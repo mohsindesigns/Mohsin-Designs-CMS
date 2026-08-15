@@ -1,0 +1,330 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@media (min-width: 350px) and (max-width: 750px) {
+  .logooo {
+    transform: translateX(-35px) !important;
+  }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 35s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+
+@layer base {
+  :root {
+    /* Background - White */
+    --background: 0 0% 100%;
+    /* Foreground - Black for ALL text */
+    --foreground: 0 0% 0%;
+    /* Black */
+
+    /* Card - White background with Black text */
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    /* Black */
+
+    /* Popover */
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+    /* Black */
+
+    /* Primary - #2430D2 Blue */
+    --primary: 235 70% 48%;
+    /* #2430D2 */
+    --primary-foreground: 0 0% 100%;
+    /* White text on blue */
+
+    /* Secondary - Darker blue variant */
+    --secondary: 235 70% 40%;
+    /* Darker shade of #2430D2 */
+    --secondary-foreground: 0 0% 100%;
+    /* White text */
+
+    /* Muted - Light gray background */
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    /* Medium gray */
+
+    /* Accent - Same blue for highlights */
+    --accent: 235 70% 48%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Destructive */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders */
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 235 70% 48%;
+    /* Blue ring focus */
+
+    --radius: 0.5rem;
+
+    /* Deep - Blue for dark backgrounds */
+    --deep: 235 70% 48%;
+    --surface: 0 0% 98%;
+    --surface-light: 0 0% 100%;
+    --text-dark: 0 0% 0%;
+
+    /* Sidebar - Blue */
+    --sidebar-background: 235 70% 48%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 235 70% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 235 70% 40%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 235 70% 40%;
+    --sidebar-ring: 235 70% 48%;
+
+    /* Fonts */
+    --font-heading: 'Space Grotesk', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  /* Optional dark mode if needed */
+  .dark {
+    --background: 235 70% 10%;
+    --foreground: 0 0% 100%;
+    --card: 235 70% 12%;
+    --card-foreground: 0 0% 100%;
+    --popover: 235 70% 12%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 235 70% 48%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 235 70% 30%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 235 70% 20%;
+    --muted-foreground: 0 0% 70%;
+    --accent: 235 70% 48%;
+    --accent-foreground: 0 0% 100%;
+    --border: 235 70% 25%;
+    --input: 235 70% 25%;
+    --ring: 235 70% 48%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ALL headings default to BLACK */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-foreground;
+    font-family: var(--font-heading);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+
+  /* Paragraphs default to BLACK */
+  p {
+    @apply text-foreground;
+  }
+
+  /* Links default to BLACK, hover to BLUE */
+  a {
+    @apply text-foreground transition-colors duration-300;
+  }
+
+  a:hover {
+    @apply text-primary;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .section-padding {
+    @apply px-6 md:px-12 lg:px-24 py-20 md:py-32;
+  }
+
+  .heading-xl {
+    @apply text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-medium text-foreground;
+    font-family: var(--font-heading);
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+  }
+
+  .heading-lg {
+    @apply text-4xl md:text-5xl lg:text-6xl font-medium text-foreground;
+    font-family: var(--font-heading);
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  .heading-md {
+    @apply text-2xl md:text-3xl lg:text-4xl font-medium text-foreground;
+    font-family: var(--font-heading);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .body-lg {
+    @apply text-lg md:text-xl text-foreground;
+    font-family: var(--font-body);
+    line-height: 1.6;
+  }
+
+  .body-sm {
+    @apply text-sm md:text-base text-foreground;
+    font-family: var(--font-body);
+    line-height: 1.5;
+  }
+
+  .accent-line {
+    @apply w-12 h-0.5 bg-primary;
+  }
+
+  .grid-editorial {
+    @apply grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8;
+  }
+
+  /* Blue to black gradient for special text */
+  .text-gradient {
+    background: linear-gradient(135deg, #2430D2 0%, #000000 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Blue gradient for CTAs */
+  .bg-gradient-cta {
+    background: linear-gradient(135deg, #2430D2 0%, #1A24A8 100%);
+    color: white;
+  }
+
+  /* Blue gradient for dark sections */
+  .bg-patriotic {
+    background: linear-gradient(135deg, #2430D2 0%, #1A24A8 100%);
+    color: white;
+  }
+
+  .border-american {
+    border-color: #2430D2;
+  }
+
+  .hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+  }
+
+  /* Text color utilities */
+  .text-navy {
+    color: #2430D2;
+  }
+
+  .text-american-red {
+    color: #2430D2;
+  }
+
+  .bg-navy {
+    background-color: #2430D2;
+  }
+
+  .bg-american-red {
+    background-color: #2430D2;
+  }
+
+  .glass {
+    @apply backdrop-blur-xl bg-white/10 border border-white/20;
+  }
+
+  .shadow-premium {
+    box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.1);
+  }
+
+  .font-heading {
+    font-family: var(--font-heading);
+  }
+
+  .font-body {
+    font-family: var(--font-body);
+  }
+
+  /* TipTap Content Styles - Tightened */
+  .rich-text-content h1 { @apply text-4xl sm:text-5xl font-black mb-3 mt-4 text-foreground; }
+  .rich-text-content h2 { @apply text-2xl sm:text-4xl font-bold mb-2 mt-3 text-foreground; }
+  .rich-text-content h3 { @apply text-xl sm:text-2xl font-bold mb-2 mt-2 text-foreground; }
+  .rich-text-content h4 { @apply text-lg sm:text-xl font-bold mb-1 mt-2 text-foreground; }
+  
+  .rich-text-content ul { 
+    @apply list-disc list-outside mb-2 pl-5 space-y-1 text-foreground;
+  }
+  .rich-text-content ol { 
+    @apply list-decimal list-outside mb-2 pl-5 space-y-1 text-foreground;
+  }
+  .rich-text-content li {
+    @apply pl-1;
+  }
+  .rich-text-content p {
+    @apply mb-2 last:mb-0;
+  }
+  .rich-text-content a {
+    @apply text-primary no-underline transition-colors;
+    text-decoration: none !important;
+  }
+  .rich-text-content a:hover {
+    @apply text-primary no-underline opacity-80;
+    text-decoration: none !important;
+  }
+  .prose a {
+    @apply text-primary no-underline transition-colors !important;
+    text-decoration: none !important;
+  }
+  .prose a:hover {
+    @apply text-primary no-underline opacity-80 !important;
+    text-decoration: none !important;
+  }
+
+  /* Prose List Spacing Fixes */
+  .prose li p {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+  .prose li {
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+  .prose ul, .prose ol {
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+}

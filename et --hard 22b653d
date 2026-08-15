@@ -1,0 +1,126 @@
+[33m5ffb360[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m i think final cahnges
+[33m22b653d[m i think final cahnges
+[33m37c31ba[m i think final cahnges
+[33mcfc1ac7[m i think final cahnges
+[33mcc5a8e9[m i think final cahnges
+[33m36a5d72[m i think final cahnges
+[33m0766bb5[m i think final cahnges
+[33m89d8af7[m Team changes
+[33mc694a8f[m Team changes
+[33m8b0bd6e[m Team changes
+[33m384292c[m Team changes
+[33m7dcc69d[m Blog seo changes
+[33m189949b[m Blog seo changes
+[33m68ce55d[m Blog seo changes
+[33m4ff9d7b[m RBUM configure
+[33mb59f04d[m RBUM configure
+[33m0914766[m RBUM configure
+[33m7003b37[m RBUM configure
+[33m83f82a4[m RBUM configure
+[33m01e7db7[m RBUM configure
+[33m9e01114[m Improve storage logging for production debugging
+[33m8b11e32[m Support CLOUDINARY_URL for signed uploads
+[33mc8bc232[m Fix production uploads with Cloudinary support and rename logs API
+[33ma4c5458[m Fix production logs by renaming API route to activity-logs
+[33me4b1805[m Fix production 404 by renaming logs to activity-logs
+[33m4bf062f[m RBUM configure
+[33md6475c0[m Fix nested blog folder structures for Next.js
+[33m65f9ec2[m Final cleanup of build cache and blog modules
+[33mf067665[m Fix roles folder structure and standardize Next.js 15 API route types
+[33m2b2465d[m Fix Next.js 15 params type error in user API route
+[33m31d742f[m RBUM configure
+[33mdf6cb3b[m RBUM configure
+[33m44fd3da[m RBUM configure
+[33m8b772c4[m RBUM configure
+[33m69136ba[m Some beautiful
+[33m2a9dbdd[m Some beautiful
+[33meeab769[m Somethign good
+[33me53ca54[m Khatarnak
+[33m9028a2d[m Schema changes
+[33mb5de77d[m Khatarnak
+[33mb8af988[m Khatarnak
+[33m896268d[m Khatarnak
+[33m28ba53d[m Khatarnak
+[33m0c30eed[m Khatarnak
+[33mdb9c5d0[m Khatarnak
+[33mbe85de2[m Khatarnak
+[33md5c34b3[m Khatarnak
+[33m0447604[m Khatarnak
+[33m8777b0c[m hero dynamic
+[33me359633[m hero dynamic
+[33m6d60165[m hero dynamic
+[33m4e14805[m hero dynamic
+[33mb3f3a45[m hero dynamic
+[33m94d9789[m hero dynamic
+[33m79a01d5[m hero dynamic
+[33mb65f7cc[m hero dynamic
+[33m989def0[m hero dynamic
+[33mce18f40[m hero dynamic
+[33mf7164bb[m hero dynamic
+[33mdbc3515[m hero dynamic
+[33m328cb11[m hero dynamic
+[33mc463e47[m hero dynamic
+[33mcf0ecd2[m hero dynamic
+[33maa18bac[m hero dynamic
+[33m6115a37[m Template thing done
+[33m6b63c78[m Team page dynamic
+[33mac6cea8[m Data filteration done
+[33m54cd872[m Data filteration done
+[33m46c49d0[m Data filteration done
+[33m3f64b3e[m Data fiteration
+[33m8e3e645[m Team page dynamic
+[33m68c36c1[m Team page dynamic
+[33mc17eb3d[m Updated project files
+[33ma4935e9[m Updated project files
+[33m4767a54[m Updated project files
+[33mf77f13e[m Updated project files
+[33me4076e8[m Updated project files
+[33m7d38858[m Updated project files
+[33m4c5ca61[m Updated project files
+[33m9523979[m Updated project files
+[33m0b8ad49[m Updated project files
+[33m6c377f9[m  Super Final Changes
+[33m71bac41[m  Client final changes
+[33mfb479d1[m  Client final changes
+[33m3b12d22[m  Client final changes
+[33m4b23887[m OG image and favicon update
+[33m55685d7[m OG image and favicon update
+[33mc22d4bc[m OG image and favicon update
+[33me4a2c53[m OG image and favicon update
+[33mbc363cf[m CLient Changes
+[33m41c4470[m CLient Changes
+[33m139efd1[m CLient Changes
+[33mabbf328[m CLient Changes
+[33m2e7f6ba[m CLient Changes
+[33meb679b3[m Client Changes Done
+[33m2296f4a[m  Some changes
+[33m2a2b469[m  Some changes
+[33m936519a[m  Some changes
+[33m9c5f540[m Client changes done
+[33m20be52e[m Layout changes done
+[33mf279f54[m Dynamic service data for every service
+[33ma57b844[m Responsive issue fix
+[33m72866fc[m Responsive issue fix
+[33m697f423[m fix: responsive design fixes for about page
+[33m1d1760f[m Some resposnivness issues fix
+[33m201b878[m Service detail and main Services Page done
+[33mf9396b6[m Pages done
+[33mdd43fc7[m Pages done
+[33ma389fde[m Changes done
+[33m17de237[m Changes done
+[33maf9f519[m Some Major Changes done
+[33m2aa23f9[m Navigation done
+[33m1e2f9ba[m Navigation done
+[33m19de934[m Navigation done
+[33mef6b9ab[m Some minor changes
+[33m96ed8ce[m Some minor changes
+[33md777f65[m Some minor changes
+[33m8a500de[m About and contact page done
+[33m654a19f[m Migrate from React To Next.Js
+[33m470b1cc[m Button fixs
+[33m92c348a[m Some minor fixes
+[33m2c9f7c2[m Some minor fixes
+[33m903bed0[m Some minor fixes
+[33ma8783a2[m Sent for a review
+[33me0007c4[m Color theme update
+[33m8376e56[m Initial commit
