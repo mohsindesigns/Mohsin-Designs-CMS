@@ -4,7 +4,6 @@ import { useRef, useEffect, useState, useCallback, useMemo, memo } from "react";
 import { Icon } from "../config/icons";
 import { useContent } from "../hooks/useContent";
 import Link from "next/link";
-import EagleAboutImg from "@/assets/fairabout.png";
 import RichTextRenderer from "./ui/RichTextRenderer";
 
 const Counter = memo(({ value, suffix = "", duration = 1.8 }: { value: number; suffix?: string; duration?: number }) => {
@@ -201,7 +200,7 @@ export default function AboutSection() {
         <section
             ref={sectionRef}
             className="relative bg-background overflow-hidden py-12 md:py-14 lg:py-16"
-            aria-label="About Eagle Revolution"
+            aria-label="About Mohsin Designs"
         >
             <div className="absolute top-0 left-0 w-full overflow-hidden leading-none z-20 pointer-events-none rotate-180">
                 <svg
@@ -282,33 +281,14 @@ export default function AboutSection() {
 
                         <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-gray-300/50">
                             <div className="relative aspect-[4/5] lg:aspect-[3/4]">
-                                {isDynamicImage && (image.src.startsWith('http') || image.src.startsWith('/uploads') || image.src.startsWith('/cdn-images')) ? (
+                                {isDynamicImage && (image.src.startsWith('http') || image.src.startsWith('/')) ? (
                                     <img
                                         src={image.src}
-                                        alt={image.alt || "About Eagle Revolution"}
+                                        alt={image.alt || "About Mohsin Designs"}
                                         className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
                                     />
-                                ) : isDynamicImage ? (
-                                    <Image
-                                        src={image.src}
-                                        alt={image.alt || "About Eagle Revolution"}
-                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                                        fill
-                                        quality={100}
-                                        priority
-                                        loading="eager"
-                                        unoptimized={shouldBeUnoptimized}
-                                    />
                                 ) : (
-                                    <Image
-                                        src={EagleAboutImg}
-                                        alt={image?.alt || "About Eagle Revolution"}
-                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                                        fill
-                                        quality={100}
-                                        priority
-                                        loading="eager"
-                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-primary/20 to-transparent" />
                                 )}
 
                                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-transparent" />

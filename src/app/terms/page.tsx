@@ -50,10 +50,10 @@ export default function TermsPage() {
                 1. Introduction
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                Welcome to Eagle Revolution. By accessing or using our website, services, or products, you agree to be bound by these Terms and Conditions.
+                Welcome to Mohsin Designs. By accessing or using our website, services, or products, you agree to be bound by these Terms and Conditions.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                Eagle Revolution provides both <span className="text-primary font-medium">roofing and exterior remodeling services</span> (primary business) and <span className="text-primary font-medium">branded merchandise</span> (secondary business). These Terms apply to both our services and products.
+                Mohsin Designs provides both <span className="text-primary font-medium">roofing and exterior remodeling services</span> (primary business) and <span className="text-primary font-medium">branded merchandise</span> (secondary business). These Terms apply to both our services and products.
               </p>
             </div>
 
@@ -220,7 +220,7 @@ export default function TermsPage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <Icon name="Check" className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-                  <span>Eagle Revolution is not responsible for delays caused by carriers or customs</span>
+                  <span>Mohsin Designs is not responsible for delays caused by carriers or customs</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Icon name="Check" className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
@@ -240,7 +240,7 @@ export default function TermsPage() {
                 6. Intellectual Property
               </h2>
               <p className="text-muted-foreground leading-relaxed">
-                All content on this website, including but not limited to text, graphics, logos, images, and software, is the property of Eagle Revolution and is protected by United States copyright and trademark laws. You may not reproduce, distribute, or create derivative works without our express written permission.
+                All content on this website, including but not limited to text, graphics, logos, images, and software, is the property of Mohsin Designs and is protected by United States copyright and trademark laws. You may not reproduce, distribute, or create derivative works without our express written permission.
               </p>
             </div>
 
@@ -251,7 +251,7 @@ export default function TermsPage() {
                 7. Limitation of Liability
               </h2>
               <p className="text-muted-foreground leading-relaxed">
-                To the fullest extent permitted by law, Eagle Revolution shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of our website, services, or products. Our total liability shall not exceed the amount you paid to us.
+                To the fullest extent permitted by law, Mohsin Designs shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of our website, services, or products. Our total liability shall not exceed the amount you paid to us.
               </p>
             </div>
 
@@ -273,7 +273,7 @@ export default function TermsPage() {
                 9. SMS/Text Messaging Terms
               </h2>
               <div className="space-y-3 text-muted-foreground text-sm">
-                <p>By providing your phone number, you consent to receive SMS messages from Eagle Revolution regarding:</p>
+                <p>By providing your phone number, you consent to receive SMS messages from Mohsin Designs regarding:</p>
                 <ul className="space-y-2 ml-4">
                   <li className="flex items-start gap-2">
                     <Icon name="Check" className="w-3 h-3 text-primary mt-1 flex-shrink-0" />
@@ -298,17 +298,17 @@ export default function TermsPage() {
                 If you have any questions about these Terms & Conditions, please contact us:
               </p>
               <a 
-                href="mailto:info@eaglerevolution.com" 
+                href="mailto:info@mohsindesigns.com" 
                 className="inline-flex items-center gap-2 text-primary hover:underline font-semibold"
               >
-                info@eaglerevolution.com
+                info@mohsindesigns.com
                 <Icon name="ArrowRight" className="w-4 h-4" />
               </a>
             </div>
 
             {/* Footer */}
             <p className="text-center text-xs text-muted-foreground/60 pt-8">
-              © {new Date().getFullYear()} Eagle Revolution. All rights reserved.
+              © {new Date().getFullYear()} Mohsin Designs. All rights reserved.
             </p>
           </motion.div>
         </div>

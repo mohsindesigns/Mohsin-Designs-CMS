@@ -94,14 +94,14 @@ export default function Footer() {
               <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 overflow-hidden border border-white/10">
                 <div className="absolute top-1 left-1 w-6 h-6 rounded-full bg-brand-yellow/80 mix-blend-screen" />
                 <div className="absolute bottom-1 right-1 w-6 h-6 rounded-full bg-brand-blue/80 mix-blend-screen" />
-                <span className="relative font-heading font-extrabold text-white text-base z-10">{footer?.logoLetter || "E"}</span>
+                <span className="relative font-heading font-extrabold text-white text-base z-10">{footer?.logoLetter || "M"}</span>
               </div>
               <div className="flex flex-col">
                 <span className="font-sans font-black text-lg leading-none tracking-tight text-white uppercase">
-                  {footer?.logoText || "EAGLE"}
+                  {footer?.logoText || "MOHSIN"}
                 </span>
                 <span className="font-sans font-bold text-[9px] tracking-widest text-brand-yellow uppercase leading-none mt-1">
-                  {footer?.logoSub || "REVOLUTION"}
+                  {footer?.logoSub || "DESIGNS"}
                 </span>
               </div>
             </div>

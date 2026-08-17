@@ -5,9 +5,9 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env.local') });
 
 const uri = process.env.MONGODB_URI;
-const dbName = 'eagle_revolution';
+const dbName = process.env.MONGODB_DB || 'mdseo2025';
 // data path relative to root
-const dataPath = path.resolve(__dirname, '../src/src/data/completeData.json');
+const dataPath = path.resolve(__dirname, '../completedata.json');
 
 async function seed() {
     if (!uri) {

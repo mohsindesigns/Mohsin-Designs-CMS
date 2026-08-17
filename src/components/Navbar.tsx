@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight, Menu, X, Star, Sun, Moon } from "lucide-react";
 import { Icon } from "../config/icons";
 import { useContent } from "../hooks/useContent";
-import logo from "../assets/eaglelogo.png";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -95,7 +94,7 @@ export default function Navbar() {
             <div className="h-10 sm:h-12 w-24 sm:w-28 flex items-center justify-center overflow-hidden relative">
               <img
                 src={navbar.logo}
-                alt={settings.siteTitle || "Eagle Revolution Logo"}
+                alt={settings.siteTitle || "Mohsin Designs Logo"}
                 className="object-contain w-full h-full max-h-10"
               />
             </div>
@@ -103,7 +102,7 @@ export default function Navbar() {
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="relative flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full bg-brand-blue shadow-md border border-brand-blue/10">
                 <span className="font-sans font-black text-white text-sm sm:text-base leading-none">
-                  {navbar.logoLetter || (settings.siteTitle ? settings.siteTitle.charAt(0) : "E")}
+                  {navbar.logoLetter || (settings.siteTitle ? settings.siteTitle.charAt(0) : "M")}
                 </span>
                 <div className="absolute -top-0.5 -right-0.5 h-3 w-3 sm:h-3.5 sm:w-3.5 rounded-full bg-brand-yellow flex items-center justify-center border border-white">
                   <Star className="h-1.5 w-1.5 sm:h-2 sm:w-2 fill-brand-dark text-brand-dark" />
@@ -111,10 +110,10 @@ export default function Navbar() {
               </div>
               <div className="flex flex-col">
                 <span className="font-sans font-black text-xs sm:text-base tracking-tight text-brand-dark dark:text-white leading-none">
-                  {navbar.logoText || "EAGLE"}
+                  {navbar.logoText || "MOHSIN"}
                 </span>
                 <span className="font-sans font-bold text-[7.5px] sm:text-[8.5px] tracking-[0.2em] text-brand-blue dark:text-brand-yellow uppercase leading-none mt-1">
-                  {navbar.logoSub || "REVOLUTION"}
+                  {navbar.logoSub || "DESIGNS"}
                 </span>
               </div>
             </div>

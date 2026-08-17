@@ -1,13 +1,15 @@
 import { useRef, useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import teamImage from "@/assets/team-image.jpg";
 import Image from "next/image";
+import { useContent } from "../hooks/useContent";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Mission = () => {
   const sectionRef = useRef<HTMLElement>(null);
+  const content = useContent();
+  const missionImage = content?.about?.teamImage || content?.about?.image?.src || "";
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -22,7 +24,11 @@ const Mission = () => {
       <div className="grid-editorial items-center">
         <div className="md:col-span-5 order-2 md:order-1">
           <div className="mission-image overflow-hidden aspect-[3/4] relative">
-            <Image src={teamImage} alt="Mohsin Designs team at work" className="object-cover" fill quality={100} />
+            {missionImage && (missionImage.startsWith("/") || missionImage.startsWith("http")) ? (
+              <Image src={missionImage} alt="Mohsin Designs team at work" className="object-cover" fill quality={100} />
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/80 via-primary/60 to-primary/40" />
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-primary/50 to-transparent" />
             <div className="absolute bottom-6 left-6 right-6 bg-primary/90 backdrop-blur-sm p-5 border border-primary-foreground/10">
               <div className="grid grid-cols-3 gap-4">

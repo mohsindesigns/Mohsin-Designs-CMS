@@ -50,7 +50,7 @@ export default function PrivacyPolicyPage() {
                 Our Commitment to Privacy
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                Eagle Revolution takes the security and privacy of your personal information extremely seriously. We will not trade, sell, or rent your personally identifiable information. For an overview of our privacy practices, please read below.
+                Mohsin Designs takes the security and privacy of your personal information extremely seriously. We will not trade, sell, or rent your personally identifiable information. For an overview of our privacy practices, please read below.
               </p>
               <p className="text-muted-foreground leading-relaxed">
                 We are strongly devoted to defending the privacy of your personal information. We have established this Privacy Policy to inform you of the type of personal information we may collect throughout your visit to our Website, why we collect your information, what we use your personal information for, when we may provide your personal information, and how you can control your personal information.
@@ -69,7 +69,7 @@ export default function PrivacyPolicyPage() {
               <div className="mt-4 p-4 bg-primary/5 border border-primary/20 rounded-xl">
                 <p className="text-sm text-muted-foreground">
                   <span className="font-semibold text-primary">Questions?</span> If you have any inquiries about this Privacy Policy, please contact us at{' '}
-                  <a href="mailto:info@eaglerevolution.com" className="text-primary hover:underline">info@eaglerevolution.com</a>
+                  <a href="mailto:info@mohsindesigns.com" className="text-primary hover:underline">info@mohsindesigns.com</a>
                 </p>
               </div>
             </div>
@@ -78,7 +78,7 @@ export default function PrivacyPolicyPage() {
             <div className="bg-card rounded-2xl border border-border p-6 md:p-8">
               <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4">What Information Is Collected and Stored?</h2>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                Eagle Revolution adheres to the uppermost standards of ethical practices in all of our processes and is devoted to protecting the privacy of all users of our Website. Our privacy policy is straightforward: Except as revealed below, we don't sell, barter, deliver or rent your personal information to any organization or individual external of Eagle Revolution.
+                Mohsin Designs adheres to the uppermost standards of ethical practices in all of our processes and is devoted to protecting the privacy of all users of our Website. Our privacy policy is straightforward: Except as revealed below, we don't sell, barter, deliver or rent your personal information to any organization or individual external of Mohsin Designs.
               </p>
               
               <h3 className="text-lg font-semibold text-foreground mt-6 mb-3">Personal Information</h3>
@@ -131,7 +131,7 @@ export default function PrivacyPolicyPage() {
               <div className="space-y-3 text-muted-foreground">
                 <p>Consent is not a condition of purchase. Message frequency varies. Message & data rates may apply.</p>
                 <p>You can opt out at any time by replying STOP or reply HELP for more info.</p>
-                <p>By clicking "Submit," I agree with Eagle Revolution Terms of Service.</p>
+                <p>By clicking "Submit," I agree with Mohsin Designs Terms of Service.</p>
                 <p className="text-sm">Reply STOP to stop receiving messages from us. Reply HELP for more information.</p>
                 <p className="text-sm">You will receive no further messages from us. If this was an error reply UNSTOP to continue receiving messages.</p>
               </div>
@@ -161,17 +161,17 @@ export default function PrivacyPolicyPage() {
                 Questions regarding this Privacy Policy should be directed to our Customer Service.
               </p>
               <a 
-                href="mailto:info@eaglerevolution.com" 
+                href="mailto:info@mohsindesigns.com" 
                 className="inline-flex items-center gap-2 text-primary hover:underline font-semibold"
               >
-                info@eaglerevolution.com
+                info@mohsindesigns.com
                 <Icon name="ArrowRight" className="w-4 h-4" />
               </a>
             </div>
 
             {/* Footer Note */}
             <p className="text-center text-xs text-muted-foreground/60 pt-8">
-              © {new Date().getFullYear()} Eagle Revolution. All rights reserved.
+              © {new Date().getFullYear()} Mohsin Designs. All rights reserved.
             </p>
           </motion.div>
         </div>

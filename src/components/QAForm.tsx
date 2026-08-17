@@ -503,7 +503,7 @@ const SMSConsentCheckbox = ({ checked, onChange, showError }: { checked: boolean
           htmlFor="smsConsent"
           className={`flex-1 text-[11px] sm:text-xs leading-relaxed cursor-pointer ${showError ? 'text-red-400' : 'text-muted-foreground'}`}
         >
-          I agree to receive informational SMS text messages from Eagle Revolution related to my request, including appointment scheduling and service updates, at the number I provided. Message frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help. Consent is not a condition of purchase. Please see{' '}
+          I agree to receive informational SMS text messages from Mohsin Designs related to my request, including appointment scheduling and service updates, at the number I provided. Message frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help. Consent is not a condition of purchase. Please see{' '}
           <Link href="/privacy" className="text-primary hover:underline transition-colors">Privacy Policy</Link>
           {' '}and{' '}
           <Link href="/terms" className="text-primary hover:underline transition-colors">Terms and Conditions</Link>.
@@ -596,7 +596,7 @@ const GetQuote = () => {
       .join(', ');
 
     const emailContent = `
-🦅 EAGLE REVOLUTION QUOTE REQUEST
+✨ MOHSIN DESIGNS QUOTE REQUEST
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -623,7 +623,7 @@ ${formData.message}
     try {
       const payload = {
         type: 'Quote Request',
-        subject: `Eagle Revolution Quote Request - ${formData.name}`,
+        subject: `Mohsin Designs Quote Request - ${formData.name}`,
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
@@ -664,13 +664,13 @@ ${formData.message}
         return;
       } else {
         console.error('API submission failed, falling back to mailto');
-        const mailtoLink = `mailto:banderson@eaglerevolution.com?subject=Quote Request - ${formData.name}&body=${encodeURIComponent(emailContent)}`;
+        const mailtoLink = `mailto:info@mohsindesigns.com?subject=Quote Request - ${formData.name}&body=${encodeURIComponent(emailContent)}`;
         window.location.href = mailtoLink;
         setShowSuccess(true);
       }
     } catch (error) {
       console.error('Final submission error:', error);
-      const mailtoLink = `mailto:banderson@eaglerevolution.com?subject=Quote Request - ${formData.name}&body=${encodeURIComponent(emailContent)}`;
+      const mailtoLink = `mailto:info@mohsindesigns.com?subject=Quote Request - ${formData.name}&body=${encodeURIComponent(emailContent)}`;
       window.location.href = mailtoLink;
       setShowSuccess(true);
     } finally {

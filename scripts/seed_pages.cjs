@@ -3,7 +3,7 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env.local') });
 
 const uri = process.env.MONGODB_URI;
-const dbName = 'eagle_revolution';
+const dbName = process.env.MONGODB_DB || 'mdseo2025';
 
 async function seedPages() {
     if (!uri) {

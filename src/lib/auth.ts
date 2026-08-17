@@ -23,7 +23,7 @@ export async function verifyToken(token: string) {
 
 export async function getAuthSession(req?: NextRequest) {
   const cookieStore = await cookies();
-  const token = cookieStore.get("admin_session")?.value;
+  const token = cookieStore.get("mohsin_admin_session")?.value;
   if (!token) return null;
   return await verifyToken(token);
 }

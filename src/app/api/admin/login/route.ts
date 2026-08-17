@@ -14,8 +14,13 @@ export async function POST(req: NextRequest) {
 
     await connectToDatabase();
 
-    // Find user and populate role
-    const user = await User.findOne({ username }).populate('role');
+    // Find user by username or email and populate role
+    const user = await User.findOne({
+      $or: [
+        { username },
+        { email: username }
+      ]
+    }).populate('role');
 
     if (!user) {
       await recordActivity({
@@ -81,7 +86,7 @@ export async function POST(req: NextRequest) {
       }
     });
 
-    response.cookies.set('admin_session', token, {
+    response.cookies.set('mohsin_admin_session', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',

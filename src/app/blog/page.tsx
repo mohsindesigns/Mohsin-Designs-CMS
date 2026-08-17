@@ -80,7 +80,7 @@ export default async function BlogIndexPage() {
             <span className="text-white">Blog</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight">Our Insights</h1>
-          <p className="text-slate-400 mt-4 text-lg max-w-2xl mx-auto">Latest news, guides and updates from Eagle Revolution.</p>
+          <p className="text-slate-400 mt-4 text-lg max-w-2xl mx-auto">Latest news, guides and updates from Mohsin Designs.</p>
         </div>
       </section>
 

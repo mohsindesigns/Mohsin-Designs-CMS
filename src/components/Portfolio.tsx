@@ -17,16 +17,6 @@ import { useRouter } from "next/navigation";
 import RichTextRenderer from "./ui/RichTextRenderer";
 
 // Rename window import to avoid conflict with global window object
-import commercialroof from "../assets/COMMERCIAL ROOFS-20260414T184732Z-3-001/COMMERCIAL ROOFS/croof1.jpg";
-import decks from "../assets/DECKS-20260414T184734Z-3-001/DECKS/deck12.jpg";
-import deck2 from "../assets/DECKS-20260414T184734Z-3-001/DECKS/deck11.jpg";
-import door from "../assets/DOORS-20260414T184740Z-3-001/DOORS/DOOR1.jpg";
-import residental1 from "../assets/RESIDENTIAL ROOFS-20260414T184752Z-3-001/RESIDENTIAL ROOFS/roof4 - Copy (2).png";
-import residental2 from "../assets/RESIDENTIAL ROOFS-20260414T184752Z-3-001/RESIDENTIAL ROOFS/roof9.jpg";
-import siding from "../assets/SIDING-20260415T110420Z-3-001/SIDING/siding5.jpg";
-import windowsImg from "../assets/WINDOWS-20260414T184759Z-3-001/WINDOWS/windows10.jpg";
-import pvc from "../assets/pvcdecks.jpg";
-import windows2Img from "../assets/WINDOWS-20260414T184759Z-3-001/WINDOWS/windows2.jpg";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -53,38 +43,7 @@ interface Button {
   link?: string;
 }
 
-const imageMap: Record<string, any> = {
-  'home1': commercialroof,
-  'home2': decks,
-  'home3': deck2,
-  'home4': door,
-  'home5': residental1,
-  'home6': residental2,
-  'home7': siding,
-  'home8': windowsImg,
-  'home9': pvc,
-  'home10': windows2Img,
-  'deck1': decks,
-  'deck2': deck2,
-  'deck3': pvc,
-  'roof1': residental1,
-  'roof2': residental2,
-  'roof3': commercialroof,
-  'window1': windowsImg,
-  'window2': windows2Img,
-  'window3': windowsImg,
-  'commercial1': commercialroof,
-  'commercial2': commercialroof,
-  'commercial3': commercialroof,
-  'residental1': residental1,
-  'residental2': residental2,
-  'commercialroof': commercialroof,
-  'siding': siding,
-  'gutter': residental1,
-  'pvc': pvc,
-  'windowImg': windowsImg,
-  'door': door,
-};
+
 
 const MarqueeItem = ({ project }: { project: Project }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -129,7 +88,7 @@ const MarqueeItem = ({ project }: { project: Project }) => {
       className="relative w-[200px] sm:w-[240px] md:w-[280px] h-[280px] sm:h-[320px] md:h-[360px] flex-shrink-0 cursor-pointer will-change-transform transition-transform duration-300"
     >
       <div className="relative w-full h-full rounded-xl overflow-hidden shadow-2xl shadow-gray-300/50">
-        {project.image && (project.image.startsWith('http') || project.image.startsWith('/uploads') || project.image.startsWith('/cdn-images')) ? (
+        {project.image && (project.image.startsWith('http') || project.image.startsWith('/')) ? (
           <img
             src={project.image}
             alt={project.title}
@@ -140,12 +99,8 @@ const MarqueeItem = ({ project }: { project: Project }) => {
             }}
           />
         ) : (
-          <Image
-            src={imageMap[project.image as keyof typeof imageMap] || project.image}
-            alt={project.title}
-            className="object-cover"
-            fill
-            quality={100}
+          <div
+            className="w-full h-full bg-gradient-to-br from-primary/30 via-primary/20 to-primary/10"
             style={{
               transform: isHovered ? "scale(1.1)" : "scale(1)",
               transition: "transform 0.6s cubic-bezier(0.215, 0.61, 0.355, 1)",

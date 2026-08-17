@@ -77,7 +77,9 @@ export default function AboutOwner() {
   const bioParagraph1 = about?.bioParagraph1 || "I help brands scale dynamically using advanced design and tech systems.";
   const bioParagraph2 = about?.bioParagraph2 || "With over a decade of design experience, we specialize in high-end design systems, custom development, and comprehensive marketing architectures.";
   
-  const portraitSrc = about?.image?.src || "";
+  // Only use image if it looks like a real path/URL
+  const rawPortraitSrc = about?.image?.src || "";
+  const portraitSrc = rawPortraitSrc.startsWith("/") || rawPortraitSrc.startsWith("http") ? rawPortraitSrc : "";
   const portraitAlt = about?.image?.alt || "Mohsin Designs Biography";
   
   const circleText = about?.circleText || "CREATIVE POWER • MOHSIN DESIGNS •";

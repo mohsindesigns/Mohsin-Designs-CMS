@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import {
   motion,
   AnimatePresence,
@@ -24,21 +23,12 @@ import {
   Droplet, FlameKindling, Lightbulb, Power
 } from 'lucide-react';
 import { notFound } from 'next/navigation';
-import breakcrumb from '@/assets/Breadcrumb-Image.jpeg';
 import { useContent } from "../../hooks/useContent";
 import RichTextRenderer from "../ui/RichTextRenderer";
 import PageInlineFaqs from "../PageInlineFaqs";
 import BlogSection from "../sections/BlogSection";
 import FeaturedComparison from '../FeaturedComparison';
 import FeaturedDetailGrid from '../FeaturedDetailGrid';
-
-import roofingImg from '@/assets/roof1.jpg.jpeg';
-import windowsImg from '@/assets/window5.jpeg';
-import decksImg from '@/assets/outdoor-sitting-desk.png';
-import commercialImg from '@/assets/commercial-tpo.png';
-import sidingImg from '@/assets/siding5.jpg.jpeg';
-import gutter from '@/assets/gutterinstallation.jpg.jpeg';
-import pvcdecks from '@/assets/pvcdecks.jpg.jpeg';
 
 const iconMap: Record<string, any> = {
   Home, Layout, TreePine, Building2, Building, Droplets,
@@ -51,15 +41,7 @@ const iconMap: Record<string, any> = {
   Droplet, FlameKindling, Lightbulb, Power
 };
 
-const imageMap: Record<string, any> = {
-  'Residential Roofing': roofingImg,
-  'Windows & Doors': windowsImg,
-  'Custom Decks': decksImg,
-  'Commercial Roofing': commercialImg,
-  'Siding, Soffit & Fascia': sidingImg,
-  'Gutters & Protection': gutter,
-  'PVC Decking': pvcdecks
-};
+
 
 // --- Counter Component ---
 const parseStatValue = (val: string) => {
@@ -331,7 +313,7 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
         {service.breadcrumbImage ? (
           <img src={service.breadcrumbImage} alt={service.title} className="absolute inset-0 w-full h-full object-cover" />
         ) : (
-          <Image src={breakcrumb} alt={service.title} fill className="object-cover" priority />
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900" />
         )}
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
         <div className="absolute inset-0 flex items-center">
@@ -463,7 +445,7 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
             >
               <div className="relative aspect-[4/5] rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl">
                 <img
-                  src={service.overviewImage || (imageMap[service.title] ? (imageMap[service.title] as any).src : "/src/assets/roof1.jpg.jpeg")}
+                  src={service.overviewImage || ""}
                   alt={service.title}
                   className="w-full h-full object-cover"
                 />
@@ -682,7 +664,7 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
             {recommendedServices.map((recService: any, idx: number) => {
               const serviceSlug = recService.slug || recService.title.toLowerCase().replace(/ & /g, '-').replace(/, /g, '-').replace(/ /g, '-');
               const Icon = iconMap[recService.icon] || Droplets;
-              const serviceImage = recService.overviewImage || (imageMap[recService.title] ? (imageMap[recService.title] as any).src : roofingImg.src);
+              const serviceImage = recService.overviewImage || recService.image || "";
               return (
                 <div key={idx} style={{ opacity: 1, transform: "none" }}>
                   <Link 

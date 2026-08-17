@@ -9,14 +9,7 @@ import { Icon } from "../../config/icons";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import owner from "@/assets/ownerupdatedimage.jpeg";
-import roofingImg from '../../assets/roof1.jpg.jpeg';
-import windowsImg from '../../assets/window5.jpeg';
-import decksImg from '../../assets/outdoor-sitting-desk.png';
-import commercialImg from '../../assets/commercial-tpo.png';
-import sidingImg from '../../assets/siding5.jpg.jpeg';
-import gutter from '../../assets/gutterinstallation.jpg.jpeg';
-import pvcdecks from '../../assets/pvcdecks.jpg.jpeg';
+
 
 import {
   ShieldCheck,
@@ -60,15 +53,7 @@ const iconMap: Record<string, any> = {
   Scale, Gem, Zap, Target: LucideTarget, Sparkles, TrendingUp, BadgeCheck, ShieldCheck, Globe: GlobeIcon, Quote, Linkedin, Mail, Flag
 };
 
-const imageMap: Record<string, any> = {
-  'Residential Roofing': roofingImg,
-  'Windows & Doors': windowsImg,
-  'Custom Decks': decksImg,
-  'Commercial Roofing': commercialImg,
-  'Siding, Soffit & Fascia': sidingImg,
-  'Gutters & Protection': gutter,
-  'PVC Decking': pvcdecks,
-};
+
 
 // ==================== STAT COUNTER COMPONENT ====================
 const StatCounter = ({ value, label, suffix = "", delay = 0, iconName, description }: {
@@ -213,13 +198,13 @@ const Hero = ({ content: passedContent }: { content?: any }) => {
           {hero.bgImage && (hero.bgImage.startsWith('http') || hero.bgImage.startsWith('/uploads') || hero.bgImage.startsWith('/cdn-images')) ? (
             <img
               src={hero.bgImage}
-              alt={hero.bgImageAlt || "Eagle Revolution Interior"}
+              alt={hero.bgImageAlt || "Mohsin Designs Interior"}
               className="object-cover w-full h-full opacity-20 sm:opacity-30 scale-110 grayscale-[0.5]"
             />
           ) : (
             <Image
               src={hero.bgImage || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070"}
-              alt={hero.bgImageAlt || "Eagle Revolution Interior"}
+              alt={hero.bgImageAlt || "Mohsin Designs Interior"}
               fill
               quality={100}
               className="object-cover opacity-20 sm:opacity-30 scale-110 grayscale-[0.5]"
@@ -351,22 +336,14 @@ const FounderPortrait = ({ content }: { content?: any }) => {
         <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-primary/20 to-primary/20 rounded-2xl sm:rounded-3xl blur-lg group-hover:blur-xl transition-all duration-700" />
 
         <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl shadow-gray-300/50 h-[350px] xs:h-[400px] sm:h-[450px] md:h-[500px] lg:h-[600px]">
-          {story.portrait?.image && (story.portrait.image.startsWith('http') || story.portrait.image.startsWith('/uploads') || story.portrait.image.startsWith('/cdn-images')) ? (
+          {story.portrait?.image && (story.portrait.image.startsWith('http') || story.portrait.image.startsWith('/')) ? (
             <img
               src={story.portrait.image}
               alt={story.portrait?.alt || story.founder?.name || "Founder"}
               className="object-cover w-full h-full"
             />
           ) : (
-            <Image
-              src={story.portrait?.image || owner}
-              alt={story.portrait?.alt || story.founder?.name || "Founder"}
-              className="object-cover"
-              fill
-              quality={100}
-              sizes="(max-width: 640px) 100vw, (max-width: 768px) 80vw, 50vw"
-              priority
-            />
+            <div className="w-full h-full bg-gradient-to-br from-primary/30 via-primary/20 to-slate-200" />
           )}
 
           <div className="absolute inset-0 bg-gradient-to-t from-secondary/80 via-secondary/20 to-transparent" />
@@ -686,44 +663,28 @@ const ServiceCard = ({ service, index }: { service: any; index: number }) => {
   const [isHovered, setIsHovered] = useState(false);
   if (!service) return null;
 
-  // Get the image - prioritize overviewImage, then fall back to imported images
-  let serviceImage: string | any = roofingImg; // default fallback
+  // Get the image - prioritize overviewImage, then image field
+  const serviceImage: string =
+    (typeof service.overviewImage === 'string' && service.overviewImage.trim()) ? service.overviewImage :
+    (typeof service.image === 'string' && service.image.trim()) ? service.image :
+    "";
 
-  // Try to get overviewImage first (could be string URL)
-  if (service.overviewImage) {
-    if (typeof service.overviewImage === 'string' && service.overviewImage.trim()) {
-      serviceImage = service.overviewImage;
-    } else if (typeof service.overviewImage === 'object' && service.overviewImage.src) {
-      // Handle case where overviewImage is an object with src property
-      serviceImage = service.overviewImage.src || service.overviewImage;
-    } else if (typeof service.overviewImage === 'object') {
-      // Use the object directly (it might be an imported image)
-      serviceImage = service.overviewImage;
-    }
-  }
-  // Fall back to regular image field
-  else if (service.image) {
-    if (typeof service.image === 'string' && service.image.trim()) {
-      serviceImage = service.image;
-    } else if (typeof service.image === 'object') {
-      serviceImage = service.image;
-    }
-  }
-  // Fall back to imageMap using the service title
-  else if (imageMap[service.title]) {
-    serviceImage = imageMap[service.title];
-  }
+  const isValidImage = serviceImage.startsWith("/") || serviceImage.startsWith("http");
 
   return (
     <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ duration: 0.6, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }} className="group" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
       <Link href={`/services/${service.slug}`} className="block h-full">
         <div className="flex flex-col h-full">
           <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 shadow-lg transition-all duration-700 group-hover:shadow-2xl">
-            <img
-              src={service.overviewImage}
-              alt={service.title}
-              className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-            />
+            {isValidImage ? (
+              <img
+                src={serviceImage}
+                alt={service.title}
+                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-primary/20 via-primary/10 to-transparent" />
+            )}
 
 
 

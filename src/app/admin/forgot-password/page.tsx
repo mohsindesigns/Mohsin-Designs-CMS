@@ -43,12 +43,11 @@ export default function ForgotPasswordPage() {
   return (
     <div className="min-h-screen bg-[#f0f2f5] flex items-center justify-center p-4">
       <div className="w-full max-w-[400px]">
-        {/* Logo Section */}
         <div className="flex flex-col items-center mb-8">
           <div className="w-20 h-20 bg-white rounded-2xl shadow-xl flex items-center justify-center mb-4 border border-slate-100 p-2">
-             <img src="/eagle-logo.png" alt="Logo" className="w-full h-full object-contain" />
+             <span className="font-sans font-black text-blue-600 text-3xl">M</span>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Eagle Revolution</h1>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Mohsin Designs</h1>
           <p className="text-slate-500 text-sm mt-1">Admin Control Center</p>
         </div>
 
@@ -133,7 +132,7 @@ export default function ForgotPasswordPage() {
         </div>
 
         <p className="text-center mt-8 text-slate-400 text-xs">
-          &copy; {new Date().getFullYear()} Eagle Revolution. All rights reserved.
+          &copy; {new Date().getFullYear()} Mohsin Designs. All rights reserved.
         </p>
       </div>
     </div>

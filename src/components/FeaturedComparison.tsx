@@ -1,10 +1,8 @@
 "use client";
 
 import React from 'react';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
 import * as LucideIcons from 'lucide-react';
-import decksImg from '@/assets/outdoor-sitting-desk.png';
 
 interface CardData {
   title?: string;
@@ -148,14 +146,7 @@ export default function FeaturedComparison({ data }: FeaturedComparisonProps) {
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
             />
           ) : (
-            <Image
-              src={decksImg}
-              alt="Premium deck showcase"
-              fill
-              quality={100}
-              className="object-cover group-hover:scale-105 transition-transform duration-1000"
-              priority
-            />
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900" />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
 

@@ -12,22 +12,16 @@ import {
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
-import brandon from '@/assets/ownerteam.jpeg'
-import chrissy from '@/assets/Chrissyteam.jpeg'
-import austin from '@/assets/Austinteam.jpeg'
-import brandonsutton from '@/assets/suttonteam.jpeg'
-import allan from '@/assets/allenteam.jpeg'
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
-
 const Images = {
-  BrandonAnderson: brandon.src,
-  ChrissyLong: chrissy.src,
-  Austin: austin.src,
-  BrandonSales: brandonsutton.src,
-  Allan: allan.src,
+  BrandonAnderson: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  ChrissyLong: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  Austin: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  BrandonSales: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  Allan: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
   Pattern: "https://images.unsplash.com/photo-1502691876148-a84978e59af8?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
   Studio: "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2069&q=80",
 };

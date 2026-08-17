@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 
-const ADMIN_COOKIE = 'admin_session';
+const ADMIN_COOKIE = 'mohsin_admin_session';
 const PUBLIC_PATHS = [
   '/admin/login',
   '/admin/forgot-password',
@@ -10,6 +10,7 @@ const PUBLIC_PATHS = [
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  console.log("=== MIDDLEWARE PATHNAME ===", pathname);
 
   // 1. Check for global redirects (only for public pages, not API, admin, next assets, uploads)
   if (

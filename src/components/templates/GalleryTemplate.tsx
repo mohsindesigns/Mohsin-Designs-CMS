@@ -9,40 +9,28 @@ import { useContent } from "../../hooks/useContent";
 import RichTextRenderer from "../ui/RichTextRenderer";
 
 // ---------- Image map: keys match galleryPage.projects[].image ----------
-import deck2a from "../../assets/outdoor-sitting-desk.png";
-import deck2b from "../../assets/pvcdecks.jpg.jpeg";
-import pvcImg from "../../assets/pvcdecks.jpg.jpeg";
-import deckMain from "../../assets/outdoor-sitting-desk.png";
-import windowImg from "../../assets/window5.jpeg";
-import window2Img from "../../assets/windowimage.jpg";
-import doorImg from "../../assets/windowimage.jpg";          // reuse best available
-import residental1Img from "../../assets/roof1.jpg.jpeg";
-import residental2Img from "../../assets/residentalroofing2ndimage.jpg";
-import commercialRoofImg from "../../assets/commercial-tpo.png";
-import sidingImg from "../../assets/siding5.jpg.jpeg";
-import gutterImg from "../../assets/gutterinstallation.jpg.jpeg";
-import portfolioFallback from "../../assets/portfolio-hero.jpg";
+const portfolioFallback = "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 
-const IMAGE_MAP: Record<string, any> = {
-  deck1: deckMain,
-  deck2: deck2a,
-  deck3: deck2b,
-  pvc: pvcImg,
-  windowImg: windowImg,
-  window2: window2Img,
-  door: doorImg,
-  residental1: residental1Img,
-  residental2: residental2Img,
-  commercialroof: commercialRoofImg,
-  siding: sidingImg,
-  gutter: gutterImg,
-  home1: residental1Img,
-  home2: residental2Img,
-  home3: deckMain,
-  home4: windowImg,
-  home5: sidingImg,
-  home6: gutterImg,
+const IMAGE_MAP: Record<string, string> = {
+  deck1: "https://images.unsplash.com/photo-1590012314607-cda9d9b6a9a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  deck2: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  deck3: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  pvc: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  windowImg: "https://images.unsplash.com/photo-1513694203232-719a280e022f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  window2: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  door: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  residental1: "https://images.unsplash.com/photo-1632759162444-18683411e3b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  residental2: "https://images.unsplash.com/photo-1632759162444-18683411e3b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  commercialroof: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  siding: "https://images.unsplash.com/photo-1513694203232-719a280e022f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  gutter: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  home1: "https://images.unsplash.com/photo-1632759162444-18683411e3b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  home2: "https://images.unsplash.com/photo-1632759162444-18683411e3b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  home3: "https://images.unsplash.com/photo-1590012314607-cda9d9b6a9a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  home4: "https://images.unsplash.com/photo-1513694203232-719a280e022f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  home5: "https://images.unsplash.com/photo-1513694203232-719a280e022f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  home6: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
 };
 
 function resolveImage(key: string, assetMap: any = {}) {

@@ -329,67 +329,33 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                {/* SERVICES SECTION */}
                {activeTab === "services" && (
                   <div className="space-y-12">
+
+                     {/* 1. Section Header */}
                      <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>1. Intro</h3>
-                        <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.services?.badge || ""} onChange={(e) => updateSection("services", "badge", e.target.value)} className={UI.input} /></div>
-                        <div className="space-y-2">
-                           <input type="text" value={data.services?.headline?.prefix || ""} onChange={(e) => updateSection("services", "headline", { ...(data.services?.headline || {}), prefix: e.target.value })} className={UI.input} />
-                           <input type="text" value={data.services?.headline?.highlight || ""} onChange={(e) => updateSection("services", "headline", { ...(data.services?.headline || {}), highlight: e.target.value })} className={UI.input + " font-bold border-[#2271b1]"} />
-                           <input type="text" value={data.services?.headline?.suffix || ""} onChange={(e) => updateSection("services", "headline", { ...(data.services?.headline || {}), suffix: e.target.value })} className={UI.input} />
+                        <h3 className={UI.sectionHeader}>1. Section Header</h3>
+                        <div className="space-y-1.5"><label className={UI.label}>Section Tag (Eyebrow Label)</label><input type="text" value={data.services?.sectionTag || ""} onChange={(e) => updateSection("services", "sectionTag", e.target.value)} className={UI.input} placeholder="OUR SERVICES" /></div>
+                        <div className="space-y-1.5"><label className={UI.label}>Title — Intro (plain)</label><input type="text" value={data.services?.titleIntro || ""} onChange={(e) => updateSection("services", "titleIntro", e.target.value)} className={UI.input} placeholder="What We" /></div>
+                        <div className="space-y-1.5"><label className={UI.label}>Title — Highlight <span className="text-[#2271b1] font-bold">(italic, brand color)</span></label><input type="text" value={data.services?.titleHighlight || ""} onChange={(e) => updateSection("services", "titleHighlight", e.target.value)} className={UI.input + " font-bold border-[#2271b1]"} placeholder="Deliver." /></div>
+                        <div className="space-y-1.5"><label className={UI.label}>Section Description</label><textarea rows={3} value={typeof data.services?.description === "string" ? data.services.description : (Array.isArray(data.services?.description) ? (data.services.description as string[]).join("") : "")} onChange={(e) => updateSection("services", "description", e.target.value)} className={UI.input} placeholder="Explore our full suite of premium digital services." /></div>
+                        <div className="grid grid-cols-2 gap-3">
+                           <div className="space-y-1.5"><label className={UI.label}>Prev Arrow Aria Label</label><input type="text" value={data.services?.ariaPrev || ""} onChange={(e) => updateSection("services", "ariaPrev", e.target.value)} className={UI.input} placeholder="Previous service" /></div>
+                           <div className="space-y-1.5"><label className={UI.label}>Next Arrow Aria Label</label><input type="text" value={data.services?.ariaNext || ""} onChange={(e) => updateSection("services", "ariaNext", e.target.value)} className={UI.input} placeholder="Next service" /></div>
                         </div>
-                        <QuillEditor
-                           label="Description Narrative"
-                           content={Array.isArray(data.services?.description) ? data.services.description.join("") : (data.services?.description || "")}
-                           onChange={(html) => updateSection("services", "description", html)}
-                        />
-                        <div className="space-y-1.5">
-                           <label className={UI.label}>Description Highlight Text</label>
-                           <input
-                              type="text"
-                              value={data.services?.highlightText || ""}
-                              onChange={(e) => updateSection("services", "highlightText", e.target.value)}
-                              className={UI.input}
-                              placeholder="e.g. Veteran Owned • Licensed • Bonded & Insured"
-                           />
-                           <p className="text-[11px] text-[#646970] italic">
-                              This text will be displayed with primary highlight styles right below the description paragraphs on the public site.
-                           </p>
-                        </div>
+                        <div className="space-y-1.5"><label className={UI.label}>Card Footer Label (e.g. "SERVICE")</label><input type="text" value={data.services?.serviceLabel || ""} onChange={(e) => updateSection("services", "serviceLabel", e.target.value)} className={UI.input} placeholder="SERVICE" /></div>
                      </div>
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>2. Metrics</h3>
-                        <div className="space-y-4">
-                           {(data.services?.stats || []).map((s: any, i: number) => (
-                              <div key={i} className={UI.card + " space-y-3"}>
-                                 <div className="space-y-1.5"><label className={UI.label}>Value</label><input type="number" step="0.1" value={s.value ?? 0} onChange={(e) => { const newS = [...data.services.stats]; newS[i].value = parseFloat(e.target.value); updateSection("services", "stats", newS); }} className={UI.inputLarge} /></div>
-                                 <div className="space-y-1.5"><label className={UI.label}>Label</label><input type="text" value={s.label || ""} onChange={(e) => { const newS = [...data.services.stats]; newS[i].label = e.target.value; updateSection("services", "stats", newS); }} className={UI.input} /></div>
-                                 <button onClick={() => { const newS = data.services.stats.filter((_: any, idx: number) => idx !== i); updateSection("services", "stats", newS); }} className="text-[#d63638] text-[11px] font-bold">Remove</button>
-                              </div>
-                           ))}
-                           <button onClick={() => updateSection("services", "stats", [...(data.services?.stats || []), { value: 0, label: "" }])} className={UI.buttonAdd}>+ Add Metric</button>
-                        </div>
-                     </div>
+
+                     {/* 2. Service Cards */}
                      <div className="space-y-6 pt-10 border-t border-[#f0f0f1]">
-                        <h3 className={UI.sectionHeader}>3. Selection</h3>
-                        <ContentSelector type="services" label="Featured Services" selectedItems={data.services?.services} onSelect={(items) => updateSection("services", "services", items)} />
-                     </div>
-                     <div className="space-y-6 pt-10 border-t border-[#f0f0f1]">
-                        <h3 className={UI.sectionHeader}>4. Section Image</h3>
-                        <ImageField
-                           label="Section Image"
-                           value={data.services?.image?.src || ""}
-                           onChange={(url) => {
-                              const currentImage = typeof data.services?.image === 'object' && data.services?.image !== null ? data.services.image : {};
-                              updateSection("services", "image", { ...currentImage, src: url });
-                           }}
-                           altValue={data.services?.image?.alt || ""}
-                           onAltChange={(alt) => {
-                              const currentImage = typeof data.services?.image === 'object' && data.services?.image !== null ? data.services.image : {};
-                              updateSection("services", "image", { ...currentImage, alt: alt });
-                           }}
-                           description="This image appears on the right side of the Services section on the homepage."
+                        <h3 className={UI.sectionHeader}>2. Service Cards</h3>
+                        <p className="text-[11px] text-[#646970] italic -mt-3">Select from your existing services. Order can be rearranged after selection.</p>
+                        <ContentSelector
+                           type="services"
+                           label="Featured Services (shown in carousel)"
+                           selectedItems={data.services?.list || []}
+                           onSelect={(items) => updateSection("services", "list", items)}
                         />
                      </div>
+
                   </div>
                )}
 
