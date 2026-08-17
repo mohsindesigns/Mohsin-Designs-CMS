@@ -22,7 +22,7 @@ const Mission = () => {
       <div className="grid-editorial items-center">
         <div className="md:col-span-5 order-2 md:order-1">
           <div className="mission-image overflow-hidden aspect-[3/4] relative">
-            <Image src={teamImage} alt="Eagle Revolution team at work" className="object-cover" fill quality={100} />
+            <Image src={teamImage} alt="Mohsin Designs team at work" className="object-cover" fill quality={100} />
             <div className="absolute inset-0 bg-gradient-to-t from-primary/50 to-transparent" />
             <div className="absolute bottom-6 left-6 right-6 bg-primary/90 backdrop-blur-sm p-5 border border-primary-foreground/10">
               <div className="grid grid-cols-3 gap-4">
@@ -41,8 +41,8 @@ const Mission = () => {
           <div className="accent-line mb-6 mission-copy" />
           <h2 className="heading-lg text-foreground mb-8 mission-headline">Soaring Beyond<br />Expectations.</h2>
           <div className="space-y-6">
-            <p className="body-lg text-foreground/90 mission-copy">Eagle Revolution was founded to do more than just build roofs, windows, decks, and siding. We are here to build a movement.</p>
-            <p className="body-sm text-muted-foreground mission-copy">Born in St. Charles, Missouri, Eagle Revolution was launched by Brandon Anderson, a U.S. Army veteran who brings battlefield discipline and boardroom precision to every project.</p>
+            <p className="body-lg text-foreground/90 mission-copy">Mohsin Designs was founded to do more than just build roofs, windows, decks, and siding. We are here to build a movement.</p>
+            <p className="body-sm text-muted-foreground mission-copy">Born in St. Charles, Missouri, Mohsin Designs was launched by Brandon Anderson, a U.S. Army veteran who brings battlefield discipline and boardroom precision to every project.</p>
             <p className="body-sm text-muted-foreground mission-copy italic border-l-2 border-primary/30 pl-4">"We don't just build homes. We restore trust, craftsmanship, and honor to the remodeling industry."</p>
           </div>
         </div>

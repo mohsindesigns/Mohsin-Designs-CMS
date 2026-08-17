@@ -13,13 +13,9 @@ const Images = {
 
 const ParallaxLayer = ({ children, speed = 0.1, className = "", sectionRef }: any) => {
   const ref = useRef<any>(null);
-  const [scrollTarget, setScrollTarget] = useState<any>(undefined);
-  useEffect(() => {
-    setScrollTarget(sectionRef);
-  }, [sectionRef]);
 
   const { scrollYProgress } = useScroll({
-    target: scrollTarget,
+    target: sectionRef,
     offset: ["start start", "end end"]
   });
   const y = useTransform(scrollYProgress, [0, 1], [0, speed * 50]);
@@ -53,7 +49,7 @@ export default function CareersTemplate({ pageData, params }: { pageData?: any, 
     setErrorMsg(null);
     const formData = new FormData(e.currentTarget);
     formData.append("type", "Job Application");
-    formData.append("_subject", "New Job Application - Eagle Revolution");
+    formData.append("_subject", "New Job Application - Mohsin Designs");
 
     try {
       const response = await fetch("/api/send", {
@@ -79,7 +75,7 @@ export default function CareersTemplate({ pageData, params }: { pageData?: any, 
       const message = formData.get("message");
 
       const emailContent = `
-NEW JOB APPLICATION - EAGLE REVOLUTION
+NEW JOB APPLICATION - MOHSIN DESIGNS
 ----------------------------------
 Name: ${name}
 Email: ${email}
@@ -92,7 +88,7 @@ ${message}
 (Note: Please attach your resume manually to this email)
       `;
 
-      const mailtoLink = `mailto:banderson@eaglerevolution.com?subject=Job Application - ${name}&body=${encodeURIComponent(emailContent)}`;
+      const mailtoLink = `mailto:info@mohsindesigns.com?subject=Job Application - ${name}&body=${encodeURIComponent(emailContent)}`;
 
       // We still set success to true because the user is being redirected to their email client
       // but we can also set a small note or alert if we want.
@@ -114,7 +110,7 @@ ${message}
           <div className="max-w-3xl mx-auto text-center mb-12 md:mb-24">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-center gap-3 mb-6">
               <div className="w-8 h-[2px] bg-gradient-to-r from-blue-300 to-blue-500" />
-              <span className="text-xs font-medium tracking-[0.2em] uppercase text-blue-600">{careersData?.section?.badge || "Join Eagle Revolution"}</span>
+              <span className="text-xs font-medium tracking-[0.2em] uppercase text-blue-600">{careersData?.section?.badge || "Join Mohsin Designs"}</span>
               <div className="w-8 h-[2px] bg-gradient-to-r from-blue-500 to-blue-300" />
             </motion.div>
             <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-4xl md:text-7xl font-light text-slate-900 mb-6 leading-tight">

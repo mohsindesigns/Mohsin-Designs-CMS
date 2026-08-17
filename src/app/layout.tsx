@@ -1,20 +1,23 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, DM_Sans } from "next/font/google";
+import { Lora, Poppins } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import SiteLayout from "@/components/SiteLayout";
 import connectToDatabase from "@/lib/mongodb";
 import SiteContent from "@/models/Content";
 import { BASE_URL } from "@/lib/constants";
+import InteractiveBackground from "@/components/InteractiveBackground";
 
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
+const lora = Lora({
   variable: "--font-heading",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
 });
 
-const dmSans = DM_Sans({
-  subsets: ["latin"],
+const poppins = Poppins({
   variable: "--font-body",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 
@@ -139,8 +142,28 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${lora.variable} ${poppins.variable} h-full antialiased scroll-smooth`}
+    >
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('theme');
+                  if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
         {/* Site-wide schemas removed - handled dynamically by pages/services */}
         {/* Preconnect to external origins for performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -155,28 +178,15 @@ export default async function RootLayout({
           />
         ))}
       </head>
-      <body className={`${spaceGrotesk.variable} ${dmSans.variable} antialiased`}>
+      <body className="min-h-full flex flex-col bg-white dark:bg-[#080710] text-black dark:text-white font-sans relative transition-colors duration-300">
         {/* ── CMS-managed body_start scripts ── */}
         {bodyStartScripts.map((s) => (
           <div key={s.id} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: s.code }} />
         ))}
         <ContentProvider initialData={initialGlobalData} initialBlogs={initialBlogs}>
           <Providers>
-            <div className="relative min-h-screen flex flex-col">
-              {/* Common background grid for all pages */}
-              <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.03]">
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    backgroundImage: `
-                      linear-gradient(to right, #2563eb 1px, transparent 1px),
-                      linear-gradient(to bottom, #2563eb 1px, transparent 1px)
-                    `,
-                    backgroundSize: '80px 80px',
-                  }}
-                />
-              </div>
-
+            <div className="relative min-h-screen flex flex-col z-10">
+              <InteractiveBackground />
               <SiteLayout>{children}</SiteLayout>
             </div>
           </Providers>

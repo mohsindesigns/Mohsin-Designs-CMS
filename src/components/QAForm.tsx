@@ -17,13 +17,9 @@ gsap.registerPlugin(ScrollTrigger);
 
 const LiquidParallax = ({ children, speed = 0.1, className = "" }: { children: React.ReactNode; speed?: number; className?: string }) => {
   const ref = useRef(null);
-  const [scrollTarget, setScrollTarget] = useState<any>(undefined);
-  useEffect(() => {
-    setScrollTarget(ref);
-  }, []);
 
   const { scrollYProgress } = useScroll({
-    target: scrollTarget,
+    target: ref,
     offset: ["start end", "end start"]
   });
 

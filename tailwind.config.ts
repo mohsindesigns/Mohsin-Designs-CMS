@@ -14,9 +14,9 @@ export default {
         },
         extend: {
             fontFamily: {
-                heading: ['Space Grotesk', 'sans-serif'],
-                body: ['DM Sans', 'sans-serif'],
-                accent: ['DM Sans', 'sans-serif'],
+                heading: ['var(--font-heading)', 'serif'],
+                body: ['var(--font-body)', 'sans-serif'],
+                accent: ['var(--font-body)', 'sans-serif'],
             },
             colors: {
                 border: "hsl(var(--border))",
@@ -75,6 +75,24 @@ export default {
                     white: "#FFFFFF",
                     blue: "#002664", // Deeper navy blue option
                     scarlet: "#B22234", // Alternative red
+                },
+                // User Brand Colors
+                brand: {
+                    yellow: "var(--color-yellow)",
+                    blue: "var(--color-blue)",
+                    "blue-mid": "var(--color-blue-dark)",
+                    "blue-deep": "#010356",
+                    dark: "var(--color-dark)",
+                    card: "var(--color-brand-card)",
+                    "card-deep": "#090814",
+                    light: "var(--color-brand-light)",
+                    "zinc-50": "var(--color-light)",
+                    "zinc-100": "#F3F4F6",
+                    "zinc-200": "var(--color-border)",
+                    "zinc-300": "#D1D5DB",
+                    "zinc-400": "#9CA3AF",
+                    "zinc-500": "var(--color-gray)",
+                    "zinc-800": "#1F2937",
                 },
             },
             borderRadius: {

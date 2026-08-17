@@ -123,8 +123,16 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                         <h3 className={UI.sectionHeader}>1. Branding</h3>
                         <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.hero?.badge || ""} onChange={(e) => updateSection("hero", "badge", e.target.value)} className={UI.input} /></div>
                      </div>
-                     <div className="space-y-8">
-                        <h3 className={UI.sectionHeader}>2. Animated Headline</h3>
+                      <div className="space-y-6">
+                         <h3 className={UI.sectionHeader}>2. Premium Hero Title</h3>
+                         <div className="space-y-4">
+                            <div className="space-y-1.5"><label className={UI.label}>Title Line 1</label><input type="text" value={data.hero?.titleLine1 || ""} onChange={(e) => updateSection("hero", "titleLine1", e.target.value)} className={UI.input} /></div>
+                            <div className="space-y-1.5"><label className={UI.label}>Title Connector (e.g. "with")</label><input type="text" value={data.hero?.titleConnector || ""} onChange={(e) => updateSection("hero", "titleConnector", e.target.value)} className={UI.input} /></div>
+                            <div className="space-y-1.5"><label className={UI.label}>Title Line 2 (Highlighted/Underlined)</label><input type="text" value={data.hero?.titleLine2 || ""} onChange={(e) => updateSection("hero", "titleLine2", e.target.value)} className={UI.input} /></div>
+                         </div>
+                      </div>
+                      <div className="space-y-8">
+                         <h3 className={UI.sectionHeader}>3. Animated Headline (Legacy)</h3>
                         <div className="space-y-4">
                            {(data.hero?.headlines || []).map((h: any, i: number) => (
                               <div key={i} className={UI.card + " space-y-4"}>
@@ -180,6 +188,7 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                                  </div>
                                  <div className="space-y-1.5"><label className={UI.label}>Value</label><input type="text" value={s.value || ""} onChange={(e) => { const val = e.target.value; updateSection("hero", "stats", (prev: any[]) => { const newS = [...prev]; newS[i].value = val; return newS; }); }} className={UI.inputLarge} /></div>
                                  <div className="space-y-1.5"><label className={UI.label}>Label</label><input type="text" value={s.label || ""} onChange={(e) => { const val = e.target.value; updateSection("hero", "stats", (prev: any[]) => { const newS = [...prev]; newS[i].label = val; return newS; }); }} className={UI.input} /></div>
+                                 <div className="space-y-1.5"><label className={UI.label}>Sub-label / Description</label><input type="text" value={s.description || ""} onChange={(e) => { const val = e.target.value; updateSection("hero", "stats", (prev: any[]) => { const newS = [...prev]; newS[i].description = val; return newS; }); }} className={UI.input} placeholder="e.g. 2x website traffic increase" /></div>
                                  <IconSelector label="Icon" value={s.icon} onChange={(val) => { updateSection("hero", "stats", (prev: any[]) => { const newS = [...prev]; newS[i].icon = val; return newS; }); }} />
                               </div>
                            ))}
@@ -202,6 +211,22 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                            onAltChange={(alt) => updateSection("hero", "bgImageAlt", alt)}
                         />
                      </div>
+                      <div className="space-y-6">
+                         <h3 className={UI.sectionHeader}>7. Interactive Elements</h3>
+                         <div className="space-y-4">
+                            <div className="space-y-1.5"><label className={UI.label}>Rotating Circle Text</label><input type="text" value={data.hero?.circleText || ""} onChange={(e) => updateSection("hero", "circleText", e.target.value)} className={UI.input} /></div>
+                            <div className="space-y-1.5"><label className={UI.label}>Rotating Circle Center Letter</label><input type="text" value={data.hero?.circleLetter || ""} onChange={(e) => updateSection("hero", "circleLetter", e.target.value)} className={UI.input} /></div>
+                            <div className="space-y-1.5">
+                               <label className={UI.label}>Marquee Items (Comma separated)</label>
+                               <input 
+                                  type="text" 
+                                  value={(data.hero?.marqueeItems || []).join(", ")} 
+                                  onChange={(e) => updateSection("hero", "marqueeItems", e.target.value.split(",").map((s: string) => s.trim()))} 
+                                  className={UI.input} 
+                               />
+                            </div>
+                         </div>
+                      </div>
                   </div>
                )}
 
@@ -221,12 +246,15 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                         </div>
                      </div>
                      <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>2. Brand Narrative</h3>
                         <QuillEditor
                            label="2. Brand Narrative"
                            content={data.about?.description || ""}
                            onChange={(html) => updateSection("about", "description", html)}
                         />
+                        <div className="space-y-4 pt-4 border-t border-[#f0f0f1] mt-4">
+                           <div className="space-y-1.5"><label className={UI.label}>Lead Biography Paragraph (Bold/Large)</label><textarea value={data.about?.bioParagraph1 || ""} onChange={(e) => updateSection("about", "bioParagraph1", e.target.value)} className={UI.input} rows={2} /></div>
+                           <div className="space-y-1.5"><label className={UI.label}>Body Biography Paragraph (Standard)</label><textarea value={data.about?.bioParagraph2 || ""} onChange={(e) => updateSection("about", "bioParagraph2", e.target.value)} className={UI.input} rows={4} /></div>
+                        </div>
                      </div>
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>3. Action Buttons</h3>
@@ -292,6 +320,8 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                            onAltChange={(alt) => updateSection("about", "image", { ...(data.about?.image || {}), alt: alt })}
                         />
                         <div className="space-y-1.5"><label className={UI.label}>Floating Badge</label><input type="text" value={data.about?.image?.badge || ""} onChange={(e) => updateSection("about", "image", { ...(data.about?.image || {}), badge: e.target.value })} className={UI.input} /></div>
+                        <div className="space-y-1.5"><label className={UI.label}>Rotating Circle Text</label><input type="text" value={data.about?.circleText || ""} onChange={(e) => updateSection("about", "circleText", e.target.value)} className={UI.input} /></div>
+                        <div className="space-y-1.5"><label className={UI.label}>Rotating Circle Center Letter</label><input type="text" value={data.about?.circleLetter || ""} onChange={(e) => updateSection("about", "circleLetter", e.target.value)} className={UI.input} /></div>
                      </div>
                   </div>
                )}

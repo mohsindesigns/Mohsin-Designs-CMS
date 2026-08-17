@@ -22,9 +22,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
           This prevents the Navbar/Footer from flashing during transitions.
         */}
         <div className="relative z-10 flex flex-col min-h-screen opacity-100">
-          <div className="z-50">
-            <Navbar />
-          </div>
+          <Navbar />
           
           <main className="flex-grow">
             <PageTransition>{children}</PageTransition>

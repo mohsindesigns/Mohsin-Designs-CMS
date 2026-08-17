@@ -22,18 +22,18 @@ export function generateSchema(options: SchemaOptions) {
   const organizationSchema = {
     "@type": "Organization",
     "@id": `${BASE_URL}/#organization`,
-    "name": "Eagle Revolution",
+    "name": "Mohsin Designs",
     "url": BASE_URL,
     "logo": {
       "@type": "ImageObject",
-      "url": `${BASE_URL}/eagle-logo.png`,
+      "url": `${BASE_URL}/mohsin-logo.png`,
       "width": 512,
       "height": 512
     },
     "sameAs": [
-      "https://www.facebook.com/eaglerevolution",
-      "https://www.instagram.com/eaglerevolution",
-      "https://www.linkedin.com/company/eaglerevolution"
+      "https://www.facebook.com/mohsindesigns",
+      "https://www.instagram.com/mohsindesigns",
+      "https://www.linkedin.com/company/mohsindesigns"
     ]
   };
 
@@ -41,10 +41,10 @@ export function generateSchema(options: SchemaOptions) {
   const localBusinessSchema = {
     "@type": "LocalBusiness",
     "@id": `${BASE_URL}/#localbusiness`,
-    "name": "Eagle Revolution",
-    "image": `${BASE_URL}/eagle-logo.png`,
+    "name": "Mohsin Designs",
+    "image": `${BASE_URL}/mohsin-logo.png`,
     "telePhone": "636-449-9714",
-    "email": "banderson@eaglerevolution.com",
+    "email": "info@mohsindesigns.com",
     "url": BASE_URL,
     "address": {
       "@type": "PostalAddress",
@@ -77,7 +77,7 @@ export function generateSchema(options: SchemaOptions) {
     "@type": "WebSite",
     "@id": `${BASE_URL}/#website`,
     "url": BASE_URL,
-    "name": "Eagle Revolution",
+    "name": "Mohsin Designs",
     "publisher": { "@id": `${BASE_URL}/#organization` }
   };
 

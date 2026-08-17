@@ -10,11 +10,12 @@ const Portfolio = dynamic(() => import("@/components/Portfolio"));
 const Leadership = dynamic(() => import("@/components/Leadership"));
 const BrandStore = dynamic(() => import("@/components/BrandStore"), { ssr: false });
 const Testimonials = dynamic(() => import("@/components/Testimonials"), { ssr: false });
-const HowWeWork = dynamic(() => import("@/components/HowWeWork"), { ssr: false });
+const AboutOwner = dynamic(() => import("@/components/AboutOwner"), { ssr: false });
 const QAForm = dynamic(() => import("@/components/QAForm"), { ssr: false });
 const FAQ = dynamic(() => import("@/components/FAQ"), { ssr: false });
 const QuickQuote = dynamic(() => import("@/components/QuickQuote"), { ssr: false });
 const BlogSection = dynamic(() => import("@/components/sections/BlogSection"), { ssr: false });
+const HowWeWork = dynamic(() => import("@/components/HowWeWork"), { ssr: false });
 
 import { useContent } from "@/hooks/useContent";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
@@ -23,10 +24,13 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any, par
   const { allBlogs, blogSection } = useContent();
   return (
     <div className="relative">
-      <Hero />
+      <Hero /> <section id="about">
+        <AboutOwner />
+      </section>
       <section id="roofingexperts">
         <AggressiveRoofingSection />
       </section>
+
       <section id="services">
         <Services />
       </section>
@@ -36,7 +40,6 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any, par
       <section id="portfolio">
         <Portfolio />
       </section>
-      <BrandStore />
       <Testimonials />
       <section id="about">
         <HowWeWork />
@@ -46,7 +49,7 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any, par
       </section>
 
 
-       <BlogSection
+      <BlogSection
         title={pageData?.content?.blogSection?.title || blogSection?.title}
         subtitle={pageData?.content?.blogSection?.subtitle || blogSection?.subtitle}
         description={pageData?.content?.blogSection?.description || blogSection?.description}

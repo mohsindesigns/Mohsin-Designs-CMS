@@ -219,7 +219,7 @@ const MarqueeItem = ({ project }: { project: Project }) => {
                       Architect
                     </span>
                     <p className="text-white/90 text-[8px] sm:text-[10px] font-light truncate max-w-[80px] sm:max-w-none">
-                      {project.architect || "Eagle Revolution"}
+                      {project.architect || "Mohsin Designs"}
                     </p>
                   </div>
 
@@ -383,15 +383,10 @@ const Portfolio = () => {
   const { portfolio: portfolioData } = useContent();
   const sectionRef = useRef<HTMLElement>(null);
   const [lightbox, setLightbox] = useState<any>(null);
-  const [scrollTarget, setScrollTarget] = useState<any>(undefined);
   const router = useRouter();
 
-  useEffect(() => {
-    setScrollTarget(sectionRef);
-  }, []);
-
   const { scrollYProgress } = useScroll({
-    target: scrollTarget,
+    target: sectionRef,
     offset: ["start end", "end start"],
   });
 
@@ -423,7 +418,7 @@ const Portfolio = () => {
 
   // Don't render marquee if no projects
   if (projects.length === 0) {
-    return null;
+    return <section ref={sectionRef} className="hidden" />;
   }
 
   return (

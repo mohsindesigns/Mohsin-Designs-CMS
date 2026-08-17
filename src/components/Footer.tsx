@@ -1,21 +1,22 @@
 "use client";
-
-import { useState, Fragment } from "react";
-import { Icon } from "../config/icons";
-import { useContent } from "../hooks/useContent";
-import Image from "next/image";
+ 
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, ArrowUp, Github, Instagram, Linkedin, Twitter } from "lucide-react";
+import { FormEvent, useState } from "react";
 import Link from "next/link";
-import RichTextRenderer from "./ui/RichTextRenderer";
-
-const NewsletterForm = () => {
-  const { footer } = useContent();
-  const [email, setEmail] = useState('');
-  const [isFocused, setIsFocused] = useState(false);
-  const [isSubscribed, setIsSubscribed] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
+import { useContent } from "../hooks/useContent";
+ 
+export default function Footer() {
+  const currentYear = new Date().getFullYear();
+  const [email, setEmail] = useState("");
+  const [subscribed, setSubscribed] = useState(false);
+  const content = useContent();
+  const { footer } = content;
+  const contact = footer?.contact;
+ 
+  const handleSubscribe = async (e: FormEvent) => {
     e.preventDefault();
-    if (email) {
+    if (email.trim()) {
       try {
         await fetch('/api/send', {
           method: 'POST',
@@ -33,401 +34,274 @@ const NewsletterForm = () => {
       } catch (error) {
         console.error('Newsletter submission failed:', error);
       }
-      setIsSubscribed(true);
-      setEmail('');
-      setTimeout(() => setIsSubscribed(false), 3000);
+      setSubscribed(true);
+      setEmail("");
+      setTimeout(() => setSubscribed(false), 5000);
     }
   };
-
+ 
+  const scrollToTop = () => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+ 
+  const wordmarkText = (footer?.wordmarkText || "MOHSIN DESIGNS") as string;
+  const wordmarkLetters = Array.from(wordmarkText) as string[];
+ 
+  const containerVariants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.03
+      }
+    }
+  };
+ 
+  const letterVariants = {
+    hidden: { y: "100%", opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }
+    }
+  };
+ 
+  const socialIcons: Record<string, React.ReactNode> = {
+    Twitter: <Twitter className="h-4 w-4" />,
+    Linkedin: <Linkedin className="h-4 w-4" />,
+    Instagram: <Instagram className="h-4 w-4" />,
+    Github: <Github className="h-4 w-4" />
+  };
+ 
+  // Safely extract data arrays
+  const socialLinks = footer?.socialLinks || [];
+  const quickLinks = footer?.quickLinks || [];
+  const servicesList = footer?.servicesList || [];
+ 
   return (
-    <div className="relative">
-      <form onSubmit={handleSubmit} className="relative">
-        <div className={`
-          relative flex items-center bg-muted backdrop-blur-sm rounded-full border transition-all duration-300
-          ${isFocused
-            ? 'border-primary/50 shadow-[0_0_30px_hsl(var(--primary)/0.1)]'
-            : 'border-border hover:border-border/80'
-          }
-        `}>
-          <input
-            type="email"
-            placeholder={footer.newsletter?.placeholder || "Enter your email"}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-            className="w-full bg-transparent px-6 py-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
-            required
-          />
+    <footer className="relative bg-[#090A29] dark:bg-[#080710] text-white pt-24 pb-12 overflow-hidden border-t border-white/5 dark:border-white/10">
+      
+      <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] rounded-full bg-brand-blue/5 dark:bg-brand-yellow/5 blur-[150px] pointer-events-none" />
+ 
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-0 pb-20 border-b border-white/10">
+          
+          {/* Logo & Description Column */}
+          <div className="lg:col-span-3 space-y-6 lg:pr-6">
+            <div className="flex items-center gap-2.5">
+              <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 overflow-hidden border border-white/10">
+                <div className="absolute top-1 left-1 w-6 h-6 rounded-full bg-brand-yellow/80 mix-blend-screen" />
+                <div className="absolute bottom-1 right-1 w-6 h-6 rounded-full bg-brand-blue/80 mix-blend-screen" />
+                <span className="relative font-heading font-extrabold text-white text-base z-10">{footer?.logoLetter || "E"}</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="font-sans font-black text-lg leading-none tracking-tight text-white uppercase">
+                  {footer?.logoText || "EAGLE"}
+                </span>
+                <span className="font-sans font-bold text-[9px] tracking-widest text-brand-yellow uppercase leading-none mt-1">
+                  {footer?.logoSub || "REVOLUTION"}
+                </span>
+              </div>
+            </div>
+            <p className="text-xs md:text-sm text-brand-zinc-300 leading-relaxed max-w-xs font-semibold">
+              {footer?.description}
+            </p>
+            
+            <div className="flex flex-col gap-1.5 pt-1">
+              <div className="flex items-center gap-2 text-[9px] font-mono tracking-widest text-brand-zinc-400">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                </span>
+                {footer?.studioStatus}
+              </div>
+              <span className="text-[9px] font-mono text-brand-zinc-500 tracking-wider">
+                {footer?.coordinates}
+              </span>
+            </div>
+ 
+            {/* Social Icons */}
+            <div className="flex gap-3 pt-2">
+              {socialLinks.map((link: any, idx: number) => (
+                <a
+                  key={idx}
+                  href={link.href}
+                  aria-label={link.ariaLabel}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 border border-white/10 text-brand-zinc-300 hover:bg-brand-blue hover:text-white dark:hover:text-[#080710] hover:border-brand-blue transition-all duration-300 shadow-sm"
+                >
+                  {socialIcons[link.name] || <ArrowRight className="h-4 w-4" />}
+                </a>
+              ))}
+            </div>
+          </div>
+ 
+          {/* Quick Links Column */}
+          <div className="lg:col-span-2 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
+            <h4 className="font-mono font-bold text-[10px] uppercase tracking-widest text-brand-yellow">
+              {footer?.labelQuickLinks || "Navigation"}
+            </h4>
+            <ul className="space-y-2.5 text-xs md:text-sm font-semibold text-brand-zinc-300">
+              {quickLinks.map((link: any, idx: number) => (
+                <li key={idx}>
+                  <Link href={link.href} className="inline-block hover:text-brand-yellow dark:hover:text-brand-blue hover:translate-x-1 transition-all duration-200">
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+ 
+          {/* Services Column */}
+          <div className="lg:col-span-2 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
+            <h4 className="font-mono font-bold text-[10px] uppercase tracking-widest text-brand-yellow">
+              {footer?.labelServices || "Services"}
+            </h4>
+            <ul className="space-y-2.5 text-xs md:text-sm font-semibold text-brand-zinc-300">
+              {servicesList.map((item: any, idx: number) => (
+                <li key={idx}>
+                  <span className="inline-block hover:text-brand-yellow dark:hover:text-brand-blue hover:translate-x-1 transition-all duration-200 cursor-default">
+                    {item}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+ 
+          {/* Contact Info Column */}
+          <div className="lg:col-span-3 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
+            <h4 className="font-mono font-bold text-[10px] uppercase tracking-widest text-brand-yellow">
+              {footer?.labelContactInfo || "Contact Info"}
+            </h4>
+            <ul className="space-y-4 text-xs md:text-sm font-semibold text-brand-zinc-300">
+              <li className="flex flex-col gap-1">
+                <span className="text-[8px] font-mono font-black text-brand-zinc-500 uppercase tracking-widest">{footer?.labelEmail || "Email"}</span>
+                {contact?.email && (
+                  <a href={`mailto:${contact.email}`} className="text-white hover:text-brand-yellow dark:hover:text-brand-blue transition-colors font-mono break-all xs:break-normal">
+                    {contact.email}
+                  </a>
+                )}
+              </li>
+              <li className="flex flex-col gap-1">
+                <span className="text-[8px] font-mono font-black text-brand-zinc-500 uppercase tracking-widest">{footer?.labelPhone || "Phone"}</span>
+                {contact?.phone && (
+                  <a href={`tel:${contact.phone.replace(/[^0-9+]/g, "")}`} className="text-white hover:text-brand-yellow dark:hover:text-brand-blue transition-colors font-mono break-all xs:break-normal">
+                    {contact.phone}
+                  </a>
+                )}
+              </li>
+              <li className="flex flex-col gap-1">
+                <span className="text-[8px] font-mono font-black text-brand-zinc-500 uppercase tracking-widest">{footer?.labelAddress || "Address"}</span>
+                <span className="text-white leading-relaxed">
+                  {footer?.valueAddress}
+                </span>
+              </li>
+            </ul>
+          </div>
+ 
+          {/* Newsletter Column */}
+          <div className="lg:col-span-2 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
+            <h4 className="font-mono font-bold text-[10px] uppercase tracking-widest text-brand-yellow">
+              {footer?.labelNewsletter || "Newsletter"}
+            </h4>
+            <p className="text-xs text-brand-zinc-300 font-semibold leading-relaxed">
+              {footer?.newsletterDesc}
+            </p>
+            
+            <AnimatePresence mode="wait">
+              {!subscribed ? (
+                <motion.form 
+                  key="form"
+                  onSubmit={handleSubscribe} 
+                  className="flex rounded-xl overflow-hidden bg-white/5 border border-white/10"
+                >
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-transparent px-3 py-2.5 text-xs text-white focus:outline-none placeholder-brand-zinc-400 font-semibold"
+                    placeholder={footer?.newsletterPlaceholder || "Your email"}
+                  />
+                  <button
+                    type="submit"
+                    className="bg-brand-blue text-white dark:text-brand-dark px-3.5 flex items-center justify-center hover:bg-brand-yellow hover:text-brand-dark dark:hover:text-white transition-colors duration-300 cursor-pointer"
+                    aria-label={footer?.ariaSubscribe || "Subscribe"}
+                  >
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                </motion.form>
+              ) : (
+                <motion.span 
+                  key="success"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="block text-xs font-bold text-brand-yellow dark:text-brand-blue"
+                >
+                  {footer?.newsletterSuccess || "Subscribed successfully!"}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </div>
+ 
+        </div>
+ 
+      </div>
+ 
+      {/* Full-Width Backdrop Wordmark */}
+      <div className="select-none text-center pointer-events-none mt-12 md:mt-20 mb-6 overflow-hidden w-full px-4 relative z-0">
+        <motion.span 
+          className="font-sans font-black text-[7.8vw] leading-none tracking-tighter uppercase flex flex-nowrap justify-center w-full whitespace-nowrap"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: false, amount: 0.01 }}
+        >
+          {wordmarkLetters.map((letter, idx) => (
+            <motion.span
+              key={idx}
+              variants={letterVariants}
+              className={`inline-block transition-all duration-300 cursor-default hover:scale-110 ${
+                idx >= 7 
+                  ? "text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.28)] dark:[-webkit-text-stroke:1px_rgba(255,255,255,0.12)] hover:[-webkit-text-stroke:1px_#E9BD36] pointer-events-auto" 
+                  : "text-white/20 dark:text-white/[0.06] hover:text-brand-yellow dark:hover:text-brand-blue pointer-events-auto"
+              }`}
+            >
+              {letter === " " ? "\u00A0" : letter}
+            </motion.span>
+          ))}
+        </motion.span>
+      </div>
+ 
+      {/* Bottom Bar */}
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 pt-10 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-white/5">
+        <p className="text-[10px] font-bold text-brand-zinc-500 dark:text-brand-zinc-400 uppercase tracking-widest text-center md:text-left">
+          {footer?.copyrightPrefix}{currentYear}{footer?.copyrightSuffix}
+        </p>
+        
+        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full md:w-auto justify-between md:justify-end">
+          <div className="flex gap-4 sm:gap-6 text-[10px] font-bold text-brand-zinc-500 dark:text-brand-zinc-400 uppercase tracking-wider">
+            {footer?.privacyHref && (
+              <Link href={footer.privacyHref} className="hover:text-brand-yellow dark:hover:text-brand-blue transition-colors">{footer.privacyText}</Link>
+            )}
+            <span>{footer?.linkSeparator || "|"}</span>
+            {footer?.termsHref && (
+              <Link href={footer.termsHref} className="hover:text-brand-yellow dark:hover:text-brand-blue transition-colors">{footer.termsText}</Link>
+            )}
+          </div>
+ 
           <button
-            type="submit"
-            className="absolute right-2 px-4 py-2 bg-primary text-primary-foreground text-xs font-medium rounded-full hover:bg-primary/90 transition-all duration-300 flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98]"
+            onClick={scrollToTop}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 border border-white/10 text-brand-zinc-300 hover:bg-brand-yellow dark:hover:bg-brand-blue hover:text-[#080710] dark:hover:text-[#080710] hover:border-brand-yellow dark:hover:border-brand-blue transition-all duration-300 cursor-pointer shadow-sm hover:scale-105 active:scale-95"
+            aria-label={footer?.ariaScrollTop || "Scroll to Top"}
           >
-            {footer.newsletter?.buttonText || "Subscribe"}
-            <Icon name="ArrowRight" className="w-4 h-4" />
+            <ArrowUp className="h-4 w-4" />
           </button>
         </div>
-      </form>
-
-      {isSubscribed && (
-        <div className="absolute -bottom-8 left-0 right-0 text-center">
-          <span className="text-xs text-primary">
-            ✓ Thank you for subscribing
-          </span>
-        </div>
-      )}
-    </div>
-  );
-};
-
-const ServiceLinks = () => {
-  const { services: servicesData, footer } = useContent();
-  const dynamicServicesRaw = ((servicesData as any).services || []).filter((s: any) => s.status === 'published' || s.status === undefined);
-  const selectedServices = footer?.services?.selectedServices || [];
-  
-  const dynamicServices = selectedServices.length > 0 
-    ? dynamicServicesRaw.filter((s: any) => selectedServices.includes(s._id))
-    : dynamicServicesRaw;
-
-  const footerServices = footer?.services || { title: "Our Services" };
-
-  return (
-    <div className="space-y-4">
-      <h4 className="text-xs font-mono tracking-[0.2em] uppercase text-muted-foreground flex items-center gap-2">
-        <Icon name="Sparkles" className="w-4 h-4" />
-        {footerServices.title}
-      </h4>
-      <div className="grid grid-cols-1 gap-2">
-        {dynamicServices.map((service: any) => (
-          <Link
-            key={service.slug}
-            href={`/services/${service.slug}`}
-            className="inline-flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-all duration-300 group py-1"
-          >
-            <span className="text-muted-foreground/60 group-hover:text-primary transition-colors">
-              <Icon name={service.icon || "Layout"} className="w-5 h-5" />
-            </span>
-            <span>{service.title}</span>
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const MaterialsSection = () => {
-  const { footer } = useContent();
-  const services = footer?.services || { materials: { title: "Materials", items: [] } };
-  const materials = services.materials || { title: "Materials", items: [] };
-
-  return (
-    <div className="space-y-3 mt-8 border-t border-border/40 pt-6">
-      <h5 className="text-[10px] font-mono tracking-[0.2em] uppercase text-primary/60">
-        {materials.title}
-      </h5>
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
-        {(materials.items || []).map((material: any, idx: number) => (
-          <Fragment key={material.label}>
-            {idx > 0 && <span className="text-muted-foreground/30 font-light">•</span>}
-            <Link
-              href={material.href || '#'}
-              className="text-muted-foreground hover:text-primary transition-colors py-0.5"
-            >
-              {material.label}
-            </Link>
-          </Fragment>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const ContactInfo = () => {
-  const { footer, hours } = useContent();
-  const contact = footer?.contact || { title: "Contact Us", email: "", phone: "", address: "", emergency: "", areas: "" };
-
-  return (
-    <div className="space-y-6">
-      <div className="space-y-4">
-        <h4 className="text-xs font-mono tracking-[0.2em] uppercase text-muted-foreground flex items-center gap-2">
-          <Icon name="Sparkles" className="w-4 h-4" />
-          {contact.title}
-        </h4>
-        <div className="space-y-4">
-          <div className="flex items-start gap-3 text-sm text-muted-foreground group">
-            <span className="text-muted-foreground/60 group-hover:text-primary mt-0.5 flex-shrink-0">
-              <Icon name="Mail" className="w-5 h-5" />
-            </span>
-            <div className="[&_a]:text-muted-foreground [&_a]:no-underline [&_a]:hover:text-primary [&_a]:transition-colors">
-              <RichTextRenderer content={contact.email} className="!text-muted-foreground [&_p]:m-0" />
-            </div>
-          </div>
-          <div className="flex items-start gap-3 text-sm text-muted-foreground group">
-            <span className="text-muted-foreground/60 group-hover:text-primary mt-0.5 flex-shrink-0">
-              <Icon name="Phone" className="w-5 h-5" />
-            </span>
-            <div className="[&_a]:text-muted-foreground [&_a]:no-underline [&_a]:hover:text-primary [&_a]:transition-colors">
-              <RichTextRenderer content={contact.phone} className="!text-muted-foreground [&_p]:m-0" />
-            </div>
-          </div>
-          <div className="flex items-start gap-3 text-sm text-muted-foreground group">
-            <span className="text-muted-foreground/60 group-hover:text-primary mt-0.5 flex-shrink-0">
-              <Icon name="MapPin" className="w-5 h-5" />
-            </span>
-            <div className="[&_a]:text-muted-foreground [&_a]:no-underline [&_a]:hover:text-primary [&_a]:transition-colors">
-              <RichTextRenderer content={contact.address} className="!text-muted-foreground [&_p]:m-0" />
-            </div>
-          </div>
-          <div className="flex items-start gap-3 text-sm text-muted-foreground group">
-            <span className="text-muted-foreground/60 group-hover:text-primary mt-0.5 flex-shrink-0">
-              <Icon name="Infinity" className="w-5 h-5" />
-            </span>
-            <div className="[&_a]:text-muted-foreground [&_a]:no-underline [&_a]:hover:text-primary [&_a]:transition-colors">
-              <RichTextRenderer content={contact.emergency} className="!text-muted-foreground [&_p]:m-0" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {hours && (
-        <div className="space-y-3">
-          <h5 className="text-[10px] font-mono tracking-[0.2em] uppercase text-primary/60">
-            Office Hours
-          </h5>
-          <div className="space-y-1 text-xs text-muted-foreground">
-            <div className="flex justify-between">
-              <span>Monday - Friday:</span>
-              <span>{hours.monday}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Saturday:</span>
-              <span>{hours.saturday}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Sunday:</span>
-              <span>{hours.sunday}</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="space-y-3">
-        <h5 className="text-[10px] font-mono tracking-[0.2em] uppercase text-primary/60">
-          Service Areas
-        </h5>
-        <div className="text-sm leading-relaxed">
-          <RichTextRenderer content={contact.areas} className="!text-muted-foreground [&_p]:m-0" />
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const SocialLinks = () => {
-  const { footer } = useContent();
-  const social = footer?.social || [];
-
-  const getIconName = (item: any) => {
-    return item.icon || item.platform;
-  };
-
-  return (
-    <div className="flex items-center gap-3 flex-wrap">
-      {social.map((socialItem: any) => (
-        <a
-          key={socialItem.platform}
-          href={socialItem.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="relative w-10 h-10 rounded-full bg-muted border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/5 hover:border-primary/20 transition-all duration-300 group"
-          aria-label={socialItem.platform}
-        >
-          <Icon name={getIconName(socialItem)} className="w-5 h-5" />
-        </a>
-      ))}
-    </div>
-  );
-};
-
-const LegacyMarquee = () => {
-  const { footer } = useContent();
-  const certifications = footer?.certifications || [];
-
-  if (certifications.length === 0) return null;
-
-  return (
-    <div className="relative overflow-hidden py-12 border-t border-border bg-muted/10">
-      <div className="animate-marquee flex whitespace-nowrap">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="flex items-center gap-16 px-8 flex-shrink-0">
-            {certifications.map((cert: any, idx: number) => (
-              <div key={`${i}-${idx}`} className="flex items-center gap-5 group">
-                <div className="w-12 h-12 rounded-2xl bg-card flex items-center justify-center text-muted-foreground group-hover:text-primary transition-all duration-500 border border-border group-hover:border-primary/30 shadow-sm group-hover:shadow-md">
-                  <Icon name={cert.icon} className="w-6 h-6" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/60 group-hover:text-foreground transition-colors">{cert.cert}</span>
-                  <span className="text-[10px] font-mono text-muted-foreground/40 mt-0.5">{cert.number}</span>
-                </div>
-                <div className="ml-12 opacity-20">
-                  <Icon name="Sparkles" className="w-3 h-3 text-primary" />
-                </div>
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-      <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
-      <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
-    </div>
-  );
-};
-
-const Footer = () => {
-  const { footer } = useContent();
-
-  const company = footer?.company || { name: "Eagle Revolution", tagline: "", description: "" };
-  const bottom = footer?.bottom || { copyright: "", rights: "", links: [], tagline: "" };
-
-  return (
-    <footer className="relative bg-background overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none">
-        <div
-          className="absolute inset-0 opacity-[0.02]"
-          style={{
-            backgroundImage: `
-              linear-gradient(to right, hsl(var(--primary)) 1px, transparent 1px),
-              linear-gradient(to bottom, hsl(var(--primary)) 1px, transparent 1px)
-            `,
-            backgroundSize: '60px 60px',
-          }}
-        />
-      </div>
-
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-gradient-to-b from-primary/5 to-transparent opacity-60 blur-3xl" />
-
-      <div className="max-w-7xl mx-auto px-6 md:px-8 relative z-30">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-24 pb-16 border-b border-border">
-          <div className="lg:col-span-3 space-y-8">
-            <div className="space-y-6">
-              <div className="flex items-center gap-3">
-                {footer.company?.logo ? (
-                  <div className="relative w-12 h-12 rounded-xl overflow-hidden">
-                    <Image src={footer.company.logo} alt={footer.company.name} fill className="object-contain" />
-                  </div>
-                ) : (
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-2xl shadow-primary/30">
-                    <span className="text-primary-foreground font-bold text-sm text-center leading-tight">ER</span>
-                  </div>
-                )}
-                <div>
-                  <span className="text-foreground font-light text-lg block">{company.name}</span>
-                  <span className="text-[10px] text-primary/60 font-mono tracking-wider">{company.tagline}</span>
-                </div>
-              </div>
-
-              <div className="text-muted-foreground text-sm leading-relaxed font-light [&_p]:m-0">
-                <RichTextRenderer content={company.description} />
-              </div>
-
-              <SocialLinks />
-            </div>
-
-            <div className="space-y-3">
-              <h4 className="text-[10px] font-mono tracking-[0.2em] uppercase text-muted-foreground">
-                Subscribe to insights
-              </h4>
-              <NewsletterForm />
-            </div>
-          </div>
-
-          <div className="lg:col-span-3">
-            <ServiceLinks />
-            <MaterialsSection />
-          </div>
-
-          <div className="lg:col-span-3">
-            <ContactInfo />
-          </div>
-
-          <div className="lg:col-span-3">
-            <div className="space-y-4">
-              <h4 className="text-xs font-mono tracking-[0.2em] uppercase text-muted-foreground flex items-center gap-2">
-                <Icon name="MapPin" className="w-4 h-4" />
-                Our Location
-              </h4>
-              <div className="relative w-full aspect-square lg:aspect-auto lg:h-[350px] rounded-2xl overflow-hidden border border-border shadow-2xl group transition-all duration-500 hover:border-primary/30">
-                <iframe 
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3109.2535729046463!2d-90.68510192536498!3d38.803742752226945!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xa84c3b8dec6bf3f%3A0x18a7936317172933!2sEagle%20Revolution!5e0!3m2!1sen!2s!4v1778495491394!5m2!1sen!2s" 
-                  width="100%" 
-                  height="100%" 
-                  style={{ border: 0 }} 
-                  allowFullScreen={true} 
-                  loading="lazy" 
-                  referrerPolicy="no-referrer-when-downgrade"
-                  className="grayscale hover:grayscale-0 transition-all duration-700"
-                />
-                <div className="absolute inset-0 pointer-events-none border-[12px] border-background/20 rounded-2xl" />
-              </div>
-              <p className="text-[10px] text-muted-foreground font-mono mt-2">
-                1077 E Terra Ln, O&apos;Fallon, MO 63366
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <LegacyMarquee />
-
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 py-6 text-[10px] text-muted-foreground">
-          <div className="flex items-center gap-4 flex-wrap">
-            <span>{bottom.copyright}</span>
-            <span className="w-1 h-1 rounded-full bg-border" />
-            <span>{bottom.rights}</span>
-            <span className="w-1 h-1 rounded-full bg-border" />
-            <span>
-              Designed by{" "}
-              <a
-                href="https://mohsindesigns.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-primary transition-colors font-medium"
-              >
-                Mohsin Designs
-              </a>
-            </span>
-          </div>
-          <div className="flex items-center gap-6 flex-wrap justify-center">
-            {bottom.links.map((link: any) => (
-              <Link key={link.label} href={link.href} className="hover:text-primary transition-colors">{link.label}</Link>
-            ))}
-          </div>
-          <div className="text-muted-foreground/60">
-            <span className="font-mono">{bottom.tagline}</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="absolute bottom-0 left-0 w-full overflow-hidden pointer-events-none">
-        <svg
-          viewBox="0 0 1440 120"
-          className="relative block w-full h-20 md:h-24"
-          preserveAspectRatio="none"
-        >
-          <path
-            fill="url(#footerWave)"
-            d="M0,64L60,69.3C120,75,240,85,360,80C480,75,600,53,720,48C840,43,960,53,1080,58.7C1200,64,1320,64,1380,64L1440,64L1440,120L1380,120C1320,120,1200,120,1080,120C960,120,840,120,720,120C600,120,480,120,360,120C240,120,120,120,60,120L0,120Z"
-          />
-          <defs>
-            <linearGradient id="footerWave" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.03" />
-              <stop offset="50%" stopColor="hsl(var(--primary))" stopOpacity="0.05" />
-              <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.03" />
-            </linearGradient>
-          </defs>
-        </svg>
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}
