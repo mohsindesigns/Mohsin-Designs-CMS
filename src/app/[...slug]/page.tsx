@@ -160,7 +160,8 @@ export default async function DynamicPage({ params }: PageProps) {
           ...page,
           content: {
             ...globalData,
-            ...(page.content || {})
+            ...(page.content || {}),
+            globalServices: globalData?.services?.services || []
           }
         }}
         params={resolvedParams}

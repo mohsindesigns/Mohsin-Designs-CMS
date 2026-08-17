@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useContent } from "@/hooks/useContent";
 
 export default function Services() {
@@ -141,12 +142,18 @@ export default function Services() {
           className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-none w-full -mx-2 px-2 md:mx-0 md:px-0 py-8 carousel-grab select-none"
         >
           {services.list.map((service: any, index: number) => {
-            const imgSrc = service.image || service.overviewImage || "";
+            const globalService = (content?.services?.services || []).find(
+              (s: any) => s.title === service.title || s.slug === service.slug
+            );
+            const imgSrc = service.image || service.overviewImage || globalService?.image || globalService?.overviewImage || "";
             const num = service.num || String(index + 1).padStart(2, "0");
 
             return (
               <div key={service._id || index} className="w-[86%] sm:w-[calc(50%-12px)] lg:w-[calc(33.33%-16px)] shrink-0 snap-start">
-                <div className="group relative flex flex-col justify-between rounded-[2rem] border border-brand-blue/20 dark:border-white/10 hover:border-transparent bg-white dark:bg-zinc-900 p-6 xs:p-7 md:p-8 transition-all duration-500 hover:-translate-y-3 h-full min-h-[490px] sm:min-h-[520px] md:min-h-[540px] shadow-[0_2px_20px_rgba(3,6,172,0.04)] hover:shadow-[0_32px_64px_rgba(3,6,172,0.28)] dark:hover:shadow-[0_32px_64px_rgba(233,189,54,0.08)] cursor-pointer card-sweep">
+                <Link
+                  href={`/services/${globalService?.slug || service.slug || ""}`}
+                  className="group relative flex flex-col justify-between rounded-[2rem] border border-brand-blue/20 dark:border-white/10 hover:border-transparent bg-white dark:bg-zinc-900 p-6 xs:p-7 md:p-8 transition-all duration-500 hover:-translate-y-3 h-full min-h-[490px] sm:min-h-[520px] md:min-h-[540px] shadow-[0_2px_20px_rgba(3,6,172,0.04)] hover:shadow-[0_32px_64px_rgba(3,6,172,0.28)] dark:hover:shadow-[0_32px_64px_rgba(233,189,54,0.08)] cursor-pointer card-sweep block no-underline"
+                >
 
                   {/* Hover fill overlay */}
                   <div className="absolute inset-0 bg-gradient-to-br from-[#0306AC] via-[#0306AC] to-[#020485] opacity-0 group-hover:opacity-100 dark:group-hover:opacity-0 transition-opacity duration-500 z-0 rounded-[2rem]" />
@@ -221,7 +228,7 @@ export default function Services() {
                     </div>
                   </div>
 
-                </div>
+                </Link>
               </div>
             );
           })}

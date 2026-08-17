@@ -24,12 +24,11 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any, par
   const { allBlogs, blogSection } = useContent();
   return (
     <div className="relative">
-      <Hero /> <section id="about">
+      <Hero />
+      <section id="about">
         <AboutOwner />
       </section>
-      <section id="roofingexperts">
-        <AggressiveRoofingSection />
-      </section>
+
 
       <section id="services">
         <Services />

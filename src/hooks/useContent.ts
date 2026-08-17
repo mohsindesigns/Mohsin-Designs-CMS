@@ -64,7 +64,11 @@ export const useContent = () => {
         services: (() => {
             const s = getSafe(completeData, 'services', { services: [] });
             // Normalize: if it's already an array, wrap it in the expected object structure
-            return Array.isArray(s) ? { services: s } : s;
+            const normalized = Array.isArray(s) ? { services: s } : s;
+            if ((!normalized.services || normalized.services.length === 0) && completeData.globalServices) {
+                normalized.services = completeData.globalServices;
+            }
+            return normalized;
         })(),
         leadership: getSafe(completeData, 'leadership', {
             section: { badge: "", headline: "", description: "" },

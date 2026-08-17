@@ -122,7 +122,8 @@ export default async function GalleryPage() {
           ...(page || { title: "Project Gallery", template: "gallery", slug: "gallery" }),
           content: {
             ...globalData,
-            ...(page?.content || {})
+            ...(page?.content || {}),
+            globalServices: globalData?.services?.services || []
           }
         }}
         params={Promise.resolve({ slug: ["gallery"] })}

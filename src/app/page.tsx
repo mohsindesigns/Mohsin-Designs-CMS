@@ -168,7 +168,8 @@ export default async function Index() {
               ...page,
               content: {
                 ...(content?.data || {}),
-                ...(page.content || {})
+                ...(page.content || {}),
+                globalServices: content?.data?.services?.services || []
               }
             }} 
             params={Promise.resolve({ slug: ['/'] })} 
