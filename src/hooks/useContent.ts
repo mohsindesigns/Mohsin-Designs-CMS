@@ -94,10 +94,43 @@ export const useContent = () => {
                 projects: selectedProjects
             };
         })(),
-        testimonials: getSafe(completeData, 'testimonials', {
-            section: { badge: "", headline: "", description: "" },
-            items: []
-        }),
+        testimonials: (() => {
+            const raw = getSafe(completeData, 'testimonials', {});
+            const defaults = {
+                sectionTag: "CLIENT PRAISE & REVIEWS",
+                titleIntro: "Trusted by Founders,",
+                titleHighlight: "Loved by Teams",
+                description: "Real feedback from visionary founders and engineering leaders who transformed their digital platforms with our expertise.",
+                scorecardRating: "4.9/5",
+                scorecardRatingLabel: "OVERALL",
+                scorecardTitle: "TOP RATED ENGINEERING",
+                scorecardSub: "BASED ON 120+ CLIENT REVIEWS",
+                list: [
+                    { id: "rev-1", name: "Marcus Vance", role: "VP of Engineering", company: "FinScale", quote: "Mohsin's team revamped our core web application in record time. Performance increased by 300% and user engagement reached all-time highs.", rating: 5, column: 1, avatarBg: "bg-[#0306AC]" },
+                    { id: "rev-2", name: "Elena Rostova", role: "Chief Design Officer", company: "Aura AI", quote: "The attention to typography, micro-interactions, and responsive layout is world-class. Our design system was delivered ahead of schedule.", rating: 5, column: 1, avatarBg: "bg-purple-600" },
+                    { id: "rev-3", name: "David Chen", role: "Founder & CEO", company: "NexPath Logistics", quote: "From discovery to deployment, the execution was flawless. Their architectural decisions saved us months of rework down the line.", rating: 5, column: 1, avatarBg: "bg-emerald-600" },
+                    { id: "rev-4", name: "Sarah Jenkins", role: "Head of Product", company: "CloudCore", quote: "Super intuitive CMS and stunning frontend animations. Our non-technical marketing team can now update high-converting pages effortlessly.", rating: 5, column: 2, avatarBg: "bg-amber-600" },
+                    { id: "rev-5", name: "Liam O'Connor", role: "Technical Director", company: "Verve Media", quote: "Incredible speed, clean code, and zero bugs on launch day. Mohsin Designs is our go-to engineering partner for every enterprise build.", rating: 5, column: 2, avatarBg: "bg-indigo-600" },
+                    { id: "rev-6", name: "Amina Al-Mansoor", role: "Director of Digital", company: "Apex Gulf Group", quote: "They understood our complex requirements instantly and delivered a modern portal that exceeds international enterprise standards.", rating: 5, column: 2, avatarBg: "bg-rose-600" },
+                    { id: "rev-7", name: "Julian Meyer", role: "Co-Founder", company: "StackFlow Analytics", quote: "The speed and polish of the final product blew our investors away. Truly state-of-the-art UI with rock-solid Next.js architecture.", rating: 5, column: 3, avatarBg: "bg-cyan-600" },
+                    { id: "rev-8", name: "Clara Johansson", role: "Growth Lead", company: "Nordic Ventures", quote: "Conversion rates jumped by 42% in the first 30 days after re-platforming. The ROI speaks for itself.", rating: 5, column: 3, avatarBg: "bg-teal-600" },
+                    { id: "rev-9", name: "Tariq Mahmood", role: "Head of Engineering", company: "PulseTech", quote: "Best agency collaboration we've had in 8 years. Highly responsive, deep technical chops, and unmatched creative execution.", rating: 5, column: 3, avatarBg: "bg-[#0306AC]" }
+                ]
+            };
+            return {
+                ...defaults,
+                ...raw,
+                sectionTag: raw.sectionTag || raw.section?.badge || defaults.sectionTag,
+                titleIntro: raw.titleIntro || raw.section?.headlinePrefix || defaults.titleIntro,
+                titleHighlight: raw.titleHighlight || raw.section?.headlineHighlight || defaults.titleHighlight,
+                description: raw.description || raw.section?.description || defaults.description,
+                scorecardRating: raw.scorecardRating || defaults.scorecardRating,
+                scorecardRatingLabel: raw.scorecardRatingLabel || defaults.scorecardRatingLabel,
+                scorecardTitle: raw.scorecardTitle || defaults.scorecardTitle,
+                scorecardSub: raw.scorecardSub || defaults.scorecardSub,
+                list: (Array.isArray(raw.list) && raw.list.length > 0) ? raw.list : defaults.list
+            };
+        })(),
         whyChooseUs: (() => {
             const raw = getSafe(completeData, 'whyChooseUs', {});
             const defaults = {

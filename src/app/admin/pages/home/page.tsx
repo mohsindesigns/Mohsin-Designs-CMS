@@ -1275,89 +1275,315 @@ export default function HomeEditor() {
         <motion.div key="testimonials" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
           <div className="flex items-center justify-between border-b border-gray-200 pb-4">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Testimonials Section</h2>
-              <p className="text-gray-500 text-sm mt-1">Configure the headers and stats for the reviews section. (To add/remove actual reviews, use the Reviews sidebar tab).</p>
+              <h2 className="text-2xl font-bold text-gray-900">Client Reviews & Testimonials</h2>
+              <p className="text-gray-500 text-sm mt-1">Manage header narrative, scorecard widget, and 3-row continuous parallax scrolling client reviews.</p>
             </div>
-            <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">Section 6</span>
+            <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">Reviews Wall</span>
           </div>
 
-          {/* Intro Panel */}
-          <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6 shadow-xl">
-            <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <Type className="w-5 h-5 text-primary" />
-              Section Headers
-            </h3>
+          {/* Section Narrative */}
+          <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">1. Header Narrative</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
-                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Badge</label>
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Badge / Tag</label>
                 <input
                   type="text"
-                  value={data.testimonials?.section?.badge || ""}
-                  onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...prev.testimonials, section: { ...prev.testimonials.section, badge: e.target.value } } }))}
+                  value={data.testimonials?.sectionTag || data.testimonials?.section?.badge || "CLIENT PRAISE & REVIEWS"}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...(prev.testimonials || {}), sectionTag: e.target.value } }))}
                   className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                  placeholder="e.g. TESTIMONIALS"
+                  placeholder="e.g. CLIENT PRAISE & REVIEWS"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Heading — Prefix (plain text)</label>
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Headline Intro</label>
                 <input
                   type="text"
-                  value={data.testimonials?.section?.headlinePrefix || ""}
-                  onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...prev.testimonials, section: { ...prev.testimonials.section, headlinePrefix: e.target.value } } }))}
-                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all mb-4"
-                />
-                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Heading — Highlight (primary color)</label>
-                <input
-                  type="text"
-                  value={data.testimonials?.section?.headlineHighlight || ""}
-                  onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...prev.testimonials, section: { ...prev.testimonials.section, headlineHighlight: e.target.value } } }))}
-                  className="w-full bg-white border border-primary/30 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all font-bold mb-4"
-                />
-                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Heading — Suffix (plain text)</label>
-                <input
-                  type="text"
-                  value={data.testimonials?.section?.headlineSuffix || ""}
-                  onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...prev.testimonials, section: { ...prev.testimonials.section, headlineSuffix: e.target.value } } }))}
+                  value={data.testimonials?.titleIntro || data.testimonials?.section?.headlinePrefix || "Trusted by Founders,"}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...(prev.testimonials || {}), titleIntro: e.target.value } }))}
                   className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. Trusted by Founders,"
                 />
               </div>
               <div className="space-y-2 md:col-span-2">
-                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Paragraph</label>
-                <RichTextEditor
-                  content={data.testimonials?.section?.description || ""}
-                  onChange={(v) => setData((prev: any) => ({ ...prev, testimonials: { ...prev.testimonials, section: { ...prev.testimonials.section, description: v } } }))}
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Headline Highlight (Accent Italic)</label>
+                <input
+                  type="text"
+                  value={data.testimonials?.titleHighlight || data.testimonials?.section?.headlineHighlight || "Loved by Teams"}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...(prev.testimonials || {}), titleHighlight: e.target.value } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-bold text-primary focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. Loved by Teams"
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Description Subtext</label>
+                <textarea
+                  rows={3}
+                  value={data.testimonials?.description || data.testimonials?.section?.description || ""}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...(prev.testimonials || {}), description: e.target.value } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. Real feedback from visionary founders and engineering leaders who transformed their digital platforms with our expertise."
                 />
               </div>
             </div>
           </div>
 
-          {/* Stats Panel */}
-          <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6 shadow-xl">
-            <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <Star className="w-5 h-5 text-primary" />
-              Bottom Highlights & Stats
-            </h3>
+          {/* Scorecard Widget */}
+          <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">2. Header Scorecard Widget</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
-                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Featured Platform Text (Next to Google Icon)</label>
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Rating Score</label>
                 <input
                   type="text"
-                  value={data.testimonials?.section?.featured || ""}
-                  onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...prev.testimonials, section: { ...prev.testimonials.section, featured: e.target.value } } }))}
-                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                  placeholder="e.g. 5.0 Rating on Google"
+                  value={data.testimonials?.scorecardRating || "4.9/5"}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...(prev.testimonials || {}), scorecardRating: e.target.value } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. 4.9/5"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Subscribers / Customer Count</label>
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Rating Label</label>
                 <input
                   type="text"
-                  value={data.testimonials?.stats?.subscribers || ""}
-                  onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...prev.testimonials, stats: { ...prev.testimonials.stats, subscribers: e.target.value } } }))}
-                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                  placeholder="e.g. 500+ Satisfied Customers"
+                  value={data.testimonials?.scorecardRatingLabel || "OVERALL"}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...(prev.testimonials || {}), scorecardRatingLabel: e.target.value } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-mono uppercase focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. OVERALL"
                 />
               </div>
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Scorecard Headline</label>
+                <input
+                  type="text"
+                  value={data.testimonials?.scorecardTitle || "TOP RATED ENGINEERING"}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...(prev.testimonials || {}), scorecardTitle: e.target.value } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. TOP RATED ENGINEERING"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Scorecard Subtitle</label>
+                <input
+                  type="text"
+                  value={data.testimonials?.scorecardSub || "BASED ON 120+ CLIENT REVIEWS"}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...(prev.testimonials || {}), scorecardSub: e.target.value } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm uppercase focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. BASED ON 120+ CLIENT REVIEWS"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Reviews List */}
+          <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">3. Client Reviews (3-Row Marquee)</h3>
+                <p className="text-xs text-gray-500">Add reviews and set which row (1, 2, or 3) they scroll in.</p>
+              </div>
+              <button
+                onClick={() => {
+                  const currentList = (data.testimonials?.list && data.testimonials.list.length > 0)
+                    ? data.testimonials.list
+                    : [
+                      { id: "rev-1", name: "Marcus Vance", role: "VP of Engineering", company: "FinScale", quote: "Mohsin's team revamped our core web application in record time. Performance increased by 300% and user engagement reached all-time highs.", rating: 5, column: 1, avatarBg: "bg-[#0306AC]" },
+                      { id: "rev-2", name: "Elena Rostova", role: "Chief Design Officer", company: "Aura AI", quote: "The attention to typography, micro-interactions, and responsive layout is world-class. Our design system was delivered ahead of schedule.", rating: 5, column: 1, avatarBg: "bg-purple-600" },
+                      { id: "rev-3", name: "David Chen", role: "Founder & CEO", company: "NexPath Logistics", quote: "From discovery to deployment, the execution was flawless. Their architectural decisions saved us months of rework down the line.", rating: 5, column: 1, avatarBg: "bg-emerald-600" },
+                      { id: "rev-4", name: "Sarah Jenkins", role: "Head of Product", company: "CloudCore", quote: "Super intuitive CMS and stunning frontend animations. Our non-technical marketing team can now update high-converting pages effortlessly.", rating: 5, column: 2, avatarBg: "bg-amber-600" },
+                      { id: "rev-5", name: "Liam O'Connor", role: "Technical Director", company: "Verve Media", quote: "Incredible speed, clean code, and zero bugs on launch day. Mohsin Designs is our go-to engineering partner for every enterprise build.", rating: 5, column: 2, avatarBg: "bg-indigo-600" },
+                      { id: "rev-6", name: "Amina Al-Mansoor", role: "Director of Digital", company: "Apex Gulf Group", quote: "They understood our complex requirements instantly and delivered a modern portal that exceeds international enterprise standards.", rating: 5, column: 2, avatarBg: "bg-rose-600" },
+                      { id: "rev-7", name: "Julian Meyer", role: "Co-Founder", company: "StackFlow Analytics", quote: "The speed and polish of the final product blew our investors away. Truly state-of-the-art UI with rock-solid Next.js architecture.", rating: 5, column: 3, avatarBg: "bg-cyan-600" },
+                      { id: "rev-8", name: "Clara Johansson", role: "Growth Lead", company: "Nordic Ventures", quote: "Conversion rates jumped by 42% in the first 30 days after re-platforming. The ROI speaks for itself.", rating: 5, column: 3, avatarBg: "bg-teal-600" },
+                      { id: "rev-9", name: "Tariq Mahmood", role: "Head of Engineering", company: "PulseTech", quote: "Best agency collaboration we've had in 8 years. Highly responsive, deep technical chops, and unmatched creative execution.", rating: 5, column: 3, avatarBg: "bg-[#0306AC]" }
+                    ];
+                  const newRev = {
+                    id: `rev-${Date.now()}`,
+                    name: "New Client",
+                    role: "Founder & CEO",
+                    company: "TechCorp",
+                    quote: "Exceptional speed, world-class UI design, and flawless execution.",
+                    rating: 5,
+                    column: 1,
+                    avatarBg: "bg-[#0306AC]"
+                  };
+                  setData((prev: any) => ({ ...prev, testimonials: { ...(prev.testimonials || {}), list: [...currentList, newRev] } }));
+                }}
+                className="text-xs bg-primary/10 text-primary hover:bg-primary/20 px-3 py-1.5 rounded-lg font-semibold transition-colors"
+              >
+                + Add Review Card
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {((data.testimonials?.list && data.testimonials.list.length > 0)
+                ? data.testimonials.list
+                : [
+                  { id: "rev-1", name: "Marcus Vance", role: "VP of Engineering", company: "FinScale", quote: "Mohsin's team revamped our core web application in record time. Performance increased by 300% and user engagement reached all-time highs.", rating: 5, column: 1, avatarBg: "bg-[#0306AC]" },
+                  { id: "rev-2", name: "Elena Rostova", role: "Chief Design Officer", company: "Aura AI", quote: "The attention to typography, micro-interactions, and responsive layout is world-class. Our design system was delivered ahead of schedule.", rating: 5, column: 1, avatarBg: "bg-purple-600" },
+                  { id: "rev-3", name: "David Chen", role: "Founder & CEO", company: "NexPath Logistics", quote: "From discovery to deployment, the execution was flawless. Their architectural decisions saved us months of rework down the line.", rating: 5, column: 1, avatarBg: "bg-emerald-600" },
+                  { id: "rev-4", name: "Sarah Jenkins", role: "Head of Product", company: "CloudCore", quote: "Super intuitive CMS and stunning frontend animations. Our non-technical marketing team can now update high-converting pages effortlessly.", rating: 5, column: 2, avatarBg: "bg-amber-600" },
+                  { id: "rev-5", name: "Liam O'Connor", role: "Technical Director", company: "Verve Media", quote: "Incredible speed, clean code, and zero bugs on launch day. Mohsin Designs is our go-to engineering partner for every enterprise build.", rating: 5, column: 2, avatarBg: "bg-indigo-600" },
+                  { id: "rev-6", name: "Amina Al-Mansoor", role: "Director of Digital", company: "Apex Gulf Group", quote: "They understood our complex requirements instantly and delivered a modern portal that exceeds international enterprise standards.", rating: 5, column: 2, avatarBg: "bg-rose-600" },
+                  { id: "rev-7", name: "Julian Meyer", role: "Co-Founder", company: "StackFlow Analytics", quote: "The speed and polish of the final product blew our investors away. Truly state-of-the-art UI with rock-solid Next.js architecture.", rating: 5, column: 3, avatarBg: "bg-cyan-600" },
+                  { id: "rev-8", name: "Clara Johansson", role: "Growth Lead", company: "Nordic Ventures", quote: "Conversion rates jumped by 42% in the first 30 days after re-platforming. The ROI speaks for itself.", rating: 5, column: 3, avatarBg: "bg-teal-600" },
+                  { id: "rev-9", name: "Tariq Mahmood", role: "Head of Engineering", company: "PulseTech", quote: "Best agency collaboration we've had in 8 years. Highly responsive, deep technical chops, and unmatched creative execution.", rating: 5, column: 3, avatarBg: "bg-[#0306AC]" }
+                ]
+              ).map((rev: any, rIdx: number) => {
+                const currentList = (data.testimonials?.list && data.testimonials.list.length > 0)
+                  ? data.testimonials.list
+                  : [
+                    { id: "rev-1", name: "Marcus Vance", role: "VP of Engineering", company: "FinScale", quote: "Mohsin's team revamped our core web application in record time. Performance increased by 300% and user engagement reached all-time highs.", rating: 5, column: 1, avatarBg: "bg-[#0306AC]" },
+                    { id: "rev-2", name: "Elena Rostova", role: "Chief Design Officer", company: "Aura AI", quote: "The attention to typography, micro-interactions, and responsive layout is world-class. Our design system was delivered ahead of schedule.", rating: 5, column: 1, avatarBg: "bg-purple-600" },
+                    { id: "rev-3", name: "David Chen", role: "Founder & CEO", company: "NexPath Logistics", quote: "From discovery to deployment, the execution was flawless. Their architectural decisions saved us months of rework down the line.", rating: 5, column: 1, avatarBg: "bg-emerald-600" },
+                    { id: "rev-4", name: "Sarah Jenkins", role: "Head of Product", company: "CloudCore", quote: "Super intuitive CMS and stunning frontend animations. Our non-technical marketing team can now update high-converting pages effortlessly.", rating: 5, column: 2, avatarBg: "bg-amber-600" },
+                    { id: "rev-5", name: "Liam O'Connor", role: "Technical Director", company: "Verve Media", quote: "Incredible speed, clean code, and zero bugs on launch day. Mohsin Designs is our go-to engineering partner for every enterprise build.", rating: 5, column: 2, avatarBg: "bg-indigo-600" },
+                    { id: "rev-6", name: "Amina Al-Mansoor", role: "Director of Digital", company: "Apex Gulf Group", quote: "They understood our complex requirements instantly and delivered a modern portal that exceeds international enterprise standards.", rating: 5, column: 2, avatarBg: "bg-rose-600" },
+                    { id: "rev-7", name: "Julian Meyer", role: "Co-Founder", company: "StackFlow Analytics", quote: "The speed and polish of the final product blew our investors away. Truly state-of-the-art UI with rock-solid Next.js architecture.", rating: 5, column: 3, avatarBg: "bg-cyan-600" },
+                    { id: "rev-8", name: "Clara Johansson", role: "Growth Lead", company: "Nordic Ventures", quote: "Conversion rates jumped by 42% in the first 30 days after re-platforming. The ROI speaks for itself.", rating: 5, column: 3, avatarBg: "bg-teal-600" },
+                    { id: "rev-9", name: "Tariq Mahmood", role: "Head of Engineering", company: "PulseTech", quote: "Best agency collaboration we've had in 8 years. Highly responsive, deep technical chops, and unmatched creative execution.", rating: 5, column: 3, avatarBg: "bg-[#0306AC]" }
+                  ];
+
+                return (
+                  <div key={rIdx} className="border border-gray-200 rounded-xl p-4 bg-gray-50 space-y-3 relative group">
+                    <div className="flex justify-between items-center pb-2 border-b border-gray-200">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-gray-800">Review #{rIdx + 1}: {rev.name}</span>
+                        <span className="text-[10px] font-bold uppercase bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
+                          Row {rev.column || 1}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => {
+                          const newList = currentList.filter((_: any, i: number) => i !== rIdx);
+                          setData((prev: any) => ({ ...prev, testimonials: { ...(prev.testimonials || {}), list: newList } }));
+                        }}
+                        className="text-xs font-semibold text-red-500 hover:text-red-700"
+                      >
+                        Delete
+                      </button>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] uppercase text-gray-500 font-bold">Review Quote</label>
+                      <textarea
+                        rows={2}
+                        value={rev.quote || ""}
+                        onChange={(e) => {
+                          const newList = [...currentList];
+                          newList[rIdx] = { ...newList[rIdx], quote: e.target.value };
+                          setData((prev: any) => ({ ...prev, testimonials: { ...(prev.testimonials || {}), list: newList } }));
+                        }}
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary/50 focus:outline-none"
+                        placeholder="Review quote text..."
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <label className="text-[10px] uppercase text-gray-500 font-bold">Client Name</label>
+                        <input
+                          type="text"
+                          value={rev.name || ""}
+                          onChange={(e) => {
+                            const newList = [...currentList];
+                            newList[rIdx] = { ...newList[rIdx], name: e.target.value };
+                            setData((prev: any) => ({ ...prev, testimonials: { ...(prev.testimonials || {}), list: newList } }));
+                          }}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-bold focus:border-primary/50 focus:outline-none"
+                          placeholder="e.g. Marcus Vance"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[10px] uppercase text-gray-500 font-bold">Role / Title</label>
+                        <input
+                          type="text"
+                          value={rev.role || ""}
+                          onChange={(e) => {
+                            const newList = [...currentList];
+                            newList[rIdx] = { ...newList[rIdx], role: e.target.value };
+                            setData((prev: any) => ({ ...prev, testimonials: { ...(prev.testimonials || {}), list: newList } }));
+                          }}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary/50 focus:outline-none"
+                          placeholder="e.g. VP of Engineering"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[10px] uppercase text-gray-500 font-bold">Company</label>
+                        <input
+                          type="text"
+                          value={rev.company || ""}
+                          onChange={(e) => {
+                            const newList = [...currentList];
+                            newList[rIdx] = { ...newList[rIdx], company: e.target.value };
+                            setData((prev: any) => ({ ...prev, testimonials: { ...(prev.testimonials || {}), list: newList } }));
+                          }}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-bold text-primary focus:border-primary/50 focus:outline-none"
+                          placeholder="e.g. FinScale"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-gray-200">
+                      <div>
+                        <label className="text-[10px] uppercase text-gray-500 font-bold">Marquee Row</label>
+                        <select
+                          value={rev.column || 1}
+                          onChange={(e) => {
+                            const newList = [...currentList];
+                            newList[rIdx] = { ...newList[rIdx], column: Number(e.target.value) };
+                            setData((prev: any) => ({ ...prev, testimonials: { ...(prev.testimonials || {}), list: newList } }));
+                          }}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-bold focus:border-primary/50 focus:outline-none"
+                        >
+                          <option value={1}>Row 1 (Scrolls Left)</option>
+                          <option value={2}>Row 2 (Scrolls Right)</option>
+                          <option value={3}>Row 3 (Scrolls Left)</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] uppercase text-gray-500 font-bold">Rating (Stars 1-5)</label>
+                        <select
+                          value={rev.rating || 5}
+                          onChange={(e) => {
+                            const newList = [...currentList];
+                            newList[rIdx] = { ...newList[rIdx], rating: Number(e.target.value) };
+                            setData((prev: any) => ({ ...prev, testimonials: { ...(prev.testimonials || {}), list: newList } }));
+                          }}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary/50 focus:outline-none"
+                        >
+                          <option value={5}>★★★★★ (5 Stars)</option>
+                          <option value={4}>★★★★☆ (4 Stars)</option>
+                          <option value={3}>★★★☆☆ (3 Stars)</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] uppercase text-gray-500 font-bold">Avatar Badge Color</label>
+                        <select
+                          value={rev.avatarBg || "bg-[#0306AC]"}
+                          onChange={(e) => {
+                            const newList = [...currentList];
+                            newList[rIdx] = { ...newList[rIdx], avatarBg: e.target.value };
+                            setData((prev: any) => ({ ...prev, testimonials: { ...(prev.testimonials || {}), list: newList } }));
+                          }}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary/50 focus:outline-none"
+                        >
+                          <option value="bg-[#0306AC]">Navy (#0306AC)</option>
+                          <option value="bg-purple-600">Purple</option>
+                          <option value="bg-emerald-600">Emerald Green</option>
+                          <option value="bg-amber-600">Amber / Gold</option>
+                          <option value="bg-indigo-600">Indigo</option>
+                          <option value="bg-rose-600">Rose Red</option>
+                          <option value="bg-cyan-600">Cyan</option>
+                          <option value="bg-teal-600">Teal</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </motion.div>

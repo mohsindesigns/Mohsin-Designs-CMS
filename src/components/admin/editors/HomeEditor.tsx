@@ -1207,33 +1207,315 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                   </div>
                )}
 
-               {/* TESTIMONIALS */}
+               {/* TESTIMONIALS SECTION */}
                {activeTab === "testimonials" && (
                   <div className="space-y-12">
+                     {/* 1. SECTION INTRO */}
                      <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>1. Branding</h3>
-                        <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.testimonials?.section?.badge || ""} onChange={(e) => updateSection("testimonials", "section", { ...(data.testimonials?.section || {}), badge: e.target.value })} className={UI.input} /></div>
-                         <div className="space-y-1.5">
-                            <label className={UI.label}>Headline — Prefix (plain text)</label>
-                            <input type="text" value={data.testimonials?.section?.headlinePrefix || ""} onChange={(e) => updateSection("testimonials", "section", { ...(data.testimonials?.section || {}), headlinePrefix: e.target.value })} className={UI.input} placeholder="e.g. What Our" />
-                         </div>
-                         <div className="space-y-1.5">
-                            <label className={UI.label}>Headline — Highlight <span className="text-primary font-bold">(shown in primary color)</span></label>
-                            <input type="text" value={data.testimonials?.section?.headlineHighlight || ""} onChange={(e) => updateSection("testimonials", "section", { ...(data.testimonials?.section || {}), headlineHighlight: e.target.value })} className={UI.input + " font-bold border-[#2271b1]"} placeholder="e.g. Clients" />
-                         </div>
-                         <div className="space-y-1.5">
-                            <label className={UI.label}>Headline — Suffix (plain text)</label>
-                            <input type="text" value={data.testimonials?.section?.headlineSuffix || ""} onChange={(e) => updateSection("testimonials", "section", { ...(data.testimonials?.section || {}), headlineSuffix: e.target.value })} className={UI.input} placeholder="e.g. Say About Us" />
-                         </div>
-                        <div className="space-y-1.5"><label className={UI.label}>Seal Text</label><input type="text" value={data.testimonials?.section?.featured || ""} onChange={(e) => updateSection("testimonials", "section", { ...(data.testimonials?.section || {}), featured: e.target.value })} className={UI.input} /></div>
+                        <h3 className={UI.sectionHeader}>1. Section Intro & Narrative</h3>
+                        <div className="space-y-1.5">
+                           <label className={UI.label}>Badge / Tag</label>
+                           <input
+                              type="text"
+                              value={data.testimonials?.sectionTag || data.testimonials?.section?.badge || "CLIENT PRAISE & REVIEWS"}
+                              onChange={(e) => updateSection("testimonials", "sectionTag", e.target.value)}
+                              className={UI.input}
+                              placeholder="e.g. CLIENT PRAISE & REVIEWS"
+                           />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Headline Intro (Prefix)</label>
+                              <input
+                                 type="text"
+                                 value={data.testimonials?.titleIntro || data.testimonials?.section?.headlinePrefix || "Trusted by Founders,"}
+                                 onChange={(e) => updateSection("testimonials", "titleIntro", e.target.value)}
+                                 className={UI.input}
+                                 placeholder="e.g. Trusted by Founders,"
+                              />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Headline Highlight (Accent Italic)</label>
+                              <input
+                                 type="text"
+                                 value={data.testimonials?.titleHighlight || data.testimonials?.section?.headlineHighlight || "Loved by Teams"}
+                                 onChange={(e) => updateSection("testimonials", "titleHighlight", e.target.value)}
+                                 className={UI.input + " font-bold border-[#2271b1] text-[#2271b1]"}
+                                 placeholder="e.g. Loved by Teams"
+                              />
+                           </div>
+                        </div>
+                        <div className="space-y-1.5">
+                           <label className={UI.label}>Description</label>
+                           <textarea
+                              rows={3}
+                              value={data.testimonials?.description || data.testimonials?.section?.description || ""}
+                              onChange={(e) => updateSection("testimonials", "description", e.target.value)}
+                              className={UI.input}
+                              placeholder="e.g. Real feedback from visionary founders and engineering leaders who transformed their digital platforms with our expertise."
+                           />
+                        </div>
                      </div>
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>2. Selection</h3>
-                        <ContentSelector type="reviews" label="Client Reviews" selectedItems={data.testimonials?.testimonials} onSelect={(items) => updateSection("testimonials", "testimonials", items)} />
+
+                     {/* 2. SCORECARD WIDGET */}
+                     <div className="space-y-6 pt-8 border-t border-[#f0f0f1]">
+                        <h3 className={UI.sectionHeader}>2. Header Scorecard Widget</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Rating Score</label>
+                              <input
+                                 type="text"
+                                 value={data.testimonials?.scorecardRating || "4.9/5"}
+                                 onChange={(e) => updateSection("testimonials", "scorecardRating", e.target.value)}
+                                 className={UI.input + " font-bold"}
+                                 placeholder="e.g. 4.9/5 or 5.0"
+                              />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Rating Label</label>
+                              <input
+                                 type="text"
+                                 value={data.testimonials?.scorecardRatingLabel || "OVERALL"}
+                                 onChange={(e) => updateSection("testimonials", "scorecardRatingLabel", e.target.value)}
+                                 className={UI.input + " uppercase font-mono"}
+                                 placeholder="e.g. OVERALL"
+                              />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Scorecard Headline</label>
+                              <input
+                                 type="text"
+                                 value={data.testimonials?.scorecardTitle || "TOP RATED ENGINEERING"}
+                                 onChange={(e) => updateSection("testimonials", "scorecardTitle", e.target.value)}
+                                 className={UI.input + " font-bold"}
+                                 placeholder="e.g. TOP RATED ENGINEERING"
+                              />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Scorecard Subtitle</label>
+                              <input
+                                 type="text"
+                                 value={data.testimonials?.scorecardSub || "BASED ON 120+ CLIENT REVIEWS"}
+                                 onChange={(e) => updateSection("testimonials", "scorecardSub", e.target.value)}
+                                 className={UI.input + " uppercase"}
+                                 placeholder="e.g. BASED ON 120+ CLIENT REVIEWS"
+                              />
+                           </div>
+                        </div>
                      </div>
-                     <div className="space-y-6 pt-10 border-t border-[#f0f0f1]">
-                        <h3 className={UI.sectionHeader}>3. Global Metric</h3>
-                        <div className="space-y-1.5"><label className={UI.label}>Happy Client Count</label><input type="text" value={data.testimonials?.stats?.subscribers || ""} onChange={(e) => updateSection("testimonials", "stats", { ...(data.testimonials?.stats || {}), subscribers: e.target.value })} className={UI.inputLarge} /></div>
+
+                     {/* 3. REVIEWS & TESTIMONIALS LIST (3-ROW MARQUEE) */}
+                     <div className="space-y-6 pt-8 border-t border-[#f0f0f1]">
+                        <div className="flex justify-between items-center">
+                           <div>
+                              <h3 className={UI.sectionHeader}>3. Client Reviews (3-Row Marquee)</h3>
+                              <p className="text-xs text-[#646970]">Assign each review to Row 1, 2, or 3 for continuous horizontal scrolling.</p>
+                           </div>
+                           <button
+                              onClick={() => {
+                                 const currentList = (data.testimonials?.list && data.testimonials.list.length > 0)
+                                    ? data.testimonials.list
+                                    : [
+                                       { id: "rev-1", name: "Marcus Vance", role: "VP of Engineering", company: "FinScale", quote: "Mohsin's team revamped our core web application in record time. Performance increased by 300% and user engagement reached all-time highs.", rating: 5, column: 1, avatarBg: "bg-[#0306AC]" },
+                                       { id: "rev-2", name: "Elena Rostova", role: "Chief Design Officer", company: "Aura AI", quote: "The attention to typography, micro-interactions, and responsive layout is world-class. Our design system was delivered ahead of schedule.", rating: 5, column: 1, avatarBg: "bg-purple-600" },
+                                       { id: "rev-3", name: "David Chen", role: "Founder & CEO", company: "NexPath Logistics", quote: "From discovery to deployment, the execution was flawless. Their architectural decisions saved us months of rework down the line.", rating: 5, column: 1, avatarBg: "bg-emerald-600" },
+                                       { id: "rev-4", name: "Sarah Jenkins", role: "Head of Product", company: "CloudCore", quote: "Super intuitive CMS and stunning frontend animations. Our non-technical marketing team can now update high-converting pages effortlessly.", rating: 5, column: 2, avatarBg: "bg-amber-600" },
+                                       { id: "rev-5", name: "Liam O'Connor", role: "Technical Director", company: "Verve Media", quote: "Incredible speed, clean code, and zero bugs on launch day. Mohsin Designs is our go-to engineering partner for every enterprise build.", rating: 5, column: 2, avatarBg: "bg-indigo-600" },
+                                       { id: "rev-6", name: "Amina Al-Mansoor", role: "Director of Digital", company: "Apex Gulf Group", quote: "They understood our complex requirements instantly and delivered a modern portal that exceeds international enterprise standards.", rating: 5, column: 2, avatarBg: "bg-rose-600" },
+                                       { id: "rev-7", name: "Julian Meyer", role: "Co-Founder", company: "StackFlow Analytics", quote: "The speed and polish of the final product blew our investors away. Truly state-of-the-art UI with rock-solid Next.js architecture.", rating: 5, column: 3, avatarBg: "bg-cyan-600" },
+                                       { id: "rev-8", name: "Clara Johansson", role: "Growth Lead", company: "Nordic Ventures", quote: "Conversion rates jumped by 42% in the first 30 days after re-platforming. The ROI speaks for itself.", rating: 5, column: 3, avatarBg: "bg-teal-600" },
+                                       { id: "rev-9", name: "Tariq Mahmood", role: "Head of Engineering", company: "PulseTech", quote: "Best agency collaboration we've had in 8 years. Highly responsive, deep technical chops, and unmatched creative execution.", rating: 5, column: 3, avatarBg: "bg-[#0306AC]" }
+                                    ];
+                                 const newRev = {
+                                    id: `rev-${Date.now()}`,
+                                    name: "New Client",
+                                    role: "Founder & CEO",
+                                    company: "TechCorp",
+                                    quote: "Exceptional speed, world-class UI design, and flawless execution.",
+                                    rating: 5,
+                                    column: 1,
+                                    avatarBg: "bg-[#0306AC]"
+                                 };
+                                 updateSection("testimonials", "list", [...currentList, newRev]);
+                              }}
+                              className={UI.buttonAdd}
+                           >
+                              + Add Review Card
+                           </button>
+                        </div>
+
+                        <div className="space-y-4">
+                           {((data.testimonials?.list && data.testimonials.list.length > 0)
+                              ? data.testimonials.list
+                              : [
+                                 { id: "rev-1", name: "Marcus Vance", role: "VP of Engineering", company: "FinScale", quote: "Mohsin's team revamped our core web application in record time. Performance increased by 300% and user engagement reached all-time highs.", rating: 5, column: 1, avatarBg: "bg-[#0306AC]" },
+                                 { id: "rev-2", name: "Elena Rostova", role: "Chief Design Officer", company: "Aura AI", quote: "The attention to typography, micro-interactions, and responsive layout is world-class. Our design system was delivered ahead of schedule.", rating: 5, column: 1, avatarBg: "bg-purple-600" },
+                                 { id: "rev-3", name: "David Chen", role: "Founder & CEO", company: "NexPath Logistics", quote: "From discovery to deployment, the execution was flawless. Their architectural decisions saved us months of rework down the line.", rating: 5, column: 1, avatarBg: "bg-emerald-600" },
+                                 { id: "rev-4", name: "Sarah Jenkins", role: "Head of Product", company: "CloudCore", quote: "Super intuitive CMS and stunning frontend animations. Our non-technical marketing team can now update high-converting pages effortlessly.", rating: 5, column: 2, avatarBg: "bg-amber-600" },
+                                 { id: "rev-5", name: "Liam O'Connor", role: "Technical Director", company: "Verve Media", quote: "Incredible speed, clean code, and zero bugs on launch day. Mohsin Designs is our go-to engineering partner for every enterprise build.", rating: 5, column: 2, avatarBg: "bg-indigo-600" },
+                                 { id: "rev-6", name: "Amina Al-Mansoor", role: "Director of Digital", company: "Apex Gulf Group", quote: "They understood our complex requirements instantly and delivered a modern portal that exceeds international enterprise standards.", rating: 5, column: 2, avatarBg: "bg-rose-600" },
+                                 { id: "rev-7", name: "Julian Meyer", role: "Co-Founder", company: "StackFlow Analytics", quote: "The speed and polish of the final product blew our investors away. Truly state-of-the-art UI with rock-solid Next.js architecture.", rating: 5, column: 3, avatarBg: "bg-cyan-600" },
+                                 { id: "rev-8", name: "Clara Johansson", role: "Growth Lead", company: "Nordic Ventures", quote: "Conversion rates jumped by 42% in the first 30 days after re-platforming. The ROI speaks for itself.", rating: 5, column: 3, avatarBg: "bg-teal-600" },
+                                 { id: "rev-9", name: "Tariq Mahmood", role: "Head of Engineering", company: "PulseTech", quote: "Best agency collaboration we've had in 8 years. Highly responsive, deep technical chops, and unmatched creative execution.", rating: 5, column: 3, avatarBg: "bg-[#0306AC]" }
+                              ]
+                           ).map((rev: any, rIdx: number) => {
+                              const currentList = (data.testimonials?.list && data.testimonials.list.length > 0)
+                                 ? data.testimonials.list
+                                 : [
+                                    { id: "rev-1", name: "Marcus Vance", role: "VP of Engineering", company: "FinScale", quote: "Mohsin's team revamped our core web application in record time. Performance increased by 300% and user engagement reached all-time highs.", rating: 5, column: 1, avatarBg: "bg-[#0306AC]" },
+                                    { id: "rev-2", name: "Elena Rostova", role: "Chief Design Officer", company: "Aura AI", quote: "The attention to typography, micro-interactions, and responsive layout is world-class. Our design system was delivered ahead of schedule.", rating: 5, column: 1, avatarBg: "bg-purple-600" },
+                                    { id: "rev-3", name: "David Chen", role: "Founder & CEO", company: "NexPath Logistics", quote: "From discovery to deployment, the execution was flawless. Their architectural decisions saved us months of rework down the line.", rating: 5, column: 1, avatarBg: "bg-emerald-600" },
+                                    { id: "rev-4", name: "Sarah Jenkins", role: "Head of Product", company: "CloudCore", quote: "Super intuitive CMS and stunning frontend animations. Our non-technical marketing team can now update high-converting pages effortlessly.", rating: 5, column: 2, avatarBg: "bg-amber-600" },
+                                    { id: "rev-5", name: "Liam O'Connor", role: "Technical Director", company: "Verve Media", quote: "Incredible speed, clean code, and zero bugs on launch day. Mohsin Designs is our go-to engineering partner for every enterprise build.", rating: 5, column: 2, avatarBg: "bg-indigo-600" },
+                                    { id: "rev-6", name: "Amina Al-Mansoor", role: "Director of Digital", company: "Apex Gulf Group", quote: "They understood our complex requirements instantly and delivered a modern portal that exceeds international enterprise standards.", rating: 5, column: 2, avatarBg: "bg-rose-600" },
+                                    { id: "rev-7", name: "Julian Meyer", role: "Co-Founder", company: "StackFlow Analytics", quote: "The speed and polish of the final product blew our investors away. Truly state-of-the-art UI with rock-solid Next.js architecture.", rating: 5, column: 3, avatarBg: "bg-cyan-600" },
+                                    { id: "rev-8", name: "Clara Johansson", role: "Growth Lead", company: "Nordic Ventures", quote: "Conversion rates jumped by 42% in the first 30 days after re-platforming. The ROI speaks for itself.", rating: 5, column: 3, avatarBg: "bg-teal-600" },
+                                    { id: "rev-9", name: "Tariq Mahmood", role: "Head of Engineering", company: "PulseTech", quote: "Best agency collaboration we've had in 8 years. Highly responsive, deep technical chops, and unmatched creative execution.", rating: 5, column: 3, avatarBg: "bg-[#0306AC]" }
+                                 ];
+
+                              return (
+                                 <div key={rIdx} className={UI.card + " space-y-4 bg-[#f6f7f7] border border-[#dcdcde]"}>
+                                    <div className="flex justify-between items-center pb-2 border-b border-[#e2e4e7]">
+                                       <div className="flex items-center gap-2">
+                                          <span className="text-[13px] font-bold text-[#1d2327]">Review #{rIdx + 1}: {rev.name}</span>
+                                          <span className="text-[10px] font-bold uppercase bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
+                                             Row {rev.column || 1}
+                                          </span>
+                                       </div>
+                                       <button
+                                          onClick={() => {
+                                             const newList = currentList.filter((_: any, i: number) => i !== rIdx);
+                                             updateSection("testimonials", "list", newList);
+                                          }}
+                                          className="text-[#d63638] hover:opacity-80 p-1 flex items-center gap-1 text-xs font-semibold"
+                                       >
+                                          <Trash2 className="w-4 h-4" />
+                                          Delete
+                                       </button>
+                                    </div>
+
+                                    {/* Quote Text */}
+                                    <div className="space-y-1">
+                                       <label className="text-[10px] font-bold uppercase text-[#50575e]">Review Quote</label>
+                                       <textarea
+                                          rows={2}
+                                          value={rev.quote || ""}
+                                          onChange={(e) => {
+                                             const newList = [...currentList];
+                                             newList[rIdx] = { ...newList[rIdx], quote: e.target.value };
+                                             updateSection("testimonials", "list", newList);
+                                          }}
+                                          className={UI.input}
+                                          placeholder="e.g. Exceptional service and outstanding deliverables."
+                                       />
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                       <div className="space-y-1">
+                                          <label className="text-[10px] font-bold uppercase text-[#50575e]">Client Name</label>
+                                          <input
+                                             type="text"
+                                             value={rev.name || ""}
+                                             onChange={(e) => {
+                                                const newList = [...currentList];
+                                                newList[rIdx] = { ...newList[rIdx], name: e.target.value };
+                                                updateSection("testimonials", "list", newList);
+                                             }}
+                                             className={UI.input + " font-bold"}
+                                             placeholder="e.g. Marcus Vance"
+                                          />
+                                       </div>
+                                       <div className="space-y-1">
+                                          <label className="text-[10px] font-bold uppercase text-[#50575e]">Role / Title</label>
+                                          <input
+                                             type="text"
+                                             value={rev.role || ""}
+                                             onChange={(e) => {
+                                                const newList = [...currentList];
+                                                newList[rIdx] = { ...newList[rIdx], role: e.target.value };
+                                                updateSection("testimonials", "list", newList);
+                                             }}
+                                             className={UI.input}
+                                             placeholder="e.g. VP of Engineering"
+                                          />
+                                       </div>
+                                       <div className="space-y-1">
+                                          <label className="text-[10px] font-bold uppercase text-[#50575e]">Company</label>
+                                          <input
+                                             type="text"
+                                             value={rev.company || ""}
+                                             onChange={(e) => {
+                                                const newList = [...currentList];
+                                                newList[rIdx] = { ...newList[rIdx], company: e.target.value };
+                                                updateSection("testimonials", "list", newList);
+                                             }}
+                                             className={UI.input + " font-bold text-[#2271b1]"}
+                                             placeholder="e.g. FinScale"
+                                          />
+                                       </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-[#e2e4e7]">
+                                       <div className="space-y-1">
+                                          <label className="text-[10px] font-bold uppercase text-[#50575e]">Marquee Row (1, 2, or 3)</label>
+                                          <select
+                                             value={rev.column || 1}
+                                             onChange={(e) => {
+                                                const newList = [...currentList];
+                                                newList[rIdx] = { ...newList[rIdx], column: Number(e.target.value) };
+                                                updateSection("testimonials", "list", newList);
+                                             }}
+                                             className={UI.input + " font-bold"}
+                                          >
+                                             <option value={1}>Row 1 (Scrolls Left)</option>
+                                             <option value={2}>Row 2 (Scrolls Right)</option>
+                                             <option value={3}>Row 3 (Scrolls Left)</option>
+                                          </select>
+                                       </div>
+
+                                       <div className="space-y-1">
+                                          <label className="text-[10px] font-bold uppercase text-[#50575e]">Rating (Stars 1-5)</label>
+                                          <select
+                                             value={rev.rating || 5}
+                                             onChange={(e) => {
+                                                const newList = [...currentList];
+                                                newList[rIdx] = { ...newList[rIdx], rating: Number(e.target.value) };
+                                                updateSection("testimonials", "list", newList);
+                                             }}
+                                             className={UI.input}
+                                          >
+                                             <option value={5}>★★★★★ (5 Stars)</option>
+                                             <option value={4}>★★★★☆ (4 Stars)</option>
+                                             <option value={3}>★★★☆☆ (3 Stars)</option>
+                                          </select>
+                                       </div>
+
+                                       <div className="space-y-1">
+                                          <label className="text-[10px] font-bold uppercase text-[#50575e]">Avatar Badge Color</label>
+                                          <select
+                                             value={rev.avatarBg || "bg-[#0306AC]"}
+                                             onChange={(e) => {
+                                                const newList = [...currentList];
+                                                newList[rIdx] = { ...newList[rIdx], avatarBg: e.target.value };
+                                                updateSection("testimonials", "list", newList);
+                                             }}
+                                             className={UI.input}
+                                          >
+                                             <option value="bg-[#0306AC]">Navy (#0306AC)</option>
+                                             <option value="bg-purple-600">Purple</option>
+                                             <option value="bg-emerald-600">Emerald Green</option>
+                                             <option value="bg-amber-600">Amber / Gold</option>
+                                             <option value="bg-indigo-600">Indigo</option>
+                                             <option value="bg-rose-600">Rose Red</option>
+                                             <option value="bg-cyan-600">Cyan</option>
+                                             <option value="bg-teal-600">Teal</option>
+                                          </select>
+                                       </div>
+                                    </div>
+                                 </div>
+                              );
+                           })}
+                        </div>
                      </div>
                   </div>
                )}
