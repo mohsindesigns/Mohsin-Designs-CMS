@@ -24,10 +24,30 @@ export default function ContentSelector({ type, selectedItems = [], onSelect, la
         const data = await res.json();
 
         let masterList: any[] = [];
-        if (type === "services") masterList = data.services?.services || [];
-        if (type === "projects") masterList = data.portfolio?.projects || [];
-        if (type === "reviews") masterList = data.testimonials?.testimonials || [];
-        if (type === "faq") masterList = data.faq?.items || [];
+        if (type === "services") {
+          if (Array.isArray(data.services?.services) && data.services.services.length > 0) {
+            masterList = data.services.services;
+          } else if (Array.isArray(data.services) && data.services.length > 0) {
+            masterList = data.services;
+          } else if (Array.isArray(data.globalServices) && data.globalServices.length > 0) {
+            masterList = data.globalServices;
+          } else if (Array.isArray(data.services?.list) && data.services.list.length > 0) {
+            masterList = data.services.list;
+          } else {
+            // Default master services
+            masterList = [
+              { id: "srv-1", title: "Custom Web Applications", slug: "custom-web-applications", tagline: "Scalable Full-Stack Engineering", category: "DEVELOPMENT", icon: "Code" },
+              { id: "srv-2", title: "UI/UX & Product Design", slug: "ui-ux-design-architecture", tagline: "Modern High-Converting Interfaces", category: "DESIGN", icon: "Palette" },
+              { id: "srv-3", title: "E-Commerce Systems", slug: "e-commerce-platforms", tagline: "High-Volume Transaction Stores", category: "COMMERCE", icon: "ShoppingCart" },
+              { id: "srv-4", title: "Performance & Technical SEO", slug: "performance-technical-seo", tagline: "Sub-Second Page Load Optimization", category: "OPTIMIZATION", icon: "Zap" },
+              { id: "srv-5", title: "Cloud Architecture & APIs", slug: "full-stack-cloud-development", tagline: "Secure, Distributed Backend Systems", category: "INFRASTRUCTURE", icon: "Server" },
+              { id: "srv-6", title: "Monthly SLA & Maintenance", slug: "dedicated-maintenance-support", tagline: "Continuous Proactive Management", category: "SUPPORT", icon: "ShieldCheck" }
+            ];
+          }
+        }
+        if (type === "projects") masterList = data.portfolio?.projects || data.galleryPage?.projects || [];
+        if (type === "reviews") masterList = data.testimonials?.list || data.testimonials?.testimonials || [];
+        if (type === "faq") masterList = data.faq?.list || data.faq?.items || [];
 
         setItems(masterList);
       } catch (err) {

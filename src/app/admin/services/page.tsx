@@ -224,7 +224,14 @@ export default function ServicesAdminPage() {
   useEffect(() => {
     fetch("/api/content").then(res => res.json()).then(json => {
       setData(json);
-      setServices(json.services?.services || []);
+      const list = Array.isArray(json.services?.services) && json.services.services.length > 0
+        ? json.services.services
+        : (Array.isArray(json.services) && json.services.length > 0
+            ? json.services
+            : (Array.isArray(json.globalServices) && json.globalServices.length > 0
+                ? json.globalServices
+                : (Array.isArray(json.services?.list) && json.services.list.length > 0 ? json.services.list : [])));
+      setServices(list);
     });
   }, []);
 
@@ -237,9 +244,21 @@ export default function ServicesAdminPage() {
 
   const saveToDb = async (newServices: any[], keepEditingIdx?: number, updatedForm?: any) => {
     setSaving(true);
-    const updatedData = { ...data, services: { ...data.services, services: newServices } };
+    const prevServicesObj = (typeof data?.services === 'object' && !Array.isArray(data?.services)) ? data.services : {};
+    const updatedData = {
+      ...data,
+      services: {
+        ...prevServicesObj,
+        services: newServices
+      },
+      globalServices: newServices
+    };
     try {
-      const res = await fetch("/api/content", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(updatedData) });
+      const res = await fetch("/api/content", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedData)
+      });
       if (res.ok) {
         setData(updatedData);
         setServices(newServices);
@@ -253,6 +272,8 @@ export default function ServicesAdminPage() {
         } else {
           setIsEditing(null);
         }
+      } else {
+        setToast({ type: "err", msg: "Failed to save." });
       }
     } catch {
       setToast({ type: "err", msg: "Failed to save." });

@@ -62,11 +62,17 @@ export const useContent = () => {
         hero: getSafe(completeData, 'hero', { headlines: [], description: "", buttons: [], stats: [], images: [] }),
         about: getSafe(completeData, 'about'),
         services: (() => {
-            const s = getSafe(completeData, 'services', { services: [] });
-            // Normalize: if it's already an array, wrap it in the expected object structure
-            const normalized = Array.isArray(s) ? { services: s } : s;
-            if ((!normalized.services || normalized.services.length === 0) && completeData.globalServices) {
-                normalized.services = completeData.globalServices;
+            const s = getSafe(completeData, 'services', {});
+            const normalized = Array.isArray(s) ? { services: s, list: s } : { ...s };
+            if ((!normalized.services || normalized.services.length === 0)) {
+                if (Array.isArray(completeData.globalServices) && completeData.globalServices.length > 0) {
+                    normalized.services = completeData.globalServices;
+                } else if (Array.isArray(normalized.list) && normalized.list.length > 0) {
+                    normalized.services = normalized.list;
+                }
+            }
+            if (!normalized.list || normalized.list.length === 0) {
+                normalized.list = normalized.services || [];
             }
             return normalized;
         })(),

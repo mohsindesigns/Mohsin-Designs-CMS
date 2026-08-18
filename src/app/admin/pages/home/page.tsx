@@ -520,226 +520,107 @@ export default function HomeEditor() {
                   <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">Section 3</span>
                 </div>
 
-                {/* Image Panel */}
-                <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6 shadow-xl">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <ImageIcon className="w-5 h-5 text-primary" />
-                    Right Side Media
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <ImageField
-                      label="Section Image"
-                      value={data.services?.image?.src || ""}
-                      onChange={(url) => {
-                        setData((prev: any) => ({
-                          ...prev,
-                          services: {
-                            ...prev.services,
-                            image: { ...prev.services.image, src: url }
-                          }
-                        }));
-                      }}
-                      altValue={data.services?.image?.alt || ""}
-                      onAltChange={(alt) => {
-                        setData((prev: any) => ({
-                          ...prev,
-                          services: {
-                            ...prev.services,
-                            image: { ...prev.services.image, alt: alt }
-                          }
-                        }));
-                      }}
-                      description="This image appears on the right side of the Services section."
-                    />
-
-                    <div className="space-y-6">
-                      <div className="space-y-3">
-                        <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Floating Image Badge</label>
-                        <input
-                          type="text"
-                          value={data.services?.image?.badge || ""}
-                          onChange={(e) => setData((prev: any) => ({ ...prev, services: { ...prev.services, image: { ...prev.services.image, badge: e.target.value } } }))}
-                          className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all transition-colors"
-                          placeholder="e.g. 🇺🇸 Veteran Owned & Operated"
-                        />
-                      </div>
-                      <div className="space-y-3">
-                        <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Top Badge</label>
-                        <input
-                          type="text"
-                          value={data.services?.badge || ""}
-                          onChange={(e) => updateSection("services", "badge", e.target.value)}
-                          className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all transition-colors"
-                          placeholder="e.g. Our Expertise"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Content Panel */}
-                <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6 shadow-xl">
+                {/* 1. Header Narrative */}
+                <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6 shadow-xl space-y-6">
                   <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                     <Type className="w-5 h-5 text-primary" />
-                    Text Content
+                    1. Section Header Narrative
                   </h3>
 
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
-                      <div className="space-y-2">
-                        <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Headline Prefix</label>
-                        <input
-                          type="text"
-                          value={data.services?.headline?.prefix || ""}
-                          onChange={(e) => setData((prev: any) => ({ ...prev, services: { ...prev.services, headline: { ...prev.services.headline, prefix: e.target.value } } }))}
-                          className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-xs uppercase tracking-widest text-primary font-bold">Highlight</label>
-                        <input
-                          type="text"
-                          value={data.services?.headline?.highlight || ""}
-                          onChange={(e) => setData((prev: any) => ({ ...prev, services: { ...prev.services, headline: { ...prev.services.headline, highlight: e.target.value } } }))}
-                          className="w-full bg-primary/10 border border-primary/30 text-primary font-bold rounded-xl px-4 py-3 text-sm focus:border-primary focus:outline-none"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Headline Suffix</label>
-                        <input
-                          type="text"
-                          value={data.services?.headline?.suffix || ""}
-                          onChange={(e) => setData((prev: any) => ({ ...prev, services: { ...prev.services, headline: { ...prev.services.headline, suffix: e.target.value } } }))}
-                          className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                        />
-                      </div>
-                    </div>
-
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                     <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold flex justify-between">
-                        <span>Description Paragraphs</span>
-                      </label>
-                      <RichTextEditor
-                        content={Array.isArray(data.services?.description) ? data.services.description.join("") : (data.services?.description || "")}
-                        onChange={(v) => updateSection("services", "description", [v])}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Description Highlight Text</label>
+                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Tag (Eyebrow Badge)</label>
                       <input
                         type="text"
-                        value={data.services?.highlightText || ""}
-                        onChange={(e) => updateSection("services", "highlightText", e.target.value)}
+                        value={data.services?.sectionTag || data.services?.badge || ""}
+                        onChange={(e) => updateSection("services", "sectionTag", e.target.value)}
                         className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                        placeholder="e.g. Veteran Owned • Licensed • Bonded & Insured"
+                        placeholder="e.g. OUR SERVICES"
                       />
-                      <p className="text-xs text-slate-500 italic">This text will be displayed with primary highlight styles right below the description paragraphs on the public site.</p>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Title — Intro (Plain)</label>
+                      <input
+                        type="text"
+                        value={data.services?.titleIntro || data.services?.headline?.prefix || ""}
+                        onChange={(e) => updateSection("services", "titleIntro", e.target.value)}
+                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                        placeholder="e.g. What We"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs uppercase tracking-widest text-primary font-bold">Title — Highlight (Italic Accent)</label>
+                      <input
+                        type="text"
+                        value={data.services?.titleHighlight || data.services?.headline?.highlight || ""}
+                        onChange={(e) => updateSection("services", "titleHighlight", e.target.value)}
+                        className="w-full bg-primary/10 border border-primary/30 text-primary font-bold rounded-xl px-4 py-3 text-sm focus:border-primary focus:outline-none"
+                        placeholder="e.g. Deliver."
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Description</label>
+                    <textarea
+                      rows={3}
+                      value={typeof data.services?.description === "string" ? data.services.description : (Array.isArray(data.services?.description) ? data.services.description.join("") : "")}
+                      onChange={(e) => updateSection("services", "description", e.target.value)}
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                      placeholder="Explore our full suite of premium digital services."
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2 border-t border-slate-100">
+                    <div className="space-y-2">
+                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Prev Arrow Label</label>
+                      <input
+                        type="text"
+                        value={data.services?.ariaPrev || ""}
+                        onChange={(e) => updateSection("services", "ariaPrev", e.target.value)}
+                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 text-sm"
+                        placeholder="Previous service"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Next Arrow Label</label>
+                      <input
+                        type="text"
+                        value={data.services?.ariaNext || ""}
+                        onChange={(e) => updateSection("services", "ariaNext", e.target.value)}
+                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 text-sm"
+                        placeholder="Next service"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Card Footer Badge</label>
+                      <input
+                        type="text"
+                        value={data.services?.serviceLabel || ""}
+                        onChange={(e) => updateSection("services", "serviceLabel", e.target.value)}
+                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 text-sm"
+                        placeholder="SERVICE"
+                      />
                     </div>
                   </div>
                 </div>
 
-                {/* Stats Panel */}
-                <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6 shadow-xl">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                {/* 2. Featured Services Carousel Selector */}
+                <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6 shadow-xl space-y-6">
+                  <h3 className="text-lg font-bold text-gray-900 mb-2 flex items-center gap-2">
                     <LayoutTemplate className="w-5 h-5 text-primary" />
-                    Stats Indicators
+                    2. Featured Carousel Services
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {(data.services?.stats || []).map((stat: any, idx: number) => (
-                      <div key={idx} className="bg-gray-50 p-5 rounded-xl border border-gray-100 space-y-4">
-                        <p className="text-xs font-bold text-primary uppercase tracking-widest border-b border-gray-200 pb-2">Stat #{idx + 1}</p>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Value</label>
-                            <input
-                              type="number"
-                              step="0.1"
-                              value={stat.value ?? 0}
-                              onChange={(e) => {
-                                const newStats = [...data.services.stats];
-                                newStats[idx].value = parseFloat(e.target.value);
-                                updateSection("services", "stats", newStats);
-                              }}
-                              className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-900 text-lg font-bold focus:border-primary/50 focus:outline-none"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Suffix</label>
-                            <input
-                              type="text"
-                              value={stat.suffix || ""}
-                              onChange={(e) => {
-                                const newStats = [...data.services.stats];
-                                newStats[idx].suffix = e.target.value;
-                                updateSection("services", "stats", newStats);
-                              }}
-                              className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-900 text-sm focus:border-primary/50 focus:outline-none"
-                              placeholder="e.g. +"
-                            />
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Label</label>
-                          <input
-                            type="text"
-                            value={stat.label || ""}
-                            onChange={(e) => {
-                              const newStats = [...data.services.stats];
-                              newStats[idx].label = e.target.value;
-                              updateSection("services", "stats", newStats);
-                            }}
-                            className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-900 text-sm focus:border-primary/50 focus:outline-none"
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Bottom CTA Panel */}
-                <div className="bg-primary/5 border border-primary/20 rounded-2xl p-6 shadow-xl relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
-                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2 relative z-10">
-                    <ChevronRight className="w-5 h-5 text-primary" />
-                    Bottom Call to Action
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5 relative z-10">
-                    <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Heading</label>
-                      <input
-                        type="text"
-                        value={data.services?.cta?.title || ""}
-                        onChange={(e) => setData((prev: any) => ({ ...prev, services: { ...prev.services, cta: { ...prev.services.cta, title: e.target.value } } }))}
-                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Button Label</label>
-                      <input
-                        type="text"
-                        value={data.services?.cta?.buttonText || ""}
-                        onChange={(e) => setData((prev: any) => ({ ...prev, services: { ...prev.services, cta: { ...prev.services.cta, buttonText: e.target.value } } }))}
-                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                      />
-                    </div>
-                    <div className="space-y-2 md:col-span-2">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Description Text</label>
-                      <RichTextEditor
-                        content={data.services?.cta?.description || ""}
-                        onChange={(v) => setData((prev: any) => ({ ...prev, services: { ...prev.services, cta: { ...prev.services.cta, description: v } } }))}
-                      />
-                    </div>
-                    <div className="space-y-2 md:col-span-2">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Destination Link</label>
-                      <input
-                        type="text"
-                        value={data.services?.cta?.buttonLink || ""}
-                        onChange={(e) => setData((prev: any) => ({ ...prev, services: { ...prev.services, cta: { ...prev.services.cta, buttonLink: e.target.value } } }))}
-                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                      />
-                    </div>
-                  </div>
+                  <p className="text-xs text-gray-500 -mt-3">
+                    Choose which services appear in the interactive horizontal swipe carousel on the homepage.
+                  </p>
+                  
+                  <ContentSelector
+                    type="services"
+                    label="Select & Order Featured Services"
+                    selectedItems={data.services?.list || []}
+                    onSelect={(items) => updateSection("services", "list", items)}
+                  />
                 </div>
               </motion.div>
             )}
