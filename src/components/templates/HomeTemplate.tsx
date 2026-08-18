@@ -22,7 +22,7 @@ import { useContent } from "@/hooks/useContent";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 
 export default function HomeTemplate({ pageData, params }: { pageData?: any, params?: any }) {
-  const { allBlogs, blogSection } = useContent();
+  const { allBlogs, blogSection, faq } = useContent();
   return (
     <div className="relative">
       <Hero />
@@ -52,6 +52,19 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any, par
       </section>
 
 
+
+
+      <section id="faq">
+        <PageInlineFaqs
+          faqs={pageData?.content?.faqs}
+          faqSchemaMarkup={pageData?.content?.faqSchemaMarkup}
+          badge={pageData?.content?.faqBadge}
+          title={pageData?.content?.faqTitleHighlight || pageData?.content?.faqTitle}
+          description={pageData?.content?.faqDescription}
+          data={pageData?.content}
+        />
+      </section>
+
       <BlogSection
         title={pageData?.content?.blogSection?.title || blogSection?.title}
         subtitle={pageData?.content?.blogSection?.subtitle || blogSection?.subtitle}
@@ -59,7 +72,7 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any, par
         posts={allBlogs.filter((p: any) => (pageData?.content?.blogSection?.selectedPosts || []).includes(p._id))}
       />
 
-      <QuickQuote />
+
 
     </div>
   );

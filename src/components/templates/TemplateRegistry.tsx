@@ -35,7 +35,7 @@ export const getTemplate = (name: string) => {
 export const TemplateWrapper = ({ templateName, pageData, params }: any) => {
   const Template = getTemplate(templateName);
 
-  const hasInlineFaqs = !['faq', 'service-detail', 'about', 'service-area', 'services'].includes(templateName) &&
+  const hasInlineFaqs = !['home', 'faq', 'service-detail', 'about', 'service-area', 'services'].includes(templateName) &&
     ((pageData?.content?.faqs && Array.isArray(pageData.content.faqs) && pageData.content.faqs.length > 0) ||
       (pageData?.content?.faqSchemaMarkup && typeof pageData.content.faqSchemaMarkup === 'string' && pageData.content.faqSchemaMarkup.trim()));
 

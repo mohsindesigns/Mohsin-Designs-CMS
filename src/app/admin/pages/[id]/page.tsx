@@ -239,93 +239,217 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
                   pageContent={content}
                 />
               ) : (
-                <div className="p-5 sm:p-6 space-y-6">
+                <div className="p-5 sm:p-6 space-y-8">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#f0f0f1] pb-4">
                     <div>
-                      <h3 className="text-base font-bold text-[#1d2327]">Page-Specific FAQs</h3>
-                      <p className="text-[12px] text-[#646970] mt-0.5">These FAQs will appear at the bottom of this specific page.</p>
+                      <h3 className="text-base font-bold text-[#1d2327]">Page-Specific FAQs & Sticky Strategy Session</h3>
+                      <p className="text-[12px] text-[#646970] mt-0.5">These FAQs and strategy audit box will appear on this page.</p>
                     </div>
                     <button onClick={() => {
                       const currentFaqs = Array.isArray(content.faqs) ? content.faqs : [];
                       const nf = [...currentFaqs];
-                      nf.push({ question: "", answer: "" });
+                      nf.push({ question: "", answer: "", category: "GENERAL" });
                       setContent({ ...content, faqs: nf });
-                    }} className="bg-white border border-[#2271b1] text-[#2271b1] px-3 py-1.5 text-[12px] font-semibold rounded-[3px] hover:bg-[#f0f6fb] transition-colors self-start">+ Add FAQ</button>
+                    }} className="bg-white border border-[#2271b1] text-[#2271b1] px-3.5 py-1.5 text-[12px] font-bold rounded-[3px] hover:bg-[#f0f6fb] transition-colors self-start">+ Add FAQ Question</button>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                    <div className="space-y-1.5">
-                      <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">FAQ Section Badge</label>
-                      <input
-                        type="text"
-                        value={content.faqBadge || ""}
-                        onChange={e => setContent({ ...content, faqBadge: e.target.value })}
-                        placeholder="e.g. Got Questions?"
-                        className="w-full border border-[#c3c4c7] px-3 py-2 text-[14px] rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none bg-white"
-                      />
+                  {/* 1. Header Narrative */}
+                  <div className="space-y-4">
+                    <h4 className="text-[12px] font-bold uppercase tracking-wider text-[#1d2327]">1. Section Header Narrative</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Badge / Tag</label>
+                        <input
+                          type="text"
+                          value={content.faqBadge || content.sectionTag || ""}
+                          onChange={e => setContent({ ...content, faqBadge: e.target.value, sectionTag: e.target.value })}
+                          placeholder="e.g. FREQUENTLY ASKED QUESTIONS"
+                          className="w-full border border-[#c3c4c7] px-3 py-2 text-[14px] rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none bg-white"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Headline Intro (Prefix - Optional)</label>
+                        <input
+                          type="text"
+                          value={content.faqTitleIntro !== undefined ? content.faqTitleIntro : (content.faqTitle ? "" : "")}
+                          onChange={e => setContent({ ...content, faqTitleIntro: e.target.value })}
+                          placeholder="e.g. Common Questions,"
+                          className="w-full border border-[#c3c4c7] px-3 py-2 text-[14px] rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none bg-white"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Headline Highlight / Title</label>
+                        <input
+                          type="text"
+                          value={content.faqTitleHighlight !== undefined ? content.faqTitleHighlight : (content.faqTitle || "")}
+                          onChange={e => setContent({ ...content, faqTitleHighlight: e.target.value, faqTitle: e.target.value })}
+                          placeholder="e.g. Clear Answers"
+                          className="w-full border border-[#2271b1] text-[#2271b1] font-bold px-3 py-2 text-[14px] rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none bg-white"
+                        />
+                      </div>
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">FAQ Section Heading</label>
-                      <input
-                        type="text"
-                        value={content.faqTitle || ""}
-                        onChange={e => setContent({ ...content, faqTitle: e.target.value })}
-                        placeholder="e.g. Frequently Asked Questions"
-                        className="w-full border border-[#c3c4c7] px-3 py-2 text-[14px] rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none bg-white"
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">FAQ Section Description</label>
-                      <input
-                        type="text"
+                      <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Description Subtext</label>
+                      <textarea
+                        rows={2}
                         value={content.faqDescription || ""}
                         onChange={e => setContent({ ...content, faqDescription: e.target.value })}
-                        placeholder="e.g. Answers to common questions..."
+                        placeholder="e.g. Everything you need to know about our modern engineering process, turnaround times, and pricing models."
                         className="w-full border border-[#c3c4c7] px-3 py-2 text-[14px] rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none bg-white"
                       />
                     </div>
                   </div>
 
-                  <div className="space-y-4 pt-2">
-                    <h4 className="text-[12px] font-bold uppercase tracking-wider text-slate-500">Question & Answer List</h4>
+                  {/* 2. Strategy Session Box */}
+                  <div className="space-y-4 pt-4 border-t border-[#f0f0f1]">
+                    <h4 className="text-[12px] font-bold uppercase tracking-wider text-[#1d2327]">2. Sticky Strategy Session Box</h4>
+                    <div className="bg-[#f6f7f7] border border-[#dcdcde] p-4 rounded-[4px] space-y-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-bold uppercase text-[#50575e]">Badge Label</label>
+                          <input
+                            type="text"
+                            value={content.strategyAudit?.badge || "FREE ARCHITECTURE AUDIT"}
+                            onChange={e => setContent({
+                              ...content,
+                              strategyAudit: { ...(content.strategyAudit || {}), badge: e.target.value }
+                            })}
+                            className="w-full border border-[#c3c4c7] px-3 py-1.5 text-[13px] bg-white rounded-[3px]"
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-bold uppercase text-[#50575e]">Card Headline</label>
+                          <input
+                            type="text"
+                            value={content.strategyAudit?.title || "Have a complex custom build in mind?"}
+                            onChange={e => setContent({
+                              ...content,
+                              strategyAudit: { ...(content.strategyAudit || {}), title: e.target.value }
+                            })}
+                            className="w-full border border-[#c3c4c7] px-3 py-1.5 text-[13px] font-bold bg-white rounded-[3px]"
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-bold uppercase text-[#50575e]">Card Description</label>
+                        <textarea
+                          rows={2}
+                          value={content.strategyAudit?.desc || "Book a 30-minute high-level technical strategy session with our lead engineer."}
+                          onChange={e => setContent({
+                            ...content,
+                            strategyAudit: { ...(content.strategyAudit || {}), desc: e.target.value }
+                          })}
+                          className="w-full border border-[#c3c4c7] px-3 py-1.5 text-[13px] bg-white rounded-[3px]"
+                        />
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-bold uppercase text-[#50575e]">CTA Button Text</label>
+                          <input
+                            type="text"
+                            value={content.strategyAudit?.button || "Book Architecture Call"}
+                            onChange={e => setContent({
+                              ...content,
+                              strategyAudit: { ...(content.strategyAudit || {}), button: e.target.value }
+                            })}
+                            className="w-full border border-[#c3c4c7] px-3 py-1.5 text-[13px] bg-white rounded-[3px]"
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-bold uppercase text-[#50575e]">CTA Button Link</label>
+                          <input
+                            type="text"
+                            value={content.strategyAudit?.href || "#contact"}
+                            onChange={e => setContent({
+                              ...content,
+                              strategyAudit: { ...(content.strategyAudit || {}), href: e.target.value }
+                            })}
+                            className="w-full border border-[#c3c4c7] px-3 py-1.5 text-[13px] bg-white rounded-[3px]"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 3. Question & Answer Accordion List */}
+                  <div className="space-y-4 pt-4 border-t border-[#f0f0f1]">
+                    <div className="flex justify-between items-center">
+                      <h4 className="text-[12px] font-bold uppercase tracking-wider text-[#1d2327]">3. Question & Answer List (Accordion)</h4>
+                      <button onClick={() => {
+                        const currentFaqs = Array.isArray(content.faqs) ? content.faqs : [];
+                        const nf = [...currentFaqs];
+                        nf.push({ question: "", answer: "", category: "GENERAL" });
+                        setContent({ ...content, faqs: nf });
+                      }} className="text-[#2271b1] text-xs font-bold hover:underline">+ Add FAQ</button>
+                    </div>
+
                     {(!content.faqs || content.faqs.length === 0) ? (
-                      <div className="text-[13px] text-[#646970] italic bg-[#f6f7f7] p-6 text-center border border-dashed border-[#c3c4c7] rounded-[3px]">No FAQs added for this page yet. Click "+ Add FAQ" above to start.</div>
+                      <div className="text-[13px] text-[#646970] italic bg-[#f6f7f7] p-6 text-center border border-dashed border-[#c3c4c7] rounded-[3px]">
+                        No custom FAQs added for this page yet. It will use the default global FAQ items. Click "+ Add FAQ Question" to create page-specific ones.
+                      </div>
                     ) : (
-                      <div className="space-y-5">
-                         {content.faqs.map((faq: any, idx: number) => (
-                          <div key={idx} className="bg-white border border-[#c3c4c7] p-5 rounded-[4px] shadow-sm hover:shadow-md transition-all space-y-4 relative">
-                            <div className="flex justify-between items-start gap-4">
-                              <div className="flex-1 space-y-4">
-                                <div className="space-y-4">
-                                  <div className="space-y-1">
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase">Question {idx + 1}</span>
-                                    <RichTextEditor
-                                      content={faq.question || ""}
-                                      onChange={(val) => {
-                                        const nf = [...content.faqs];
-                                        nf[idx].question = val;
-                                        setContent({ ...content, faqs: nf });
-                                      }}
-                                      placeholder="Question"
-                                    />
-                                  </div>
-                                  <div className="space-y-1">
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase">Answer {idx + 1}</span>
-                                    <RichTextEditor
-                                      content={faq.answer || ""}
-                                      onChange={(val) => {
-                                        const nf = [...content.faqs];
-                                        nf[idx].answer = val;
-                                        setContent({ ...content, faqs: nf });
-                                      }}
-                                      placeholder="Answer"
-                                    />
-                                  </div>
-                                </div>
+                      <div className="space-y-4">
+                        {content.faqs.map((faq: any, idx: number) => (
+                          <div key={idx} className="bg-white border border-[#c3c4c7] p-4 sm:p-5 rounded-[4px] shadow-sm space-y-3 relative">
+                            <div className="flex justify-between items-center pb-2 border-b border-[#e2e4e7]">
+                              <div className="flex items-center gap-2">
+                                <span className="font-mono text-xs font-black text-[#2271b1]">#{String(idx + 1).padStart(2, "0")}</span>
+                                <span className="text-[12px] font-bold text-[#1d2327]">Question {idx + 1}</span>
                               </div>
-                              <button onClick={() => {
-                                setContent({ ...content, faqs: content.faqs.filter((_: any, i: number) => i !== idx) });
-                              }} className="text-[#d63638] hover:bg-red-50 p-1.5 rounded-[3px] transition-colors self-start mt-5" title="Delete FAQ Item"><Trash2 className="w-4 h-4" /></button>
+                              <button
+                                onClick={() => {
+                                  setContent({ ...content, faqs: content.faqs.filter((_: any, i: number) => i !== idx) });
+                                }}
+                                className="text-[#d63638] hover:bg-red-50 p-1 rounded text-xs font-semibold flex items-center gap-1"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" /> Delete
+                              </button>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                              <div className="space-y-1">
+                                <label className="text-[10px] font-bold uppercase text-[#50575e]">Category Tag</label>
+                                <input
+                                  type="text"
+                                  value={faq.category || "GENERAL"}
+                                  onChange={e => {
+                                    const nf = [...content.faqs];
+                                    nf[idx].category = e.target.value;
+                                    setContent({ ...content, faqs: nf });
+                                  }}
+                                  placeholder="e.g. PRICING"
+                                  className="w-full border border-[#c3c4c7] px-2.5 py-1.5 text-xs font-mono font-bold uppercase rounded-[3px] bg-white"
+                                />
+                              </div>
+                              <div className="space-y-1 sm:col-span-3">
+                                <label className="text-[10px] font-bold uppercase text-[#50575e]">Question Headline</label>
+                                <input
+                                  type="text"
+                                  value={faq.question || ""}
+                                  onChange={e => {
+                                    const nf = [...content.faqs];
+                                    nf[idx].question = e.target.value;
+                                    setContent({ ...content, faqs: nf });
+                                  }}
+                                  placeholder="e.g. What is your typical project timeline?"
+                                  className="w-full border border-[#c3c4c7] px-3 py-1.5 text-sm font-bold rounded-[3px] bg-white"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-bold uppercase text-[#50575e]">Answer Content</label>
+                              <textarea
+                                rows={3}
+                                value={faq.answer || ""}
+                                onChange={e => {
+                                  const nf = [...content.faqs];
+                                  nf[idx].answer = e.target.value;
+                                  setContent({ ...content, faqs: nf });
+                                }}
+                                placeholder="Write clear, detailed answer here..."
+                                className="w-full border border-[#c3c4c7] px-3 py-2 text-xs leading-relaxed rounded-[3px] bg-white"
+                              />
                             </div>
                           </div>
                         ))}
@@ -333,6 +457,7 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
                     )}
                   </div>
 
+                  {/* 4. Schema Markup */}
                   <div className="pt-5 border-t border-[#c3c4c7] space-y-2">
                     <label className="text-[13px] font-bold text-[#1d2327]">FAQ Schema Markup (Bulk JSON-LD)</label>
                     <p className="text-[12px] text-[#646970] mt-0.5">Paste a single JSON-LD schema block covering all FAQs for this page.</p>
@@ -340,7 +465,7 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
                       value={content.faqSchemaMarkup || ""}
                       onChange={e => setContent({ ...content, faqSchemaMarkup: e.target.value })}
                       className="w-full border border-[#c3c4c7] px-3 py-2 text-[13px] font-mono rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
-                      rows={8}
+                      rows={6}
                       placeholder='e.g. {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [...]}'
                     />
                   </div>

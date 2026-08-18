@@ -217,11 +217,7 @@ export const useContent = () => {
                 hubs: Array.isArray(raw.hubs) && raw.hubs.length > 0 ? raw.hubs : defaults.hubs
             };
         })(),
-        faq: getSafe(completeData, 'faq', {
-            section: { badge: "", headline: "", title: "", description: "" },
-            categories: [],
-            items: []
-        }),
+
         quote: getSafe(completeData, 'quote', {
             section: { badge: "", headline: "", description: "" },
             services: [],
@@ -285,6 +281,64 @@ export const useContent = () => {
         serviceDetailPage: getSafe(completeData, 'serviceDetailPage'),
         settings: completeData?.settings || { siteTitle: "Mohsin Designs", siteTemplate: "%s | Mohsin Designs", favicon: "/mohsin-logo.png" },
         faqPage: getSafe(completeData, 'faqPage'),
+        faq: (() => {
+            const raw = getSafe(completeData, 'faq', {});
+            const defaults = {
+                sectionTag: "FREQUENTLY ASKED QUESTIONS",
+                titleIntro: "Common Questions,",
+                titleHighlight: "Clear Answers",
+                description: "Everything you need to know about our modern engineering process, turnaround times, and pricing models.",
+                strategyAudit: {
+                    badge: "FREE ARCHITECTURE AUDIT",
+                    title: "Have a complex custom build in mind?",
+                    desc: "Book a 30-minute high-level technical strategy session with our lead engineer.",
+                    button: "Book Architecture Call",
+                    href: "#contact"
+                },
+                list: [
+                    {
+                        question: "What is your typical project timeline?",
+                        answer: "Most custom web applications, high-converting marketing sites, and bespoke CMS builds launch within 2 to 4 weeks depending on scope and integrations.",
+                        category: "TIMELINE & PROCESS"
+                    },
+                    {
+                        question: "How do you handle ongoing maintenance and support?",
+                        answer: "We offer dedicated monthly SLA maintenance packages covering continuous security patches, performance audits, technical SEO adjustments, and feature iterations.",
+                        category: "SUPPORT & SLA"
+                    },
+                    {
+                        question: "Do you build custom CMS integrations?",
+                        answer: "Yes! We specialize in lightweight, lightning-fast custom CMS dashboards tailored strictly to your team's workflow without bloating the codebase.",
+                        category: "ENGINEERING"
+                    },
+                    {
+                        question: "What tech stack do you recommend for high-scale apps?",
+                        answer: "Our primary stack centers on Next.js (App Router), TypeScript, Tailwind CSS / Vanilla CSS, Framer Motion, and scalable MongoDB or PostgreSQL architectures.",
+                        category: "TECHNOLOGY"
+                    },
+                    {
+                        question: "How does the pricing and billing structure work?",
+                        answer: "We operate on fixed-price milestone deliverables for well-defined scopes and transparent weekly sprints for fast-moving agile product development.",
+                        category: "PRICING"
+                    }
+                ]
+            };
+            return {
+                ...defaults,
+                ...raw,
+                sectionTag: raw.sectionTag || raw.section?.badge || defaults.sectionTag,
+                titleIntro: raw.titleIntro || raw.section?.headlinePrefix || defaults.titleIntro,
+                titleHighlight: raw.titleHighlight || raw.section?.headlineHighlight || defaults.titleHighlight,
+                description: raw.description || raw.section?.description || defaults.description,
+                strategyAudit: {
+                    ...defaults.strategyAudit,
+                    ...(raw.strategyAudit || {})
+                },
+                list: (Array.isArray(raw.list) && raw.list.length > 0)
+                    ? raw.list
+                    : (Array.isArray(raw.items) && raw.items.length > 0 ? raw.items : defaults.list)
+            };
+        })(),
         blogSection: (() => {
             const raw = getSafe(completeData, 'blogSection', {});
             const defaults = {
