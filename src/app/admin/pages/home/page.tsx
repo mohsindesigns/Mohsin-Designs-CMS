@@ -7,7 +7,7 @@ import Link from "next/link";
 import ImageField from "@/components/admin/ImageField";
 import ContentSelector from "@/components/admin/ContentSelector";
 import dynamic from "next/dynamic";
-const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), { 
+const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
   ssr: false,
   loading: () => <div className="h-64 bg-[#f6f7f7] animate-pulse border border-[#c3c4c7] rounded-sm flex items-center justify-center text-[#8c8f94] text-xs">Loading Rich Text Editor...</div>
 });
@@ -135,7 +135,7 @@ export default function HomeEditor() {
                 <h2 className="text-2xl font-extrabold text-slate-900 mb-8 border-b border-slate-100 pb-6">Hero Section</h2>
 
                 {/* Background Image */}
-                <ImageField 
+                <ImageField
                   label="Background Image"
                   value={data.hero?.images?.[0] || ""}
                   onChange={(url) => {
@@ -162,9 +162,9 @@ export default function HomeEditor() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs uppercase tracking-wider text-slate-500 font-bold">Description</label>
-                    <RichTextEditor 
-                      content={data.hero?.description || ""} 
-                      onChange={(v) => updateSection("hero", "description", v)} 
+                    <RichTextEditor
+                      content={data.hero?.description || ""}
+                      onChange={(v) => updateSection("hero", "description", v)}
                     />
                   </div>
                 </div>
@@ -314,16 +314,16 @@ export default function HomeEditor() {
 
                 {/* Image Selection */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <ImageField 
+                  <ImageField
                     label="Left Side Image"
                     value={data.about?.image?.src || ""}
                     onChange={(url) => {
-                      setData((prev: any) => ({ 
-                        ...prev, 
-                        about: { 
-                          ...prev.about, 
-                          image: { ...prev.about.image, src: url } 
-                        } 
+                      setData((prev: any) => ({
+                        ...prev,
+                        about: {
+                          ...prev.about,
+                          image: { ...prev.about.image, src: url }
+                        }
                       }));
                     }}
                     altValue={data.about?.image?.alt || ""}
@@ -400,9 +400,9 @@ export default function HomeEditor() {
                 <div className="space-y-4 pt-4 border-t border-gray-200">
                   <div className="space-y-2">
                     <label className="text-xs uppercase tracking-wider text-slate-500 font-bold">Description</label>
-                    <RichTextEditor 
-                      content={data.about?.description || ""} 
-                      onChange={(v) => updateSection("about", "description", v)} 
+                    <RichTextEditor
+                      content={data.about?.description || ""}
+                      onChange={(v) => updateSection("about", "description", v)}
                     />
                   </div>
                   <div className="space-y-2">
@@ -522,16 +522,16 @@ export default function HomeEditor() {
                     Right Side Media
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <ImageField 
+                    <ImageField
                       label="Section Image"
                       value={data.services?.image?.src || ""}
                       onChange={(url) => {
-                        setData((prev: any) => ({ 
-                          ...prev, 
-                          services: { 
-                            ...prev.services, 
-                            image: { ...prev.services.image, src: url } 
-                          } 
+                        setData((prev: any) => ({
+                          ...prev,
+                          services: {
+                            ...prev.services,
+                            image: { ...prev.services.image, src: url }
+                          }
                         }));
                       }}
                       altValue={data.services?.image?.alt || ""}
@@ -614,9 +614,9 @@ export default function HomeEditor() {
                       <label className="text-xs uppercase tracking-widest text-gray-500 font-bold flex justify-between">
                         <span>Description Paragraphs</span>
                       </label>
-                      <RichTextEditor 
-                        content={Array.isArray(data.services?.description) ? data.services.description.join("") : (data.services?.description || "")} 
-                        onChange={(v) => updateSection("services", "description", [v])} 
+                      <RichTextEditor
+                        content={Array.isArray(data.services?.description) ? data.services.description.join("") : (data.services?.description || "")}
+                        onChange={(v) => updateSection("services", "description", [v])}
                       />
                     </div>
 
@@ -720,9 +720,9 @@ export default function HomeEditor() {
                     </div>
                     <div className="space-y-2 md:col-span-2">
                       <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Description Text</label>
-                      <RichTextEditor 
-                        content={data.services?.cta?.description || ""} 
-                        onChange={(v) => setData((prev: any) => ({ ...prev, services: { ...prev.services, cta: { ...prev.services.cta, description: v } } }))} 
+                      <RichTextEditor
+                        content={data.services?.cta?.description || ""}
+                        onChange={(v) => setData((prev: any) => ({ ...prev, services: { ...prev.services, cta: { ...prev.services.cta, description: v } } }))}
                       />
                     </div>
                     <div className="space-y-2 md:col-span-2">
@@ -763,38 +763,38 @@ export default function HomeEditor() {
                         placeholder="e.g. OUR LEADERSHIP"
                       />
                     </div>
-                     <div className="space-y-2">
-                       <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Heading — Prefix (plain text)</label>
-                       <input
-                         type="text"
-                         value={data.testimonials?.section?.headlinePrefix || ""}
-                         onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...prev.testimonials, section: { ...prev.testimonials.section, headlinePrefix: e.target.value } } }))}
-                         className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                       />
-                     </div>
-                     <div className="space-y-2">
-                       <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Heading — Highlight (primary color)</label>
-                       <input
-                         type="text"
-                         value={data.leadership?.section?.headlineHighlight || ""}
-                         onChange={(e) => setData((prev: any) => ({ ...prev, leadership: { ...prev.leadership, section: { ...prev.leadership.section, headlineHighlight: e.target.value } } }))}
-                         className="w-full bg-white border border-primary/30 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all font-bold"
-                       />
-                     </div>
-                     <div className="space-y-2">
-                       <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Heading — Suffix (plain text)</label>
-                       <input
-                         type="text"
-                         value={data.leadership?.section?.headlineSuffix || ""}
-                         onChange={(e) => setData((prev: any) => ({ ...prev, leadership: { ...prev.leadership, section: { ...prev.leadership.section, headlineSuffix: e.target.value } } }))}
-                         className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                       />
-                     </div>
+                    <div className="space-y-2">
+                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Heading — Prefix (plain text)</label>
+                      <input
+                        type="text"
+                        value={data.testimonials?.section?.headlinePrefix || ""}
+                        onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...prev.testimonials, section: { ...prev.testimonials.section, headlinePrefix: e.target.value } } }))}
+                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Heading — Highlight (primary color)</label>
+                      <input
+                        type="text"
+                        value={data.leadership?.section?.headlineHighlight || ""}
+                        onChange={(e) => setData((prev: any) => ({ ...prev, leadership: { ...prev.leadership, section: { ...prev.leadership.section, headlineHighlight: e.target.value } } }))}
+                        className="w-full bg-white border border-primary/30 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all font-bold"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Heading — Suffix (plain text)</label>
+                      <input
+                        type="text"
+                        value={data.leadership?.section?.headlineSuffix || ""}
+                        onChange={(e) => setData((prev: any) => ({ ...prev, leadership: { ...prev.leadership, section: { ...prev.leadership.section, headlineSuffix: e.target.value } } }))}
+                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                      />
+                    </div>
                     <div className="space-y-2 md:col-span-2">
                       <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Paragraph</label>
-                      <RichTextEditor 
-                        content={data.leadership?.section?.description || ""} 
-                        onChange={(v) => setData((prev: any) => ({ ...prev, leadership: { ...prev.leadership, section: { ...prev.leadership.section, description: v } } }))} 
+                      <RichTextEditor
+                        content={data.leadership?.section?.description || ""}
+                        onChange={(v) => setData((prev: any) => ({ ...prev, leadership: { ...prev.leadership, section: { ...prev.leadership.section, description: v } } }))}
                       />
                     </div>
                   </div>
@@ -808,7 +808,7 @@ export default function HomeEditor() {
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
-                      <ImageField 
+                      <ImageField
                         label="Leader Portrait"
                         value={data.leadership?.ceo?.image?.src || ""}
                         onChange={(url) => {
@@ -899,19 +899,19 @@ export default function HomeEditor() {
                         <span>Founder Quotes</span>
                         <span className="text-gray-400 lowercase font-normal italic">Hit enter for a new quote</span>
                       </label>
-                       <RichTextEditor 
-                         content={Array.isArray(data.leadership?.ceo?.quotes) ? data.leadership.ceo.quotes.join("") : (data.leadership?.ceo?.quotes || "")} 
-                         onChange={(v) => setData((prev: any) => ({ ...prev, leadership: { ...prev.leadership, ceo: { ...prev.leadership.ceo, quotes: [v] } } }))} 
-                       />
+                      <RichTextEditor
+                        content={Array.isArray(data.leadership?.ceo?.quotes) ? data.leadership.ceo.quotes.join("") : (data.leadership?.ceo?.quotes || "")}
+                        onChange={(v) => setData((prev: any) => ({ ...prev, leadership: { ...prev.leadership, ceo: { ...prev.leadership.ceo, quotes: [v] } } }))}
+                      />
                     </div>
 
                     <div className="space-y-2">
                       <label className="text-xs uppercase tracking-widest text-gray-500 font-bold flex justify-between">
                         <span>Complete Description</span>
                       </label>
-                      <RichTextEditor 
-                        content={Array.isArray(data.leadership?.ceo?.description) ? data.leadership.ceo.description.join("") : (data.leadership?.ceo?.description || "")} 
-                        onChange={(v) => setData((prev: any) => ({ ...prev, leadership: { ...prev.leadership, ceo: { ...prev.leadership.ceo, description: [v] } } }))} 
+                      <RichTextEditor
+                        content={Array.isArray(data.leadership?.ceo?.description) ? data.leadership.ceo.description.join("") : (data.leadership?.ceo?.description || "")}
+                        onChange={(v) => setData((prev: any) => ({ ...prev, leadership: { ...prev.leadership, ceo: { ...prev.leadership.ceo, description: [v] } } }))}
                       />
                     </div>
                   </div>
@@ -1054,536 +1054,716 @@ export default function HomeEditor() {
                         placeholder="e.g. Masterpieces"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Description</label>
-                      <textarea
-                        value={data.portfolio?.description || ""}
-                        onChange={(e) => setData((prev: any) => ({ ...prev, portfolio: { ...prev.portfolio, description: e.target.value } }))}
-                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all min-h-[80px]"
-                        placeholder="e.g. A detailed look at some of our premium agency projects..."
-                      />
-                    </div>
+                    <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Description</label>
+                    <textarea
+                      value={data.portfolio?.description || ""}
+                      onChange={(e) => setData((prev: any) => ({ ...prev, portfolio: { ...prev.portfolio, description: e.target.value } }))}
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all min-h-[80px]"
+                      placeholder="e.g. A detailed look at some of our premium agency projects..."
+                    />
                   </div>
                 </div>
 
-                {/* Work Selector Panel */}
-                <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6 shadow-xl">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <ImageIcon className="w-5 h-5 text-primary" />
-                    Work Selection
-                  </h3>
-                  <ContentSelector
-                    type="projects"
-                    label="Featured Projects"
-                    selectedItems={data.portfolio?.projects || []}
-                    onSelect={(items) => setData((prev: any) => ({
-                      ...prev,
-                      portfolio: {
-                        ...prev.portfolio,
-                        projects: items
-                      }
-                    }))}
+        {/* Filter Categories Manager */}
+        <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6 shadow-xl space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+            <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+              <LayoutTemplate className="w-5 h-5 text-primary" />
+              Filter Categories (Tabs)
+            </h3>
+            <button
+              type="button"
+              onClick={() => {
+                const currentCats = data.portfolio?.categories || [
+                  { id: "all", label: "All Work", iconName: "LayoutGrid" },
+                  { id: "design", label: "UX/UI Design", iconName: "Paintbrush" },
+                  { id: "dev", label: "Development", iconName: "Monitor" },
+                  { id: "marketing", label: "Marketing", iconName: "TrendingUp" }
+                ];
+                const newId = `category-${Date.now()}`;
+                setData((prev: any) => ({
+                  ...prev,
+                  portfolio: {
+                    ...prev.portfolio,
+                    categories: [
+                      ...currentCats,
+                      { id: newId, label: "New Category", iconName: "Award" }
+                    ]
+                  }
+                }));
+              }}
+              className="bg-primary/15 text-primary border border-primary/20 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-primary/20 transition-all flex items-center gap-1 cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Add Filter Tab
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            {(data.portfolio?.categories || [
+              { id: "all", label: "All Work", iconName: "LayoutGrid" },
+              { id: "design", label: "UX/UI Design", iconName: "Paintbrush" },
+              { id: "dev", label: "Development", iconName: "Monitor" },
+              { id: "marketing", label: "Marketing", iconName: "TrendingUp" }
+            ]).map((cat: any, cIdx: number) => (
+              <div key={cIdx} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center bg-slate-50 p-4 rounded-xl border border-slate-200/50">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tab Label / Name</label>
+                  <input
+                    type="text"
+                    value={cat.label || ""}
+                    disabled={cat.id === "all"}
+                    onChange={(e) => {
+                      const currentCats = [...(data.portfolio?.categories || [
+                        { id: "all", label: "All Work", iconName: "LayoutGrid" },
+                        { id: "design", label: "UX/UI Design", iconName: "Paintbrush" },
+                        { id: "dev", label: "Development", iconName: "Monitor" },
+                        { id: "marketing", label: "Marketing", iconName: "TrendingUp" }
+                      ])];
+                      currentCats[cIdx] = { ...currentCats[cIdx], label: e.target.value };
+                      setData((prev: any) => ({ ...prev, portfolio: { ...prev.portfolio, categories: currentCats } }));
+                    }}
+                    className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-slate-900 text-sm focus:border-primary focus:outline-none"
+                    placeholder="e.g. UX/UI Design"
                   />
                 </div>
-              </motion.div>
-            )}
 
-            {activeTab === "testimonials" && (
-              <motion.div key="testimonials" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
-                <div className="flex items-center justify-between border-b border-gray-200 pb-4">
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-900">Testimonials Section</h2>
-                    <p className="text-gray-500 text-sm mt-1">Configure the headers and stats for the reviews section. (To add/remove actual reviews, use the Reviews sidebar tab).</p>
-                  </div>
-                  <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">Section 6</span>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Unique Filter ID (Slug)</label>
+                  <input
+                    type="text"
+                    value={cat.id || ""}
+                    disabled={cat.id === "all"}
+                    onChange={(e) => {
+                      const currentCats = [...(data.portfolio?.categories || [
+                        { id: "all", label: "All Work", iconName: "LayoutGrid" },
+                        { id: "design", label: "UX/UI Design", iconName: "Paintbrush" },
+                        { id: "dev", label: "Development", iconName: "Monitor" },
+                        { id: "marketing", label: "Marketing", iconName: "TrendingUp" }
+                      ])];
+                      currentCats[cIdx] = { ...currentCats[cIdx], id: e.target.value.toLowerCase().replace(/[^a-z0-9-_]/g, '') };
+                      setData((prev: any) => ({ ...prev, portfolio: { ...prev.portfolio, categories: currentCats } }));
+                    }}
+                    className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-slate-900 text-sm focus:border-primary focus:outline-none"
+                    placeholder="e.g. design"
+                  />
                 </div>
 
-                {/* Intro Panel */}
-                <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6 shadow-xl">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <Type className="w-5 h-5 text-primary" />
-                    Section Headers
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Badge</label>
-                      <input
-                        type="text"
-                        value={data.testimonials?.section?.badge || ""}
-                        onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...prev.testimonials, section: { ...prev.testimonials.section, badge: e.target.value } } }))}
-                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                        placeholder="e.g. TESTIMONIALS"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Heading — Prefix (plain text)</label>
-                      <input
-                        type="text"
-                        value={data.testimonials?.section?.headlinePrefix || ""}
-                        onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...prev.testimonials, section: { ...prev.testimonials.section, headlinePrefix: e.target.value } } }))}
-                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all mb-4"
-                      />
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Heading — Highlight (primary color)</label>
-                      <input
-                        type="text"
-                        value={data.testimonials?.section?.headlineHighlight || ""}
-                        onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...prev.testimonials, section: { ...prev.testimonials.section, headlineHighlight: e.target.value } } }))}
-                        className="w-full bg-white border border-primary/30 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all font-bold mb-4"
-                      />
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Heading — Suffix (plain text)</label>
-                      <input
-                        type="text"
-                        value={data.testimonials?.section?.headlineSuffix || ""}
-                        onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...prev.testimonials, section: { ...prev.testimonials.section, headlineSuffix: e.target.value } } }))}
-                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                      />
-                    </div>
-                    <div className="space-y-2 md:col-span-2">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Paragraph</label>
-                      <RichTextEditor 
-                        content={data.testimonials?.section?.description || ""} 
-                        onChange={(v) => setData((prev: any) => ({ ...prev, testimonials: { ...prev.testimonials, section: { ...prev.testimonials.section, description: v } } }))} 
-                      />
-                    </div>
-                  </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tab Icon</label>
+                  <select
+                    value={cat.iconName || "Award"}
+                    disabled={cat.id === "all"}
+                    onChange={(e) => {
+                      const currentCats = [...(data.portfolio?.categories || [
+                        { id: "all", label: "All Work", iconName: "LayoutGrid" },
+                        { id: "design", label: "UX/UI Design", iconName: "Paintbrush" },
+                        { id: "dev", label: "Development", iconName: "Monitor" },
+                        { id: "marketing", label: "Marketing", iconName: "TrendingUp" }
+                      ])];
+                      currentCats[cIdx] = { ...currentCats[cIdx], iconName: e.target.value };
+                      setData((prev: any) => ({ ...prev, portfolio: { ...prev.portfolio, categories: currentCats } }));
+                    }}
+                    className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-slate-900 text-sm focus:border-primary focus:outline-none"
+                  >
+                    {["LayoutGrid", "Paintbrush", "Search", "Monitor", "BarChart3", "TrendingUp", "Users", "Shield", "Droplet", "Home", "Zap", "Award"].map((icon) => (
+                      <option key={icon} value={icon}>{icon}</option>
+                    ))}
+                  </select>
                 </div>
 
-                {/* Stats Panel */}
-                <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6 shadow-xl">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <Star className="w-5 h-5 text-primary" />
-                    Bottom Highlights & Stats
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Featured Platform Text (Next to Google Icon)</label>
-                      <input
-                        type="text"
-                        value={data.testimonials?.section?.featured || ""}
-                        onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...prev.testimonials, section: { ...prev.testimonials.section, featured: e.target.value } } }))}
-                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                        placeholder="e.g. 5.0 Rating on Google"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Subscribers / Customer Count</label>
-                      <input
-                        type="text"
-                        value={data.testimonials?.stats?.subscribers || ""}
-                        onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...prev.testimonials, stats: { ...prev.testimonials.stats, subscribers: e.target.value } } }))}
-                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                        placeholder="e.g. 500+ Satisfied Customers"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-            {activeTab === "whyChooseUs" && (
-              <motion.div key="whyChooseUs" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
-                <div className="flex items-center justify-between border-b border-gray-200 pb-4">
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-900">Why Choose Us</h2>
-                    <p className="text-gray-500 text-sm mt-1">Manage the features, stats, and the big call-to-action banner.</p>
-                  </div>
-                  <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">Section 7</span>
-                </div>
-
-                {/* Section Headers */}
-                <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">Section Headers</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Badge</label>
-                      <input
-                        type="text"
-                        value={data.whyChooseUs?.section?.badge || ""}
-                        onChange={(e) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, section: { ...prev.whyChooseUs.section, badge: e.target.value } } }))}
-                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Headline</label>
-                      <input
-                        type="text"
-                        value={data.whyChooseUs?.section?.headline || ""}
-                        onChange={(e) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, section: { ...prev.whyChooseUs.section, headline: e.target.value } } }))}
-                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                      />
-                    </div>
-                    <div className="space-y-2 md:col-span-2">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Description</label>
-                      <RichTextEditor 
-                        content={data.whyChooseUs?.section?.description || ""} 
-                        onChange={(v) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, section: { ...prev.whyChooseUs.section, description: v } } }))} 
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Features (Cards) */}
-                <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-bold text-gray-900">Feature Cards</h3>
+                <div className="flex justify-end pt-4 md:pt-0">
+                  {cat.id !== "all" ? (
                     <button
+                      type="button"
                       onClick={() => {
-                        const newFeatures = [...(data.whyChooseUs?.features || []), { title: "New Feature", description: "Description...", icon: "CheckCircle2" }];
+                        const currentCats = (data.portfolio?.categories || [
+                          { id: "all", label: "All Work", iconName: "LayoutGrid" },
+                          { id: "design", label: "UX/UI Design", iconName: "Paintbrush" },
+                          { id: "dev", label: "Development", iconName: "Monitor" },
+                          { id: "marketing", label: "Marketing", iconName: "TrendingUp" }
+                        ]).filter((_: any, i: number) => i !== cIdx);
+                        setData((prev: any) => ({ ...prev, portfolio: { ...prev.portfolio, categories: currentCats } }));
+                      }}
+                      className="text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100 p-2.5 rounded-xl border border-red-100 transition-all flex items-center gap-1 text-xs font-bold cursor-pointer"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Delete Tab
+                    </button>
+                  ) : (
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-slate-200/50 px-3 py-1.5 rounded-lg border border-slate-200">Default All</span>
+                  )}
+                </div>
+
+                {/* Bidirectional Project Assignment Checklist */}
+                {cat.id !== "all" && (
+                  <div className="col-span-1 md:col-span-4 mt-2 border-t border-slate-200/40 pt-2 space-y-2">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Assigned Projects for this Filter:</label>
+                    <div className="flex flex-wrap gap-2">
+                      {(data.portfolio?.projects || []).map((project: any, pIdx: number) => {
+                        const isAssigned = Array.isArray(project.categories)
+                          ? project.categories.includes(cat.id)
+                          : (project.category && project.category.toLowerCase() === cat.id);
+                        return (
+                          <label key={pIdx} className="flex items-center gap-1.5 bg-white border border-slate-200/60 hover:border-slate-300 pl-2.5 pr-3 py-1 rounded-xl text-xs font-semibold cursor-pointer select-none shadow-xs">
+                            <input
+                              type="checkbox"
+                              checked={isAssigned}
+                              onChange={(e) => {
+                                const updatedProjects = [...(data.portfolio?.projects || [])];
+                                const proj = { ...updatedProjects[pIdx] };
+                                const cats = Array.isArray(proj.categories) ? [...proj.categories] : (proj.category ? [proj.category.toLowerCase()] : []);
+                                if (e.target.checked) {
+                                  if (!cats.includes(cat.id)) cats.push(cat.id);
+                                } else {
+                                  const index = cats.indexOf(cat.id);
+                                  if (index > -1) cats.splice(index, 1);
+                                }
+                                proj.categories = cats;
+                                updatedProjects[pIdx] = proj;
+                                setData((prev: any) => ({
+                                  ...prev,
+                                  portfolio: {
+                                    ...prev.portfolio,
+                                    projects: updatedProjects
+                                  }
+                                }));
+                              }}
+                              className="w-3.5 h-3.5 border-[#8c8f94] rounded-[3px]"
+                            />
+                            {project.title || "Untitled Project"}
+                          </label>
+                        );
+                      })}
+                      {(!data.portfolio?.projects || data.portfolio.projects.length === 0) && (
+                        <p className="text-xs text-slate-400 italic">No projects found. Add projects first in the Projects module.</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Work Selector Panel */}
+        <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6 shadow-xl">
+          <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <ImageIcon className="w-5 h-5 text-primary" />
+            Work Selection
+          </h3>
+          <ContentSelector
+            type="projects"
+            label="Featured Projects"
+            selectedItems={data.portfolio?.projects || []}
+            onSelect={(items) => setData((prev: any) => ({
+              ...prev,
+              portfolio: {
+                ...prev.portfolio,
+                projects: items
+              }
+            }))}
+          />
+        </div>
+      </motion.div>
+            )}
+
+      {activeTab === "testimonials" && (
+        <motion.div key="testimonials" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
+          <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Testimonials Section</h2>
+              <p className="text-gray-500 text-sm mt-1">Configure the headers and stats for the reviews section. (To add/remove actual reviews, use the Reviews sidebar tab).</p>
+            </div>
+            <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">Section 6</span>
+          </div>
+
+          {/* Intro Panel */}
+          <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6 shadow-xl">
+            <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <Type className="w-5 h-5 text-primary" />
+              Section Headers
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Badge</label>
+                <input
+                  type="text"
+                  value={data.testimonials?.section?.badge || ""}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...prev.testimonials, section: { ...prev.testimonials.section, badge: e.target.value } } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. TESTIMONIALS"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Heading — Prefix (plain text)</label>
+                <input
+                  type="text"
+                  value={data.testimonials?.section?.headlinePrefix || ""}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...prev.testimonials, section: { ...prev.testimonials.section, headlinePrefix: e.target.value } } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all mb-4"
+                />
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Heading — Highlight (primary color)</label>
+                <input
+                  type="text"
+                  value={data.testimonials?.section?.headlineHighlight || ""}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...prev.testimonials, section: { ...prev.testimonials.section, headlineHighlight: e.target.value } } }))}
+                  className="w-full bg-white border border-primary/30 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all font-bold mb-4"
+                />
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Heading — Suffix (plain text)</label>
+                <input
+                  type="text"
+                  value={data.testimonials?.section?.headlineSuffix || ""}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...prev.testimonials, section: { ...prev.testimonials.section, headlineSuffix: e.target.value } } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Paragraph</label>
+                <RichTextEditor
+                  content={data.testimonials?.section?.description || ""}
+                  onChange={(v) => setData((prev: any) => ({ ...prev, testimonials: { ...prev.testimonials, section: { ...prev.testimonials.section, description: v } } }))}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Stats Panel */}
+          <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6 shadow-xl">
+            <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <Star className="w-5 h-5 text-primary" />
+              Bottom Highlights & Stats
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Featured Platform Text (Next to Google Icon)</label>
+                <input
+                  type="text"
+                  value={data.testimonials?.section?.featured || ""}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...prev.testimonials, section: { ...prev.testimonials.section, featured: e.target.value } } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. 5.0 Rating on Google"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Subscribers / Customer Count</label>
+                <input
+                  type="text"
+                  value={data.testimonials?.stats?.subscribers || ""}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, testimonials: { ...prev.testimonials, stats: { ...prev.testimonials.stats, subscribers: e.target.value } } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. 500+ Satisfied Customers"
+                />
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {activeTab === "whyChooseUs" && (
+        <motion.div key="whyChooseUs" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
+          <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Why Choose Us</h2>
+              <p className="text-gray-500 text-sm mt-1">Manage the features, stats, and the big call-to-action banner.</p>
+            </div>
+            <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">Section 7</span>
+          </div>
+
+          {/* Section Headers */}
+          <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">Section Headers</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Badge</label>
+                <input
+                  type="text"
+                  value={data.whyChooseUs?.section?.badge || ""}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, section: { ...prev.whyChooseUs.section, badge: e.target.value } } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Headline</label>
+                <input
+                  type="text"
+                  value={data.whyChooseUs?.section?.headline || ""}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, section: { ...prev.whyChooseUs.section, headline: e.target.value } } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Description</label>
+                <RichTextEditor
+                  content={data.whyChooseUs?.section?.description || ""}
+                  onChange={(v) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, section: { ...prev.whyChooseUs.section, description: v } } }))}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Features (Cards) */}
+          <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-gray-900">Feature Cards</h3>
+              <button
+                onClick={() => {
+                  const newFeatures = [...(data.whyChooseUs?.features || []), { title: "New Feature", description: "Description...", icon: "CheckCircle2" }];
+                  setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, features: newFeatures } }));
+                }}
+                className="text-xs bg-primary/10 text-primary hover:bg-primary/20 px-3 py-1.5 rounded-lg font-semibold transition-colors"
+              >
+                + Add Card
+              </button>
+            </div>
+            <div className="space-y-4">
+              {data.whyChooseUs?.features?.map((feature: any, idx: number) => (
+                <div key={idx} className="border border-gray-200 rounded-xl p-4 flex gap-4 bg-gray-50 relative group">
+                  <button
+                    onClick={() => {
+                      const newFeatures = [...data.whyChooseUs.features];
+                      newFeatures.splice(idx, 1);
+                      setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, features: newFeatures } }));
+                    }}
+                    className="absolute top-3 right-3 text-xs font-semibold text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    Delete
+                  </button>
+                  <div className="w-1/4 space-y-2">
+                    <label className="text-[10px] uppercase text-gray-500 font-bold">Icon</label>
+                    <select
+                      value={feature.icon}
+                      onChange={(e) => {
+                        const newFeatures = [...data.whyChooseUs.features];
+                        newFeatures[idx].icon = e.target.value;
                         setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, features: newFeatures } }));
                       }}
-                      className="text-xs bg-primary/10 text-primary hover:bg-primary/20 px-3 py-1.5 rounded-lg font-semibold transition-colors"
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary/50 focus:outline-none"
                     >
-                      + Add Card
-                    </button>
+                      <option value="Veteran">Veteran (Custom)</option>
+                      <option value="Experience">Experience (Custom)</option>
+                      <option value="Warranty">Warranty (Custom)</option>
+                      <option value="Financing">Financing (Custom)</option>
+                      <option value="Certified">Certified (Custom)</option>
+                      <option value="Community">Community (Custom)</option>
+                      <option value="Shield">Shield (Lucide)</option>
+                      <option value="Star">Star (Lucide)</option>
+                      <option value="CheckCircle2">Check (Lucide)</option>
+                      <option value="Award">Award (Lucide)</option>
+                    </select>
                   </div>
-                  <div className="space-y-4">
-                    {data.whyChooseUs?.features?.map((feature: any, idx: number) => (
-                      <div key={idx} className="border border-gray-200 rounded-xl p-4 flex gap-4 bg-gray-50 relative group">
-                        <button
-                          onClick={() => {
-                            const newFeatures = [...data.whyChooseUs.features];
-                            newFeatures.splice(idx, 1);
-                            setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, features: newFeatures } }));
-                          }}
-                          className="absolute top-3 right-3 text-xs font-semibold text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          Delete
-                        </button>
-                        <div className="w-1/4 space-y-2">
-                          <label className="text-[10px] uppercase text-gray-500 font-bold">Icon</label>
-                          <select
-                            value={feature.icon}
-                            onChange={(e) => {
-                              const newFeatures = [...data.whyChooseUs.features];
-                              newFeatures[idx].icon = e.target.value;
-                              setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, features: newFeatures } }));
-                            }}
-                            className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary/50 focus:outline-none"
-                          >
-                            <option value="Veteran">Veteran (Custom)</option>
-                            <option value="Experience">Experience (Custom)</option>
-                            <option value="Warranty">Warranty (Custom)</option>
-                            <option value="Financing">Financing (Custom)</option>
-                            <option value="Certified">Certified (Custom)</option>
-                            <option value="Community">Community (Custom)</option>
-                            <option value="Shield">Shield (Lucide)</option>
-                            <option value="Star">Star (Lucide)</option>
-                            <option value="CheckCircle2">Check (Lucide)</option>
-                            <option value="Award">Award (Lucide)</option>
-                          </select>
-                        </div>
-                        <div className="flex-1 space-y-3">
-                          <div>
-                            <label className="text-[10px] uppercase text-gray-500 font-bold">Title</label>
-                            <input
-                              type="text"
-                              value={feature.title}
-                              onChange={(e) => {
-                                const newFeatures = [...data.whyChooseUs.features];
-                                newFeatures[idx].title = e.target.value;
-                                setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, features: newFeatures } }));
-                              }}
-                              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary/50 focus:outline-none"
-                            />
-                          </div>
-                          <div>
-                            <label className="text-[10px] uppercase text-gray-500 font-bold">Description</label>
-                            <RichTextEditor 
-                              content={feature.description || ""} 
-                              onChange={(v) => {
-                                const newFeatures = [...data.whyChooseUs.features];
-                                newFeatures[idx].description = v;
-                                setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, features: newFeatures } }));
-                              }} 
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Stats */}
-                <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-bold text-gray-900">Stats Grid</h3>
-                    <button
-                      onClick={() => {
-                        const newStats = [...(data.whyChooseUs?.stats || []), { label: "New Stat", value: "0", suffix: "+" }];
-                        setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, stats: newStats } }));
-                      }}
-                      className="text-xs bg-primary/10 text-primary hover:bg-primary/20 px-3 py-1.5 rounded-lg font-semibold transition-colors"
-                    >
-                      + Add Stat
-                    </button>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                    {data.whyChooseUs?.stats?.map((stat: any, idx: number) => (
-                      <div key={idx} className="border border-gray-200 rounded-xl p-3 bg-gray-50 relative group">
-                        <button
-                          onClick={() => {
-                            const newStats = [...data.whyChooseUs.stats];
-                            newStats.splice(idx, 1);
-                            setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, stats: newStats } }));
-                          }}
-                          className="absolute top-1 right-1 text-[10px] font-bold bg-red-100 text-red-600 px-1.5 rounded opacity-0 group-hover:opacity-100"
-                        >
-                          X
-                        </button>
-                        <div className="space-y-2">
-                          <div>
-                            <label className="text-[9px] uppercase text-gray-500 font-bold">Label</label>
-                            <input
-                              type="text"
-                              value={stat.label}
-                              onChange={(e) => {
-                                const newStats = [...data.whyChooseUs.stats];
-                                newStats[idx].label = e.target.value;
-                                setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, stats: newStats } }));
-                              }}
-                              className="w-full bg-white border border-gray-200 rounded px-2 py-1 text-xs focus:border-primary/50 focus:outline-none"
-                            />
-                          </div>
-                          <div className="flex gap-2">
-                            <div className="flex-1">
-                              <label className="text-[9px] uppercase text-gray-500 font-bold">Value</label>
-                              <input
-                                type="text"
-                                value={stat.value}
-                                onChange={(e) => {
-                                  const newStats = [...data.whyChooseUs.stats];
-                                  newStats[idx].value = e.target.value;
-                                  setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, stats: newStats } }));
-                                }}
-                                className="w-full bg-white border border-gray-200 rounded px-2 py-1 text-xs focus:border-primary/50 focus:outline-none"
-                              />
-                            </div>
-                            <div className="w-10">
-                              <label className="text-[9px] uppercase text-gray-500 font-bold">Suffix</label>
-                              <input
-                                type="text"
-                                value={stat.suffix || ""}
-                                onChange={(e) => {
-                                  const newStats = [...data.whyChooseUs.stats];
-                                  newStats[idx].suffix = e.target.value;
-                                  setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, stats: newStats } }));
-                                }}
-                                className="w-full bg-white border border-gray-200 rounded px-2 py-1 text-xs focus:border-primary/50 focus:outline-none"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* CTA Banner */}
-                <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">CTA Banner (Bottom)</h3>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Offer Badge</label>
-                        <input
-                          type="text"
-                          value={data.whyChooseUs?.cta?.badge || ""}
-                          onChange={(e) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, cta: { ...prev.whyChooseUs.cta, badge: e.target.value } } }))}
-                          className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Title</label>
-                        <input
-                          type="text"
-                          value={data.whyChooseUs?.cta?.title || ""}
-                          onChange={(e) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, cta: { ...prev.whyChooseUs.cta, title: e.target.value } } }))}
-                          className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Description</label>
-                      <RichTextEditor 
-                        content={data.whyChooseUs?.cta?.description || ""} 
-                        onChange={(v) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, cta: { ...prev.whyChooseUs.cta, description: v } } }))} 
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Trust Badges (Comma separated)</label>
+                  <div className="flex-1 space-y-3">
+                    <div>
+                      <label className="text-[10px] uppercase text-gray-500 font-bold">Title</label>
                       <input
                         type="text"
-                        value={Array.isArray(data.whyChooseUs?.cta?.trustBadges) ? data.whyChooseUs.cta.trustBadges.join(', ') : (data.whyChooseUs?.cta?.trustBadges || "")}
-                        onChange={(e) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, cta: { ...prev.whyChooseUs.cta, trustBadges: e.target.value.split(',').map((s: any) => s.trim()).filter(Boolean) } } }))}
-                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                        value={feature.title}
+                        onChange={(e) => {
+                          const newFeatures = [...data.whyChooseUs.features];
+                          newFeatures[idx].title = e.target.value;
+                          setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, features: newFeatures } }));
+                        }}
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary/50 focus:outline-none"
                       />
                     </div>
-
-                    <div className="space-y-2 pt-4 border-t border-gray-100">
-                      <h4 className="text-xs uppercase tracking-widest text-gray-500 font-bold mb-2">CTA Buttons</h4>
-                      {data.whyChooseUs?.cta?.buttons?.map((btn: any, idx: number) => (
-                        <div key={idx} className="flex gap-4 items-end">
-                          <div className="flex-1 space-y-1">
-                            <label className="text-[10px] text-gray-500 uppercase">Button Label</label>
-                            <input
-                              type="text"
-                              value={btn.text}
-                              onChange={(e) => {
-                                const newBtns = [...data.whyChooseUs.cta.buttons];
-                                newBtns[idx].text = e.target.value;
-                                setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, cta: { ...prev.whyChooseUs.cta, buttons: newBtns } } }));
-                              }}
-                              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary/50 focus:outline-none"
-                            />
-                          </div>
-                          <div className="flex-1 space-y-1">
-                            <label className="text-[10px] text-gray-500 uppercase">Destination Link</label>
-                            <input
-                              type="text"
-                              value={btn.href}
-                              onChange={(e) => {
-                                const newBtns = [...data.whyChooseUs.cta.buttons];
-                                newBtns[idx].href = e.target.value;
-                                setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, cta: { ...prev.whyChooseUs.cta, buttons: newBtns } } }));
-                              }}
-                              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary/50 focus:outline-none"
-                            />
-                          </div>
-                        </div>
-                      ))}
+                    <div>
+                      <label className="text-[10px] uppercase text-gray-500 font-bold">Description</label>
+                      <RichTextEditor
+                        content={feature.description || ""}
+                        onChange={(v) => {
+                          const newFeatures = [...data.whyChooseUs.features];
+                          newFeatures[idx].description = v;
+                          setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, features: newFeatures } }));
+                        }}
+                      />
                     </div>
                   </div>
                 </div>
-              </motion.div>
-            )}
+              ))}
+            </div>
+          </div>
 
-            {activeTab === "quote" && (
-              <motion.div key="quote" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6">
-                <h2 className="text-xl font-bold text-slate-900 mb-6 border-b border-slate-200 pb-4">Homepage Contact Section (QA Form)</h2>
-
-                <div className="space-y-4">
+          {/* Stats */}
+          <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-gray-900">Stats Grid</h3>
+              <button
+                onClick={() => {
+                  const newStats = [...(data.whyChooseUs?.stats || []), { label: "New Stat", value: "0", suffix: "+" }];
+                  setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, stats: newStats } }));
+                }}
+                className="text-xs bg-primary/10 text-primary hover:bg-primary/20 px-3 py-1.5 rounded-lg font-semibold transition-colors"
+              >
+                + Add Stat
+              </button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              {data.whyChooseUs?.stats?.map((stat: any, idx: number) => (
+                <div key={idx} className="border border-gray-200 rounded-xl p-3 bg-gray-50 relative group">
+                  <button
+                    onClick={() => {
+                      const newStats = [...data.whyChooseUs.stats];
+                      newStats.splice(idx, 1);
+                      setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, stats: newStats } }));
+                    }}
+                    className="absolute top-1 right-1 text-[10px] font-bold bg-red-100 text-red-600 px-1.5 rounded opacity-0 group-hover:opacity-100"
+                  >
+                    X
+                  </button>
                   <div className="space-y-2">
-                    <label className="text-xs uppercase tracking-wider text-slate-500 font-bold">Section Badge</label>
-                    <input
-                      type="text"
-                      value={data.quote?.section?.badge || ""}
-                      onChange={(e) => setData((prev: any) => ({ ...prev, quote: { ...(prev.quote || {}), section: { ...(prev.quote?.section || {}), badge: e.target.value } } }))}
-                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs uppercase tracking-wider text-slate-500 font-bold">Section Title — Prefix (plain text)</label>
-                    <input
-                      type="text"
-                      value={data.quote?.section?.headlinePrefix || ""}
-                      onChange={(e) => setData((prev: any) => ({ ...prev, quote: { ...(prev.quote || {}), section: { ...(prev.quote?.section || {}), headlinePrefix: e.target.value } } }))}
-                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs uppercase tracking-wider text-slate-500 font-bold">Section Title — Highlight (primary color)</label>
-                    <input
-                      type="text"
-                      value={data.quote?.section?.headlineHighlight || ""}
-                      onChange={(e) => setData((prev: any) => ({ ...prev, quote: { ...(prev.quote || {}), section: { ...(prev.quote?.section || {}), headlineHighlight: e.target.value } } }))}
-                      className="w-full bg-white border border-primary/30 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all font-bold"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs uppercase tracking-wider text-slate-500 font-bold">Section Title — Suffix (plain text)</label>
-                    <input
-                      type="text"
-                      value={data.quote?.section?.headlineSuffix || ""}
-                      onChange={(e) => setData((prev: any) => ({ ...prev, quote: { ...(prev.quote || {}), section: { ...(prev.quote?.section || {}), headlineSuffix: e.target.value } } }))}
-                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs uppercase tracking-wider text-slate-500 font-bold">Section Description</label>
-                    <RichTextEditor 
-                      content={data.quote?.section?.description || ""} 
-                      onChange={(v) => setData((prev: any) => ({ ...prev, quote: { ...(prev.quote || {}), section: { ...(prev.quote?.section || {}), description: v } } }))} 
-                    />
-                  </div>
-                  <div className="space-y-2 pt-4 border-t border-gray-100">
-                    <label className="text-xs uppercase tracking-wider text-slate-500 font-bold">Receiver Email</label>
-                    <input
-                      type="email"
-                      value={data.quote?.email || ""}
-                      onChange={(e) => setData((prev: any) => ({ ...prev, quote: { ...(prev.quote || {}), email: e.target.value } }))}
-                      placeholder="Email for submissions"
-                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                    />
+                    <div>
+                      <label className="text-[9px] uppercase text-gray-500 font-bold">Label</label>
+                      <input
+                        type="text"
+                        value={stat.label}
+                        onChange={(e) => {
+                          const newStats = [...data.whyChooseUs.stats];
+                          newStats[idx].label = e.target.value;
+                          setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, stats: newStats } }));
+                        }}
+                        className="w-full bg-white border border-gray-200 rounded px-2 py-1 text-xs focus:border-primary/50 focus:outline-none"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <div className="flex-1">
+                        <label className="text-[9px] uppercase text-gray-500 font-bold">Value</label>
+                        <input
+                          type="text"
+                          value={stat.value}
+                          onChange={(e) => {
+                            const newStats = [...data.whyChooseUs.stats];
+                            newStats[idx].value = e.target.value;
+                            setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, stats: newStats } }));
+                          }}
+                          className="w-full bg-white border border-gray-200 rounded px-2 py-1 text-xs focus:border-primary/50 focus:outline-none"
+                        />
+                      </div>
+                      <div className="w-10">
+                        <label className="text-[9px] uppercase text-gray-500 font-bold">Suffix</label>
+                        <input
+                          type="text"
+                          value={stat.suffix || ""}
+                          onChange={(e) => {
+                            const newStats = [...data.whyChooseUs.stats];
+                            newStats[idx].suffix = e.target.value;
+                            setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, stats: newStats } }));
+                          }}
+                          className="w-full bg-white border border-gray-200 rounded px-2 py-1 text-xs focus:border-primary/50 focus:outline-none"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </motion.div>
-            )}
-            {activeTab === "faq" && (
-              <motion.div key="faq" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6">
-                <h2 className="text-2xl font-extrabold text-slate-900 mb-8 border-b border-slate-100 pb-6">FAQ Section</h2>
+              ))}
+            </div>
+          </div>
 
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <label className="text-xs uppercase tracking-widest text-slate-500 font-extrabold">Section Badge</label>
-                    <input
-                      type="text"
-                      value={data.faq?.section?.badge || ""}
-                      onChange={(e) => {
-                        setData((prev: any) => ({
-                          ...prev,
-                          faq: { ...prev.faq, section: { ...prev.faq.section, badge: e.target.value } }
-                        }));
-                      }}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 text-slate-900 font-bold focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-inner"
-                      placeholder="e.g. QUESTIONS"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-xs uppercase tracking-widest text-slate-500 font-extrabold">Section Heading</label>
-                    <input
-                      type="text"
-                      value={data.faq?.section?.title || ""}
-                      onChange={(e) => {
-                        setData((prev: any) => ({
-                          ...prev,
-                          faq: { ...prev.faq, section: { ...prev.faq.section, title: e.target.value } }
-                        }));
-                      }}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 text-slate-900 font-bold focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-inner"
-                      placeholder="e.g. Frequently Asked Questions"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-xs uppercase tracking-widest text-slate-500 font-extrabold">Section Paragraph</label>
-                    <RichTextEditor 
-                      content={data.faq?.section?.description || ""} 
-                      onChange={(v) => {
-                        setData((prev: any) => ({
-                          ...prev,
-                          faq: { ...prev.faq, section: { ...prev.faq.section, description: v } }
-                        }));
-                      }} 
-                    />
-                  </div>
+          {/* CTA Banner */}
+          <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">CTA Banner (Bottom)</h3>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Offer Badge</label>
+                  <input
+                    type="text"
+                    value={data.whyChooseUs?.cta?.badge || ""}
+                    onChange={(e) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, cta: { ...prev.whyChooseUs.cta, badge: e.target.value } } }))}
+                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  />
                 </div>
-
-                <div className="pt-6 border-t border-slate-100">
-                  <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10 flex items-start gap-4">
-                    <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0 text-white font-bold text-sm">!</div>
-                    <p className="text-slate-600 text-sm font-medium">
-                      Note: This tab only controls the header text on the homepage. To add or edit the actual FAQ questions, go to
-                      <Link href="/admin/faq" className="text-primary font-bold hover:underline ml-1">FAQ Management</Link> in the sidebar.
-                    </p>
-                  </div>
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Title</label>
+                  <input
+                    type="text"
+                    value={data.whyChooseUs?.cta?.title || ""}
+                    onChange={(e) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, cta: { ...prev.whyChooseUs.cta, title: e.target.value } } }))}
+                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  />
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-    </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Description</label>
+                <RichTextEditor
+                  content={data.whyChooseUs?.cta?.description || ""}
+                  onChange={(v) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, cta: { ...prev.whyChooseUs.cta, description: v } } }))}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Trust Badges (Comma separated)</label>
+                <input
+                  type="text"
+                  value={Array.isArray(data.whyChooseUs?.cta?.trustBadges) ? data.whyChooseUs.cta.trustBadges.join(', ') : (data.whyChooseUs?.cta?.trustBadges || "")}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, cta: { ...prev.whyChooseUs.cta, trustBadges: e.target.value.split(',').map((s: any) => s.trim()).filter(Boolean) } } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                />
+              </div>
+
+              <div className="space-y-2 pt-4 border-t border-gray-100">
+                <h4 className="text-xs uppercase tracking-widest text-gray-500 font-bold mb-2">CTA Buttons</h4>
+                {data.whyChooseUs?.cta?.buttons?.map((btn: any, idx: number) => (
+                  <div key={idx} className="flex gap-4 items-end">
+                    <div className="flex-1 space-y-1">
+                      <label className="text-[10px] text-gray-500 uppercase">Button Label</label>
+                      <input
+                        type="text"
+                        value={btn.text}
+                        onChange={(e) => {
+                          const newBtns = [...data.whyChooseUs.cta.buttons];
+                          newBtns[idx].text = e.target.value;
+                          setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, cta: { ...prev.whyChooseUs.cta, buttons: newBtns } } }));
+                        }}
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary/50 focus:outline-none"
+                      />
+                    </div>
+                    <div className="flex-1 space-y-1">
+                      <label className="text-[10px] text-gray-500 uppercase">Destination Link</label>
+                      <input
+                        type="text"
+                        value={btn.href}
+                        onChange={(e) => {
+                          const newBtns = [...data.whyChooseUs.cta.buttons];
+                          newBtns[idx].href = e.target.value;
+                          setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, cta: { ...prev.whyChooseUs.cta, buttons: newBtns } } }));
+                        }}
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary/50 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {activeTab === "quote" && (
+        <motion.div key="quote" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6">
+          <h2 className="text-xl font-bold text-slate-900 mb-6 border-b border-slate-200 pb-4">Homepage Contact Section (QA Form)</h2>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-xs uppercase tracking-wider text-slate-500 font-bold">Section Badge</label>
+              <input
+                type="text"
+                value={data.quote?.section?.badge || ""}
+                onChange={(e) => setData((prev: any) => ({ ...prev, quote: { ...(prev.quote || {}), section: { ...(prev.quote?.section || {}), badge: e.target.value } } }))}
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs uppercase tracking-wider text-slate-500 font-bold">Section Title — Prefix (plain text)</label>
+              <input
+                type="text"
+                value={data.quote?.section?.headlinePrefix || ""}
+                onChange={(e) => setData((prev: any) => ({ ...prev, quote: { ...(prev.quote || {}), section: { ...(prev.quote?.section || {}), headlinePrefix: e.target.value } } }))}
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs uppercase tracking-wider text-slate-500 font-bold">Section Title — Highlight (primary color)</label>
+              <input
+                type="text"
+                value={data.quote?.section?.headlineHighlight || ""}
+                onChange={(e) => setData((prev: any) => ({ ...prev, quote: { ...(prev.quote || {}), section: { ...(prev.quote?.section || {}), headlineHighlight: e.target.value } } }))}
+                className="w-full bg-white border border-primary/30 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all font-bold"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs uppercase tracking-wider text-slate-500 font-bold">Section Title — Suffix (plain text)</label>
+              <input
+                type="text"
+                value={data.quote?.section?.headlineSuffix || ""}
+                onChange={(e) => setData((prev: any) => ({ ...prev, quote: { ...(prev.quote || {}), section: { ...(prev.quote?.section || {}), headlineSuffix: e.target.value } } }))}
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs uppercase tracking-wider text-slate-500 font-bold">Section Description</label>
+              <RichTextEditor
+                content={data.quote?.section?.description || ""}
+                onChange={(v) => setData((prev: any) => ({ ...prev, quote: { ...(prev.quote || {}), section: { ...(prev.quote?.section || {}), description: v } } }))}
+              />
+            </div>
+            <div className="space-y-2 pt-4 border-t border-gray-100">
+              <label className="text-xs uppercase tracking-wider text-slate-500 font-bold">Receiver Email</label>
+              <input
+                type="email"
+                value={data.quote?.email || ""}
+                onChange={(e) => setData((prev: any) => ({ ...prev, quote: { ...(prev.quote || {}), email: e.target.value } }))}
+                placeholder="Email for submissions"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+              />
+            </div>
+          </div>
+        </motion.div>
+      )}
+      {activeTab === "faq" && (
+        <motion.div key="faq" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6">
+          <h2 className="text-2xl font-extrabold text-slate-900 mb-8 border-b border-slate-100 pb-6">FAQ Section</h2>
+
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-xs uppercase tracking-widest text-slate-500 font-extrabold">Section Badge</label>
+              <input
+                type="text"
+                value={data.faq?.section?.badge || ""}
+                onChange={(e) => {
+                  setData((prev: any) => ({
+                    ...prev,
+                    faq: { ...prev.faq, section: { ...prev.faq.section, badge: e.target.value } }
+                  }));
+                }}
+                className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 text-slate-900 font-bold focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-inner"
+                placeholder="e.g. QUESTIONS"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs uppercase tracking-widest text-slate-500 font-extrabold">Section Heading</label>
+              <input
+                type="text"
+                value={data.faq?.section?.title || ""}
+                onChange={(e) => {
+                  setData((prev: any) => ({
+                    ...prev,
+                    faq: { ...prev.faq, section: { ...prev.faq.section, title: e.target.value } }
+                  }));
+                }}
+                className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 text-slate-900 font-bold focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-inner"
+                placeholder="e.g. Frequently Asked Questions"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs uppercase tracking-widest text-slate-500 font-extrabold">Section Paragraph</label>
+              <RichTextEditor
+                content={data.faq?.section?.description || ""}
+                onChange={(v) => {
+                  setData((prev: any) => ({
+                    ...prev,
+                    faq: { ...prev.faq, section: { ...prev.faq.section, description: v } }
+                  }));
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="pt-6 border-t border-slate-100">
+            <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10 flex items-start gap-4">
+              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0 text-white font-bold text-sm">!</div>
+              <p className="text-slate-600 text-sm font-medium">
+                Note: This tab only controls the header text on the homepage. To add or edit the actual FAQ questions, go to
+                <Link href="/admin/faq" className="text-primary font-bold hover:underline ml-1">FAQ Management</Link> in the sidebar.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+        </div >
+      </div >
+    </div >
   );
 }

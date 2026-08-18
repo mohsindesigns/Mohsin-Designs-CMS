@@ -80,6 +80,26 @@ export async function PATCH(
       }
     }
 
+    // Sync Home page changes directly into SiteContent (complete_data) so frontend and projects CMS update in real-time
+    if (updatedPage && (updatedPage.template === 'home' || updatedPage.slug === 'home' || updatedPage.slug === '/') && content) {
+      try {
+        const SiteContent = (await import('@/models/Content')).default;
+        const currentDoc = await SiteContent.findOne({ key: 'complete_data' });
+        if (currentDoc) {
+          const mergedData = { ...currentDoc.data, ...content };
+          if (content.portfolio) {
+            mergedData.portfolio = { ...(currentDoc.data?.portfolio || {}), ...content.portfolio };
+          }
+          await SiteContent.updateOne(
+            { key: 'complete_data' },
+            { $set: { data: mergedData, lastUpdated: new Date() } }
+          );
+        }
+      } catch (syncErr) {
+        console.error('Failed to sync Home page to complete_data:', syncErr);
+      }
+    }
+
     return NextResponse.json(updatedPage);
   } catch (error: any) {
     console.error('Page update error:', error);

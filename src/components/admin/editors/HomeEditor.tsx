@@ -545,8 +545,178 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                          <div className="space-y-1.5"><label className={UI.label}>Title Highlight</label><input type="text" value={data.portfolio?.titleHighlight || data.portfolio?.section?.headlineHighlight || ""} onChange={(e) => updateSection("portfolio", "titleHighlight", e.target.value)} className={UI.input} /></div>
                          <div className="space-y-1.5"><label className={UI.label}>Description</label><textarea value={data.portfolio?.description || data.portfolio?.section?.description || ""} onChange={(e) => updateSection("portfolio", "description", e.target.value)} className={UI.input + " min-h-[80px]"} /></div>
                      </div>
+
+                     {/* 2. FILTER CATEGORIES */}
                      <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>2. Work Selection</h3>
+                        <div className="flex items-center justify-between pb-2.5 border-b border-[#dcdcde]">
+                           <h3 className="text-[15px] font-bold text-[#1d2327] tracking-wide">2. Filter Categories (Tabs)</h3>
+                           <button
+                              type="button"
+                              onClick={() => {
+                                 const currentCats = data.portfolio?.categories || [
+                                    { id: "all", label: "All Work", iconName: "LayoutGrid" },
+                                    { id: "design", label: "UX/UI Design", iconName: "Paintbrush" },
+                                    { id: "dev", label: "Development", iconName: "Monitor" },
+                                    { id: "marketing", label: "Marketing", iconName: "TrendingUp" }
+                                 ];
+                                 const newId = `category-${Date.now()}`;
+                                 updateSection("portfolio", "categories", [
+                                    ...currentCats,
+                                    { id: newId, label: "New Category", iconName: "Award" }
+                                 ]);
+                              }}
+                              className="bg-[#2271b1] text-white px-3 py-1.5 rounded-[3px] text-xs font-semibold hover:bg-[#135e96] transition-all flex items-center gap-1 cursor-pointer"
+                           >
+                              <Plus className="w-3.5 h-3.5" />
+                              Add Filter Tab
+                           </button>
+                        </div>
+
+                        <div className="space-y-4">
+                           {(data.portfolio?.categories || [
+                              { id: "all", label: "All Work", iconName: "LayoutGrid" },
+                              { id: "design", label: "UX/UI Design", iconName: "Paintbrush" },
+                              { id: "dev", label: "Development", iconName: "Monitor" },
+                              { id: "marketing", label: "Marketing", iconName: "TrendingUp" }
+                           ]).map((cat: any, cIdx: number) => (
+                              <div key={cIdx} className="bg-[#f6f7f7] p-4 rounded-[4px] border border-[#c3c4c7] space-y-3">
+                                 <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-center">
+                                    <div className="space-y-1">
+                                       <label className="text-[11px] font-bold text-[#50575e] uppercase">Tab Label / Name</label>
+                                       <input
+                                          type="text"
+                                          value={cat.label || ""}
+                                          disabled={cat.id === "all"}
+                                          onChange={(e) => {
+                                             const currentCats = [...(data.portfolio?.categories || [
+                                                { id: "all", label: "All Work", iconName: "LayoutGrid" },
+                                                { id: "design", label: "UX/UI Design", iconName: "Paintbrush" },
+                                                { id: "dev", label: "Development", iconName: "Monitor" },
+                                                { id: "marketing", label: "Marketing", iconName: "TrendingUp" }
+                                             ])];
+                                             currentCats[cIdx] = { ...currentCats[cIdx], label: e.target.value };
+                                             updateSection("portfolio", "categories", currentCats);
+                                          }}
+                                          className={UI.input}
+                                          placeholder="e.g. UX/UI Design"
+                                       />
+                                    </div>
+
+                                    <div className="space-y-1">
+                                       <label className="text-[11px] font-bold text-[#50575e] uppercase">Unique Filter ID (Slug)</label>
+                                       <input
+                                          type="text"
+                                          value={cat.id || ""}
+                                          disabled={cat.id === "all"}
+                                          onChange={(e) => {
+                                             const currentCats = [...(data.portfolio?.categories || [
+                                                { id: "all", label: "All Work", iconName: "LayoutGrid" },
+                                                { id: "design", label: "UX/UI Design", iconName: "Paintbrush" },
+                                                { id: "dev", label: "Development", iconName: "Monitor" },
+                                                { id: "marketing", label: "Marketing", iconName: "TrendingUp" }
+                                             ])];
+                                             currentCats[cIdx] = { ...currentCats[cIdx], id: e.target.value.toLowerCase().replace(/[^a-z0-9-_]/g, '') };
+                                             updateSection("portfolio", "categories", currentCats);
+                                          }}
+                                          className={UI.input}
+                                          placeholder="e.g. design"
+                                       />
+                                    </div>
+
+                                    <div className="space-y-1">
+                                       <label className="text-[11px] font-bold text-[#50575e] uppercase">Tab Icon</label>
+                                       <select
+                                          value={cat.iconName || "Award"}
+                                          disabled={cat.id === "all"}
+                                          onChange={(e) => {
+                                             const currentCats = [...(data.portfolio?.categories || [
+                                                { id: "all", label: "All Work", iconName: "LayoutGrid" },
+                                                { id: "design", label: "UX/UI Design", iconName: "Paintbrush" },
+                                                { id: "dev", label: "Development", iconName: "Monitor" },
+                                                { id: "marketing", label: "Marketing", iconName: "TrendingUp" }
+                                             ])];
+                                             currentCats[cIdx] = { ...currentCats[cIdx], iconName: e.target.value };
+                                             updateSection("portfolio", "categories", currentCats);
+                                          }}
+                                          className={UI.input}
+                                       >
+                                          {["LayoutGrid", "Paintbrush", "Search", "Monitor", "BarChart3", "TrendingUp", "Users", "Shield", "Droplet", "Home", "Zap", "Award"].map((icon) => (
+                                             <option key={icon} value={icon}>{icon}</option>
+                                          ))}
+                                       </select>
+                                    </div>
+
+                                    <div className="flex justify-end pt-2 md:pt-4">
+                                       {cat.id !== "all" ? (
+                                          <button
+                                             type="button"
+                                             onClick={() => {
+                                                const currentCats = (data.portfolio?.categories || [
+                                                   { id: "all", label: "All Work", iconName: "LayoutGrid" },
+                                                   { id: "design", label: "UX/UI Design", iconName: "Paintbrush" },
+                                                   { id: "dev", label: "Development", iconName: "Monitor" },
+                                                   { id: "marketing", label: "Marketing", iconName: "TrendingUp" }
+                                                ]).filter((_: any, i: number) => i !== cIdx);
+                                                updateSection("portfolio", "categories", currentCats);
+                                             }}
+                                             className="text-[#d63638] hover:bg-red-50 p-2 rounded-[3px] border border-red-200 transition-all flex items-center gap-1 text-xs font-semibold cursor-pointer"
+                                          >
+                                             <Trash2 className="w-4 h-4" />
+                                             Delete Tab
+                                          </button>
+                                       ) : (
+                                          <span className="text-[11px] font-bold text-[#8c8f94] uppercase bg-[#e0e0e0] px-2.5 py-1 rounded-[3px]">Default All</span>
+                                       )}
+                                    </div>
+                                 </div>
+
+                                 {/* Bidirectional Project Assignment Checklist */}
+                                 {cat.id !== "all" && (
+                                    <div className="mt-2 border-t border-[#dcdcde] pt-2 space-y-1.5">
+                                       <label className="text-[11px] font-bold text-[#50575e] uppercase block">Assigned Projects for this Filter:</label>
+                                       <div className="flex flex-wrap gap-2">
+                                          {(data.portfolio?.projects || []).map((project: any, pIdx: number) => {
+                                             const isAssigned = Array.isArray(project.categories)
+                                                ? project.categories.includes(cat.id)
+                                                : (project.category && project.category.toLowerCase() === cat.id);
+                                             return (
+                                                <label key={pIdx} className="flex items-center gap-1.5 bg-white border border-[#c3c4c7] pl-2 pr-2.5 py-1 rounded-[3px] text-xs font-medium cursor-pointer select-none shadow-xs">
+                                                   <input
+                                                      type="checkbox"
+                                                      checked={isAssigned}
+                                                      onChange={(e) => {
+                                                         const updatedProjects = [...(data.portfolio?.projects || [])];
+                                                         const proj = { ...updatedProjects[pIdx] };
+                                                         const cats = Array.isArray(proj.categories) ? [...proj.categories] : (proj.category ? [proj.category.toLowerCase()] : []);
+                                                         if (e.target.checked) {
+                                                            if (!cats.includes(cat.id)) cats.push(cat.id);
+                                                         } else {
+                                                            const index = cats.indexOf(cat.id);
+                                                            if (index > -1) cats.splice(index, 1);
+                                                         }
+                                                         proj.categories = cats;
+                                                         updatedProjects[pIdx] = proj;
+                                                         updateSection("portfolio", "projects", updatedProjects);
+                                                      }}
+                                                      className="w-3.5 h-3.5 rounded-[2px]"
+                                                   />
+                                                   {project.title || "Untitled Project"}
+                                                </label>
+                                             );
+                                          })}
+                                          {(!data.portfolio?.projects || data.portfolio.projects.length === 0) && (
+                                             <p className="text-xs text-[#8c8f94] italic">No projects found. Add projects first in the Projects module or select them below.</p>
+                                          )}
+                                       </div>
+                                    </div>
+                                 )}
+                              </div>
+                           ))}
+                        </div>
+                     </div>
+
+                     <div className="space-y-6">
+                        <h3 className={UI.sectionHeader}>3. Work Selection</h3>
                         <ContentSelector type="projects" label="Featured Projects" selectedItems={data.portfolio?.projects} onSelect={(items) => updateSection("portfolio", "projects", items)} />
                      </div>
                   </div>

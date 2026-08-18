@@ -4,7 +4,7 @@ import SiteContent from '@/models/Content';
 import { hasPermission, getSessionUser } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
 import { sanitizeEncoding } from '@/lib/utils';
-export const revalidate = 60; // Cache for 1 minute
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {

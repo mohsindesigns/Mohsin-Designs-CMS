@@ -23,6 +23,7 @@ export default function ProjectsAdminPage() {
     title: "",
     subtitle: "",
     category: "",
+    categories: [] as string[],
     year: "",
     desc: "",
     challenge: "",
@@ -42,10 +43,39 @@ export default function ProjectsAdminPage() {
   });
 
   useEffect(() => {
-    fetch("/api/content").then(res => res.json()).then(json => {
-        setData(json);
+    const loadAll = async () => {
+      try {
+        let cats: any[] = [];
+        // 1. Fetch from Pages collection (where Home editor saves)
+        try {
+          const pagesRes = await fetch(`/api/admin/pages?t=${Date.now()}`);
+          if (pagesRes.ok) {
+            const pages = await pagesRes.json();
+            const homePage = Array.isArray(pages) ? pages.find((p: any) => p.slug === 'home' || p.template === 'home' || p.slug === '/') : null;
+            if (homePage?.content?.portfolio?.categories && homePage.content.portfolio.categories.length > 0) {
+              cats = homePage.content.portfolio.categories;
+            }
+          }
+        } catch (e) {}
+
+        // 2. Fetch from /api/content
+        const contentRes = await fetch(`/api/content?t=${Date.now()}`);
+        const json = await contentRes.json();
+        
+        const finalCats = (cats && cats.length > 0) ? cats : (json.portfolio?.categories || []);
+        setData({
+          ...json,
+          portfolio: {
+            ...json.portfolio,
+            categories: finalCats
+          }
+        });
         setProjects(json.portfolio?.projects || []);
-      });
+      } catch (err) {
+        console.error("Error loading project admin data:", err);
+      }
+    };
+    loadAll();
   }, []);
 
   const saveToDb = async (newProjects: any[]) => {
@@ -83,6 +113,7 @@ export default function ProjectsAdminPage() {
       title: p.title || "",
       subtitle: p.subtitle || "",
       category: p.category || "",
+      categories: p.categories || (p.category ? [p.category.toLowerCase()] : []),
       year: p.year || "",
       desc: p.desc || "",
       challenge: p.challenge || "",
@@ -117,6 +148,7 @@ export default function ProjectsAdminPage() {
                 title: "",
                 subtitle: "",
                 category: "",
+                categories: [],
                 year: "",
                 desc: "",
                 challenge: "",
@@ -166,16 +198,49 @@ export default function ProjectsAdminPage() {
                         <input type="text" value={form.subtitle || ""} onChange={(e) => setForm({ ...form, subtitle: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Enterprise-grade Product Design" />
                      </div>
 
-                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                           <label className="text-[13px] font-bold">Category</label>
-                           <input type="text" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. UX/UI Design" />
-                        </div>
-                        <div className="space-y-1">
-                           <label className="text-[13px] font-bold">Location</label>
-                           <input type="text" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Dallas, TX" />
-                        </div>
-                     </div>
+                      <div className="grid grid-cols-2 gap-4">
+                         <div className="space-y-2">
+                            <label className="text-[13px] font-bold">Category Display Name</label>
+                            <input type="text" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px] mb-2" placeholder="e.g. UX/UI Design" />
+                            
+                            <label className="text-[11px] font-bold text-[#50575e] block">Select Filter Tags for this project:</label>
+                             <div className="flex flex-wrap gap-3 mt-1">
+                                {(() => {
+                                   const customCats = data?.portfolio?.categories;
+                                   const available = Array.isArray(customCats)
+                                      ? customCats.filter((c: any) => c.id !== "all")
+                                      : [
+                                         { id: "design", label: "UX/UI Design" },
+                                         { id: "dev", label: "Development" },
+                                         { id: "marketing", label: "Marketing" }
+                                      ];
+                                   if (available.length === 0) {
+                                      return <p className="text-xs text-[#8c8f94] italic">No filter tags created yet. Add them in Homepage Editor → Work tab.</p>;
+                                   }
+                                   return available.map((cat: any) => (
+                                      <label key={cat.id} className="flex items-center gap-1.5 text-xs font-semibold cursor-pointer select-none bg-slate-50 border border-slate-200 px-2.5 py-1 rounded">
+                                         <input
+                                            type="checkbox"
+                                            checked={(form.categories || []).includes(cat.id)}
+                                            onChange={(e) => {
+                                               const newCats = e.target.checked
+                                                  ? [...(form.categories || []), cat.id]
+                                                  : (form.categories || []).filter((id) => id !== cat.id);
+                                               setForm({ ...form, categories: newCats });
+                                            }}
+                                            className="w-4 h-4 border-[#8c8f94] rounded-[3px]"
+                                         />
+                                         {cat.label}
+                                      </label>
+                                   ));
+                                })()}
+                             </div>
+                         </div>
+                         <div className="space-y-1">
+                            <label className="text-[13px] font-bold">Location</label>
+                            <input type="text" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Dallas, TX" />
+                         </div>
+                      </div>
 
                      <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1">
