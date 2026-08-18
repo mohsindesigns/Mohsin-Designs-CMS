@@ -32,15 +32,20 @@ export const getTemplate = (name: string) => {
   return TEMPLATE_MAP[name] || HomeTemplate;
 };
 
-export const TemplateWrapper = ({ templateName, pageData, params }: any) => {
+export const TemplateWrapper = ({ templateName, pageData, globalData, params }: any) => {
   const Template = getTemplate(templateName);
 
   const hasInlineFaqs = !['home', 'faq', 'service-detail', 'about', 'service-area', 'services'].includes(templateName) &&
     ((pageData?.content?.faqs && Array.isArray(pageData.content.faqs) && pageData.content.faqs.length > 0) ||
       (pageData?.content?.faqSchemaMarkup && typeof pageData.content.faqSchemaMarkup === 'string' && pageData.content.faqSchemaMarkup.trim()));
 
+  const providerData = {
+    ...(globalData || {}),
+    ...(pageData?.content || {}),
+  };
+
   return (
-    <ContentProvider initialData={pageData.content}>
+    <ContentProvider initialData={providerData}>
       <Template pageData={pageData} params={params} />
       {hasInlineFaqs && (
         <PageInlineFaqs 

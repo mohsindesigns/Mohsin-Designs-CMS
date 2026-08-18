@@ -159,11 +159,11 @@ export default async function DynamicPage({ params }: PageProps) {
         pageData={{
           ...page,
           content: {
-            ...globalData,
             ...(page.content || {}),
-            globalServices: globalData?.services?.services || []
+            globalServices: globalData?.services?.services || globalData?.globalServices || []
           }
         }}
+        globalData={globalData}
         params={resolvedParams}
       />
     </main>
