@@ -479,6 +479,8 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       titleIntro: dbService?.hero?.titleIntro || dbService?.heroTitleIntro || dbService?.title || "Transform Your Business With",
       titleHighlight: dbService?.hero?.titleHighlight || dbService?.heroTitleHighlight || "Expert Solutions",
       description: dbService?.hero?.description || dbService?.heroDescription || dbService?.description || "High-performance digital engineering and growth architecture tailored to maximize brand equity.",
+      backgroundImage: dbService?.hero?.backgroundImage || dbService?.hero?.bgImage || "/portfolio_hero_bg.png",
+      bgImage: dbService?.hero?.backgroundImage || dbService?.hero?.bgImage || "/portfolio_hero_bg.png",
       primaryCta: {
         text: dbService?.hero?.primaryCta?.text || "Start Your Project",
         link: dbService?.hero?.primaryCta?.link || "#contact-form"
@@ -853,10 +855,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       <div className="absolute bottom-[20%] left-[-12%] w-[48vw] h-[48vw] rounded-full bg-brand-blue/[0.02] dark:bg-brand-blue/[0.04] blur-[140px] pointer-events-none select-none -z-10 animate-float-blob" />
 
       {/* ── 01. SERVICE HERO ── */}
-      <section className="-mt-[110px] sm:-mt-[125px] lg:-mt-[140px] pt-[135px] sm:pt-[150px] lg:pt-[165px] pb-16 sm:pb-24 relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10">
+      <section className="-mt-[110px] sm:-mt-[125px] lg:-mt-[140px] pt-[175px] sm:pt-[200px] lg:pt-[230px] pb-16 sm:pb-24 relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10">
         <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
           <img
-            src="/portfolio_hero_bg.png"
+            src={service.hero?.backgroundImage || service.hero?.bgImage || "/portfolio_hero_bg.png"}
             alt="Hero Background"
             className="w-full h-full object-cover object-right opacity-100 dark:opacity-60"
           />

@@ -193,6 +193,14 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
                       />
                     </div>
                   </div>
+
+                  <div className="space-y-1.5 pt-3 border-t border-[#c3c4c7]">
+                    <ImageField
+                      label="Hero Background Image (Bleed Header Banner)"
+                      value={data.hero?.backgroundImage || data.hero?.bgImage || ""}
+                      onChange={(url) => updateSection("hero", "backgroundImage", url)}
+                    />
+                  </div>
                 </div>
               </div>
             )}

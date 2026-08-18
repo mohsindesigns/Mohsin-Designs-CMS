@@ -91,6 +91,8 @@ const DEFAULT_SERVICE_TEMPLATE = {
     titleIntro: "Transform Your Business With",
     titleHighlight: "Expert Solutions",
     description: "High-performance digital engineering and growth architecture tailored to maximize brand equity.",
+    backgroundImage: "/portfolio_hero_bg.png",
+    bgImage: "/portfolio_hero_bg.png",
     primaryCta: {
       text: "Start Your Project",
       link: "#contact-form"
@@ -745,6 +747,22 @@ export default function ServicesAdminPage() {
                           value={form.hero?.description || ""}
                           onChange={(e) => setForm({ ...form, hero: { ...form.hero, description: e.target.value } })}
                           className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
+                        />
+                      </div>
+
+                      {/* Hero Background Image */}
+                      <div className="space-y-1 pt-2">
+                        <ImageField
+                          label="Hero Background Image (Bleed Header Banner)"
+                          value={form.hero?.backgroundImage || form.hero?.bgImage || ""}
+                          onChange={(url) => setForm({
+                            ...form,
+                            hero: {
+                              ...form.hero,
+                              backgroundImage: url,
+                              bgImage: url
+                            }
+                          })}
                         />
                       </div>
 

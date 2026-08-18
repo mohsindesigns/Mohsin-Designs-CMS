@@ -237,6 +237,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
     titleIntro: content.hero?.titleIntro || "High-Performance Growth &",
     titleHighlight: content.hero?.titleHighlight || "Digital Architecture",
     description: content.hero?.description || "From custom Next.js platforms to full-funnel acquisition engines, we design, engineer, and scale market-leading digital products that dominate competitive categories.",
+    bgImage: content.hero?.bgImage || content.hero?.backgroundImage || "/portfolio_hero_bg.png",
     ctaPrimary: {
       label: content.hero?.ctaPrimary?.label || "Schedule Strategy Call",
       href: content.hero?.ctaPrimary?.href || "/contact",
@@ -300,12 +301,12 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
       <div className="absolute bottom-[20%] left-[-12%] w-[48vw] h-[48vw] rounded-full bg-[#0306ac]/[0.02] dark:bg-[#0306ac]/[0.04] blur-[140px] pointer-events-none select-none -z-10 animate-float-blob" />
 
       {/* ── 1. HERO ─────────────────────────────────────────────────────────── */}
-      <section className="-mt-[110px] sm:-mt-[125px] lg:-mt-[140px] pt-[135px] sm:pt-[150px] lg:pt-[165px] pb-16 sm:pb-20 relative overflow-hidden border-b border-gray-200 dark:border-white/10">
+      <section className="-mt-[110px] sm:-mt-[125px] lg:-mt-[140px] pt-[175px] sm:pt-[200px] lg:pt-[230px] pb-16 sm:pb-24 relative overflow-hidden border-b border-gray-200 dark:border-white/10">
 
         {/* Full background bleed image */}
         <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
           <img
-            src="/portfolio_hero_bg.png"
+            src={hero.bgImage || "/portfolio_hero_bg.png"}
             alt="Services Background"
             className="w-full h-full object-cover object-right opacity-100 dark:opacity-60"
           />
