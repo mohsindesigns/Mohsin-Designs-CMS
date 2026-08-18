@@ -21,15 +21,24 @@ export default function ProjectsAdminPage() {
   // Form State
   const [form, setForm] = useState({
     title: "",
+    subtitle: "",
     category: "",
     year: "",
     desc: "",
+    challenge: "",
+    approach: "",
     image: "",
     number: "",
     location: "",
     architect: "",
     accent: "from-primary to-primary/80",
-    featured: false
+    glowClass: "",
+    featured: false,
+    stats: [
+      { value: "", label: "", iconName: "Award" },
+      { value: "", label: "", iconName: "TrendingUp" },
+      { value: "", label: "", iconName: "Zap" }
+    ]
   });
 
   useEffect(() => {
@@ -69,7 +78,28 @@ export default function ProjectsAdminPage() {
 
   const handleEdit = (idx: number) => {
     setIsEditing(idx);
-    setForm(projects[idx]);
+    const p = projects[idx];
+    setForm({
+      title: p.title || "",
+      subtitle: p.subtitle || "",
+      category: p.category || "",
+      year: p.year || "",
+      desc: p.desc || "",
+      challenge: p.challenge || "",
+      approach: p.approach || "",
+      image: p.image || "",
+      number: p.number || "",
+      location: p.location || "",
+      architect: p.architect || "",
+      accent: p.accent || "from-primary to-primary/80",
+      glowClass: p.glowClass || "",
+      featured: p.featured || false,
+      stats: p.stats || [
+        { value: "", label: "", iconName: "Award" },
+        { value: "", label: "", iconName: "TrendingUp" },
+        { value: "", label: "", iconName: "Zap" }
+      ]
+    });
   };
 
   if (!data) return <div className="flex h-screen items-center justify-center text-[#646970] font-serif">Loading...</div>;
@@ -83,7 +113,27 @@ export default function ProjectsAdminPage() {
           <button
             onClick={() => {
               setIsEditing(projects.length);
-              setForm({ title: "", category: "", year: "", desc: "", image: "", number: "", location: "", architect: "", accent: "from-primary to-primary/80", featured: false });
+              setForm({
+                title: "",
+                subtitle: "",
+                category: "",
+                year: "",
+                desc: "",
+                challenge: "",
+                approach: "",
+                image: "",
+                number: "",
+                location: "",
+                architect: "",
+                accent: "from-primary to-primary/80",
+                glowClass: "",
+                featured: false,
+                stats: [
+                  { value: "", label: "", iconName: "Award" },
+                  { value: "", label: "", iconName: "TrendingUp" },
+                  { value: "", label: "", iconName: "Zap" }
+                ]
+              });
             }}
             className="bg-white border border-[#2271b1] text-[#2271b1] hover:bg-[#f6f7f7] hover:text-[#135e96] hover:border-[#135e96] px-2 py-1 text-[13px] rounded-[3px] transition-colors"
           >
@@ -110,37 +160,116 @@ export default function ProjectsAdminPage() {
                    placeholder="Enter project title"
                  />
                  
-                 <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                       <div className="space-y-1">
-                          <label className="text-[13px] font-bold">Category</label>
-                          <input type="text" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. ROOFING" />
-                       </div>
-                       <div className="space-y-1">
-                          <label className="text-[13px] font-bold">Location</label>
-                          <input type="text" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Dallas, TX" />
-                       </div>
-                    </div>
+                  <div className="space-y-4">
+                     <div className="space-y-1">
+                        <label className="text-[13px] font-bold">Project Subtitle / Tagline</label>
+                        <input type="text" value={form.subtitle || ""} onChange={(e) => setForm({ ...form, subtitle: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Enterprise-grade Product Design" />
+                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                       <div className="space-y-1">
-                          <label className="text-[13px] font-bold">Year</label>
-                          <input type="text" value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. 2024" />
-                       </div>
-                       <div className="flex items-center gap-2 pt-6">
-                          <input type="checkbox" id="feat" checked={form.featured} onChange={(e) => setForm({ ...form, featured: e.target.checked })} className="w-4 h-4 border-[#8c8f94] rounded-[3px]" />
-                          <label htmlFor="feat" className="text-[13px] font-semibold">Feature this project</label>
-                       </div>
-                    </div>
+                     <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                           <label className="text-[13px] font-bold">Category</label>
+                           <input type="text" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. UX/UI Design" />
+                        </div>
+                        <div className="space-y-1">
+                           <label className="text-[13px] font-bold">Location</label>
+                           <input type="text" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Dallas, TX" />
+                        </div>
+                     </div>
 
-                    <div className="space-y-1">
-                       <label className="text-[13px] font-bold">Project Description</label>
-                       <RichTextEditor 
-                         content={form.desc} 
-                         onChange={(val) => setForm({ ...form, desc: val })} 
-                       />
-                    </div>
-                 </div>
+                     <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                           <label className="text-[13px] font-bold">Year</label>
+                           <input type="text" value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. 2024" />
+                        </div>
+                        <div className="space-y-1">
+                           <label className="text-[13px] font-bold">Backlight Glow CSS Class</label>
+                           <input type="text" value={form.glowClass || ""} onChange={(e) => setForm({ ...form, glowClass: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. from-orange-500/20 via-red-500/10 to-transparent" />
+                        </div>
+                     </div>
+
+                     <div className="space-y-1">
+                        <label className="text-[13px] font-bold">The Challenge</label>
+                        <textarea value={form.challenge || ""} onChange={(e) => setForm({ ...form, challenge: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px] min-h-[80px]" placeholder="Describe the challenge..." />
+                     </div>
+
+                     <div className="space-y-1">
+                        <label className="text-[13px] font-bold">Our Approach / What We Did</label>
+                        <textarea value={form.approach || ""} onChange={(e) => setForm({ ...form, approach: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px] min-h-[80px]" placeholder="Describe the approach/solution..." />
+                     </div>
+
+                     <div className="flex items-center gap-2 py-2">
+                        <input type="checkbox" id="feat" checked={form.featured} onChange={(e) => setForm({ ...form, featured: e.target.checked })} className="w-4 h-4 border-[#8c8f94] rounded-[3px]" />
+                        <label htmlFor="feat" className="text-[13px] font-semibold">Feature this project</label>
+                     </div>
+
+                     <div className="space-y-1">
+                        <label className="text-[13px] font-bold">Project Description</label>
+                        <RichTextEditor 
+                          content={form.desc} 
+                          onChange={(val) => setForm({ ...form, desc: val })} 
+                        />
+                     </div>
+
+                     {/* Case Study Stats Editor */}
+                     <div className="space-y-3 p-4 border border-[#c3c4c7] rounded-[3px] bg-[#fbfbfb] mt-4">
+                        <h4 className="text-[14px] font-bold text-[#1d2327]">Case Study Stats (3 Items Recommended)</h4>
+                        <div className="space-y-4">
+                           {(form.stats || [
+                              { value: "", label: "", iconName: "Award" },
+                              { value: "", label: "", iconName: "TrendingUp" },
+                              { value: "", label: "", iconName: "Zap" }
+                           ]).map((stat: any, sIdx: number) => (
+                              <div key={sIdx} className="grid grid-cols-3 gap-3 border-b border-[#f0f0f1] pb-3 last:border-0 last:pb-0">
+                                 <div className="space-y-1">
+                                    <label className="text-[11px] font-semibold text-[#50575e]">Stat Value</label>
+                                    <input
+                                       type="text"
+                                       value={stat.value || ""}
+                                       onChange={(e) => {
+                                          const newStats = [...(form.stats || [])];
+                                          newStats[sIdx] = { ...(newStats[sIdx] || {}), value: e.target.value };
+                                          setForm({ ...form, stats: newStats });
+                                       }}
+                                       className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]"
+                                       placeholder="e.g. 48%"
+                                    />
+                                 </div>
+                                 <div className="space-y-1">
+                                    <label className="text-[11px] font-semibold text-[#50575e]">Stat Label</label>
+                                    <input
+                                       type="text"
+                                       value={stat.label || ""}
+                                       onChange={(e) => {
+                                          const newStats = [...(form.stats || [])];
+                                          newStats[sIdx] = { ...(newStats[sIdx] || {}), label: e.target.value };
+                                          setForm({ ...form, stats: newStats });
+                                       }}
+                                       className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]"
+                                       placeholder="e.g. Activation Boost"
+                                    />
+                                 </div>
+                                 <div className="space-y-1">
+                                    <label className="text-[11px] font-semibold text-[#50575e]">Stat Icon</label>
+                                    <select
+                                       value={stat.iconName || "Award"}
+                                       onChange={(e) => {
+                                          const newStats = [...(form.stats || [])];
+                                          newStats[sIdx] = { ...(newStats[sIdx] || {}), iconName: e.target.value };
+                                          setForm({ ...form, stats: newStats });
+                                       }}
+                                       className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] bg-white rounded-[3px]"
+                                    >
+                                       {["Award", "TrendingUp", "Zap", "BarChart3", "Users", "Shield", "Droplet", "Home", "Monitor", "Search", "Paintbrush", "LayoutGrid"].map((icon) => (
+                                          <option key={icon} value={icon}>{icon}</option>
+                                       ))}
+                                    </select>
+                                 </div>
+                              </div>
+                           ))}
+                        </div>
+                     </div>
+                  </div>
               </div>
            </div>
 

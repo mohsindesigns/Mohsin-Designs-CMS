@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Save, Loader2, LayoutTemplate, Type, Image as ImageIcon, ChevronRight, Star, Phone, Plus, Trash2, Mail, Users } from "lucide-react";
 import Link from "next/link";
 import ImageField from "@/components/admin/ImageField";
+import ContentSelector from "@/components/admin/ContentSelector";
 import dynamic from "next/dynamic";
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), { 
   ssr: false,
@@ -1011,69 +1012,78 @@ export default function HomeEditor() {
                 <div className="flex items-center justify-between border-b border-gray-200 pb-4">
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900">Portfolio Section</h2>
-                    <p className="text-gray-500 text-sm mt-1">Configure the design settings for the homepage portfolio section. (To add/remove actual projects, use the Projects sidebar tab).</p>
+                    <p className="text-gray-500 text-sm mt-1">Configure the design settings and select featured projects to show in the homepage slider.</p>
                   </div>
                   <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">Section 5</span>
                 </div>
 
                 {/* Intro Panel */}
-                <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6 shadow-xl">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6 shadow-xl space-y-4">
+                  <h3 className="text-lg font-bold text-gray-900 mb-2 flex items-center gap-2">
                     <Type className="w-5 h-5 text-primary" />
                     Section Headers
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Badge</label>
+                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Badge / Tag</label>
                       <input
                         type="text"
-                        value={data.portfolio?.section?.badge || ""}
-                        onChange={(e) => setData((prev: any) => ({ ...prev, portfolio: { ...prev.portfolio, section: { ...prev.portfolio.section, badge: e.target.value } } }))}
+                        value={data.portfolio?.sectionTag || ""}
+                        onChange={(e) => setData((prev: any) => ({ ...prev, portfolio: { ...prev.portfolio, sectionTag: e.target.value } }))}
                         className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                        placeholder="e.g. OUR WORK"
+                        placeholder="e.g. CASE STUDIES"
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Section Heading</label>
+                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Title Intro</label>
                       <input
                         type="text"
-                        value={data.portfolio?.section?.headline || ""}
-                        onChange={(e) => setData((prev: any) => ({ ...prev, portfolio: { ...prev.portfolio, section: { ...prev.portfolio.section, headline: e.target.value } } }))}
+                        value={data.portfolio?.titleIntro || ""}
+                        onChange={(e) => setData((prev: any) => ({ ...prev, portfolio: { ...prev.portfolio, titleIntro: e.target.value } }))}
                         className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                        placeholder="e.g. Featured Projects"
+                        placeholder="e.g. Our Recent"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Title Highlight</label>
+                      <input
+                        type="text"
+                        value={data.portfolio?.titleHighlight || ""}
+                        onChange={(e) => setData((prev: any) => ({ ...prev, portfolio: { ...prev.portfolio, titleHighlight: e.target.value } }))}
+                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                        placeholder="e.g. Masterpieces"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Description</label>
+                      <textarea
+                        value={data.portfolio?.description || ""}
+                        onChange={(e) => setData((prev: any) => ({ ...prev, portfolio: { ...prev.portfolio, description: e.target.value } }))}
+                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all min-h-[80px]"
+                        placeholder="e.g. A detailed look at some of our premium agency projects..."
                       />
                     </div>
                   </div>
                 </div>
 
-                {/* Bottom CTA Panel */}
+                {/* Work Selector Panel */}
                 <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6 shadow-xl">
                   <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <ChevronRight className="w-5 h-5 text-primary" />
-                    Bottom Call to Action Button
+                    <ImageIcon className="w-5 h-5 text-primary" />
+                    Work Selection
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Button Label</label>
-                      <input
-                        type="text"
-                        value={data.portfolio?.button?.text || ""}
-                        onChange={(e) => setData((prev: any) => ({ ...prev, portfolio: { ...prev.portfolio, button: { ...prev.portfolio.button, text: e.target.value } } }))}
-                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                        placeholder="e.g. View All Projects"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Destination Link</label>
-                      <input
-                        type="text"
-                        value={data.portfolio?.button?.link || "/gallery"}
-                        onChange={(e) => setData((prev: any) => ({ ...prev, portfolio: { ...prev.portfolio, button: { ...prev.portfolio.button, link: e.target.value } } }))}
-                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                        placeholder="e.g. /gallery"
-                      />
-                    </div>
-                  </div>
+                  <ContentSelector
+                    type="projects"
+                    label="Featured Projects"
+                    selectedItems={data.portfolio?.projects || []}
+                    onSelect={(items) => setData((prev: any) => ({
+                      ...prev,
+                      portfolio: {
+                        ...prev.portfolio,
+                        projects: items
+                      }
+                    }))}
+                  />
                 </div>
               </motion.div>
             )}

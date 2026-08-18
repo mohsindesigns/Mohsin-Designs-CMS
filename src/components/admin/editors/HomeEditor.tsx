@@ -540,19 +540,14 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                   <div className="space-y-12">
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>1. Branding</h3>
-                        <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.portfolio?.section?.badge || ""} onChange={(e) => updateSection("portfolio", "section", { ...(data.portfolio?.section || {}), badge: e.target.value })} className={UI.input} /></div>
-                        <div className="space-y-1.5"><label className={UI.label}>Headline</label><input type="text" value={data.portfolio?.section?.headline || ""} onChange={(e) => updateSection("portfolio", "section", { ...(data.portfolio?.section || {}), headline: e.target.value })} className={UI.inputLarge} /></div>
+                         <div className="space-y-1.5"><label className={UI.label}>Badge / Tag</label><input type="text" value={data.portfolio?.sectionTag || data.portfolio?.section?.badge || ""} onChange={(e) => updateSection("portfolio", "sectionTag", e.target.value)} className={UI.input} /></div>
+                         <div className="space-y-1.5"><label className={UI.label}>Title Intro</label><input type="text" value={data.portfolio?.titleIntro || data.portfolio?.section?.headlinePrefix || ""} onChange={(e) => updateSection("portfolio", "titleIntro", e.target.value)} className={UI.input} /></div>
+                         <div className="space-y-1.5"><label className={UI.label}>Title Highlight</label><input type="text" value={data.portfolio?.titleHighlight || data.portfolio?.section?.headlineHighlight || ""} onChange={(e) => updateSection("portfolio", "titleHighlight", e.target.value)} className={UI.input} /></div>
+                         <div className="space-y-1.5"><label className={UI.label}>Description</label><textarea value={data.portfolio?.description || data.portfolio?.section?.description || ""} onChange={(e) => updateSection("portfolio", "description", e.target.value)} className={UI.input + " min-h-[80px]"} /></div>
                      </div>
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>2. Work Selection</h3>
                         <ContentSelector type="projects" label="Featured Projects" selectedItems={data.portfolio?.projects} onSelect={(items) => updateSection("portfolio", "projects", items)} />
-                     </div>
-                     <div className="space-y-6 pt-10 border-t border-[#f0f0f1]">
-                        <h3 className={UI.sectionHeader}>3. Button</h3>
-                        <div className="space-y-4">
-                           <div className="space-y-1.5"><label className={UI.label}>Text</label><input type="text" value={data.portfolio?.button?.text || ""} onChange={(e) => updateSection("portfolio", "button", { ...(data.portfolio?.button || {}), text: e.target.value })} className={UI.input} /></div>
-                           <div className="space-y-1.5"><label className={UI.label}>Link</label><input type="text" value={data.portfolio?.button?.link || ""} onChange={(e) => updateSection("portfolio", "button", { ...(data.portfolio?.button || {}), link: e.target.value })} className={UI.input} /></div>
-                        </div>
                      </div>
                   </div>
                )}

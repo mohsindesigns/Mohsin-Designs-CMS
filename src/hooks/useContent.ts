@@ -149,7 +149,7 @@ export const useContent = () => {
             ...(completeData?.recognition ? { recognition: completeData.recognition } : {}),
         },
         images: getSafe(completeData, 'images', {}),
-        loader: getSafe(completeData, 'loader', { company: { name: "Mohsin Designs", tagline: "Premium Exterior Solutions" }, phases: { simpleDark: 200, roofDraw: 300, logoText: 400, ready: 100 } }),
+        loader: getSafe(completeData, 'loader', { company: { name: "Mohsin Designs", tagline: "Premium Agency Solutions" }, phases: { simpleDark: 200, roofDraw: 300, logoText: 400, ready: 100 } }),
         quickQuote: getSafe(completeData, 'quickQuote', {
             title: "",
             description: "",
@@ -175,7 +175,7 @@ export const useContent = () => {
         blogSection: getSafe(completeData, 'blogSection', {
             title: "Latest from the Blog",
             subtitle: "Insights & News",
-            description: "Stay updated with the latest trends, tips, and news from the roofing and construction industry.",
+            description: "Stay updated with the latest trends, tips, and news from the creative design and development industry.",
             selectedPosts: []
         }),
         allBlogs: Array.isArray(completeData?.allBlogs) ? completeData.allBlogs : [],

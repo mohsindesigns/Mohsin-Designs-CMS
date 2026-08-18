@@ -41,7 +41,7 @@ export default function BlogSection({
 
     const displayTitle = hasTextContent(title) ? title! : "Latest from the Blog";
     const displaySubtitle = hasTextContent(subtitle) ? subtitle! : "Insights & News";
-    const displayDescription = hasTextContent(description) ? description! : "Stay updated with the latest trends, tips, and news from the roofing and construction industry.";
+    const displayDescription = hasTextContent(description) ? description! : "Stay updated with the latest trends, tips, and news from the design, development, and marketing industry.";
 
     const words = displayTitle.trim().split(/\s+/);
     let mainTitle = "";
