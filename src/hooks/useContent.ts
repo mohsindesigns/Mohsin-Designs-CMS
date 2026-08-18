@@ -285,12 +285,29 @@ export const useContent = () => {
         serviceDetailPage: getSafe(completeData, 'serviceDetailPage'),
         settings: completeData?.settings || { siteTitle: "Mohsin Designs", siteTemplate: "%s | Mohsin Designs", favicon: "/mohsin-logo.png" },
         faqPage: getSafe(completeData, 'faqPage'),
-        blogSection: getSafe(completeData, 'blogSection', {
-            title: "Latest from the Blog",
-            subtitle: "Insights & News",
-            description: "Stay updated with the latest trends, tips, and news from the creative design and development industry.",
-            selectedPosts: []
-        }),
+        blogSection: (() => {
+            const raw = getSafe(completeData, 'blogSection', {});
+            const defaults = {
+                sectionTag: "LATEST ARTICLES & INSIGHTS",
+                titleIntro: "Thinking, Strategies &",
+                titleHighlight: "Industry Insights",
+                description: "Explore our latest thoughts on high-performance web engineering, modern UI/UX design architectures, and conversion rate optimization.",
+                featuredLabel: "Read Full Article",
+                dateSeparator: " • ",
+                selectedPosts: []
+            };
+            return {
+                ...defaults,
+                ...raw,
+                sectionTag: raw.sectionTag || raw.subtitle || defaults.sectionTag,
+                titleIntro: raw.titleIntro || defaults.titleIntro,
+                titleHighlight: raw.titleHighlight || raw.title || defaults.titleHighlight,
+                description: raw.description || defaults.description,
+                featuredLabel: raw.featuredLabel || defaults.featuredLabel,
+                dateSeparator: raw.dateSeparator || defaults.dateSeparator,
+                selectedPosts: Array.isArray(raw.selectedPosts) ? raw.selectedPosts : defaults.selectedPosts
+            };
+        })(),
         allBlogs: Array.isArray(completeData?.allBlogs) ? completeData.allBlogs : [],
     };
 };

@@ -1596,17 +1596,118 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                {activeTab === "blog" && (
                   <div className="space-y-12">
                      <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>1. Header</h3>
-                        <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.blogSection?.subtitle || ""} onChange={(e) => updateSection("blogSection", "subtitle", e.target.value)} className={UI.input} /></div>
-                        <div className="space-y-1.5"><label className={UI.label}>Headline</label><input type="text" value={data.blogSection?.title || ""} onChange={(e) => updateSection("blogSection", "title", e.target.value)} className={UI.inputLarge} /></div>
-                        <RichTextEditor
-                           label="Description Narrative"
-                           content={data.blogSection?.description || ""}
-                           onChange={(html) => updateSection("blogSection", "description", html)}
-                        />
+                        <h3 className={UI.sectionHeader}>1. Section Intro & Narrative</h3>
+                        <div className="space-y-1.5">
+                           <label className={UI.label}>Badge / Tag</label>
+                           <input
+                              type="text"
+                              value={data.blogSection?.sectionTag || data.blogSection?.subtitle || "LATEST ARTICLES & INSIGHTS"}
+                              onChange={(e) => updateSection("blogSection", "sectionTag", e.target.value)}
+                              className={UI.input}
+                              placeholder="e.g. LATEST ARTICLES & INSIGHTS"
+                           />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Headline Intro (Prefix)</label>
+                              <input
+                                 type="text"
+                                 value={data.blogSection?.titleIntro || "Thinking, Strategies &"}
+                                 onChange={(e) => updateSection("blogSection", "titleIntro", e.target.value)}
+                                 className={UI.input}
+                                 placeholder="e.g. Thinking, Strategies &"
+                              />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Headline Highlight (Accent Italic)</label>
+                              <input
+                                 type="text"
+                                 value={data.blogSection?.titleHighlight || data.blogSection?.title || "Industry Insights"}
+                                 onChange={(e) => updateSection("blogSection", "titleHighlight", e.target.value)}
+                                 className={UI.input + " font-bold border-[#2271b1] text-[#2271b1]"}
+                                 placeholder="e.g. Industry Insights"
+                              />
+                           </div>
+                        </div>
+                        <div className="space-y-1.5">
+                           <label className={UI.label}>Description</label>
+                           <textarea
+                              rows={3}
+                              value={data.blogSection?.description || ""}
+                              onChange={(e) => updateSection("blogSection", "description", e.target.value)}
+                              className={UI.input}
+                              placeholder="e.g. Explore our latest thoughts on high-performance web engineering, modern UI/UX design architectures, and conversion rate optimization."
+                           />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Featured Card CTA Label</label>
+                              <input
+                                 type="text"
+                                 value={data.blogSection?.featuredLabel || "Read Full Article"}
+                                 onChange={(e) => updateSection("blogSection", "featuredLabel", e.target.value)}
+                                 className={UI.input}
+                                 placeholder="e.g. Read Full Article"
+                              />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Date Separator Symbol</label>
+                              <input
+                                 type="text"
+                                 value={data.blogSection?.dateSeparator || " • "}
+                                 onChange={(e) => updateSection("blogSection", "dateSeparator", e.target.value)}
+                                 className={UI.input}
+                                 placeholder="e.g.  • "
+                              />
+                           </div>
+                        </div>
                      </div>
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>2. Selected Posts</h3>
+
+                     {/* FEATURED MAIN CARD OVERRIDES (OPTIONAL) */}
+                     <div className="space-y-6 pt-8 border-t border-[#f0f0f1]">
+                        <h3 className={UI.sectionHeader}>2. Main Featured Card (Optional Overrides)</h3>
+                        <p className="text-xs text-[#646970]">By default, the main featured card automatically pulls the headline, live excerpt/content, category, and image from the selected post. You can optionally override any of them here.</p>
+                        
+                        <div className="space-y-4 bg-[#f6f7f7] border border-[#dcdcde] p-5 rounded-sm">
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Custom Excerpt / Summary (Overrides Auto-Generated Snippet)</label>
+                              <textarea
+                                 rows={3}
+                                 value={data.blogSection?.featuredExcerpt || ""}
+                                 onChange={(e) => updateSection("blogSection", "featuredExcerpt", e.target.value)}
+                                 className={UI.input}
+                                 placeholder="Leave blank to automatically extract from the post content..."
+                              />
+                           </div>
+
+                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              <div className="space-y-1.5">
+                                 <label className={UI.label}>Custom Headline (Optional Override)</label>
+                                 <input
+                                    type="text"
+                                    value={data.blogSection?.featuredTitle || ""}
+                                    onChange={(e) => updateSection("blogSection", "featuredTitle", e.target.value)}
+                                    className={UI.input}
+                                    placeholder="Leave blank to use post title"
+                                 />
+                              </div>
+                              <div className="space-y-1.5">
+                                 <label className={UI.label}>Custom Category Badge (Optional Override)</label>
+                                 <input
+                                    type="text"
+                                    value={data.blogSection?.featuredCategory || ""}
+                                    onChange={(e) => updateSection("blogSection", "featuredCategory", e.target.value)}
+                                    className={UI.input}
+                                    placeholder="Leave blank to use post category"
+                                 />
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+
+                     <div className="space-y-6 pt-8 border-t border-[#f0f0f1]">
+                        <h3 className={UI.sectionHeader}>3. Selected Posts (Selector)</h3>
+                        <p className="text-xs text-[#646970]">Select the articles you want to highlight. The first post will be showcased in the large featured card, and the rest in the recent list.</p>
                         <BlogSelector
                            selectedIds={data.blogSection?.selectedPosts || []}
                            onChange={(ids) => updateSection("blogSection", "selectedPosts", ids)}

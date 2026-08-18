@@ -1,171 +1,376 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Calendar, User, Clock } from "lucide-react";
-import Link from "next/link";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
-import RichTextRenderer from "../ui/RichTextRenderer";
+import Link from "next/link";
+import { useContent } from "@/hooks/useContent";
 
 interface BlogPost {
-    _id: string;
-    title: string;
-    slug: string;
-    featuredImage?: string;
-    excerpt?: string;
-    publishedAt: string;
-    author?: string | { name: string };
+  _id?: string;
+  id?: string;
+  title: string;
+  slug?: string;
+  link?: string;
+  featuredImage?: string;
+  image?: string;
+  excerpt?: string;
+  publishedAt?: string;
+  date?: string;
+  category?: string;
+  categories?: string[];
+  readTime?: string;
+  readingTime?: string;
+  author?: string | { name: string };
 }
 
 interface BlogSectionProps {
-    title?: string;
-    subtitle?: string;
-    description?: string;
-    posts: BlogPost[];
-    viewAllLink?: string;
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  posts?: BlogPost[];
+  viewAllLink?: string;
+  data?: any;
 }
 
-const hasTextContent = (str?: string) => {
-    if (!str) return false;
-    const clean = str.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ').trim();
-    return clean.length > 0;
-};
-
-export default function BlogSection({ 
-    title, 
-    subtitle, 
-    description,
-    posts = [],
-    viewAllLink = "/blog"
+export default function BlogSection({
+  title,
+  subtitle,
+  description,
+  posts: propPosts,
+  data: overrideData,
+  viewAllLink = "/blog"
 }: BlogSectionProps) {
-    if (!posts || posts.length === 0) return null;
+  const content = useContent();
+  const rawBlog = overrideData || content.blogSection || {};
 
-    const displayTitle = hasTextContent(title) ? title! : "Latest from the Blog";
-    const displaySubtitle = hasTextContent(subtitle) ? subtitle! : "Insights & News";
-    const displayDescription = hasTextContent(description) ? description! : "Stay updated with the latest trends, tips, and news from the design, development, and marketing industry.";
+  // Headers and narrative defaults
+  const sectionTag = rawBlog.sectionTag || subtitle || rawBlog.subtitle || "LATEST ARTICLES & INSIGHTS";
+  const titleIntro = rawBlog.titleIntro || "Thinking, Strategies &";
+  const titleHighlight = rawBlog.titleHighlight || title || rawBlog.title || "Industry Insights";
+  const descText = rawBlog.description || description || "Explore our latest thoughts on high-performance web engineering, modern UI/UX design architectures, and conversion rate optimization.";
+  const featuredLabel = rawBlog.featuredLabel || "Read Full Article";
+  const dateSeparator = rawBlog.dateSeparator || " • ";
 
-    const words = displayTitle.trim().split(/\s+/);
-    let mainTitle = "";
-    let lastWord = "";
-    if (words.length > 0) {
-        lastWord = words[words.length - 1];
-        mainTitle = words.slice(0, -1).join(" ");
+  // Fallback demo posts if no posts are found
+  const defaultPosts: BlogPost[] = [
+    {
+      _id: "demo-1",
+      title: "Building High-Conversion SaaS Landing Pages with Next.js 15 & Framer Motion",
+      slug: "building-high-conversion-saas-landing-pages",
+      image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop",
+      excerpt: "A comprehensive deep dive into sub-second page loads, micro-animations that convert, and scalable architecture patterns for modern SaaS.",
+      date: "Oct 24, 2026",
+      category: "Engineering",
+      readTime: "5 min read"
+    },
+    {
+      _id: "demo-2",
+      title: "The Architecture of World-Class Design Systems in 2026",
+      slug: "architecture-of-world-class-design-systems",
+      image: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=800&auto=format&fit=crop",
+      excerpt: "How unified component tokens and strict accessibility audits transform team velocity.",
+      date: "Oct 18, 2026",
+      category: "UI/UX Design",
+      readTime: "4 min read"
+    },
+    {
+      _id: "demo-3",
+      title: "Optimizing Core Web Vitals for Enterprise Applications",
+      slug: "optimizing-core-web-vitals-for-enterprise",
+      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop",
+      excerpt: "Eliminating layout shifts, mastering dynamic hydration, and hitting 99+ Lighthouse scores.",
+      date: "Oct 12, 2026",
+      category: "Performance",
+      readTime: "6 min read"
+    },
+    {
+      _id: "demo-4",
+      title: "From Figma to Production: A Frictionless Developer Workflow",
+      slug: "from-figma-to-production-workflow",
+      image: "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?q=80&w=800&auto=format&fit=crop",
+      excerpt: "Bridging the designer-developer divide with automated token pipelines and live specs.",
+      date: "Oct 05, 2026",
+      category: "Workflow",
+      readTime: "3 min read"
+    }
+  ];
+
+  // Resolve posts from props, or selectedPosts filter, or allBlogs, or fallback defaults
+  let activePosts: BlogPost[] = [];
+  if (propPosts && propPosts.length > 0) {
+    activePosts = propPosts;
+  } else if (Array.isArray(rawBlog.selectedPosts) && rawBlog.selectedPosts.length > 0 && Array.isArray(content.allBlogs)) {
+    activePosts = content.allBlogs.filter((p: any) => rawBlog.selectedPosts.includes(p._id));
+  }
+  
+  if (activePosts.length === 0 && Array.isArray(content.allBlogs) && content.allBlogs.length > 0) {
+    activePosts = content.allBlogs.slice(0, 4);
+  }
+
+  if (activePosts.length === 0) {
+    activePosts = defaultPosts;
+  }
+
+  // Helper to extract clean text from blog post content or SEO description
+  const getPostExcerpt = (p: any): string => {
+    if (p.excerpt && typeof p.excerpt === "string" && p.excerpt.trim().length > 0) {
+      return p.excerpt.trim();
+    }
+    if (p.seo?.metaDescription && typeof p.seo.metaDescription === "string" && p.seo.metaDescription.trim().length > 0) {
+      return p.seo.metaDescription.trim();
+    }
+    if (p.seo?.ogDescription && typeof p.seo.ogDescription === "string" && p.seo.ogDescription.trim().length > 0) {
+      return p.seo.ogDescription.trim();
+    }
+    if (p.description && typeof p.description === "string" && p.description.trim().length > 0) {
+      const clean = p.description.replace(/<[^>]*>?/gm, "").replace(/&nbsp;/g, " ").trim();
+      if (clean.length > 0) return clean.length > 160 ? clean.slice(0, 157) + "..." : clean;
+    }
+    if (p.content && typeof p.content === "string") {
+      const clean = p.content.replace(/<[^>]*>?/gm, "").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
+      if (clean.length > 0) return clean.length > 160 ? clean.slice(0, 157) + "..." : clean;
+    }
+    return "";
+  };
+
+  const getPostReadingTime = (p: any): string => {
+    if (p.readTime) return p.readTime;
+    if (p.readingTime) return p.readingTime;
+    if (p.content && typeof p.content === "string") {
+      const text = p.content.replace(/<[^>]*>?/gm, "").replace(/&nbsp;/g, " ").trim();
+      const words = text.split(/\s+/).filter(Boolean).length;
+      const mins = Math.max(1, Math.ceil(words / 200));
+      return `${mins} min read`;
+    }
+    return "4 min read";
+  };
+
+  const getPostCategory = (p: any, idx: number): string => {
+    if (typeof p.category === "string" && p.category.trim()) return p.category.trim();
+    if (Array.isArray(p.categories) && p.categories.length > 0) {
+      const first = p.categories[0];
+      if (typeof first === "string" && first.trim()) return first.trim();
+      if (first && typeof first === "object" && first.name) return first.name;
+    }
+    return defaultPosts[idx % defaultPosts.length].category || "Article";
+  };
+
+  // Normalize post fields
+  const posts = activePosts.map((p, idx) => {
+    let cat = getPostCategory(p, idx);
+    let formattedDate = p.date || (p.publishedAt ? new Date(p.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Recent");
+    let reading = getPostReadingTime(p);
+    let img = p.featuredImage || p.image || defaultPosts[idx % defaultPosts.length].image!;
+    let href = p.link || (p.slug ? `/blog/${p.slug}` : `/blog/${p._id || idx}`);
+    let extractedExcerpt = getPostExcerpt(p);
+
+    // If this is the featured post (idx === 0) and CMS has an override excerpt, use it
+    if (idx === 0 && rawBlog.featuredExcerpt && rawBlog.featuredExcerpt.trim()) {
+      extractedExcerpt = rawBlog.featuredExcerpt.trim();
     }
 
-    return (
-        <section className="py-24 bg-background relative overflow-hidden">
-            {/* Background Accents */}
-            <div className="absolute top-0 right-0 w-1/3 h-1/2 bg-gradient-to-br from-primary/10 to-transparent blur-[120px] rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-1/4 h-1/3 bg-gradient-to-tr from-primary/10 to-transparent blur-[100px] rounded-full translate-y-1/2 -translate-x-1/4 pointer-events-none" />
-            <div className="absolute inset-0 opacity-[0.015] pointer-events-none" style={{ backgroundImage: "radial-gradient(hsl(var(--primary)) 0.5px, transparent 0.5px)", backgroundSize: "24px 24px" }} />
+    return {
+      id: p._id || p.id || `post-${idx}`,
+      title: (idx === 0 && rawBlog.featuredTitle) ? rawBlog.featuredTitle : (p.title || "Untitled Post"),
+      link: href,
+      image: (idx === 0 && rawBlog.featuredImage) ? rawBlog.featuredImage : img,
+      excerpt: extractedExcerpt,
+      category: (idx === 0 && rawBlog.featuredCategory) ? rawBlog.featuredCategory : cat,
+      date: formattedDate,
+      readTime: reading
+    };
+  });
 
-            <div className="max-w-7xl mx-auto px-4 relative z-10">
-                <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5 }}
-                    >
-                        <div className="flex items-center justify-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-                            <div className="w-8 sm:w-12 h-px bg-primary/30" />
-                            <span className="text-[8px] xs:text-[10px] sm:text-xs font-bold tracking-[0.2em] uppercase text-primary">
-                                {displaySubtitle}
-                            </span>
-                            <div className="w-8 sm:w-12 h-px bg-primary/30" />
-                        </div>
-                        <h2 className="text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-foreground mb-3 sm:mb-4">
-                            {mainTitle}{" "}
-                            {lastWord && (
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/80">
-                                    {lastWord}
-                                </span>
-                            )}
-                        </h2>
-                        <div className="text-muted-foreground text-sm sm:text-base lg:text-lg max-w-2xl mx-auto leading-relaxed">
-                            <RichTextRenderer content={displayDescription} stripParagraphs={true} />
-                        </div>
-                    </motion.div>
+  return (
+    <section
+      id="blog"
+      className="relative overflow-hidden bg-white dark:bg-[#080710] py-24 md:py-32 border-t border-b border-slate-200 dark:border-white/10"
+    >
+      {/* Decorative Background Glows */}
+      <div className="absolute top-1/3 -right-32 w-96 h-96 rounded-full bg-[#E9BD36]/10 blur-3xl pointer-events-none z-0" />
+      <div className="absolute bottom-1/3 -left-32 w-96 h-96 rounded-full bg-primary/5 blur-3xl pointer-events-none z-0" />
+
+      {/* Crossing structural grid lines */}
+      <div className="absolute inset-x-0 top-12 h-[1px] bg-primary/[0.03] pointer-events-none" />
+      <div className="absolute inset-x-0 bottom-12 h-[1px] bg-primary/[0.03] pointer-events-none" />
+      <div className="absolute left-1/4 top-0 bottom-0 w-[1px] bg-primary/[0.03] pointer-events-none" />
+      <div className="absolute right-1/4 top-0 bottom-0 w-[1px] bg-primary/[0.03] pointer-events-none" />
+
+      {/* Local keyframe animations for premium hover card glass sweep reflections */}
+      <style>{`
+        .card-sweep-glare {
+          position: relative;
+        }
+        .card-sweep-glare::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -120%;
+          width: 60%;
+          height: 100%;
+          background: linear-gradient(
+            to right,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.28) 50%,
+            rgba(255, 255, 255, 0) 100%
+          );
+          transform: skewX(-25deg);
+          transition: left 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+          pointer-events: none;
+          z-index: 20;
+        }
+        .group:hover.card-sweep-glare::before {
+          left: 160%;
+        }
+        .dark .card-sweep-glare::before {
+          display: none;
+        }
+      `}</style>
+
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
+
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+          className="flex flex-col gap-4 mb-16"
+        >
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary dark:text-yellow-400 text-xs font-bold uppercase tracking-widest self-start">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary dark:bg-yellow-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary dark:bg-yellow-400" />
+            </span>
+            {sectionTag}
+          </div>
+          <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-[1.15]">
+            {titleIntro}{" "}
+            <span className="text-primary dark:text-yellow-400 font-serif font-normal italic">
+              {titleHighlight}
+            </span>
+          </h2>
+          <p className="text-sm sm:text-base font-sans text-slate-600 dark:text-zinc-300 font-normal leading-relaxed max-w-xl">
+            {descText}
+          </p>
+        </motion.div>
+
+        {/* Asymmetrical Split Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
+
+          {/* Left Column: Featured Post (lg:col-span-7) */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            className="lg:col-span-7"
+          >
+            {posts[0] && (
+              <Link
+                href={posts[0].link}
+                className="group flex flex-col rounded-[2.5rem] border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#12121e] p-6 md:p-8 shadow-[0_2px_12px_rgba(3,6,172,0.015)] hover:shadow-[0_20px_40px_rgba(3,6,172,0.08)] hover:border-primary/30 dark:hover:border-primary/30 transition-all duration-300 overflow-hidden card-sweep-glare select-none block no-underline"
+              >
+                {/* Image Wrapper */}
+                <div className="relative aspect-[16/10] overflow-hidden bg-slate-100 dark:bg-zinc-800 border border-slate-200/40 dark:border-white/10 rounded-3xl mb-6">
+                  <Image
+                    src={posts[0].image}
+                    alt={posts[0].title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    sizes="(max-width: 1024px) 100vw, 680px"
+                    priority
+                  />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {posts.map((post, idx) => (
-                        <motion.article
-                            key={post._id}
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.5, delay: idx * 0.1 }}
-                            className="group bg-card border border-border/50 rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 hover:-translate-y-2"
-                        >
-                            <Link href={`/blog/${post.slug}`} className="block relative aspect-[16/10] overflow-hidden no-underline hover:no-underline">
-                                {post.featuredImage ? (
-                                    <Image 
-                                        src={post.featuredImage} 
-                                        alt={post.title}
-                                        fill
-                                        className="object-cover transition-transform duration-700 group-hover:scale-110"
-                                    />
-                                ) : (
-                                    <div className="w-full h-full bg-muted flex items-center justify-center">
-                                        <ArrowRight className="w-8 h-8 text-muted-foreground/30" />
-                                    </div>
-                                )}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                            </Link>
+                {/* Card Body */}
+                <div className="space-y-4">
+                  {/* Date and Read Time Meta */}
+                  <div className="flex items-center justify-between">
+                    <span className="block text-[10px] font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-wider">
+                      {posts[0].date}{dateSeparator}{posts[0].readTime}
+                    </span>
+                  </div>
 
-                            <div className="p-8">
-                                <div className="flex items-center gap-4 text-[11px] text-muted-foreground uppercase tracking-wider mb-4">
-                                    <div className="flex items-center gap-1.5">
-                                        <Calendar className="w-3 h-3 text-primary" />
-                                        <span>{new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                                    </div>
-                                    <div className="w-1 h-1 rounded-full bg-border" />
-                                    <div className="flex items-center gap-1.5">
-                                        <Clock className="w-3 h-3 text-primary" />
-                                        <span>5 min read</span>
-                                    </div>
-                                </div>
+                  {/* Title */}
+                  <h3 className="font-heading text-lg sm:text-xl md:text-2xl font-black text-slate-900 dark:text-white leading-snug group-hover:text-primary dark:group-hover:text-yellow-400 transition-colors duration-300">
+                    {posts[0].title}
+                  </h3>
 
-                                <h3 className="text-xl font-bold text-foreground mb-4 line-clamp-2 group-hover:text-primary transition-colors duration-300 no-underline">
-                                    <Link href={`/blog/${post.slug}`} className="no-underline text-foreground group-hover:text-primary transition-colors duration-300">
-                                        {post.title}
-                                    </Link>
-                                </h3>
+                  {/* Excerpt */}
+                  {posts[0].excerpt ? (
+                    <p className="text-xs sm:text-[13px] text-slate-600 dark:text-zinc-300 font-medium leading-relaxed line-clamp-3">
+                      {posts[0].excerpt}
+                    </p>
+                  ) : null}
 
-                                <p className="text-muted-foreground text-sm leading-relaxed mb-6 line-clamp-3">
-                                    {post.excerpt || (post as any).content?.substring(0, 150).replace(/<[^>]*>?/gm, '') + "..."}
-                                </p>
-
-                                <Link 
-                                    href={`/blog/${post.slug}`}
-                                    className="inline-flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-widest group/link no-underline hover:no-underline"
-                                >
-                                    Read Article
-                                    <ArrowRight className="w-3 h-3 transition-transform group-hover/link:translate-x-1" />
-                                </Link>
-                            </div>
-                        </motion.article>
-                    ))}
+                  {/* Read More button */}
+                  <div className="flex items-center gap-2 pt-2">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-yellow-400">{featuredLabel}</span>
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/5 dark:bg-yellow-400/10 border border-primary/10 dark:border-yellow-400/20 text-primary dark:text-yellow-400 group-hover:bg-primary group-hover:text-white dark:group-hover:bg-yellow-400 dark:group-hover:text-[#080710] transition-all duration-300">
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    </div>
+                  </div>
                 </div>
+              </Link>
+            )}
+          </motion.div>
 
-                {/* View All Posts Button */}
-                <div className="mt-12 sm:mt-16 flex justify-center">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: 0.3 }}
-                    >
-                        <Link href={viewAllLink} className="no-underline hover:no-underline">
-                            <div className="group relative overflow-hidden px-8 py-4 rounded-2xl inline-flex items-center justify-center gap-2.5 text-sm font-bold uppercase tracking-wider bg-primary text-white border border-primary/30 transition-all duration-300 active:scale-[0.98] hover:text-white shadow-lg shadow-primary/10 hover:shadow-primary/20 cursor-pointer">
-                                <span className="relative z-10">View All Posts</span>
-                                <ArrowRight className="relative z-10 w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
-                                <span className="absolute inset-0 bg-gradient-to-r from-white/10 via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
-                            </div>
-                        </Link>
-                    </motion.div>
+          {/* Right Column: Recent Posts List (lg:col-span-5) */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
+            className="lg:col-span-5 space-y-6"
+          >
+            {posts.slice(1).map((post: any, idx: number) => (
+              <Link
+                key={idx}
+                href={post.link}
+                className="group block rounded-[2rem] border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#12121e] p-4 sm:p-5 shadow-[0_2px_12px_rgba(3,6,172,0.01)] hover:shadow-[0_16px_36px_rgba(3,6,172,0.06)] hover:border-primary/30 dark:hover:border-primary/30 transition-all duration-300 overflow-hidden card-sweep-glare select-none no-underline"
+              >
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 w-full">
+                  {/* Small Thumbnail */}
+                  <div className="relative w-full sm:w-24 aspect-[16/10] sm:aspect-square overflow-hidden bg-slate-100 dark:bg-zinc-800 border border-slate-200/40 dark:border-white/10 rounded-2xl shrink-0">
+                    <Image
+                      src={post.image}
+                      alt={post.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      sizes="(max-width: 640px) 100vw, 100px"
+                    />
+                  </div>
+
+                  {/* Text Details */}
+                  <div className="flex-1 min-w-0 space-y-1.5 w-full">
+                    {/* Meta date row */}
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="block text-[9px] font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-wider">
+                        {post.date}
+                      </span>
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="font-heading text-xs sm:text-[13px] md:text-sm font-black text-slate-900 dark:text-white leading-snug group-hover:text-primary dark:group-hover:text-yellow-400 transition-colors duration-300 line-clamp-2">
+                      {post.title}
+                    </h3>
+
+                    {/* Read info */}
+                    <div className="flex items-center gap-1 text-[9px] font-bold text-slate-400 group-hover:text-primary dark:group-hover:text-yellow-400 transition-colors duration-300 pt-0.5">
+                      <span>{post.readTime}</span>
+                      <ArrowUpRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    </div>
+                  </div>
                 </div>
-            </div>
-        </section>
-    );
+              </Link>
+            ))}
+          </motion.div>
+
+        </div>
+
+      </div>
+    </section>
+  );
 }

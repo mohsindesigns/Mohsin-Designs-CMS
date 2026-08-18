@@ -6,6 +6,7 @@ import { Save, Loader2, LayoutTemplate, Type, Image as ImageIcon, ChevronRight, 
 import Link from "next/link";
 import ImageField from "@/components/admin/ImageField";
 import ContentSelector from "@/components/admin/ContentSelector";
+import BlogSelector from "@/components/admin/BlogSelector";
 import { AVAILABLE_COUNTRIES, resolveCountryLocation } from "@/lib/countryLocations";
 import dynamic from "next/dynamic";
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
@@ -77,6 +78,7 @@ export default function HomeEditor() {
     { id: "testimonials", label: "Testimonials", icon: Type },
     { id: "whyChooseUs", label: "Why Choose Us", icon: ImageIcon },
     { id: "serviceArea", label: "Service Area (Global Map)", icon: MapPin },
+    { id: "blog", label: "Blog Section", icon: LayoutTemplate },
     { id: "faq", label: "FAQ Section", icon: LayoutTemplate },
     { id: "quote", label: "Homepage Contact", icon: Mail },
   ];
@@ -2159,6 +2161,137 @@ export default function HomeEditor() {
                 );
               })}
             </div>
+          </div>
+        </motion.div>
+      )}
+
+      {activeTab === "blog" && (
+        <motion.div key="blog" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
+          <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Blog / Articles Section</h2>
+              <p className="text-gray-500 text-sm mt-1">Manage header narrative, featured article CTA, and choose which blog posts appear on the homepage.</p>
+            </div>
+            <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">Split Layout</span>
+          </div>
+
+          {/* Section Narrative */}
+          <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">1. Header Narrative</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Badge / Tag</label>
+                <input
+                  type="text"
+                  value={data.blogSection?.sectionTag || data.blogSection?.subtitle || "LATEST ARTICLES & INSIGHTS"}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, blogSection: { ...(prev.blogSection || {}), sectionTag: e.target.value } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. LATEST ARTICLES & INSIGHTS"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Headline Intro</label>
+                <input
+                  type="text"
+                  value={data.blogSection?.titleIntro || "Thinking, Strategies &"}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, blogSection: { ...(prev.blogSection || {}), titleIntro: e.target.value } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. Thinking, Strategies &"
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Headline Highlight (Accent Italic)</label>
+                <input
+                  type="text"
+                  value={data.blogSection?.titleHighlight || data.blogSection?.title || "Industry Insights"}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, blogSection: { ...(prev.blogSection || {}), titleHighlight: e.target.value } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-bold text-primary focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. Industry Insights"
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Description Subtext</label>
+                <textarea
+                  rows={3}
+                  value={data.blogSection?.description || ""}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, blogSection: { ...(prev.blogSection || {}), description: e.target.value } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. Explore our latest thoughts on high-performance web engineering, modern UI/UX design architectures, and conversion rate optimization."
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Featured Card CTA Label</label>
+                <input
+                  type="text"
+                  value={data.blogSection?.featuredLabel || "Read Full Article"}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, blogSection: { ...(prev.blogSection || {}), featuredLabel: e.target.value } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. Read Full Article"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Date Separator</label>
+                <input
+                  type="text"
+                  value={data.blogSection?.dateSeparator || " • "}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, blogSection: { ...(prev.blogSection || {}), dateSeparator: e.target.value } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g.  • "
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Featured Main Card Overrides */}
+          <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-1">2. Main Featured Card (Optional Overrides)</h3>
+            <p className="text-xs text-gray-500 mb-4">By default, the main featured card pulls its headline, live excerpt, category, and image directly from the selected post. You can optionally override them here.</p>
+
+            <div className="space-y-4 bg-slate-50 border border-slate-200 p-4 rounded-xl">
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Custom Excerpt / Summary (Overrides Auto-Generated Snippet)</label>
+                <textarea
+                  rows={3}
+                  value={data.blogSection?.featuredExcerpt || ""}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, blogSection: { ...(prev.blogSection || {}), featuredExcerpt: e.target.value } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="Leave blank to automatically extract from the post content..."
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Custom Headline (Optional Override)</label>
+                  <input
+                    type="text"
+                    value={data.blogSection?.featuredTitle || ""}
+                    onChange={(e) => setData((prev: any) => ({ ...prev, blogSection: { ...(prev.blogSection || {}), featuredTitle: e.target.value } }))}
+                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                    placeholder="Leave blank to use post title"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Custom Category Badge (Optional Override)</label>
+                  <input
+                    type="text"
+                    value={data.blogSection?.featuredCategory || ""}
+                    onChange={(e) => setData((prev: any) => ({ ...prev, blogSection: { ...(prev.blogSection || {}), featuredCategory: e.target.value } }))}
+                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                    placeholder="Leave blank to use post category"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Selected Posts */}
+          <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-2">3. Selected Posts (Selector)</h3>
+            <p className="text-xs text-gray-500 mb-4">Pick the articles to display. The first post will be showcased in the large featured card, and the rest in the recent list.</p>
+            <BlogSelector
+              selectedIds={data.blogSection?.selectedPosts || []}
+              onChange={(ids) => setData((prev: any) => ({ ...prev, blogSection: { ...(prev.blogSection || {}), selectedPosts: ids } }))}
+            />
           </div>
         </motion.div>
       )}
