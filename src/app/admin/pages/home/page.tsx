@@ -1364,274 +1364,333 @@ export default function HomeEditor() {
         <motion.div key="whyChooseUs" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
           <div className="flex items-center justify-between border-b border-gray-200 pb-4">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Why Choose Us</h2>
-              <p className="text-gray-500 text-sm mt-1">Manage the features, stats, and the big call-to-action banner.</p>
+              <h2 className="text-2xl font-bold text-gray-900">How We Work / Why Choose Us</h2>
+              <p className="text-gray-500 text-sm mt-1">Manage header narrative, 3 animated circular progress rings, step-by-step workflow, and graphic badge labels.</p>
             </div>
             <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">Section 7</span>
           </div>
 
           {/* Section Headers */}
           <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Section Headers</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-4">1. Header Narrative</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
-                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Badge</label>
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Badge / Tag</label>
                 <input
                   type="text"
-                  value={data.whyChooseUs?.section?.badge || ""}
-                  onChange={(e) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, section: { ...prev.whyChooseUs.section, badge: e.target.value } } }))}
+                  value={data.whyChooseUs?.sectionTag || data.whyChooseUs?.section?.badge || ""}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, sectionTag: e.target.value } }))}
                   className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. HOW WE WORK"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Headline</label>
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Headline Intro</label>
                 <input
                   type="text"
-                  value={data.whyChooseUs?.section?.headline || ""}
-                  onChange={(e) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, section: { ...prev.whyChooseUs.section, headline: e.target.value } } }))}
+                  value={data.whyChooseUs?.titleIntro || data.whyChooseUs?.section?.headlinePrefix || ""}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, titleIntro: e.target.value } }))}
                   className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. Engineered For"
                 />
               </div>
               <div className="space-y-2 md:col-span-2">
-                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Description</label>
-                <RichTextEditor
-                  content={data.whyChooseUs?.section?.description || ""}
-                  onChange={(v) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, section: { ...prev.whyChooseUs.section, description: v } } }))}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Features (Cards) */}
-          <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-gray-900">Feature Cards</h3>
-              <button
-                onClick={() => {
-                  const newFeatures = [...(data.whyChooseUs?.features || []), { title: "New Feature", description: "Description...", icon: "CheckCircle2" }];
-                  setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, features: newFeatures } }));
-                }}
-                className="text-xs bg-primary/10 text-primary hover:bg-primary/20 px-3 py-1.5 rounded-lg font-semibold transition-colors"
-              >
-                + Add Card
-              </button>
-            </div>
-            <div className="space-y-4">
-              {data.whyChooseUs?.features?.map((feature: any, idx: number) => (
-                <div key={idx} className="border border-gray-200 rounded-xl p-4 flex gap-4 bg-gray-50 relative group">
-                  <button
-                    onClick={() => {
-                      const newFeatures = [...data.whyChooseUs.features];
-                      newFeatures.splice(idx, 1);
-                      setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, features: newFeatures } }));
-                    }}
-                    className="absolute top-3 right-3 text-xs font-semibold text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    Delete
-                  </button>
-                  <div className="w-1/4 space-y-2">
-                    <label className="text-[10px] uppercase text-gray-500 font-bold">Icon</label>
-                    <select
-                      value={feature.icon}
-                      onChange={(e) => {
-                        const newFeatures = [...data.whyChooseUs.features];
-                        newFeatures[idx].icon = e.target.value;
-                        setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, features: newFeatures } }));
-                      }}
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary/50 focus:outline-none"
-                    >
-                      <option value="Veteran">Veteran (Custom)</option>
-                      <option value="Experience">Experience (Custom)</option>
-                      <option value="Warranty">Warranty (Custom)</option>
-                      <option value="Financing">Financing (Custom)</option>
-                      <option value="Certified">Certified (Custom)</option>
-                      <option value="Community">Community (Custom)</option>
-                      <option value="Shield">Shield (Lucide)</option>
-                      <option value="Star">Star (Lucide)</option>
-                      <option value="CheckCircle2">Check (Lucide)</option>
-                      <option value="Award">Award (Lucide)</option>
-                    </select>
-                  </div>
-                  <div className="flex-1 space-y-3">
-                    <div>
-                      <label className="text-[10px] uppercase text-gray-500 font-bold">Title</label>
-                      <input
-                        type="text"
-                        value={feature.title}
-                        onChange={(e) => {
-                          const newFeatures = [...data.whyChooseUs.features];
-                          newFeatures[idx].title = e.target.value;
-                          setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, features: newFeatures } }));
-                        }}
-                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary/50 focus:outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] uppercase text-gray-500 font-bold">Description</label>
-                      <RichTextEditor
-                        content={feature.description || ""}
-                        onChange={(v) => {
-                          const newFeatures = [...data.whyChooseUs.features];
-                          newFeatures[idx].description = v;
-                          setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, features: newFeatures } }));
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Stats */}
-          <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-gray-900">Stats Grid</h3>
-              <button
-                onClick={() => {
-                  const newStats = [...(data.whyChooseUs?.stats || []), { label: "New Stat", value: "0", suffix: "+" }];
-                  setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, stats: newStats } }));
-                }}
-                className="text-xs bg-primary/10 text-primary hover:bg-primary/20 px-3 py-1.5 rounded-lg font-semibold transition-colors"
-              >
-                + Add Stat
-              </button>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-              {data.whyChooseUs?.stats?.map((stat: any, idx: number) => (
-                <div key={idx} className="border border-gray-200 rounded-xl p-3 bg-gray-50 relative group">
-                  <button
-                    onClick={() => {
-                      const newStats = [...data.whyChooseUs.stats];
-                      newStats.splice(idx, 1);
-                      setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, stats: newStats } }));
-                    }}
-                    className="absolute top-1 right-1 text-[10px] font-bold bg-red-100 text-red-600 px-1.5 rounded opacity-0 group-hover:opacity-100"
-                  >
-                    X
-                  </button>
-                  <div className="space-y-2">
-                    <div>
-                      <label className="text-[9px] uppercase text-gray-500 font-bold">Label</label>
-                      <input
-                        type="text"
-                        value={stat.label}
-                        onChange={(e) => {
-                          const newStats = [...data.whyChooseUs.stats];
-                          newStats[idx].label = e.target.value;
-                          setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, stats: newStats } }));
-                        }}
-                        className="w-full bg-white border border-gray-200 rounded px-2 py-1 text-xs focus:border-primary/50 focus:outline-none"
-                      />
-                    </div>
-                    <div className="flex gap-2">
-                      <div className="flex-1">
-                        <label className="text-[9px] uppercase text-gray-500 font-bold">Value</label>
-                        <input
-                          type="text"
-                          value={stat.value}
-                          onChange={(e) => {
-                            const newStats = [...data.whyChooseUs.stats];
-                            newStats[idx].value = e.target.value;
-                            setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, stats: newStats } }));
-                          }}
-                          className="w-full bg-white border border-gray-200 rounded px-2 py-1 text-xs focus:border-primary/50 focus:outline-none"
-                        />
-                      </div>
-                      <div className="w-10">
-                        <label className="text-[9px] uppercase text-gray-500 font-bold">Suffix</label>
-                        <input
-                          type="text"
-                          value={stat.suffix || ""}
-                          onChange={(e) => {
-                            const newStats = [...data.whyChooseUs.stats];
-                            newStats[idx].suffix = e.target.value;
-                            setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, stats: newStats } }));
-                          }}
-                          className="w-full bg-white border border-gray-200 rounded px-2 py-1 text-xs focus:border-primary/50 focus:outline-none"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* CTA Banner */}
-          <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">CTA Banner (Bottom)</h3>
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Offer Badge</label>
-                  <input
-                    type="text"
-                    value={data.whyChooseUs?.cta?.badge || ""}
-                    onChange={(e) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, cta: { ...prev.whyChooseUs.cta, badge: e.target.value } } }))}
-                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Title</label>
-                  <input
-                    type="text"
-                    value={data.whyChooseUs?.cta?.title || ""}
-                    onChange={(e) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, cta: { ...prev.whyChooseUs.cta, title: e.target.value } } }))}
-                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Description</label>
-                <RichTextEditor
-                  content={data.whyChooseUs?.cta?.description || ""}
-                  onChange={(v) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, cta: { ...prev.whyChooseUs.cta, description: v } } }))}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Trust Badges (Comma separated)</label>
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Headline Highlight (Italic Accent)</label>
                 <input
                   type="text"
-                  value={Array.isArray(data.whyChooseUs?.cta?.trustBadges) ? data.whyChooseUs.cta.trustBadges.join(', ') : (data.whyChooseUs?.cta?.trustBadges || "")}
-                  onChange={(e) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, cta: { ...prev.whyChooseUs.cta, trustBadges: e.target.value.split(',').map((s: any) => s.trim()).filter(Boolean) } } }))}
-                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  value={data.whyChooseUs?.titleHighlight || data.whyChooseUs?.section?.headlineHighlight || ""}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, titleHighlight: e.target.value } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-bold text-primary focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. Peak Performance"
                 />
               </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Description Subtext</label>
+                <textarea
+                  rows={3}
+                  value={data.whyChooseUs?.subtext || data.whyChooseUs?.section?.description || ""}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, subtext: e.target.value } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. We combine precision design, rock-solid engineering, and conversion strategy to build digital experiences that deliver real, measurable growth."
+                />
+              </div>
+            </div>
+          </div>
 
-              <div className="space-y-2 pt-4 border-t border-gray-100">
-                <h4 className="text-xs uppercase tracking-widest text-gray-500 font-bold mb-2">CTA Buttons</h4>
-                {data.whyChooseUs?.cta?.buttons?.map((btn: any, idx: number) => (
-                  <div key={idx} className="flex gap-4 items-end">
-                    <div className="flex-1 space-y-1">
-                      <label className="text-[10px] text-gray-500 uppercase">Button Label</label>
+          {/* 3 Circular Stats */}
+          <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">2. Animated Circular Stats (3 Rings)</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {((data.whyChooseUs?.stats && data.whyChooseUs.stats.length > 0)
+                ? data.whyChooseUs.stats
+                : [
+                    { value: "99.8%", label: "Satisfaction", sublabel: "Verified Reviews", percentage: 0.99 },
+                    { value: "10x", label: "Speed Increase", sublabel: "Faster Load Times", percentage: 0.95 },
+                    { value: "<24h", label: "Turnaround", sublabel: "Average Response", percentage: 0.9 }
+                  ]
+              ).slice(0, 3).map((stat: any, idx: number) => {
+                const currentStats = (data.whyChooseUs?.stats && data.whyChooseUs.stats.length > 0)
+                  ? data.whyChooseUs.stats
+                  : [
+                      { value: "99.8%", label: "Satisfaction", sublabel: "Verified Reviews", percentage: 0.99 },
+                      { value: "10x", label: "Speed Increase", sublabel: "Faster Load Times", percentage: 0.95 },
+                      { value: "<24h", label: "Turnaround", sublabel: "Average Response", percentage: 0.9 }
+                    ];
+                return (
+                  <div key={idx} className="border border-slate-200 rounded-xl p-4 bg-slate-50/50 space-y-3">
+                    <span className="text-xs font-bold text-primary uppercase">Ring Stat #{idx + 1}</span>
+                    <div>
+                      <label className="text-[10px] uppercase text-gray-500 font-bold">Display Value</label>
                       <input
                         type="text"
-                        value={btn.text}
+                        value={stat.value || ""}
                         onChange={(e) => {
-                          const newBtns = [...data.whyChooseUs.cta.buttons];
-                          newBtns[idx].text = e.target.value;
-                          setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, cta: { ...prev.whyChooseUs.cta, buttons: newBtns } } }));
+                          const newStats = [...currentStats];
+                          newStats[idx] = { ...newStats[idx], value: e.target.value };
+                          setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, stats: newStats } }));
                         }}
-                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary/50 focus:outline-none"
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm font-bold focus:border-primary/50 focus:outline-none"
+                        placeholder="e.g. 99.8%"
                       />
                     </div>
-                    <div className="flex-1 space-y-1">
-                      <label className="text-[10px] text-gray-500 uppercase">Destination Link</label>
+                    <div>
+                      <label className="text-[10px] uppercase text-gray-500 font-bold">Fill % (0.1 to 1.0)</label>
+                      <input
+                        type="number"
+                        step="0.05"
+                        min="0.1"
+                        max="1.0"
+                        value={stat.percentage ?? 0.85}
+                        onChange={(e) => {
+                          const newStats = [...currentStats];
+                          newStats[idx] = { ...newStats[idx], percentage: parseFloat(e.target.value) || 0.85 };
+                          setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, stats: newStats } }));
+                        }}
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-xs focus:border-primary/50 focus:outline-none"
+                        placeholder="0.95"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] uppercase text-gray-500 font-bold">Label</label>
                       <input
                         type="text"
-                        value={btn.href}
+                        value={stat.label || ""}
                         onChange={(e) => {
-                          const newBtns = [...data.whyChooseUs.cta.buttons];
-                          newBtns[idx].href = e.target.value;
-                          setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, cta: { ...prev.whyChooseUs.cta, buttons: newBtns } } }));
+                          const newStats = [...currentStats];
+                          newStats[idx] = { ...newStats[idx], label: e.target.value };
+                          setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, stats: newStats } }));
                         }}
-                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary/50 focus:outline-none"
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-xs focus:border-primary/50 focus:outline-none"
+                        placeholder="e.g. Satisfaction"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] uppercase text-gray-500 font-bold">Sublabel</label>
+                      <input
+                        type="text"
+                        value={stat.sublabel || ""}
+                        onChange={(e) => {
+                          const newStats = [...currentStats];
+                          newStats[idx] = { ...newStats[idx], sublabel: e.target.value };
+                          setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, stats: newStats } }));
+                        }}
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-xs focus:border-primary/50 focus:outline-none"
+                        placeholder="e.g. Verified Reviews"
                       />
                     </div>
                   </div>
-                ))}
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Workflow Steps / Reasons */}
+          <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-gray-900">3. Process Steps & Features</h3>
+              <button
+                onClick={() => {
+                  const currentReasons = (data.whyChooseUs?.reasons && data.whyChooseUs.reasons.length > 0)
+                    ? data.whyChooseUs.reasons
+                    : (data.whyChooseUs?.features || []);
+                  const nextNum = String(currentReasons.length + 1).padStart(2, "0");
+                  const newReasons = [...currentReasons, { num: nextNum, title: "New Workflow Step", desc: "Description here...", iconName: "Sparkles" }];
+                  setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, reasons: newReasons } }));
+                }}
+                className="text-xs bg-primary/10 text-primary hover:bg-primary/20 px-3 py-1.5 rounded-lg font-semibold transition-colors"
+              >
+                + Add Step
+              </button>
+            </div>
+            <div className="space-y-4">
+              {((data.whyChooseUs?.reasons && data.whyChooseUs.reasons.length > 0)
+                ? data.whyChooseUs.reasons
+                : (data.whyChooseUs?.features && data.whyChooseUs.features.length > 0
+                    ? data.whyChooseUs.features.map((f: any, idx: number) => ({
+                        num: String(idx + 1).padStart(2, "0"),
+                        title: f.title,
+                        desc: f.description,
+                        iconName: f.icon || "Sparkles"
+                      }))
+                    : [
+                        { num: "01", title: "Strategy & Discovery", desc: "Deep analysis of your market, competitors, and audience to lay the foundation for high-conversion outcomes.", iconName: "Sparkles" },
+                        { num: "02", title: "Custom UX/UI & Prototyping", desc: "Bespoke, brand-aligned interfaces crafted with pixel precision and optimized for seamless user journeys.", iconName: "Terminal" },
+                        { num: "03", title: "High-Speed Clean Development", desc: "Modern, performant code built on scalable architectures with ultra-fast page speeds and airtight security.", iconName: "Zap" },
+                        { num: "04", title: "Conversion Optimization & SEO", desc: "Built-in technical SEO, structured data markup, and high-impact conversion funnels that drive revenue.", iconName: "TrendingUp" },
+                        { num: "05", title: "Ongoing Partnership & Support", desc: "Continuous proactive monitoring, performance audits, and rapid updates to keep you ahead of the competition.", iconName: "HeartHandshake" }
+                      ])
+              ).map((reason: any, idx: number) => {
+                const currentReasons = (data.whyChooseUs?.reasons && data.whyChooseUs.reasons.length > 0)
+                  ? data.whyChooseUs.reasons
+                  : (data.whyChooseUs?.features && data.whyChooseUs.features.length > 0
+                      ? data.whyChooseUs.features.map((f: any, i: number) => ({
+                          num: String(i + 1).padStart(2, "0"),
+                          title: f.title,
+                          desc: f.description,
+                          iconName: f.icon || "Sparkles"
+                        }))
+                      : [
+                          { num: "01", title: "Strategy & Discovery", desc: "Deep analysis of your market, competitors, and audience to lay the foundation for high-conversion outcomes.", iconName: "Sparkles" },
+                          { num: "02", title: "Custom UX/UI & Prototyping", desc: "Bespoke, brand-aligned interfaces crafted with pixel precision and optimized for seamless user journeys.", iconName: "Terminal" },
+                          { num: "03", title: "High-Speed Clean Development", desc: "Modern, performant code built on scalable architectures with ultra-fast page speeds and airtight security.", iconName: "Zap" },
+                          { num: "04", title: "Conversion Optimization & SEO", desc: "Built-in technical SEO, structured data markup, and high-impact conversion funnels that drive revenue.", iconName: "TrendingUp" },
+                          { num: "05", title: "Ongoing Partnership & Support", desc: "Continuous proactive monitoring, performance audits, and rapid updates to keep you ahead of the competition.", iconName: "HeartHandshake" }
+                        ]);
+                return (
+                  <div key={idx} className="border border-gray-200 rounded-xl p-4 bg-gray-50 relative group space-y-3">
+                    <div className="flex justify-between items-center pb-2 border-b border-gray-200">
+                      <span className="text-xs font-bold text-gray-800">Step #{idx + 1} ({reason.num || `0${idx+1}`})</span>
+                      <button
+                        onClick={() => {
+                          const newReasons = currentReasons.filter((_: any, i: number) => i !== idx);
+                          setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, reasons: newReasons } }));
+                        }}
+                        className="text-xs font-semibold text-red-500 hover:text-red-700"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[10px] uppercase text-gray-500 font-bold">Number</label>
+                        <input
+                          type="text"
+                          value={reason.num || ""}
+                          onChange={(e) => {
+                            const newReasons = [...currentReasons];
+                            newReasons[idx] = { ...newReasons[idx], num: e.target.value };
+                            setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, reasons: newReasons } }));
+                          }}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono font-bold focus:border-primary/50 focus:outline-none"
+                          placeholder="01"
+                        />
+                      </div>
+                      <div className="space-y-1 md:col-span-2">
+                        <label className="text-[10px] uppercase text-gray-500 font-bold">Title</label>
+                        <input
+                          type="text"
+                          value={reason.title || ""}
+                          onChange={(e) => {
+                            const newReasons = [...currentReasons];
+                            newReasons[idx] = { ...newReasons[idx], title: e.target.value };
+                            setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, reasons: newReasons } }));
+                          }}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-bold focus:border-primary/50 focus:outline-none"
+                          placeholder="e.g. Strategy & Discovery"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] uppercase text-gray-500 font-bold">Icon</label>
+                        <select
+                          value={reason.iconName || reason.icon || "Sparkles"}
+                          onChange={(e) => {
+                            const newReasons = [...currentReasons];
+                            newReasons[idx] = { ...newReasons[idx], iconName: e.target.value, icon: e.target.value };
+                            setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, reasons: newReasons } }));
+                          }}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary/50 focus:outline-none"
+                        >
+                          <option value="Sparkles">Sparkles</option>
+                          <option value="Terminal">Terminal</option>
+                          <option value="Zap">Zap</option>
+                          <option value="TrendingUp">TrendingUp</option>
+                          <option value="HeartHandshake">HeartHandshake</option>
+                          <option value="Rocket">Rocket</option>
+                          <option value="Paintbrush">Paintbrush</option>
+                          <option value="Shield">Shield</option>
+                          <option value="Search">Search</option>
+                          <option value="Users">Users</option>
+                          <option value="Award">Award</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] uppercase text-gray-500 font-bold">Description</label>
+                      <textarea
+                        rows={2}
+                        value={reason.desc || reason.description || ""}
+                        onChange={(e) => {
+                          const newReasons = [...currentReasons];
+                          newReasons[idx] = { ...newReasons[idx], desc: e.target.value, description: e.target.value };
+                          setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, reasons: newReasons } }));
+                        }}
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary/50 focus:outline-none"
+                        placeholder="Detailed description of this workflow step..."
+                      />
+                    </div>
+                    <div className="space-y-1 pt-2 border-t border-gray-200">
+                      <ImageField
+                        label="Step Image (Replaces SVG)"
+                        value={reason.image || ""}
+                        onChange={(url) => {
+                          const newReasons = [...currentReasons];
+                          newReasons[idx] = { ...newReasons[idx], image: url };
+                          setData((prev: any) => ({ ...prev, whyChooseUs: { ...prev.whyChooseUs, reasons: newReasons } }));
+                        }}
+                        description="Upload or choose an image for this workflow step from the Media Library"
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Graphic Illustration Badges */}
+          <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">4. Illustration Graphic Badges</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Terminal Score Badge</label>
+                <input
+                  type="text"
+                  value={data.whyChooseUs?.illustrations?.scoreLabel || "100"}
+                  onChange={(e) => setData((prev: any) => ({
+                    ...prev,
+                    whyChooseUs: {
+                      ...prev.whyChooseUs,
+                      illustrations: { ...(prev.whyChooseUs?.illustrations || {}), scoreLabel: e.target.value }
+                    }
+                  }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. 100"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Support Rating Badge</label>
+                <input
+                  type="text"
+                  value={data.whyChooseUs?.illustrations?.ratingLabel || "5.0 ★★★★★"}
+                  onChange={(e) => setData((prev: any) => ({
+                    ...prev,
+                    whyChooseUs: {
+                      ...prev.whyChooseUs,
+                      illustrations: { ...(prev.whyChooseUs?.illustrations || {}), ratingLabel: e.target.value }
+                    }
+                  }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. 5.0 ★★★★★"
+                />
               </div>
             </div>
           </div>

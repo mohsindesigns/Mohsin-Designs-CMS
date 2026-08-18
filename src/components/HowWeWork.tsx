@@ -1,751 +1,332 @@
+"use client";
+
+import { motion, useInView } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import {
-    motion,
-    useInView,
-    useMotionValue,
-    useSpring,
-    useTransform
-} from "framer-motion";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Icon } from "../config/icons";
-import { useContent } from "../hooks/useContent";
-import Link from "next/link";
-import RichTextRenderer from "./ui/RichTextRenderer";
+  Sparkles,
+  Terminal,
+  TrendingUp,
+  Zap,
+  HeartHandshake,
+  Award,
+  Monitor,
+  Paintbrush,
+  Shield,
+  Search,
+  Users,
+  CheckCircle2,
+  Rocket,
+  Image as ImageIcon
+} from "lucide-react";
+import { useContent } from "@/hooks/useContent";
 
-gsap.registerPlugin(ScrollTrigger);
+// ── Animated Circular Stat ────────────────────────────────────
+const RADIUS = 34;
+const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
-// Custom icons for WhyChooseUs section since they're not in lucide-react
-const CustomIcons = {
-    Veteran: () => (
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M12 2L2 7l10 5 10-5-10-5z" />
-            <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
-        </svg>
-    ),
-    Experience: () => (
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <circle cx="12" cy="12" r="9" />
-            <path d="M12 7v5l3 3" strokeLinecap="round" />
-        </svg>
-    ),
-    Warranty: () => (
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M12 2L15 9H22L17 14L19 21L12 17L5 21L7 14L2 9H9L12 2Z" />
-        </svg>
-    ),
-    Financing: () => (
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M8 12h8M12 8v8" />
-        </svg>
-    ),
-    Certified: () => (
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M12 2L3 7v7c0 5.5 9 8 9 8s9-2.5 9-8V7l-9-5z" />
-            <path d="M8 12l3 3 5-5" strokeLinecap="round" />
-        </svg>
-    ),
-    Community: () => (
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-        </svg>
-    ),
-};
+function AnimatedStat({
+  value = "0",
+  label = "",
+  sublabel = "",
+  percentage = 0.8,
+}: {
+  value: string;
+  label: string;
+  sublabel: string;
+  percentage: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: false, margin: "-80px" });
+  const [displayed, setDisplayed] = useState(String(value || "").replace(/[0-9.]/g, "0"));
+  const [dotProgress, setDotProgress] = useState(0);
 
-// Helper function to get the correct icon
-const getFeatureIcon = (iconName: string) => {
-    // Try custom icons first
-    if (CustomIcons[iconName as keyof typeof CustomIcons]) {
-        return CustomIcons[iconName as keyof typeof CustomIcons];
-    }
-    // Fallback to lucide icons
-    return () => <Icon name={iconName} className="w-10 h-10" />;
-};
+  useEffect(() => {
+    if (isInView) {
+      const valStr = String(value || "0");
+      const isFloat = valStr.includes(".");
+      const isPercent = valStr.includes("%");
+      const suffix = isPercent ? "%" : valStr.replace(/[0-9.]/g, "");
+      const numeric = parseFloat(valStr.replace(/[^0-9.]/g, "")) || 0;
+      const DURATION = 1400;
+      const DELAY = 150;
+      const startTime = performance.now() + DELAY;
+      let rafId: number;
 
-const CinematicBackground = ({ isClient }: { isClient: boolean }) => {
-    return (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <motion.div
-                className="absolute top-20 left-20 w-[800px] h-[800px] rounded-full bg-primary/5 blur-[120px]"
-                animate={{
-                    x: [0, 100, 0, -50, 0],
-                    y: [0, -50, 100, 50, 0],
-                    scale: [1, 1.2, 0.8, 1.1, 1],
-                }}
-                transition={{
-                    duration: 30,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                }}
-            />
-            <motion.div
-                className="absolute bottom-20 right-20 w-[800px] h-[800px] rounded-full bg-primary/5 blur-[120px]"
-                animate={{
-                    x: [0, -100, 50, -30, 0],
-                    y: [0, 50, -50, 30, 0],
-                    scale: [1, 0.8, 1.2, 0.9, 1],
-                }}
-                transition={{
-                    duration: 25,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 2
-                }}
-            />
+      const tick = (now: number) => {
+        const elapsed = Math.max(0, now - startTime);
+        const raw = Math.min(elapsed / DURATION, 1);
+        const eased = 1 - Math.pow(1 - raw, 4); // easeOutQuart
 
-            <div
-                className="absolute inset-0 opacity-[0.02]"
-                style={{
-                    backgroundImage: `
-            linear-gradient(to right, hsl(var(--primary)) 1px, transparent 1px),
-            linear-gradient(to bottom, hsl(var(--primary)) 1px, transparent 1px)
-          `,
-                    backgroundSize: '60px 60px',
-                }}
-            />
+        setDisplayed((isFloat ? (eased * numeric).toFixed(1) : Math.round(eased * numeric).toString()) + suffix);
+        setDotProgress(eased * (percentage || 0.8));
 
-            <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background opacity-30" />
-
-
-            {isClient && [...Array(20)].map((_, i) => (
-                <motion.div
-                    key={i}
-                    className="absolute w-px h-px bg-primary/30"
-                    style={{
-                        left: `${Math.random() * 100}%`,
-                        top: `${Math.random() * 100}%`,
-                    }}
-                    animate={{
-                        y: [0, -100, 0],
-                        opacity: [0, 0.5, 0],
-                        scale: [0, 1, 0],
-                    }}
-                    transition={{
-                        duration: 10 + Math.random() * 10,
-                        repeat: Infinity,
-                        delay: Math.random() * 5,
-                        ease: "linear"
-                    }}
-                />
-            ))}
-        </div>
-    );
-};
-
-const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
-    const [isHovered, setIsHovered] = useState(false);
-    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-    const cardRef = useRef(null);
-    const inView = useInView(cardRef, { once: true, margin: "-100px" });
-
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
-    const springX = useSpring(x, { stiffness: 150, damping: 15 });
-    const springY = useSpring(y, { stiffness: 150, damping: 15 });
-    const rotateX = useTransform(springY, [-0.5, 0.5], [5, -5]);
-    const rotateY = useTransform(springX, [-0.5, 0.5], [-5, 5]);
-
-    const handleMouseMove = (e: React.MouseEvent) => {
-        if (!cardRef.current) return;
-        const rect = (cardRef.current as HTMLElement).getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-        const xPct = (mouseX / rect.width - 0.5) * 0.4;
-        const yPct = (mouseY / rect.height - 0.5) * 0.4;
-        x.set(xPct);
-        y.set(yPct);
-        setMousePosition({ x: mouseX, y: mouseY });
-    };
-
-    const handleMouseLeave = () => {
-        setIsHovered(false);
-        x.set(0);
-        y.set(0);
-    };
-
-    // Get the correct icon component
-    const FeatureIcon = getFeatureIcon(feature?.icon || "CheckCircle");
-
-    return (
-        <motion.article
-            ref={cardRef}
-            initial={{ opacity: 0, y: 100 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{
-                duration: 0.8,
-                delay: index * 0.1,
-                ease: [0.16, 1, 0.3, 1]
-            }}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={handleMouseLeave}
-            onMouseMove={handleMouseMove}
-            style={{
-                rotateX,
-                rotateY,
-                transformPerspective: 2000,
-            }}
-            className="relative group h-full cursor-pointer"
-        >
-            <div className="relative h-full bg-card overflow-hidden rounded-2xl border border-border">
-                <motion.div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"
-                    style={{
-                        background: `radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, hsl(var(--primary)/0.03), transparent 60%)`,
-                    }}
-                />
-
-                <motion.div
-                    className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent"
-                    initial={{ x: '-100%', opacity: 0 }}
-                    animate={{
-                        x: isHovered ? '100%' : '-100%',
-                        opacity: isHovered ? 1 : 0
-                    }}
-                    transition={{ duration: 0.8, ease: "easeInOut" }}
-                />
-
-                <motion.div
-                    className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent"
-                    initial={{ x: '100%', opacity: 0 }}
-                    animate={{
-                        x: isHovered ? '-100%' : '100%',
-                        opacity: isHovered ? 1 : 0
-                    }}
-                    transition={{ duration: 0.8, ease: "easeInOut", delay: 0.1 }}
-                />
-
-                <motion.div
-                    className="absolute left-0 top-0 bottom-0 w-[3px] bg-primary"
-                    initial={{ height: 0, top: '50%' }}
-                    animate={{
-                        height: isHovered ? '100%' : 0,
-                        top: isHovered ? 0 : '50%'
-                    }}
-                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                />
-
-                <motion.div
-                    className="absolute right-0 top-0 bottom-0 w-[1px] bg-primary/30"
-                    initial={{ height: 0, top: '50%' }}
-                    animate={{
-                        height: isHovered ? '100%' : 0,
-                        top: isHovered ? 0 : '50%'
-                    }}
-                    transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                />
-
-                <motion.div
-                    className="absolute top-0 right-0 w-16 h-16"
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: isHovered ? 1 : 0, scale: isHovered ? 1 : 0.5 }}
-                    transition={{ duration: 0.4, delay: 0.15 }}
-                >
-                    <div className="absolute top-0 right-0 w-10 h-10 border-t-2 border-r-2 border-primary" />
-                </motion.div>
-
-                <motion.div
-                    className="absolute bottom-0 left-0 w-16 h-16"
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: isHovered ? 1 : 0, scale: isHovered ? 1 : 0.5 }}
-                    transition={{ duration: 0.4, delay: 0.2 }}
-                >
-                    <div className="absolute bottom-0 left-0 w-10 h-10 border-b-2 border-l-2 border-primary" />
-                </motion.div>
-
-                {isHovered && (
-                    <>
-                        {[...Array(3)].map((_, i) => (
-                            <motion.div
-                                key={i}
-                                className="absolute w-1 h-1 rounded-full bg-primary/40"
-                                initial={{
-                                    x: mousePosition.x,
-                                    y: mousePosition.y,
-                                    scale: 0,
-                                    opacity: 0.6
-                                }}
-                                animate={{
-                                    x: mousePosition.x + (Math.random() - 0.5) * 150,
-                                    y: mousePosition.y + (Math.random() - 0.5) * 150,
-                                    scale: [0, 1.5, 0],
-                                    opacity: [0, 0.4, 0]
-                                }}
-                                transition={{
-                                    duration: 1,
-                                    delay: i * 0.15,
-                                    ease: "easeOut"
-                                }}
-                            />
-                        ))}
-                    </>
-                )}
-
-                <div className="relative h-full p-8 flex flex-col z-10">
-                    <div className="relative mb-6">
-                        <div className="relative w-20 h-20">
-                            <motion.div
-                                className="absolute inset-0 border"
-                                animate={{
-                                    borderColor: isHovered ? 'hsl(235, 70%, 48%)' : 'rgba(36, 48, 210, 0.2)',
-                                    scale: isHovered ? 1.05 : 1
-                                }}
-                                transition={{ duration: 0.3 }}
-                            />
-
-                            <motion.div
-                                className="absolute inset-2 border border-primary/10"
-                                animate={{ rotate: isHovered ? 45 : 0 }}
-                                transition={{ duration: 0.5 }}
-                            />
-
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <motion.div
-                                    animate={{
-                                        scale: isHovered ? 1.1 : 1,
-                                        color: isHovered ? 'hsl(var(--primary))' : 'hsl(var(--primary))'
-                                    }}
-                                    transition={{ duration: 0.3 }}
-                                    className="text-primary"
-                                >
-                                    <FeatureIcon />
-                                </motion.div>
-                            </div>
-                        </div>
-
-                        <motion.div
-                            className="absolute -top-2 -right-2 text-primary"
-                            animate={{
-                                rotate: isHovered ? 360 : 0,
-                                scale: isHovered ? 1.2 : 0.8,
-                                opacity: isHovered ? 1 : 0.3
-                            }}
-                            transition={{ duration: 0.5 }}
-                        >
-                            <Icon name="Sparkles" className="w-4 h-4" />
-                        </motion.div>
-                    </div>
-
-                    <div className="mb-4">
-                        <h3 className={`
-              text-xl md:text-2xl font-bold mb-3 transition-colors duration-300
-              ${isHovered ? 'text-primary' : 'text-card-foreground'}
-            `}>
-                            {feature.title}
-                        </h3>
-
-                        <motion.div
-                            className="h-[2px] bg-gradient-to-r from-primary to-primary/30 rounded-full"
-                            initial={{ width: 0 }}
-                            animate={{ width: isHovered ? '60px' : 0 }}
-                            transition={{ duration: 0.5, delay: 0.1 }}
-                        />
-                    </div>
-
-                    <RichTextRenderer
-                        content={feature?.description || ""}
-                        className="text-sm md:text-base text-muted-foreground leading-relaxed flex-1"
-                    />
-
-                    <motion.div
-                        className="absolute bottom-4 right-4 text-7xl font-black text-muted-foreground/20 select-none"
-                        animate={{
-                            scale: isHovered ? 1.1 : 1,
-                            color: isHovered ? 'hsl(var(--primary)/0.1)' : 'hsl(var(--muted-foreground)/0.05)'
-                        }}
-                    >
-                        {(index + 1).toString().padStart(2, '0')}
-                    </motion.div>
-
-                    <motion.div
-                        className="mt-6 flex items-center gap-3"
-                        animate={{ x: isHovered ? 5 : 0 }}
-                    >
-                        <span className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-                            Explore
-                        </span>
-                        <motion.div
-                            className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden"
-                            animate={{
-                                backgroundColor: isHovered ? 'hsl(var(--primary))' : 'hsl(var(--primary)/0.1)',
-                                width: '28px'
-                            }}
-                        >
-                            <motion.div
-                                animate={{ x: isHovered ? 3 : 0 }}
-                                transition={{ duration: 0.2 }}
-                            >
-                                <Icon name="ArrowRight" className={`w-3.5 h-3.5 ${isHovered ? 'text-primary-foreground' : 'text-primary'}`} />
-                            </motion.div>
-                        </motion.div>
-                    </motion.div>
-                </div>
-
-                <motion.div
-                    className="absolute inset-0 -z-10"
-                    animate={{
-                        boxShadow: isHovered
-                            ? '20px 20px 40px -20px hsl(var(--primary)/0.3), -20px -20px 40px -20px hsl(var(--primary)/0.1)'
-                            : '10px 10px 30px -15px hsl(var(--foreground)/0.1)'
-                    }}
-                    transition={{ duration: 0.3 }}
-                />
-            </div>
-        </motion.article>
-    );
-};
-
-const StatCounter = ({ value, label, suffix = "", delay = 0 }: { value: string | number; label: string; suffix?: string; delay?: number }) => {
-    const ref = useRef(null);
-    const [displayValue, setDisplayValue] = useState(0);
-    const [isHovered, setIsHovered] = useState(false);
-    const inView = useInView(ref, { once: true, margin: "-50px" });
-
-    // Extract suffix from value if not provided explicitly (e.g. "500+" -> numeric: 500, suffix: "+")
-    let cleanValue = value;
-    let autoSuffix = suffix;
-    if (typeof value === "string") {
-        const match = value.match(/^(\d+)(.*)$/);
-        if (match) {
-            cleanValue = parseInt(match[1], 10);
-            if (!autoSuffix && match[2]) {
-                autoSuffix = match[2];
-            }
+        if (raw < 1) {
+          rafId = requestAnimationFrame(tick);
+        } else {
+          setDotProgress(percentage || 0.8);
         }
+      };
+
+      rafId = requestAnimationFrame(tick);
+      return () => cancelAnimationFrame(rafId);
+    } else {
+      setDisplayed(String(value || "0").replace(/[0-9.]/g, "0"));
+      setDotProgress(0);
     }
+  }, [isInView, percentage, value]);
 
-    const numericValue = typeof cleanValue === 'number' ? cleanValue : parseInt(String(cleanValue), 10);
-    const isValidNumber = !isNaN(numericValue) && isFinite(numericValue);
+  const safePercentage = Math.min(Math.max(dotProgress, 0), 1);
+  const dotAngle = 2 * Math.PI * safePercentage;
+  const dotX = 41 + RADIUS * Math.cos(dotAngle);
+  const dotY = 41 + RADIUS * Math.sin(dotAngle);
 
-    useEffect(() => {
-        if (!inView || !isValidNumber) return;
+  const gradientId = `ringGradient-${String(label || "stat").replace(/[^a-zA-Z0-9]/g, "")}`;
 
-        let startTime: number;
-        const duration = 2000;
-        const end = numericValue;
+  return (
+    <div ref={ref} className="flex flex-col items-center gap-3">
+      {/* Ring */}
+      <div className="relative w-[80px] h-[80px] sm:w-[96px] sm:h-[96px]">
+        <div className="absolute inset-0 rounded-full bg-primary/10 dark:bg-yellow-400/5 blur-md" />
+        <svg viewBox="0 0 82 82" className="relative w-full h-full -rotate-90">
+          <defs>
+            <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#0306AC" />
+              <stop offset="100%" stopColor="#E9BD36" />
+            </linearGradient>
+          </defs>
+          {/* Track */}
+          <circle
+            cx="41" cy="41" r={RADIUS}
+            fill="none"
+            stroke="rgba(0,0,0,0.08)"
+            strokeWidth="5"
+            className="dark:stroke-white/10"
+          />
+          {/* Animated fill */}
+          <circle
+            cx="41" cy="41" r={RADIUS}
+            fill="none"
+            stroke={`url(#${gradientId})`}
+            strokeWidth="5"
+            strokeLinecap="round"
+            strokeDasharray={CIRCUMFERENCE}
+            strokeDashoffset={CIRCUMFERENCE * (1 - safePercentage)}
+          />
+          {/* Yellow dot */}
+          <circle
+            cx={dotX} cy={dotY} r="4.5"
+            fill="#E9BD36"
+            stroke="white"
+            strokeWidth="1.5"
+            style={{ filter: "drop-shadow(0 2px 4px rgba(233,189,54,0.5))" }}
+          />
+        </svg>
+        {/* Number */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="font-heading font-black text-[15px] sm:text-[18px] text-brand-dark dark:text-white leading-none">
+            {displayed}
+          </span>
+        </div>
+      </div>
+      {/* Labels */}
+      <div className="text-center">
+        <p className="text-[9px] font-black uppercase tracking-widest text-brand-dark dark:text-white">{label}</p>
+        <p className="text-[8.5px] text-slate-500 dark:text-zinc-400 mt-0.5 leading-snug whitespace-pre-line">{sublabel}</p>
+      </div>
+    </div>
+  );
+}
 
-        const animate = (timestamp: number) => {
-            if (!startTime) startTime = timestamp;
-            const progress = Math.min((timestamp - startTime) / duration, 1);
-            const eased = 1 - Math.pow(1 - progress, 3);
-            setDisplayValue(Math.floor(eased * end));
+const iconMap: Record<string, any> = {
+  Sparkles,
+  Terminal,
+  TrendingUp,
+  Zap,
+  HeartHandshake,
+  Award,
+  Monitor,
+  Paintbrush,
+  Shield,
+  Search,
+  Users,
+  CheckCircle2,
+  Rocket
+};
 
-            if (progress < 1) {
-                requestAnimationFrame(animate);
-            }
-        };
+export default function HowWeWork({ data: overrideData }: { data?: any }) {
+  const content = useContent();
+  const rawWhyChoose = overrideData || content.whyChooseUs || {};
 
-        requestAnimationFrame(animate);
-    }, [inView, numericValue, isValidNumber]);
+  const sectionTag = rawWhyChoose.sectionTag || rawWhyChoose.section?.badge || "HOW WE WORK";
+  const titleIntro = rawWhyChoose.titleIntro || rawWhyChoose.section?.headlinePrefix || "Engineered For";
+  const titleHighlight = rawWhyChoose.titleHighlight || rawWhyChoose.section?.headlineHighlight || "Peak Performance";
+  const subtext = rawWhyChoose.subtext || rawWhyChoose.section?.description || "We combine precision design, rock-solid engineering, and conversion strategy to build digital experiences that deliver real, measurable growth.";
 
-    // If not a valid number, just display the value as is
-    if (!isValidNumber) {
-        return (
+  const rawStats = Array.isArray(rawWhyChoose.stats) && rawWhyChoose.stats.length > 0 ? rawWhyChoose.stats : [
+    { value: "99.8%", label: "Satisfaction", sublabel: "Verified Reviews", percentage: 0.99 },
+    { value: "10x", label: "Speed Increase", sublabel: "Faster Load Times", percentage: 0.95 },
+    { value: "<24h", label: "Turnaround", sublabel: "Average Response", percentage: 0.9 }
+  ];
+
+  const rawReasons = Array.isArray(rawWhyChoose.reasons) && rawWhyChoose.reasons.length > 0 
+    ? rawWhyChoose.reasons 
+    : (Array.isArray(rawWhyChoose.features) && rawWhyChoose.features.length > 0 
+        ? rawWhyChoose.features.map((f: any, idx: number) => ({
+            num: String(idx + 1).padStart(2, "0"),
+            title: f.title,
+            desc: f.description,
+            iconName: f.icon || "Sparkles",
+            image: f.image || ""
+          }))
+        : [
+            { num: "01", title: "Strategy & Discovery", desc: "Deep analysis of your market, competitors, and audience to lay the foundation for high-conversion outcomes.", iconName: "Sparkles", image: "" },
+            { num: "02", title: "Custom UX/UI & Prototyping", desc: "Bespoke, brand-aligned interfaces crafted with pixel precision and optimized for seamless user journeys.", iconName: "Terminal", image: "" },
+            { num: "03", title: "High-Speed Clean Development", desc: "Modern, performant code built on scalable architectures with ultra-fast page speeds and airtight security.", iconName: "Zap", image: "" },
+            { num: "04", title: "Conversion Optimization & SEO", desc: "Built-in technical SEO, structured data markup, and high-impact conversion funnels that drive revenue.", iconName: "TrendingUp", image: "" },
+            { num: "05", title: "Ongoing Partnership & Support", desc: "Continuous proactive monitoring, performance audits, and rapid updates to keep you ahead of the competition.", iconName: "HeartHandshake", image: "" }
+          ]);
+
+  const reasons = rawReasons.map((r: any) => ({
+    ...r,
+    icon: iconMap[r.iconName] || iconMap[r.icon] || Sparkles
+  }));
+
+  return (
+    <section
+      id="how-we-work"
+      className="relative bg-[#F8FAFC] dark:bg-[#0a0a14] border-t border-slate-200 dark:border-white/10 py-20 md:py-28"
+    >
+      {/* Dot grid */}
+      <div
+        className="absolute inset-0 opacity-[0.03] pointer-events-none"
+        style={{
+          backgroundImage: "radial-gradient(#0306AC 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+        }}
+      />
+
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
+        <div className="flex flex-col lg:flex-row lg:items-start gap-12 lg:gap-0">
+
+          {/* ── LEFT STICKY ─────────────────────────────────── */}
+          <div className="lg:w-[42%] lg:shrink-0 lg:sticky lg:top-28 flex flex-col justify-start lg:pr-16 lg:border-r border-slate-200 dark:border-white/10">
             <motion.div
-                ref={ref}
-                initial={{ opacity: 0, y: 20 }}
-                animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay }}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-                className="text-center group cursor-pointer"
+              initial={{ opacity: 0, y: 28 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              className="space-y-7"
             >
-                <div className="relative inline-block">
-                    <motion.div
-                        className="text-4xl md:text-5xl font-black text-primary relative z-10"
-                        animate={{
-                            scale: isHovered ? 1.1 : 1,
-                            y: isHovered ? -2 : 0
-                        }}
-                    >
-                        <span>{String(value)}</span>{autoSuffix}
-                    </motion.div>
-                </div>
-                <div className="text-xs font-semibold tracking-wider text-muted-foreground mt-2 uppercase">
-                    {label}
-                </div>
+              {/* Pill */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary dark:text-yellow-400 text-xs font-bold uppercase tracking-widest">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary dark:bg-yellow-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary dark:bg-yellow-400" />
+                </span>
+                {sectionTag}
+              </div>
+
+              {/* Heading */}
+              <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white leading-[1.15] tracking-tight">
+                {titleIntro}{" "}
+                <span className="text-primary dark:text-yellow-400 font-serif font-normal italic">
+                  {titleHighlight}
+                </span>
+              </h2>
+
+              {/* Subtext */}
+              <p className="text-sm sm:text-base font-sans text-slate-600 dark:text-zinc-300 font-normal leading-relaxed max-w-sm">
+                {subtext}
+              </p>
+
+              {/* Circular stats */}
+              <div className="flex items-center justify-between gap-4 pt-6 w-full">
+                {rawStats.slice(0, 3).map((stat: any, sIdx: number) => (
+                  <div key={sIdx} className="flex items-center gap-4 flex-1 justify-center">
+                    <AnimatedStat
+                      value={stat.value}
+                      label={stat.label}
+                      sublabel={stat.sublabel}
+                      percentage={Number(stat.percentage) || 0.85}
+                    />
+                    {sIdx < 2 && (
+                      <div className="w-px h-16 bg-slate-200 dark:bg-white/10 self-center hidden sm:block" />
+                    )}
+                  </div>
+                ))}
+              </div>
             </motion.div>
-        );
-    }
+          </div>
 
-    return (
-        <motion.div
-            ref={ref}
-            initial={{ opacity: 0, y: 20 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay }}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            className="text-center group cursor-pointer"
-        >
-            <div className="relative inline-block">
+          {/* ── RIGHT SCROLLING ──────────────────────────────── */}
+          <div className="lg:flex-1 lg:pl-14 flex flex-col">
+            {reasons.map((reason: any, index: number) => {
+              const IconComp = reason.icon;
+              return (
                 <motion.div
-                    className="text-4xl md:text-5xl font-black text-primary relative z-10"
-                    animate={{
-                        scale: isHovered ? 1.1 : 1,
-                        y: isHovered ? -2 : 0
-                    }}
+                  key={index}
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: false, margin: "-50px" }}
+                  transition={{
+                    duration: 0.55,
+                    ease: [0.16, 1, 0.3, 1],
+                    delay: index * 0.04,
+                  }}
+                  className="group border-b border-slate-200 dark:border-white/10 last:border-b-0 py-8"
                 >
-                    <span>{displayValue}</span>{autoSuffix}
-                </motion.div>
+                  {/* Row: icon+text LEFT, image RIGHT */}
+                  <div className="flex items-center gap-6">
 
-                <motion.div
-                    className="absolute inset-0 bg-primary/10 blur-xl"
-                    animate={{
-                        scale: isHovered ? 1.5 : 1,
-                        opacity: isHovered ? 0.5 : 0
-                    }}
-                    transition={{ duration: 0.3 }}
-                />
+                    {/* LEFT: Icon + text */}
+                    <div className="flex items-start gap-4 flex-1 min-w-0">
+                      {/* Icon */}
+                      <div className="shrink-0 flex h-11 w-11 items-center justify-center rounded-xl
+                        bg-primary/10 border border-primary/20 text-primary dark:text-yellow-400 dark:bg-yellow-400/10 dark:border-yellow-400/20
+                        group-hover:bg-primary group-hover:text-white dark:group-hover:bg-yellow-400 dark:group-hover:text-[#080710] group-hover:border-primary dark:group-hover:border-yellow-400
+                        group-hover:shadow-[0_6px_20px_rgba(3,6,172,0.22)] dark:group-hover:shadow-[0_6px_20px_rgba(233,189,54,0.18)]
+                        transition-all duration-300 mt-0.5">
+                        <IconComp className="h-[18px] w-[18px]" />
+                      </div>
 
-                <motion.div
-                    className="absolute -top-2 -right-2 w-1.5 h-1.5 bg-primary rounded-full"
-                    animate={{ scale: [1, 1.5, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                />
-            </div>
-            <div className="text-xs font-semibold tracking-wider text-muted-foreground mt-2 uppercase">
-                {label}
-            </div>
-        </motion.div>
-    );
-};
+                      {/* Text */}
+                      <div className="flex-1 min-w-0 space-y-1.5">
+                        <span className="font-mono text-[10px] font-black text-primary dark:text-yellow-400 tracking-widest">
+                          {reason.num || String(index + 1).padStart(2, "0")}
+                        </span>
+                        <h3 className="font-heading font-extrabold text-[1.1rem] text-slate-900 dark:text-white group-hover:text-primary dark:group-hover:text-yellow-400 transition-colors duration-300 leading-snug">
+                          {reason.title}
+                        </h3>
+                        <p className="text-[13px] text-slate-600 dark:text-zinc-400 leading-relaxed">
+                          {reason.desc}
+                        </p>
+                      </div>
+                    </div>
 
-const AwardCTABanner = () => {
-    const { cta } = useContent().whyChooseUs || {};
-
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="relative mt-20 overflow-hidden"
-        >
-            <div className="relative bg-card border border-border rounded-2xl">
-                <div className="absolute inset-0 overflow-hidden">
-                    <motion.div
-                        className="absolute -top-40 -right-40 w-80 h-80 bg-primary/5 rotate-12"
-                        animate={{ rotate: [12, 15, 12] }}
-                        transition={{ duration: 8, repeat: Infinity }}
-                    />
-                    <motion.div
-                        className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary/5 -rotate-12"
-                        animate={{ rotate: [-12, -15, -12] }}
-                        transition={{ duration: 8, repeat: Infinity }}
-                    />
-                </div>
-
-                <motion.div
-                    className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent"
-                    animate={{ x: ["-100%", "100%"] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                />
-                <motion.div
-                    className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent"
-                    animate={{ x: ["100%", "-100%"] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                />
-
-                <div className="absolute top-0 left-0 w-16 h-16 border-t-2 border-l-2 border-primary/30" />
-                <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-primary/30" />
-                <div className="absolute bottom-0 left-0 w-16 h-16 border-b-2 border-l-2 border-primary/30" />
-                <div className="absolute bottom-0 right-0 w-16 h-16 border-b-2 border-r-2 border-primary/30" />
-
-                <div className="relative px-8 py-16 md:px-20 md:py-20 flex flex-col lg:flex-row items-center justify-between gap-10 z-30">
-                    <div className="max-w-2xl">
-                        {cta?.badge && cta.badge.trim() !== "" && (
-                            <motion.div
-                                initial={{ opacity: 0, x: -20 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.4 }}
-                                className="flex items-center gap-2 mb-4"
-                            >
-                                <span className="w-8 h-[2px] bg-primary" />
-                                <span className="text-lg font-bold tracking-[0.3em] uppercase text-primary">
-                                    {cta.badge}
-                                </span>
-                            </motion.div>
-                        )}
-
-                        <h3
-                            className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4 leading-tight"
-                            dangerouslySetInnerHTML={{ __html: cta?.title || "" }}
+                    {/* RIGHT: Dynamic Image Managed from Dashboard */}
+                    <div className="hidden md:block shrink-0 w-[140px] h-[95px] rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 overflow-hidden group-hover:border-primary/30 group-hover:shadow-md transition-all duration-300">
+                      {reason.image ? (
+                        <img
+                          src={reason.image}
+                          alt={reason.title || "Step Image"}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
-
-                        <RichTextRenderer
-                            content={cta?.description || ""}
-                            className="text-muted-foreground text-base md:text-lg leading-relaxed max-w-lg"
-                        />
-
-                        <div className="flex items-center gap-6 mt-6">
-                            {(cta?.trustBadges || []).map((badge: string, i: number) => (
-                                <div key={i} className="flex items-center gap-2">
-                                    <div className="w-1.5 h-1.5 bg-primary rounded-full" />
-                                    <span className="text-xs text-muted-foreground">{badge}</span>
-                                </div>
-                            ))}
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 dark:text-zinc-600 bg-slate-50 dark:bg-white/[0.02] p-2 text-center">
+                          <IconComp className="w-6 h-6 text-primary/40 mb-1" />
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">{reason.num || `0${index+1}`}</span>
                         </div>
+                      )}
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-4">
-                        {(cta?.buttons || []).map((button: any, idx: number) => {
-                            const links = ["/contact-us", "/gallery"];
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
 
-                            return (
-
-                                <Link key={idx} href={links[idx] || "#"}>
-                                    <motion.div
-                                        whileHover={{ scale: 1.03 }}
-                                        whileTap={{ scale: 0.98 }}
-                                        className="relative px-8 py-4 bg-white text-primary border-2 border-primary font-bold rounded-full shadow-sm hover:bg-primary hover:text-white hover:shadow-md transition-all duration-300 overflow-hidden flex items-center justify-center gap-2 cursor-pointer"
-                                    >
-                                        <span className="relative z-10 flex items-center gap-2 text-sm md:text-base">
-                                            {button.text}
-                                            <motion.svg
-                                                className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M9 5l7 7-7 7"
-                                                />
-                                            </motion.svg>
-                                        </span>
-                                    </motion.div>
-                                </Link>
-                            );
-                        })}
-                    </div>
-                </div>
-            </div>
-        </motion.div>
-    );
-};
-
-const WhyChooseUs = () => {
-    const { whyChooseUs } = useContent();
-    const sectionRef = useRef(null);
-    const [isClient, setIsClient] = useState(false);
-
-    const { section, features, stats } = whyChooseUs || {};
-
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
-
-    useEffect(() => {
-        if (!sectionRef.current || !isClient) return;
-
-        const ctx = gsap.context(() => {
-            gsap.fromTo('.reveal-text',
-                { y: 50, opacity: 0 },
-                {
-                    y: 0,
-                    opacity: 1,
-                    duration: 1,
-                    stagger: 0.15,
-                    ease: "power3.out",
-                    scrollTrigger: {
-                        trigger: sectionRef.current,
-                        start: "top 85%",
-                        toggleActions: "play none none reverse"
-                    }
-                }
-            );
-        }, sectionRef);
-
-        return () => ctx.revert();
-    }, [isClient]);
-
-
-    // if (!isClient) return null;
-
-    return (
-        <section
-            ref={sectionRef}
-            className="relative bg-background py-20 md:py-24 lg:py-32 overflow-hidden"
-            aria-label="Why Choose Mohsin Designs"
-        >
-            <CinematicBackground isClient={isClient} />
-
-            <div className="max-w-7xl mx-auto px-6 md:px-8 relative z-20">
-                <header className="text-center max-w-4xl mx-auto mb-20">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="reveal-text"
-                    >
-                        {section?.badge && section.badge.trim() !== "" && (
-                            <div className="flex items-center justify-center gap-3 mb-6">
-                                <div className="w-16 h-[2px] bg-primary" />
-                                <span className="text-xs font-bold tracking-[0.3em] uppercase text-primary">
-                                    {section.badge}
-                                </span>
-                                <div className="w-16 h-[2px] bg-primary" />
-                            </div>
-                        )}
-
-                        <h2
-                            className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight"
-                        >
-                            {(section?.headlinePrefix || section?.headlineHighlight || section?.headlineSuffix) ? (
-                                <>
-                                    {section?.headlinePrefix && (
-                                        <span>{section.headlinePrefix} </span>
-                                    )}
-                                    {section?.headlineHighlight && (
-                                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/80">
-                                            {section.headlineHighlight}
-                                        </span>
-                                    )}
-                                    {section?.headlineSuffix && (
-                                        <span> {section.headlineSuffix}</span>
-                                    )}
-                                </>
-                            ) : (
-                                <span dangerouslySetInnerHTML={{ __html: section?.headline || "" }} />
-                            )}
-                        </h2>
-
-                        <RichTextRenderer
-                            content={section?.description || ""}
-                            className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto"
-                            stripParagraphs={true}
-                        />
-                    </motion.div>
-                </header>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24">
-                    {(features || []).map((feature: any, index: number) => (
-                        <FeatureCard key={`feature-${index}`} feature={feature} index={index} />
-                    ))}
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-24">
-                    {(stats || []).map((stat: any, index: number) => (
-                        <StatCounter
-                            key={`stat-${index}`}
-                            value={stat?.value || 0}
-                            label={stat?.label || ""}
-                            suffix={stat?.suffix || ""}
-                            delay={0.1 + (index * 0.1)}
-                        />
-                    ))}
-                </div>
-
-                <AwardCTABanner />
-            </div>
-        </section>
-    );
-};
-
-export default WhyChooseUs;
+        </div>
+      </div>
+    </section>
+  );
+}

@@ -359,75 +359,322 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                   </div>
                )}
 
-               {/* WHY CHOOSE US */}
+               {/* HOW WE WORK / WHY CHOOSE US */}
                {activeTab === "whyChooseUs" && (
                   <div className="space-y-12">
                      <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>1. Narrative</h3>
-                        <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.whyChooseUs?.section?.badge || ""} onChange={(e) => updateSection("whyChooseUs", "section", { ...(data.whyChooseUs?.section || {}), badge: e.target.value })} className={UI.input} /></div>
-                         <div className="space-y-1.5">
-                            <label className={UI.label}>Headline — Prefix (plain text)</label>
-                            <input type="text" value={data.whyChooseUs?.section?.headlinePrefix || ""} onChange={(e) => updateSection("whyChooseUs", "section", { ...(data.whyChooseUs?.section || {}), headlinePrefix: e.target.value })} className={UI.input} placeholder="e.g. Why Homeowners" />
-                         </div>
-                         <div className="space-y-1.5">
-                            <label className={UI.label}>Headline — Highlight <span className="text-primary font-bold">(shown in primary color)</span></label>
-                            <input type="text" value={data.whyChooseUs?.section?.headlineHighlight || ""} onChange={(e) => updateSection("whyChooseUs", "section", { ...(data.whyChooseUs?.section || {}), headlineHighlight: e.target.value })} className={UI.input + " font-bold border-[#2271b1]"} placeholder="e.g. Choose Us" />
-                         </div>
-                         <div className="space-y-1.5">
-                            <label className={UI.label}>Headline — Suffix (plain text)</label>
-                            <input type="text" value={data.whyChooseUs?.section?.headlineSuffix || ""} onChange={(e) => updateSection("whyChooseUs", "section", { ...(data.whyChooseUs?.section || {}), headlineSuffix: e.target.value })} className={UI.input} placeholder="e.g. Over Anyone Else" />
-                         </div>
-                        <RichTextEditor
-                           label="Intro Narrative"
-                           content={data.whyChooseUs?.section?.description || ""}
-                           onChange={(html) => updateSection("whyChooseUs", "section", { ...(data.whyChooseUs?.section || {}), description: html })}
-                        />
-                     </div>
-                     <div className="space-y-8">
-                        <h3 className={UI.sectionHeader}>2. Features</h3>
-                        <div className="space-y-4">
-                           {(data.whyChooseUs?.features || []).map((f: any, i: number) => (
-                              <div key={i} className={UI.card + " space-y-4"}>
-                                 <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
-                                    <span className="text-[10px] font-bold">Feature #{i + 1}</span>
-                                    <button onClick={() => { const newF = data.whyChooseUs.features.filter((_: any, idx: number) => idx !== i); updateSection("whyChooseUs", "features", newF); }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
-                                 </div>
-                                 <IconSelector label="Icon" value={f.icon || ""} onChange={(val) => { const newF = [...data.whyChooseUs.features]; newF[i].icon = val; updateSection("whyChooseUs", "features", newF); }} />
-                                 <input type="text" value={f.title || ""} onChange={(e) => { const newF = [...data.whyChooseUs.features]; newF[i].title = e.target.value; updateSection("whyChooseUs", "features", newF); }} className={UI.input + " font-bold"} placeholder="Title" />
-                                 <RichTextEditor
-                                    label="Feature Detail"
-                                    content={f.description}
-                                    onChange={(html) => { const newF = [...data.whyChooseUs.features]; newF[i].description = html; updateSection("whyChooseUs", "features", newF); }}
-                                 />
-                              </div>
-                           ))}
-                           <button onClick={() => updateSection("whyChooseUs", "features", [...(data.whyChooseUs?.features || []), { title: "", description: "", icon: "Star" }])} className={UI.buttonAdd}>+ Add Feature</button>
+                        <h3 className={UI.sectionHeader}>1. Section Header & Narrative</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Badge / Tag</label>
+                              <input
+                                 type="text"
+                                 value={data.whyChooseUs?.sectionTag || data.whyChooseUs?.section?.badge || ""}
+                                 onChange={(e) => updateSection("whyChooseUs", "sectionTag", e.target.value)}
+                                 className={UI.input}
+                                 placeholder="e.g. HOW WE WORK"
+                              />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Headline Intro</label>
+                              <input
+                                 type="text"
+                                 value={data.whyChooseUs?.titleIntro || data.whyChooseUs?.section?.headlinePrefix || ""}
+                                 onChange={(e) => updateSection("whyChooseUs", "titleIntro", e.target.value)}
+                                 className={UI.input}
+                                 placeholder="e.g. Engineered For"
+                              />
+                           </div>
+                        </div>
+
+                        <div className="space-y-1.5">
+                           <label className={UI.label}>Headline Highlight <span className="text-primary font-bold">(Italic / Highlight color)</span></label>
+                           <input
+                              type="text"
+                              value={data.whyChooseUs?.titleHighlight || data.whyChooseUs?.section?.headlineHighlight || ""}
+                              onChange={(e) => updateSection("whyChooseUs", "titleHighlight", e.target.value)}
+                              className={UI.input + " font-bold border-[#2271b1]"}
+                              placeholder="e.g. Peak Performance"
+                           />
+                        </div>
+
+                        <div className="space-y-1.5">
+                           <label className={UI.label}>Intro Subtext</label>
+                           <textarea
+                              rows={3}
+                              value={data.whyChooseUs?.subtext || data.whyChooseUs?.section?.description || ""}
+                              onChange={(e) => updateSection("whyChooseUs", "subtext", e.target.value)}
+                              className={UI.input}
+                              placeholder="e.g. We combine precision design, rock-solid engineering, and conversion strategy to build digital experiences that deliver real, measurable growth."
+                           />
                         </div>
                      </div>
-                     <div className="space-y-6 pt-10 border-t border-[#f0f0f1]">
-                        <h3 className={UI.sectionHeader}>3. Metrics</h3>
+
+                     {/* 2. CIRCULAR STATS */}
+                     <div className="space-y-6 pt-8 border-t border-[#f0f0f1]">
+                        <div className="flex justify-between items-center">
+                           <h3 className={UI.sectionHeader}>2. Animated Circular Stats (3 Rings)</h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                           {((data.whyChooseUs?.stats && data.whyChooseUs.stats.length > 0)
+                              ? data.whyChooseUs.stats
+                              : [
+                                 { value: "99.8%", label: "Satisfaction", sublabel: "Verified Reviews", percentage: 0.99 },
+                                 { value: "10x", label: "Speed Increase", sublabel: "Faster Load Times", percentage: 0.95 },
+                                 { value: "<24h", label: "Turnaround", sublabel: "Average Response", percentage: 0.9 }
+                              ]
+                           ).slice(0, 3).map((s: any, i: number) => {
+                              const currentStats = (data.whyChooseUs?.stats && data.whyChooseUs.stats.length > 0)
+                                 ? data.whyChooseUs.stats
+                                 : [
+                                    { value: "99.8%", label: "Satisfaction", sublabel: "Verified Reviews", percentage: 0.99 },
+                                    { value: "10x", label: "Speed Increase", sublabel: "Faster Load Times", percentage: 0.95 },
+                                    { value: "<24h", label: "Turnaround", sublabel: "Average Response", percentage: 0.9 }
+                                 ];
+                              return (
+                                 <div key={i} className={UI.card + " space-y-3 bg-[#f6f7f7]"}>
+                                    <span className="text-[11px] font-bold text-[#2271b1] uppercase">Ring Stat #{i + 1}</span>
+                                    <div className="space-y-1">
+                                       <label className="text-[11px] font-bold text-[#50575e]">Value</label>
+                                       <input
+                                          type="text"
+                                          value={s.value || ""}
+                                          onChange={(e) => {
+                                             const newS = [...currentStats];
+                                             newS[i] = { ...newS[i], value: e.target.value };
+                                             updateSection("whyChooseUs", "stats", newS);
+                                          }}
+                                          className={UI.input + " font-bold text-base"}
+                                          placeholder="e.g. 99.8%"
+                                       />
+                                    </div>
+                                    <div className="space-y-1">
+                                       <label className="text-[11px] font-bold text-[#50575e]">Ring Fill % (0.1 to 1.0)</label>
+                                       <input
+                                          type="number"
+                                          step="0.05"
+                                          min="0.1"
+                                          max="1.0"
+                                          value={s.percentage ?? 0.85}
+                                          onChange={(e) => {
+                                             const newS = [...currentStats];
+                                             newS[i] = { ...newS[i], percentage: parseFloat(e.target.value) || 0.85 };
+                                             updateSection("whyChooseUs", "stats", newS);
+                                          }}
+                                          className={UI.input}
+                                          placeholder="0.95"
+                                       />
+                                    </div>
+                                    <div className="space-y-1">
+                                       <label className="text-[11px] font-bold text-[#50575e]">Label</label>
+                                       <input
+                                          type="text"
+                                          value={s.label || ""}
+                                          onChange={(e) => {
+                                             const newS = [...currentStats];
+                                             newS[i] = { ...newS[i], label: e.target.value };
+                                             updateSection("whyChooseUs", "stats", newS);
+                                          }}
+                                          className={UI.input}
+                                          placeholder="e.g. Satisfaction"
+                                       />
+                                    </div>
+                                    <div className="space-y-1">
+                                       <label className="text-[11px] font-bold text-[#50575e]">Sublabel</label>
+                                       <input
+                                          type="text"
+                                          value={s.sublabel || ""}
+                                          onChange={(e) => {
+                                             const newS = [...currentStats];
+                                             newS[i] = { ...newS[i], sublabel: e.target.value };
+                                             updateSection("whyChooseUs", "stats", newS);
+                                          }}
+                                          className={UI.input}
+                                          placeholder="e.g. Verified Reviews"
+                                       />
+                                    </div>
+                                 </div>
+                              );
+                           })}
+                        </div>
+                     </div>
+
+                     {/* 3. PROCESS STEPS / REASONS */}
+                     <div className="space-y-6 pt-8 border-t border-[#f0f0f1]">
+                        <div className="flex justify-between items-center">
+                           <h3 className={UI.sectionHeader}>3. Process Steps & Features</h3>
+                           <button
+                              onClick={() => {
+                                 const currentReasons = (data.whyChooseUs?.reasons && data.whyChooseUs.reasons.length > 0)
+                                    ? data.whyChooseUs.reasons
+                                    : (data.whyChooseUs?.features || []);
+                                 const nextNum = String(currentReasons.length + 1).padStart(2, "0");
+                                 const newReasons = [...currentReasons, { num: nextNum, title: "New Process Step", desc: "Description here...", iconName: "Sparkles" }];
+                                 updateSection("whyChooseUs", "reasons", newReasons);
+                              }}
+                              className={UI.buttonAdd}
+                           >
+                              + Add Step
+                           </button>
+                        </div>
                         <div className="space-y-4">
-                           {(data.whyChooseUs?.stats || []).map((s: any, i: number) => (
-                              <div key={i} className={UI.card + " space-y-4"}>
-                                 <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
-                                    <span className="text-[10px] font-bold text-[#646970] uppercase">Metric #{i + 1}</span>
-                                    <button onClick={() => { const newS = data.whyChooseUs.stats.filter((_: any, idx: number) => idx !== i); updateSection("whyChooseUs", "stats", newS); }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
+                           {((data.whyChooseUs?.reasons && data.whyChooseUs.reasons.length > 0)
+                              ? data.whyChooseUs.reasons
+                              : (data.whyChooseUs?.features && data.whyChooseUs.features.length > 0
+                                 ? data.whyChooseUs.features.map((f: any, idx: number) => ({
+                                    num: String(idx + 1).padStart(2, "0"),
+                                    title: f.title,
+                                    desc: f.description,
+                                    iconName: f.icon || "Sparkles"
+                                 }))
+                                 : [
+                                    { num: "01", title: "Strategy & Discovery", desc: "Deep analysis of your market, competitors, and audience to lay the foundation for high-conversion outcomes.", iconName: "Sparkles" },
+                                    { num: "02", title: "Custom UX/UI & Prototyping", desc: "Bespoke, brand-aligned interfaces crafted with pixel precision and optimized for seamless user journeys.", iconName: "Terminal" },
+                                    { num: "03", title: "High-Speed Clean Development", desc: "Modern, performant code built on scalable architectures with ultra-fast page speeds and airtight security.", iconName: "Zap" },
+                                    { num: "04", title: "Conversion Optimization & SEO", desc: "Built-in technical SEO, structured data markup, and high-impact conversion funnels that drive revenue.", iconName: "TrendingUp" },
+                                    { num: "05", title: "Ongoing Partnership & Support", desc: "Continuous proactive monitoring, performance audits, and rapid updates to keep you ahead of the competition.", iconName: "HeartHandshake" }
+                                 ])
+                           ).map((r: any, i: number) => {
+                              const currentReasons = (data.whyChooseUs?.reasons && data.whyChooseUs.reasons.length > 0)
+                                 ? data.whyChooseUs.reasons
+                                 : (data.whyChooseUs?.features && data.whyChooseUs.features.length > 0
+                                    ? data.whyChooseUs.features.map((f: any, idx: number) => ({
+                                       num: String(idx + 1).padStart(2, "0"),
+                                       title: f.title,
+                                       desc: f.description,
+                                       iconName: f.icon || "Sparkles"
+                                    }))
+                                    : [
+                                       { num: "01", title: "Strategy & Discovery", desc: "Deep analysis of your market, competitors, and audience to lay the foundation for high-conversion outcomes.", iconName: "Sparkles" },
+                                       { num: "02", title: "Custom UX/UI & Prototyping", desc: "Bespoke, brand-aligned interfaces crafted with pixel precision and optimized for seamless user journeys.", iconName: "Terminal" },
+                                       { num: "03", title: "High-Speed Clean Development", desc: "Modern, performant code built on scalable architectures with ultra-fast page speeds and airtight security.", iconName: "Zap" },
+                                       { num: "04", title: "Conversion Optimization & SEO", desc: "Built-in technical SEO, structured data markup, and high-impact conversion funnels that drive revenue.", iconName: "TrendingUp" },
+                                       { num: "05", title: "Ongoing Partnership & Support", desc: "Continuous proactive monitoring, performance audits, and rapid updates to keep you ahead of the competition.", iconName: "HeartHandshake" }
+                                    ]);
+                              return (
+                                 <div key={i} className={UI.card + " space-y-4"}>
+                                    <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
+                                       <span className="text-[12px] font-bold text-[#1d2327]">Step #{i + 1} ({r.num || `0${i+1}`})</span>
+                                       <button
+                                          onClick={() => {
+                                             const newR = currentReasons.filter((_: any, idx: number) => idx !== i);
+                                             updateSection("whyChooseUs", "reasons", newR);
+                                          }}
+                                          className="text-[#d63638] hover:opacity-80 p-1"
+                                       >
+                                          <Trash2 className="w-4 h-4" />
+                                       </button>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                       <div className="space-y-1">
+                                          <label className="text-[11px] font-bold text-[#50575e]">Number Prefix</label>
+                                          <input
+                                             type="text"
+                                             value={r.num || ""}
+                                             onChange={(e) => {
+                                                const newR = [...currentReasons];
+                                                newR[i] = { ...newR[i], num: e.target.value };
+                                                updateSection("whyChooseUs", "reasons", newR);
+                                             }}
+                                             className={UI.input + " font-mono font-bold"}
+                                             placeholder="e.g. 01"
+                                          />
+                                       </div>
+                                       <div className="space-y-1 md:col-span-2">
+                                          <label className="text-[11px] font-bold text-[#50575e]">Title</label>
+                                          <input
+                                             type="text"
+                                             value={r.title || ""}
+                                             onChange={(e) => {
+                                                const newR = [...currentReasons];
+                                                newR[i] = { ...newR[i], title: e.target.value };
+                                                updateSection("whyChooseUs", "reasons", newR);
+                                             }}
+                                             className={UI.input + " font-bold"}
+                                             placeholder="e.g. Strategy & Architecture"
+                                          />
+                                       </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                       <label className="text-[11px] font-bold text-[#50575e]">Icon</label>
+                                       <select
+                                          value={r.iconName || r.icon || "Sparkles"}
+                                          onChange={(e) => {
+                                             const newR = [...currentReasons];
+                                             newR[i] = { ...newR[i], iconName: e.target.value, icon: e.target.value };
+                                             updateSection("whyChooseUs", "reasons", newR);
+                                          }}
+                                          className={UI.input}
+                                       >
+                                          <option value="Sparkles">Sparkles (Strategy / Creativity)</option>
+                                          <option value="Terminal">Terminal (Coding / Architecture)</option>
+                                          <option value="Zap">Zap (Performance / Speed)</option>
+                                          <option value="TrendingUp">TrendingUp (Growth / Conversion)</option>
+                                          <option value="HeartHandshake">HeartHandshake (Support / Partnership)</option>
+                                          <option value="Rocket">Rocket (Launch)</option>
+                                          <option value="Paintbrush">Paintbrush (Design)</option>
+                                          <option value="Shield">Shield (Security / Quality)</option>
+                                          <option value="Search">Search (SEO / Analytics)</option>
+                                          <option value="Users">Users (User Experience)</option>
+                                          <option value="Award">Award (Excellence)</option>
+                                       </select>
+                                    </div>
+                                    <div className="space-y-1">
+                                       <label className="text-[11px] font-bold text-[#50575e]">Description</label>
+                                       <textarea
+                                          rows={2}
+                                          value={r.desc || r.description || ""}
+                                          onChange={(e) => {
+                                             const newR = [...currentReasons];
+                                             newR[i] = { ...newR[i], desc: e.target.value, description: e.target.value };
+                                             updateSection("whyChooseUs", "reasons", newR);
+                                          }}
+                                          className={UI.input}
+                                          placeholder="Detailed description of this step..."
+                                       />
+                                    </div>
+                                    <div className="space-y-1 pt-2 border-t border-[#f0f0f1]">
+                                       <ImageField
+                                          label="Step Image (Replaces SVG)"
+                                          value={r.image || ""}
+                                          onChange={(url) => {
+                                             const newR = [...currentReasons];
+                                             newR[i] = { ...newR[i], image: url };
+                                             updateSection("whyChooseUs", "reasons", newR);
+                                          }}
+                                          description="Upload or choose an image for this workflow step from the Media Library"
+                                       />
+                                    </div>
                                  </div>
-                                 <div className="space-y-1.5">
-                                    <label className={UI.label}>Value</label>
-                                    <input type="text" value={s.value || ""} onChange={(e) => { const newS = [...data.whyChooseUs.stats]; newS[i].value = e.target.value; updateSection("whyChooseUs", "stats", newS); }} className={UI.inputLarge} placeholder="e.g. 500" />
-                                 </div>
-                                 <div className="space-y-1.5">
-                                    <label className={UI.label}>Suffix (e.g. +, %)</label>
-                                    <input type="text" value={s.suffix || ""} onChange={(e) => { const newS = [...data.whyChooseUs.stats]; newS[i].suffix = e.target.value; updateSection("whyChooseUs", "stats", newS); }} className={UI.input} placeholder="e.g. +" />
-                                 </div>
-                                 <div className="space-y-1.5">
-                                    <label className={UI.label}>Label</label>
-                                    <input type="text" value={s.label || ""} onChange={(e) => { const newS = [...data.whyChooseUs.stats]; newS[i].label = e.target.value; updateSection("whyChooseUs", "stats", newS); }} className={UI.input} />
-                                 </div>
-                              </div>
-                           ))}
-                           <button onClick={() => updateSection("whyChooseUs", "stats", [...(data.whyChooseUs?.stats || []), { value: "", suffix: "", label: "" }])} className={UI.buttonAdd}>+ Add Metric</button>
+                              );
+                           })}
+                        </div>
+                     </div>
+
+                     {/* 4. ILLUSTRATION LABELS */}
+                     <div className="space-y-6 pt-8 border-t border-[#f0f0f1]">
+                        <h3 className={UI.sectionHeader}>4. Illustration Graphic Badges</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Terminal Score Badge</label>
+                              <input
+                                 type="text"
+                                 value={data.whyChooseUs?.illustrations?.scoreLabel || "100"}
+                                 onChange={(e) => updateSection("whyChooseUs", "illustrations", { ...(data.whyChooseUs?.illustrations || {}), scoreLabel: e.target.value })}
+                                 className={UI.input}
+                                 placeholder="e.g. 100"
+                              />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Rating Badge Label</label>
+                              <input
+                                 type="text"
+                                 value={data.whyChooseUs?.illustrations?.ratingLabel || "5.0 ★★★★★"}
+                                 onChange={(e) => updateSection("whyChooseUs", "illustrations", { ...(data.whyChooseUs?.illustrations || {}), ratingLabel: e.target.value })}
+                                 className={UI.input}
+                                 placeholder="e.g. 5.0 ★★★★★"
+                              />
+                           </div>
                         </div>
                      </div>
                   </div>

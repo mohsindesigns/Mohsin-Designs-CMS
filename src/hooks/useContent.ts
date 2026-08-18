@@ -98,12 +98,52 @@ export const useContent = () => {
             section: { badge: "", headline: "", description: "" },
             items: []
         }),
-        whyChooseUs: getSafe(completeData, 'whyChooseUs', {
-            section: { badge: "", headline: "", description: "" },
-            features: [],
-            stats: [],
-            cta: { badge: "", title: "", description: "", trustBadges: [], buttons: [] }
-        }),
+        whyChooseUs: (() => {
+            const raw = getSafe(completeData, 'whyChooseUs', {});
+            const defaults = {
+                sectionTag: "HOW WE WORK",
+                titleIntro: "Engineered For",
+                titleHighlight: "Peak Performance",
+                subtext: "We combine precision design, rock-solid engineering, and conversion strategy to build digital experiences that deliver real, measurable growth.",
+                stats: [
+                    { value: "99.8%", label: "Satisfaction", sublabel: "Verified Reviews", percentage: 0.99 },
+                    { value: "10x", label: "Speed Increase", sublabel: "Faster Load Times", percentage: 0.95 },
+                    { value: "<24h", label: "Turnaround", sublabel: "Average Response", percentage: 0.9 }
+                ],
+                illustrations: {
+                    scoreLabel: "100",
+                    ratingLabel: "5.0 ★★★★★"
+                },
+                reasons: [
+                    { num: "01", title: "Strategy & Discovery", desc: "Deep analysis of your market, competitors, and audience to lay the foundation for high-conversion outcomes.", iconName: "Sparkles", image: "" },
+                    { num: "02", title: "Custom UX/UI & Prototyping", desc: "Bespoke, brand-aligned interfaces crafted with pixel precision and optimized for seamless user journeys.", iconName: "Terminal", image: "" },
+                    { num: "03", title: "High-Speed Clean Development", desc: "Modern, performant code built on scalable architectures with ultra-fast page speeds and airtight security.", iconName: "Zap", image: "" },
+                    { num: "04", title: "Conversion Optimization & SEO", desc: "Built-in technical SEO, structured data markup, and high-impact conversion funnels that drive revenue.", iconName: "TrendingUp", image: "" },
+                    { num: "05", title: "Ongoing Partnership & Support", desc: "Continuous proactive monitoring, performance audits, and rapid updates to keep you ahead of the competition.", iconName: "HeartHandshake", image: "" }
+                ]
+            };
+            return {
+                ...defaults,
+                ...raw,
+                sectionTag: raw.sectionTag || raw.section?.badge || defaults.sectionTag,
+                titleIntro: raw.titleIntro || raw.section?.headlinePrefix || defaults.titleIntro,
+                titleHighlight: raw.titleHighlight || raw.section?.headlineHighlight || defaults.titleHighlight,
+                subtext: raw.subtext || raw.section?.description || defaults.subtext,
+                stats: (Array.isArray(raw.stats) && raw.stats.length > 0) ? raw.stats : defaults.stats,
+                illustrations: { ...defaults.illustrations, ...(raw.illustrations || {}) },
+                reasons: (Array.isArray(raw.reasons) && raw.reasons.length > 0) 
+                    ? raw.reasons 
+                    : (Array.isArray(raw.features) && raw.features.length > 0 
+                        ? raw.features.map((f: any, idx: number) => ({
+                            num: String(idx + 1).padStart(2, "0"),
+                            title: f.title,
+                            desc: f.description,
+                            iconName: f.icon || "Sparkles",
+                            image: f.image || ""
+                          })) 
+                        : defaults.reasons)
+            };
+        })(),
         faq: getSafe(completeData, 'faq', {
             section: { badge: "", headline: "", title: "", description: "" },
             categories: [],
