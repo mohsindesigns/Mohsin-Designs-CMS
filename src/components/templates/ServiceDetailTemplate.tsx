@@ -1388,10 +1388,12 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                       )}
                     </div>
 
-                    <div className="pt-4 mt-5 border-t border-brand-zinc-150 dark:border-white/5 flex items-center justify-between text-brand-zinc-400 dark:text-zinc-555 font-mono text-[8px] font-bold uppercase tracking-widest">
-                      <span>{step.footerLeft || "Verification Checkpoint"}</span>
-                      <span>{step.footerRight || "Verified Node"}</span>
-                    </div>
+                    {(step.footerLeft || step.footerRight) && (
+                      <div className="pt-4 mt-5 border-t border-brand-zinc-150 dark:border-white/5 flex items-center justify-between text-brand-zinc-400 dark:text-zinc-555 font-mono text-[8px] font-bold uppercase tracking-widest">
+                        <span>{step.footerLeft || ""}</span>
+                        <span>{step.footerRight || ""}</span>
+                      </div>
+                    )}
                   </SpotlightCard>
                 );
               })}
@@ -1465,7 +1467,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                               </span>
                             </div>
                             <p className="text-brand-zinc-555 dark:text-zinc-400 font-normal leading-relaxed text-[11.5px] line-clamp-3">
-                              {cs.challenge} {cs.strategy}
+                              {cs.desc || cs.challenge || cs.strategy || ""}
                             </p>
                           </div>
                           
@@ -1546,37 +1548,40 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               const IndustryIcon = indIcons[idx % indIcons.length];
               
               const words = String(ind.title || "").split(" ");
-              const abbreviation = ind.watermark || words.map((w: string) => w[0]).join("").toUpperCase().slice(0, 2) || "IN";
+              const abbreviation = words.map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
 
               return (
-                <SpotlightCard key={idx} className="bg-zinc-50/80 dark:bg-[#0c0b18] border border-brand-zinc-200/90 dark:border-white/5 p-5 xs:p-7 sm:p-8 rounded-[20px] xs:rounded-[28px] hover:shadow-2xl hover:border-brand-blue/30 dark:hover:border-brand-yellow/30 transition-all duration-500 flex flex-col justify-between min-h-[240px] relative group text-left">
-                  
+                <SpotlightCard
+                  key={idx}
+                  className="bg-white dark:bg-[#0c0b18] border border-slate-200/80 dark:border-white/10 p-6 sm:p-8 rounded-[28px] hover:shadow-2xl hover:border-blue-600/30 dark:hover:border-yellow-400/30 transition-all duration-500 flex flex-col justify-between min-h-[250px] relative group text-left overflow-hidden"
+                >
                   {/* Floating Watermark */}
-                  <span className="absolute top-4 right-6 font-serif italic text-6xl font-black text-brand-zinc-200/20 dark:text-white/5 select-none pointer-events-none transition-transform duration-500 group-hover:scale-110">
+                  <span className="absolute top-5 right-7 font-serif italic text-6xl sm:text-7xl font-black text-slate-100 dark:text-white/[0.04] select-none pointer-events-none transition-transform duration-500 group-hover:scale-110">
                     {abbreviation}
                   </span>
 
-                  <div className="space-y-5">
-                    {/* Icon Container with double ring on hover */}
-                    <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-zinc-100 dark:bg-[#1e1e2e] border border-brand-zinc-200 dark:border-white/10 group-hover:bg-[#0306AC] dark:group-hover:bg-[#E9BD36] group-hover:border-none transition-all duration-500 ease-out shadow-sm group-hover:shadow-md shrink-0">
-                      <div className="absolute inset-0 rounded-2xl border border-dashed border-[#0306AC]/0 dark:border-[#E9BD36]/0 group-hover:border-[#0306AC]/30 dark:group-hover:border-[#E9BD36]/30 group-hover:scale-110 transition-all duration-500" />
-                      <IndustryIcon className="h-6.5 w-6.5 text-[#0306AC] dark:text-[#E9BD36] group-hover:text-white dark:group-hover:text-brand-dark transition-all duration-300 group-hover:scale-110" />
+                  <div className="space-y-5 relative z-10">
+                    {/* Icon Container with subtle shadow and hover transition */}
+                    <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 dark:bg-[#1e1e2e] border border-slate-200/90 dark:border-white/10 shadow-[0_2px_8px_rgba(0,0,0,0.03)] group-hover:bg-[#0306AC] dark:group-hover:bg-[#E9BD36] group-hover:border-transparent transition-all duration-500 ease-out shrink-0">
+                      <IndustryIcon className="h-6 w-6 text-[#0306AC] dark:text-[#E9BD36] group-hover:text-white dark:group-hover:text-[#080710] transition-all duration-300 stroke-[1.75]" />
                     </div>
                     
-                    <div className="space-y-1">
-                      <h3 className="font-heading text-base font-extrabold text-brand-dark dark:text-white group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors duration-300">
+                    <div className="space-y-2">
+                      <h3 className="font-heading text-lg sm:text-xl font-bold text-slate-900 dark:text-white group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors duration-300 leading-snug">
                         {ind.title}
                       </h3>
-                      <p className="text-xs sm:text-[13px] font-sans text-brand-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
+                      <p className="text-xs sm:text-[13.5px] font-sans text-slate-600 dark:text-zinc-400 leading-relaxed font-normal">
                         {ind.desc}
                       </p>
                     </div>
                   </div>
 
-                  <div className="pt-4 mt-5 border-t border-brand-zinc-150 dark:border-white/5 flex items-center justify-between text-brand-blue/60 dark:text-brand-yellow/60 font-mono text-[8px] font-black uppercase tracking-widest">
-                    <span>{ind.footerLeft || service.industries.footerLeft || "Target Sector"}</span>
-                    <span>{ind.footerRight || service.industries.footerRight || "Verified Optimization"}</span>
-                  </div>
+                  {(ind.footerLeft || ind.footerRight || service.industries.footerLeft || service.industries.footerRight) && (
+                    <div className="pt-4 mt-6 border-t border-[#0306AC]/25 dark:border-white/10 flex items-center justify-between text-[#0306AC]/80 dark:text-yellow-400/80 font-mono text-[9px] font-bold uppercase tracking-widest relative z-10">
+                      <span>{ind.footerLeft || service.industries.footerLeft || ""}</span>
+                      <span>{ind.footerRight || service.industries.footerRight || ""}</span>
+                    </div>
+                  )}
                 </SpotlightCard>
               );
             })}

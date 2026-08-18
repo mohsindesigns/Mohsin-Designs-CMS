@@ -1412,6 +1412,30 @@ export default function ServicesAdminPage() {
                                 placeholder="Google Search Console audit, Core Web Vitals check, Schema injection"
                               />
                             </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <input
+                                type="text"
+                                placeholder="Footer Left (e.g. Verification Checkpoint)"
+                                value={step.footerLeft || ""}
+                                onChange={(e) => {
+                                  const s = [...form.process.steps];
+                                  s[idx] = { ...s[idx], footerLeft: e.target.value };
+                                  setForm({ ...form, process: { ...form.process, steps: s } });
+                                }}
+                                className="border border-[#8c8f94] px-2 py-1 text-[11px] rounded-[3px] font-mono"
+                              />
+                              <input
+                                type="text"
+                                placeholder="Footer Right (e.g. Verified Node)"
+                                value={step.footerRight || ""}
+                                onChange={(e) => {
+                                  const s = [...form.process.steps];
+                                  s[idx] = { ...s[idx], footerRight: e.target.value };
+                                  setForm({ ...form, process: { ...form.process, steps: s } });
+                                }}
+                                className="border border-[#8c8f94] px-2 py-1 text-[11px] rounded-[3px] font-mono"
+                              />
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -1727,7 +1751,7 @@ export default function ServicesAdminPage() {
                               <textarea
                                 rows={2}
                                 placeholder="Description"
-                                value={item.desc}
+                                value={item.desc || ""}
                                 onChange={(e) => {
                                   const ind = [...form.industries.list];
                                   ind[idx] = { ...ind[idx], desc: e.target.value };
@@ -1735,6 +1759,30 @@ export default function ServicesAdminPage() {
                                 }}
                                 className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
                               />
+                              <div className="grid grid-cols-2 gap-2">
+                                <input
+                                  type="text"
+                                  placeholder="Footer Left (e.g. TARGET SECTOR)"
+                                  value={item.footerLeft || ""}
+                                  onChange={(e) => {
+                                    const ind = [...form.industries.list];
+                                    ind[idx] = { ...ind[idx], footerLeft: e.target.value };
+                                    setForm({ ...form, industries: { ...form.industries, list: ind } });
+                                  }}
+                                  className="border border-[#8c8f94] px-2 py-1 text-[11px] rounded-[3px] font-mono"
+                                />
+                                <input
+                                  type="text"
+                                  placeholder="Footer Right (e.g. VERIFIED OPTIMIZATION)"
+                                  value={item.footerRight || ""}
+                                  onChange={(e) => {
+                                    const ind = [...form.industries.list];
+                                    ind[idx] = { ...ind[idx], footerRight: e.target.value };
+                                    setForm({ ...form, industries: { ...form.industries, list: ind } });
+                                  }}
+                                  className="border border-[#8c8f94] px-2 py-1 text-[11px] rounded-[3px] font-mono"
+                                />
+                              </div>
                             </div>
                           ))}
                         </div>
