@@ -52,8 +52,9 @@ export const TemplateWrapper = ({ templateName, pageData, globalData, params }: 
           faqs={pageData.content.faqs} 
           faqSchemaMarkup={pageData.content.faqSchemaMarkup} 
           badge={pageData.content.faqBadge}
-          title={pageData.content.faqTitle}
-          subtitle={pageData.content.faqDescription}
+          title={pageData.content.faqTitleHighlight || pageData.content.faqTitle}
+          description={pageData.content.faqDescription}
+          data={pageData.content}
         />
       )}
     </ContentProvider>

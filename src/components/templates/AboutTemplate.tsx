@@ -888,8 +888,9 @@ export default function AboutTemplate({ pageData, params }: { pageData?: any, pa
         faqs={content.faqs}
         faqSchemaMarkup={content.faqSchemaMarkup}
         badge={content.faqBadge}
-        title={content.faqTitle}
-        subtitle={content.faqDescription}
+        title={content.faqTitleHighlight || content.faqTitle}
+        description={content.faqDescription}
+        data={content}
       />
 
       {content?.blogSection && Array.isArray(content.blogSection.selectedPosts) && content.blogSection.selectedPosts.length > 0 && (

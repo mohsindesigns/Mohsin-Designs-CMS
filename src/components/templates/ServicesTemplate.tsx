@@ -526,9 +526,10 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
       <PageInlineFaqs 
         faqs={(pageData?.content?.faqs && pageData.content.faqs.length > 0) ? pageData.content.faqs : faq?.items} 
         faqSchemaMarkup={pageData?.content?.faqSchemaMarkup || pageData?.faqSchemaMarkup} 
-        badge={pageData?.content?.faqBadge || "FREQUENTLY ASKED QUESTIONS"}
-        title={pageData?.content?.faqTitle || "Got Questions About Our Services?"}
-        subtitle={pageData?.content?.faqDescription || "Clear answers to help you navigate our process and delivery timeline."}
+        badge={pageData?.content?.faqBadge}
+        title={pageData?.content?.faqTitleHighlight || pageData?.content?.faqTitle}
+        description={pageData?.content?.faqDescription}
+        data={pageData?.content}
       />
 
       {/* ── 5. BLOG SECTION ────────────────────────────────────────────────── */}
