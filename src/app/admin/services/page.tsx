@@ -365,6 +365,7 @@ export default function ServicesAdminPage() {
   const [search, setSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkAction, setBulkAction] = useState("");
+  const [quickEditing, setQuickEditing] = useState<any>(null);
 
   const [form, setForm] = useState<any>(DEFAULT_SERVICE_TEMPLATE);
 
@@ -374,10 +375,10 @@ export default function ServicesAdminPage() {
       const list = Array.isArray(json.services?.services) && json.services.services.length > 0
         ? json.services.services
         : (Array.isArray(json.services) && json.services.length > 0
-            ? json.services
-            : (Array.isArray(json.globalServices) && json.globalServices.length > 0
-                ? json.globalServices
-                : (Array.isArray(json.services?.list) && json.services.list.length > 0 ? json.services.list : [])));
+          ? json.services
+          : (Array.isArray(json.globalServices) && json.globalServices.length > 0
+            ? json.globalServices
+            : (Array.isArray(json.services?.list) && json.services.list.length > 0 ? json.services.list : [])));
       setServices(list);
     });
   }, []);
@@ -438,7 +439,7 @@ export default function ServicesAdminPage() {
       id: form.id || Date.now().toString(),
       number: form.number || (services.length + 1).toString().padStart(2, '0')
     };
-    
+
     let targetIdx = isEditing;
     if (isEditing !== null && isEditing < services.length) {
       newServices[isEditing] = serviceData;
@@ -542,6 +543,37 @@ export default function ServicesAdminPage() {
     if (isEditing === index) setIsEditing(null);
   };
 
+  const handleDuplicate = (service: any) => {
+    const newService = {
+      ...service,
+      id: Date.now().toString(),
+      title: `${service.title} (Copy)`,
+      slug: `${service.slug}-copy`,
+      status: 'draft'
+    };
+    const newServices = [...services, newService];
+    saveToDb(newServices);
+  };
+
+  const handleQuickEditSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!quickEditing) return;
+    const newServices = [...services];
+    const idx = services.findIndex((s) => (s.id && s.id === quickEditing.id) || s.slug === quickEditing.originalSlug);
+    if (idx !== -1) {
+      newServices[idx] = {
+        ...newServices[idx],
+        title: quickEditing.title,
+        slug: quickEditing.slug,
+        tag: quickEditing.tag,
+        status: quickEditing.status,
+        icon: quickEditing.icon
+      };
+      saveToDb(newServices);
+      setQuickEditing(null);
+    }
+  };
+
   const handleAddNew = () => {
     setForm(DEFAULT_SERVICE_TEMPLATE);
     setSeo({});
@@ -576,19 +608,19 @@ export default function ServicesAdminPage() {
   ];
 
   return (
-    <div className="wrap max-w-7xl mx-auto p-4 sm:p-6 text-[#1d2327] font-sans">
-      
-      {/* WordPress Page Header */}
-      <div className="flex items-center gap-3 mb-4">
-        <h1 className="text-[23px] font-normal leading-tight text-[#1d2327]">
+    <div className="space-y-4">
+
+      {/* WP Header Area */}
+      <div className="flex items-center gap-4 mb-2">
+        <h1 className="text-[23px] font-normal text-[#1d2327] font-serif m-0">
           {isEditing !== null ? "Edit Service" : "Services"}
         </h1>
         {isEditing === null && (
           <button
             onClick={handleAddNew}
-            className="border border-[#2271b1] text-[#2271b1] hover:bg-[#2271b1] hover:text-white px-2.5 py-0.5 rounded-[3px] text-[13px] font-medium transition-all"
+            className="bg-white border border-[#2271b1] text-[#2271b1] hover:bg-[#f6f7f7] hover:text-[#135e96] hover:border-[#135e96] px-2 py-1 text-[13px] rounded-[3px] transition-colors"
           >
-            Add New
+            Add New Service
           </button>
         )}
       </div>
@@ -609,10 +641,10 @@ export default function ServicesAdminPage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-            
+
             {/* Left Column (#post-body-content) */}
             <div className="lg:col-span-3 space-y-4">
-              
+
               {/* Title input */}
               <input
                 type="text"
@@ -643,7 +675,7 @@ export default function ServicesAdminPage() {
 
               {/* WP Tabbed Metabox */}
               <div className="postbox bg-white border border-[#c3c4c7] shadow-sm rounded-[3px] overflow-hidden">
-                
+
                 {/* Horizontal WP Tabs */}
                 <div className="flex flex-wrap border-b border-[#c3c4c7] bg-[#f6f7f7]">
                   {tabs.map((tab) => (
@@ -651,11 +683,10 @@ export default function ServicesAdminPage() {
                       key={tab.id}
                       type="button"
                       onClick={() => setActiveTab(tab.id)}
-                      className={`px-3 py-2 text-[13px] font-medium border-r border-[#c3c4c7] transition-all ${
-                        activeTab === tab.id
-                          ? "bg-white text-[#1d2327] font-bold border-b-2 border-b-[#2271b1] -mb-[1px]"
-                          : "text-[#2271b1] hover:bg-[#f0f0f1]"
-                      }`}
+                      className={`px-3 py-2 text-[13px] font-medium border-r border-[#c3c4c7] transition-all ${activeTab === tab.id
+                        ? "bg-white text-[#1d2327] font-bold border-b-2 border-b-[#2271b1] -mb-[1px]"
+                        : "text-[#2271b1] hover:bg-[#f0f0f1]"
+                        }`}
                     >
                       {tab.label}
                     </button>
@@ -2565,7 +2596,7 @@ export default function ServicesAdminPage() {
 
             {/* Right Sidebar (#postbox-container-1) */}
             <div className="space-y-4">
-              
+
               {/* Publish Metabox */}
               <div className="postbox bg-white border border-[#c3c4c7] shadow-sm rounded-[3px]">
                 <h3 className="hndle font-bold px-3 py-2 border-b border-[#c3c4c7] bg-[#f6f7f7] text-[13px] text-[#1d2327]">
@@ -2636,57 +2667,42 @@ export default function ServicesAdminPage() {
         </div>
       ) : (
         /* WordPress Classic Table List View */
-        <div className="space-y-2">
-          
-          {/* Subsubsub Status Filter Links */}
-          <ul className="subsubsub flex items-center gap-1.5 text-[13px] text-[#646970] my-2">
-            <li>
-              <button
-                onClick={() => setFilter("all")}
-                className={`${filter === 'all' ? 'font-bold text-[#1d2327]' : 'text-[#2271b1] hover:underline'}`}
-              >
-                All <span className="text-[#646970]">({services.length})</span>
-              </button>
-              <span className="mx-1.5 text-[#c3c4c7]">|</span>
-            </li>
-            <li>
-              <button
-                onClick={() => setFilter("published")}
-                className={`${filter === 'published' ? 'font-bold text-[#1d2327]' : 'text-[#2271b1] hover:underline'}`}
-              >
-                Published <span className="text-[#646970]">({publishedCount})</span>
-              </button>
-              <span className="mx-1.5 text-[#c3c4c7]">|</span>
-            </li>
-            <li>
-              <button
-                onClick={() => setFilter("draft")}
-                className={`${filter === 'draft' ? 'font-bold text-[#1d2327]' : 'text-[#2271b1] hover:underline'}`}
-              >
-                Drafts <span className="text-[#646970]">({draftCount})</span>
-              </button>
-            </li>
-          </ul>
+        <div className="space-y-4">
 
-          {/* Tablenav Top */}
-          <div className="tablenav top flex flex-wrap items-center justify-between gap-2 py-1.5">
-            <div className="alignleft actions flex items-center gap-2">
+          {/* Filter Links */}
+          <div className="flex items-center gap-2 text-[13px]">
+            <button onClick={() => setFilter("all")} className={`${filter === 'all' ? 'text-black font-bold' : 'text-[#2271b1] hover:text-[#135e96] underline decoration-transparent hover:decoration-current'}`}>
+              All <span className="text-[#646970] font-normal">({services.length})</span>
+            </button>
+            <span className="text-[#c3c4c7]">|</span>
+            <button onClick={() => setFilter("published")} className={`${filter === 'published' ? 'text-black font-bold' : 'text-[#2271b1] hover:text-[#135e96] underline decoration-transparent hover:decoration-current'}`}>
+              Published <span className="text-[#646970] font-normal">({publishedCount})</span>
+            </button>
+            <span className="text-[#c3c4c7]">|</span>
+            <button onClick={() => setFilter("draft")} className={`${filter === 'draft' ? 'text-black font-bold' : 'text-[#2271b1] hover:text-[#135e96] underline decoration-transparent hover:decoration-current'}`}>
+              Drafts <span className="text-[#646970] font-normal">({draftCount})</span>
+            </button>
+          </div>
+
+          {/* Top Bar: Bulk Actions & Search */}
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
               <select
+                className="border border-[#8c8f94] bg-white text-[#2c3338] px-2 py-1 text-[13px] rounded-[3px] outline-none focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1]"
                 value={bulkAction}
                 onChange={(e) => setBulkAction(e.target.value)}
-                className="border border-[#8c8f94] bg-white px-2 py-1 text-[13px] rounded-[3px]"
               >
                 <option value="">Bulk actions</option>
-                <option value="publish">Set to Published</option>
-                <option value="draft">Set to Draft</option>
-                <option value="delete">Delete</option>
+                <option value="publish">Mark as Published</option>
+                <option value="draft">Mark as Draft</option>
+                <option value="delete">Delete Permanently</option>
               </select>
               <button
                 type="button"
                 onClick={() => {
                   if (!bulkAction || selectedIds.length === 0) return;
                   if (bulkAction === 'delete') {
-                    if (!confirm(`Delete ${selectedIds.length} services?`)) return;
+                    if (!confirm(`Permanently delete ${selectedIds.length} services?`)) return;
                     const newServices = services.filter((s: any) => !selectedIds.includes(s.id || s.slug));
                     saveToDb(newServices);
                     setSelectedIds([]);
@@ -2697,122 +2713,202 @@ export default function ServicesAdminPage() {
                     setSelectedIds([]);
                   }
                 }}
-                className="border border-[#2271b1] text-[#2271b1] hover:bg-[#2271b1] hover:text-white px-2.5 py-1 text-[13px] font-medium rounded-[3px]"
+                className="bg-white border border-[#8c8f94] text-[#2c3338] px-3 py-1 text-[13px] rounded-[3px] hover:bg-[#f6f7f7] transition-colors"
               >
                 Apply
               </button>
             </div>
 
-            <div className="search-box">
+            <div className="flex items-center gap-2">
               <input
-                type="search"
+                type="text"
                 placeholder="Search Services"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="border border-[#8c8f94] bg-white px-2.5 py-1 text-[13px] rounded-[3px] outline-none focus:border-[#2271b1]"
+                className="border border-[#8c8f94] bg-white px-3 py-1 text-[13px] rounded-[3px] outline-none focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1]"
               />
+              <button className="bg-white border border-[#8c8f94] text-[#2c3338] px-3 py-1 text-[13px] rounded-[3px] hover:bg-[#f6f7f7] transition-colors">
+                Search Services
+              </button>
             </div>
           </div>
 
-          {/* WordPress Table */}
-          <table className="wp-list-table widefat fixed striped posts w-full border border-[#c3c4c7] bg-white text-left text-[13px]">
-            <thead>
-              <tr className="border-b border-[#c3c4c7] bg-[#f6f7f7] text-[#1d2327]">
-                <th className="p-2.5 w-8">
-                  <input
-                    type="checkbox"
-                    checked={selectedIds.length === filteredServices.length && filteredServices.length > 0}
-                    onChange={(e) => {
-                      if (e.target.checked) setSelectedIds(filteredServices.map((s: any) => s.id || s.slug));
-                      else setSelectedIds([]);
-                    }}
-                  />
-                </th>
-                <th className="p-2.5 font-bold">Title</th>
-                <th className="p-2.5 font-bold w-36">Tag</th>
-                <th className="p-2.5 font-bold w-48">Slug</th>
-                <th className="p-2.5 font-bold w-28">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#c3c4c7]">
-              {filteredServices.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="p-4 text-center text-[#646970]">No services found.</td>
-                </tr>
-              ) : (
-                filteredServices.map((service: any, index: number) => {
-                  const serviceIdentifier = service.id || service.slug;
-                  const isChecked = selectedIds.includes(serviceIdentifier);
-                  const ServiceIcon = IconComponentMap[service.icon] || Search;
+          {/* Table Pagination Info */}
+          <div className="flex justify-end text-[13px] text-[#50575e]">
+            {filteredServices.length} items
+          </div>
 
-                  return (
-                    <tr key={index} className="hover:bg-[#f6f7f7] transition-colors group">
-                      <td className="p-2.5">
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={(e) => {
-                            if (e.target.checked) setSelectedIds([...selectedIds, serviceIdentifier]);
-                            else setSelectedIds(selectedIds.filter(id => id !== serviceIdentifier));
-                          }}
-                        />
-                      </td>
-                      <td className="p-2.5">
-                        <div className="flex items-center gap-2">
-                          <div className="w-5 h-5 rounded bg-[#f0f0f1] flex items-center justify-center text-[#50575e]">
-                            <ServiceIcon className="w-3.5 h-3.5" />
-                          </div>
-                          <strong>
-                            <button
-                              onClick={() => handleEdit(service)}
-                              className="text-[#2271b1] hover:underline font-bold text-left"
-                            >
-                              {service.title}
-                            </button>
+          {/* WP-Style Table */}
+          <div className="bg-white border border-[#c3c4c7] rounded-sm overflow-hidden shadow-[0_1px_1px_rgba(0,0,0,0.04)]">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-[#c3c4c7] text-[#1d2327]">
+                  <th className="w-8 py-2 px-3">
+                    <input
+                      type="checkbox"
+                      checked={filteredServices.length > 0 && selectedIds.length === filteredServices.length}
+                      onChange={(e) => {
+                        if (e.target.checked) setSelectedIds(filteredServices.map((s: any) => s.id || s.slug));
+                        else setSelectedIds([]);
+                      }}
+                      className="w-4 h-4 border-[#8c8f94] rounded-[3px] text-[#2271b1] focus:ring-[#2271b1]"
+                    />
+                  </th>
+                  <th className="py-2 px-3 text-[14px] font-semibold">Title</th>
+                  <th className="py-2 px-3 text-[14px] font-semibold w-40">Template</th>
+                  <th className="py-2 px-3 text-[14px] font-semibold w-40">Status</th>
+                  <th className="py-2 px-3 text-[14px] font-semibold w-32">Date</th>
+                </tr>
+              </thead>
+              <tbody className="text-[13px] text-[#2c3338]">
+                {filteredServices.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-6 px-4 text-[#50575e]">No services found.</td>
+                  </tr>
+                ) : (
+                  filteredServices.map((service: any, index: number) => {
+                    const serviceIdentifier = service.id || service.slug;
+                    const isChecked = selectedIds.includes(serviceIdentifier);
+                    const isQuickEditing = quickEditing && (quickEditing.id === service.id || quickEditing.originalSlug === service.slug);
+
+                    if (isQuickEditing) {
+                      return (
+                        <tr key={index} className="bg-[#f0f6fc] border-y-2 border-[#2271b1]">
+                          <td colSpan={5} className="p-4">
+                            <form onSubmit={handleQuickEditSave} className="space-y-3">
+                              <h4 className="font-bold text-[13px] text-[#1d2327] uppercase tracking-wide">Quick Edit</h4>
+                              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                                <div className="space-y-1">
+                                  <label className="text-[11px] font-bold text-[#50575e]">Title</label>
+                                  <input
+                                    type="text"
+                                    value={quickEditing.title}
+                                    onChange={(e) => setQuickEditing({ ...quickEditing, title: e.target.value })}
+                                    className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] bg-white"
+                                  />
+                                </div>
+                                <div className="space-y-1">
+                                  <label className="text-[11px] font-bold text-[#50575e]">Slug</label>
+                                  <input
+                                    type="text"
+                                    value={quickEditing.slug}
+                                    onChange={(e) => setQuickEditing({ ...quickEditing, slug: e.target.value })}
+                                    className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] bg-white font-mono"
+                                  />
+                                </div>
+                                <div className="space-y-1">
+                                  <label className="text-[11px] font-bold text-[#50575e]">Category Tag</label>
+                                  <input
+                                    type="text"
+                                    value={quickEditing.tag || ""}
+                                    onChange={(e) => setQuickEditing({ ...quickEditing, tag: e.target.value })}
+                                    className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] bg-white"
+                                  />
+                                </div>
+                                <div className="space-y-1">
+                                  <label className="text-[11px] font-bold text-[#50575e]">Status</label>
+                                  <select
+                                    value={quickEditing.status || "published"}
+                                    onChange={(e) => setQuickEditing({ ...quickEditing, status: e.target.value })}
+                                    className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] bg-white"
+                                  >
+                                    <option value="published">Published</option>
+                                    <option value="draft">Draft</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-end gap-2 pt-2">
+                                <button
+                                  type="button"
+                                  onClick={() => setQuickEditing(null)}
+                                  className="bg-white border border-[#8c8f94] text-[#2c3338] px-3 py-1 text-xs rounded-[3px] hover:bg-[#f6f7f7]"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  type="submit"
+                                  className="bg-[#2271b1] text-white px-3 py-1 text-xs font-semibold rounded-[3px] hover:bg-[#135e96]"
+                                >
+                                  Update Service
+                                </button>
+                              </div>
+                            </form>
+                          </td>
+                        </tr>
+                      );
+                    }
+
+                    return (
+                      <tr
+                        key={service.id || index}
+                        className={`border-b border-[#f0f0f1] group ${index % 2 === 0 ? "bg-[#f9f9f9]" : "bg-white"} hover:bg-[#f0f0f1] transition-colors`}
+                      >
+                        <td className="py-3 px-3 align-top">
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={(e) => {
+                              if (e.target.checked) setSelectedIds([...selectedIds, serviceIdentifier]);
+                              else setSelectedIds(selectedIds.filter(id => id !== serviceIdentifier));
+                            }}
+                            className="w-4 h-4 border-[#8c8f94] rounded-[3px] text-[#2271b1] focus:ring-[#2271b1]"
+                          />
+                        </td>
+                        <td className="py-3 px-3 align-top">
+                          <strong className="text-[#2271b1] block text-[14px]">
+                            {service.title} — {service.status === 'draft' ? (
+                              <span className="text-[#646970] font-normal italic">Draft</span>
+                            ) : (
+                              <span className="text-[#00a32a] font-normal italic">Published</span>
+                            )}
                           </strong>
-                        </div>
-                        {/* WordPress Hover Row Actions */}
-                        <div className="row-actions text-[11px] text-[#646970] mt-1 space-x-1.5">
-                          <span>
-                            <button onClick={() => handleEdit(service)} className="text-[#2271b1] hover:underline">
+                          <div className="flex items-center gap-2 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onClick={() => handleEdit(service)} className="text-[#2271b1] hover:underline text-[12px]">
                               Edit
                             </button>
-                          </span>
-                          <span className="text-[#c3c4c7]">|</span>
-                          <span>
-                            <button onClick={() => toggleStatus(service)} className="text-[#2271b1] hover:underline">
-                              {service.status === 'draft' ? 'Publish' : 'Draft'}
+                            <span className="text-[#a7aaad]">|</span>
+                            <button
+                              onClick={() => setQuickEditing({ ...service, originalSlug: service.slug })}
+                              className="text-[#2271b1] hover:underline text-[12px]"
+                            >
+                              Quick Edit
                             </button>
-                          </span>
-                          <span className="text-[#c3c4c7]">|</span>
-                          <span>
-                            <button onClick={() => handleDelete(index)} className="text-[#d63638] hover:underline">
-                              Trash
+                            <span className="text-[#a7aaad]">|</span>
+                            <button onClick={() => handleDuplicate(service)} className="text-[#2271b1] hover:underline text-[12px]">
+                              Duplicate
                             </button>
-                          </span>
-                          <span className="text-[#c3c4c7]">|</span>
-                          <span>
-                            <Link href={`/services/${service.slug}`} target="_blank" className="text-[#2271b1] hover:underline">
+                            <span className="text-[#a7aaad]">|</span>
+                            <button onClick={() => toggleStatus(service)} className="text-[#2271b1] hover:underline text-[12px]">
+                              {service.status === 'published' ? 'Keep as Draft' : 'Publish Now'}
+                            </button>
+                            <span className="text-[#a7aaad]">|</span>
+                            <Link href={`/services/${service.slug}`} target="_blank" className="text-[#2271b1] hover:underline text-[12px]">
                               View
                             </Link>
+                            <span className="text-[#a7aaad]">|</span>
+                            <button onClick={() => handleDelete(index)} className="text-[#d63638] hover:underline text-[12px]">
+                              Trash
+                            </button>
+                          </div>
+                        </td>
+                        <td className="py-3 px-3 align-top capitalize text-[#50575e]">
+                          {service.tag || "Service Detail"}
+                        </td>
+                        <td className="py-3 px-3 align-top">
+                          <span className={`font-semibold ${service.status === 'published' ? 'text-[#00a32a]' : 'text-[#d63638]'}`}>
+                            {service.status === 'published' ? 'Active' : 'Draft'}
                           </span>
-                        </div>
-                      </td>
-                      <td className="p-2.5 text-[#50575e]">{service.tag || "—"}</td>
-                      <td className="p-2.5 font-mono text-xs text-[#646970]">/services/{service.slug}</td>
-                      <td className="p-2.5">
-                        <span className={`inline-block px-2 py-0.5 rounded-[3px] text-[11px] font-bold uppercase ${
-                          service.status === 'draft' ? 'bg-[#f0f0f1] text-[#50575e]' : 'bg-[#e7f5ea] text-[#00a32a]'
-                        }`}>
-                          {service.status === 'draft' ? 'Draft' : 'Published'}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+                        </td>
+                        <td className="py-3 px-3 align-top text-[#50575e]">
+                          {new Date(service.createdAt || Date.now()).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' })}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
 
         </div>
       )}
