@@ -6,13 +6,14 @@ import {
    Plus, Trash2, Loader2, Image as ImageIcon,
    LayoutTemplate, Type, Settings, Star,
    CheckCircle2, List, CircleHelp, Mail, Briefcase,
-   ChevronRight, X
+   ChevronRight, X, MapPin, Globe
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import ContentSelector from "@/components/admin/ContentSelector";
 import IconSelector from "@/components/admin/IconSelector";
 import ImageField from "@/components/admin/ImageField";
 import BlogSelector from "@/components/admin/BlogSelector";
+import { AVAILABLE_COUNTRIES, resolveCountryLocation, COUNTRIES_DATABASE } from "@/lib/countryLocations";
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
    ssr: false,
    loading: () => <div className="h-64 bg-[#f6f7f7] animate-pulse border border-[#c3c4c7] rounded-sm flex items-center justify-center text-[#8c8f94] text-xs">Loading Rich Text Editor...</div>
@@ -759,58 +760,37 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                         </div>
                      </div>
 
-                     {/* 3. MAP GRAPHIC */}
-                     <div className="space-y-6 pt-8 border-t border-[#f0f0f1]">
-                        <h3 className={UI.sectionHeader}>3. World Map Image</h3>
-                        <ImageField
-                           label="Map Graphic (SVG or PNG)"
-                           value={data.serviceArea?.mapSrc || "https://res.cloudinary.com/dyt4m9t6k/image/upload/v1723467823/world-map_h1y3qk.svg"}
-                           onChange={(url) => updateSection("serviceArea", "mapSrc", url)}
-                           description="Upload or pick a world map image from your Media Library"
-                        />
-                        <div className="space-y-1.5">
-                           <label className={UI.label}>Map Alt Text</label>
-                           <input
-                              type="text"
-                              value={data.serviceArea?.mapAlt || "Global Service Locations Map"}
-                              onChange={(e) => updateSection("serviceArea", "mapAlt", e.target.value)}
-                              className={UI.input}
-                              placeholder="e.g. Global Service Locations Map"
-                           />
-                        </div>
-                     </div>
-
-                     {/* 4. GLOBAL HUBS & LOCATION PINS */}
+                     {/* 3. GLOBAL HUBS (AUTO-PINNED TO REAL WORLD MAP) */}
                      <div className="space-y-6 pt-8 border-t border-[#f0f0f1]">
                         <div className="flex justify-between items-center">
                            <div>
-                              <h3 className={UI.sectionHeader}>4. Global Hubs & Map Pins</h3>
-                              <p className="text-xs text-[#646970]">Coordinates (X %, Y %) control pin placement directly over the world map.</p>
+                              <h3 className={UI.sectionHeader}>3. Active Global Operating Countries</h3>
+                              <p className="text-xs text-[#646970]">Simply choose or type a country. Real GPS coordinates are automatically mapped to the interactive live globe.</p>
                            </div>
                            <button
                               onClick={() => {
                                  const currentHubs = (data.serviceArea?.hubs && data.serviceArea.hubs.length > 0)
                                     ? data.serviceArea.hubs
                                     : [
-                                       { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", x: "27.27%", y: "29.72%" },
-                                       { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", x: "24.63%", y: "33.63%" },
-                                       { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", x: "45.97%", y: "45.21%" },
-                                       { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", x: "49.66%", y: "43.78%" },
-                                       { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET", x: "49.00%", y: "47.84%" },
-                                       { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET", x: "46.49%", y: "46.30%" },
-                                       { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET", x: "50.53%", y: "50.18%" },
-                                       { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET", x: "51.07%", y: "44.34%" },
-                                       { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET", x: "48.27%", y: "44.90%" },
-                                       { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT", x: "26.67%", y: "77.03%" },
-                                       { id: "bh", name: "Bahrain / GCC", focus: "MENA Regional Hub", timezone: "AST", x: "61.08%", y: "58.22%" },
-                                       { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST", x: "82.34%", y: "82.47%" }
+                                       { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST" },
+                                       { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST" },
+                                       { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT" },
+                                       { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET" },
+                                       { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET" },
+                                       { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET" },
+                                       { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET" },
+                                       { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET" },
+                                       { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET" },
+                                       { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT" },
+                                       { id: "bh", name: "Bahrain", focus: "MENA Regional Hub", timezone: "AST" },
+                                       { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST" }
                                     ];
-                                 const newHub = { id: `hub-${Date.now()}`, name: "New Hub Location", focus: "Full-Stack Development", timezone: "UTC", x: "50%", y: "50%" };
+                                 const newHub = { id: `hub-${Date.now()}`, name: "United Arab Emirates", focus: "Regional Hub", timezone: "GST" };
                                  updateSection("serviceArea", "hubs", [...currentHubs, newHub]);
                               }}
                               className={UI.buttonAdd}
                            >
-                              + Add Location Pin
+                              + Add Operating Country
                            </button>
                         </div>
 
@@ -818,68 +798,90 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                            {((data.serviceArea?.hubs && data.serviceArea.hubs.length > 0)
                               ? data.serviceArea.hubs
                               : [
-                                 { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", x: "27.27%", y: "29.72%" },
-                                 { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", x: "24.63%", y: "33.63%" },
-                                 { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", x: "45.97%", y: "45.21%" },
-                                 { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", x: "49.66%", y: "43.78%" },
-                                 { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET", x: "49.00%", y: "47.84%" },
-                                 { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET", x: "46.49%", y: "46.30%" },
-                                 { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET", x: "50.53%", y: "50.18%" },
-                                 { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET", x: "51.07%", y: "44.34%" },
-                                 { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET", x: "48.27%", y: "44.90%" },
-                                 { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT", x: "26.67%", y: "77.03%" },
-                                 { id: "bh", name: "Bahrain / GCC", focus: "MENA Regional Hub", timezone: "AST", x: "61.08%", y: "58.22%" },
-                                 { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST", x: "82.34%", y: "82.47%" }
+                                 { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST" },
+                                 { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST" },
+                                 { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT" },
+                                 { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET" },
+                                 { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET" },
+                                 { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET" },
+                                 { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET" },
+                                 { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET" },
+                                 { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET" },
+                                 { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT" },
+                                 { id: "bh", name: "Bahrain", focus: "MENA Regional Hub", timezone: "AST" },
+                                 { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST" }
                               ]
                            ).map((hub: any, hIdx: number) => {
                               const currentHubs = (data.serviceArea?.hubs && data.serviceArea.hubs.length > 0)
                                  ? data.serviceArea.hubs
                                  : [
-                                    { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", x: "27.27%", y: "29.72%" },
-                                    { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", x: "24.63%", y: "33.63%" },
-                                    { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", x: "45.97%", y: "45.21%" },
-                                    { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", x: "49.66%", y: "43.78%" },
-                                    { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET", x: "49.00%", y: "47.84%" },
-                                    { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET", x: "46.49%", y: "46.30%" },
-                                    { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET", x: "50.53%", y: "50.18%" },
-                                    { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET", x: "51.07%", y: "44.34%" },
-                                    { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET", x: "48.27%", y: "44.90%" },
-                                    { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT", x: "26.67%", y: "77.03%" },
-                                    { id: "bh", name: "Bahrain / GCC", focus: "MENA Regional Hub", timezone: "AST", x: "61.08%", y: "58.22%" },
-                                    { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST", x: "82.34%", y: "82.47%" }
+                                    { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST" },
+                                    { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST" },
+                                    { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT" },
+                                    { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET" },
+                                    { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET" },
+                                    { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET" },
+                                    { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET" },
+                                    { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET" },
+                                    { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET" },
+                                    { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT" },
+                                    { id: "bh", name: "Bahrain", focus: "MENA Regional Hub", timezone: "AST" },
+                                    { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST" }
                                  ];
+                              const geo = resolveCountryLocation(hub.name);
+
                               return (
-                                 <div key={hIdx} className={UI.card + " space-y-3 bg-[#f6f7f7]"}>
+                                 <div key={hIdx} className={UI.card + " space-y-3 bg-[#f6f7f7] border border-[#dcdcde]"}>
                                     <div className="flex justify-between items-center pb-2 border-b border-[#e2e4e7]">
-                                       <span className="text-[12px] font-bold text-[#1d2327]">Location #{hIdx + 1}: {hub.name}</span>
+                                       <div className="flex items-center gap-2">
+                                          <MapPin className="w-4 h-4 text-[#2271b1]" />
+                                          <span className="text-[13px] font-bold text-[#1d2327]">{hub.name || `Country #${hIdx + 1}`}</span>
+                                          <span className="text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                             📍 Auto-Geolocated ({geo.region})
+                                          </span>
+                                       </div>
                                        <button
                                           onClick={() => {
                                              const newHubs = currentHubs.filter((_: any, i: number) => i !== hIdx);
                                              updateSection("serviceArea", "hubs", newHubs);
                                           }}
-                                          className="text-[#d63638] hover:opacity-80 p-1"
+                                          className="text-[#d63638] hover:opacity-80 p-1 flex items-center gap-1 text-xs font-semibold"
                                        >
                                           <Trash2 className="w-4 h-4" />
+                                          Remove
                                        </button>
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                                        <div className="space-y-1">
-                                          <label className="text-[10px] font-bold uppercase text-[#50575e]">Location Name</label>
+                                          <label className="text-[10px] font-bold uppercase text-[#50575e]">Country Name</label>
                                           <input
+                                             list={`countries-list-${hIdx}`}
                                              type="text"
                                              value={hub.name || ""}
                                              onChange={(e) => {
+                                                const countryVal = e.target.value;
                                                 const newHubs = [...currentHubs];
-                                                newHubs[hIdx] = { ...newHubs[hIdx], name: e.target.value };
+                                                const autoGeo = resolveCountryLocation(countryVal);
+                                                newHubs[hIdx] = {
+                                                   ...newHubs[hIdx],
+                                                   name: countryVal,
+                                                   timezone: newHubs[hIdx].timezone || autoGeo.timezone
+                                                };
                                                 updateSection("serviceArea", "hubs", newHubs);
                                              }}
                                              className={UI.input + " font-bold"}
-                                             placeholder="e.g. United States"
+                                             placeholder="Type or select a country..."
                                           />
+                                          <datalist id={`countries-list-${hIdx}`}>
+                                             {AVAILABLE_COUNTRIES.map((c) => (
+                                                <option key={c} value={c} />
+                                             ))}
+                                          </datalist>
                                        </div>
+
                                        <div className="space-y-1">
-                                          <label className="text-[10px] font-bold uppercase text-[#50575e]">Focus / Specialty</label>
+                                          <label className="text-[10px] font-bold uppercase text-[#50575e]">Specialty / Focus</label>
                                           <input
                                              type="text"
                                              value={hub.focus || ""}
@@ -889,14 +891,15 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                                                 updateSection("serviceArea", "hubs", newHubs);
                                              }}
                                              className={UI.input}
-                                             placeholder="e.g. Architecture & Design"
+                                             placeholder="e.g. Full-Stack & UI/UX"
                                           />
                                        </div>
+
                                        <div className="space-y-1">
-                                          <label className="text-[10px] font-bold uppercase text-[#50575e]">Timezone</label>
+                                          <label className="text-[10px] font-bold uppercase text-[#50575e]">Timezone Badge</label>
                                           <input
                                              type="text"
-                                             value={hub.timezone || ""}
+                                             value={hub.timezone || geo.timezone || ""}
                                              onChange={(e) => {
                                                 const newHubs = [...currentHubs];
                                                 newHubs[hIdx] = { ...newHubs[hIdx], timezone: e.target.value };
@@ -904,37 +907,6 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                                              }}
                                              className={UI.input + " font-mono"}
                                              placeholder="e.g. EST / PST"
-                                          />
-                                       </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-[#e2e4e7]">
-                                       <div className="space-y-1">
-                                          <label className="text-[10px] font-bold uppercase text-[#50575e]">Pin X Coordinate (%)</label>
-                                          <input
-                                             type="text"
-                                             value={hub.x || ""}
-                                             onChange={(e) => {
-                                                const newHubs = [...currentHubs];
-                                                newHubs[hIdx] = { ...newHubs[hIdx], x: e.target.value };
-                                                updateSection("serviceArea", "hubs", newHubs);
-                                             }}
-                                             className={UI.input + " font-mono"}
-                                             placeholder="e.g. 27.27%"
-                                          />
-                                       </div>
-                                       <div className="space-y-1">
-                                          <label className="text-[10px] font-bold uppercase text-[#50575e]">Pin Y Coordinate (%)</label>
-                                          <input
-                                             type="text"
-                                             value={hub.y || ""}
-                                             onChange={(e) => {
-                                                const newHubs = [...currentHubs];
-                                                newHubs[hIdx] = { ...newHubs[hIdx], y: e.target.value };
-                                                updateSection("serviceArea", "hubs", newHubs);
-                                             }}
-                                             className={UI.input + " font-mono"}
-                                             placeholder="e.g. 29.72%"
                                           />
                                        </div>
                                     </div>

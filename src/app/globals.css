@@ -1,7 +1,56 @@
 @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+@import 'leaflet/dist/leaflet.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ── Brand Map Styling (CartoDB Tiles) ── */
+.map-tiles-light {
+  filter: contrast(1.04) brightness(1.02) saturate(1.1);
+}
+
+.map-tiles-dark {
+  filter: brightness(0.9) contrast(1.15) hue-rotate(220deg) saturate(1.2);
+}
+
+.leaflet-container {
+  background-color: transparent !important;
+  font-family: inherit !important;
+}
+
+.leaflet-bar {
+  border-radius: 12px !important;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+.dark .leaflet-bar {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: #12121e !important;
+}
+
+.leaflet-bar a {
+  background-color: #ffffff !important;
+  color: #0306AC !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+  transition: all 0.2s ease;
+}
+
+.dark .leaflet-bar a {
+  background-color: #12121e !important;
+  color: #E9BD36 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.leaflet-bar a:hover {
+  background-color: #f1f5f9 !important;
+}
+
+.dark .leaflet-bar a:hover {
+  background-color: #1e1e30 !important;
+}
+
 
 @media (min-width: 350px) and (max-width: 750px) {
   .logooo {
