@@ -5,6 +5,7 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useContent } from "@/hooks/useContent";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 interface BlogPost {
   _id?: string;
@@ -46,9 +47,26 @@ export default function BlogSection({
 
   // Headers and narrative defaults
   const sectionTag = rawBlog.sectionTag || subtitle || rawBlog.subtitle || "LATEST ARTICLES & INSIGHTS";
-  const titleIntro = rawBlog.titleIntro || "Thinking, Strategies &";
-  const titleHighlight = rawBlog.titleHighlight || title || rawBlog.title || "Industry Insights";
-  const descText = rawBlog.description || description || "Explore our latest thoughts on high-performance web engineering, modern UI/UX design architectures, and conversion rate optimization.";
+  
+  // Clean dynamic heading without unwanted hardcoded prefixes
+  const explicitIntro = rawBlog.titleIntro !== undefined ? rawBlog.titleIntro : undefined;
+  const explicitHighlight = title || rawBlog.titleHighlight || rawBlog.title;
+
+  let titleIntro = "";
+  let titleHighlight = "";
+
+  if (explicitIntro !== undefined && explicitIntro.trim()) {
+    titleIntro = explicitIntro.trim();
+    titleHighlight = (explicitHighlight || "").trim();
+  } else if (explicitHighlight && explicitHighlight.trim()) {
+    titleIntro = "";
+    titleHighlight = explicitHighlight.trim();
+  } else {
+    titleIntro = "Thinking, Strategies &";
+    titleHighlight = "Industry Insights";
+  }
+
+  const descText = rawBlog.description || description || "";
   const featuredLabel = rawBlog.featuredLabel || "Read Full Article";
   const dateSeparator = rawBlog.dateSeparator || " • ";
 
@@ -96,20 +114,20 @@ export default function BlogSection({
     }
   ];
 
-  // Resolve posts from props, or selectedPosts filter, or allBlogs, or fallback defaults
+  // Resolve posts strictly from props, or page-specific selectedPosts
   let activePosts: BlogPost[] = [];
-  if (propPosts && propPosts.length > 0) {
+  if (Array.isArray(propPosts)) {
     activePosts = propPosts;
-  } else if (Array.isArray(rawBlog.selectedPosts) && rawBlog.selectedPosts.length > 0 && Array.isArray(content.allBlogs)) {
+  } else if (Array.isArray(rawBlog.selectedPosts) && Array.isArray(content.allBlogs)) {
     activePosts = content.allBlogs.filter((p: any) => rawBlog.selectedPosts.includes(p._id));
-  }
-  
-  if (activePosts.length === 0 && Array.isArray(content.allBlogs) && content.allBlogs.length > 0) {
+  } else if (Array.isArray(content.allBlogs) && content.allBlogs.length > 0 && !overrideData) {
+    // Only default to first 4 blogs if on generic blog page without specific configuration
     activePosts = content.allBlogs.slice(0, 4);
   }
 
+  // If no posts are chosen or available for this section, do not display ghost content
   if (activePosts.length === 0) {
-    activePosts = defaultPosts;
+    return null;
   }
 
   // Helper to extract clean text from blog post content or SEO description
@@ -246,14 +264,24 @@ export default function BlogSection({
             {sectionTag}
           </div>
           <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-[1.15]">
-            {titleIntro}{" "}
-            <span className="text-primary dark:text-yellow-400 font-serif font-normal italic">
-              {titleHighlight}
-            </span>
+            {titleIntro ? (
+              <>
+                {titleIntro}{" "}
+                <span className="text-primary dark:text-yellow-400 font-serif font-normal italic">
+                  {titleHighlight}
+                </span>
+              </>
+            ) : (
+              <span className="text-slate-900 dark:text-white">
+                {titleHighlight}
+              </span>
+            )}
           </h2>
-          <p className="text-sm sm:text-base font-sans text-slate-600 dark:text-zinc-300 font-normal leading-relaxed max-w-xl">
-            {descText}
-          </p>
+          {descText && (
+            <div className="text-sm sm:text-base font-sans text-slate-600 dark:text-zinc-300 font-normal leading-relaxed max-w-xl">
+              <RichTextRenderer content={descText} />
+            </div>
+          )}
         </motion.div>
 
         {/* Asymmetrical Split Layout */}

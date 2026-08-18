@@ -167,11 +167,11 @@ export default async function Index() {
             pageData={{
               ...page,
               content: {
-                ...(content?.data || {}),
                 ...(page.content || {}),
                 globalServices: content?.data?.services?.services || []
               }
             }} 
+            globalData={content?.data || {}}
             params={Promise.resolve({ slug: ['/'] })} 
           />
         </>
@@ -202,15 +202,22 @@ export default async function Index() {
     }
   }
 
-  // Default Home Template
-  const homeData = content?.data?.home;
+  // Find published Home Page in MongoDB
+  const defaultHomePageDoc = await Page.findOne({
+    $or: [{ slug: 'home' }, { template: 'home' }],
+    status: 'published',
+    isTrashed: { $ne: true }
+  }).lean();
+
+  const homePage = defaultHomePageDoc ? JSON.parse(JSON.stringify(defaultHomePageDoc)) : null;
+
   const schema = generateSchema({
-    title: settings?.siteTitle || "Eagle Revolution",
-    description: homeData?.hero?.subheadline || "Veteran-owned roofing & home improvement in St. Louis, MO.",
+    title: homePage?.seo?.metaTitle || homePage?.title || settings?.siteTitle || "Mohsin Designs",
+    description: homePage?.seo?.metaDescription || "",
     slug: "/",
     type: "WebPage",
     faqs: faqs,
-    image: `${BASE_URL}/eagle-logo.png`
+    image: `${BASE_URL}/logo.png`
   });
 
   return (
@@ -220,7 +227,17 @@ export default async function Index() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
-      <HomeTemplate />
+      <TemplateWrapper 
+        templateName="home"
+        pageData={homePage || {
+          content: {
+            ...(content?.data?.home || {}),
+            globalServices: content?.data?.services?.services || []
+          }
+        }}
+        globalData={content?.data || {}}
+        params={Promise.resolve({ slug: ['/'] })}
+      />
     </>
   );
 }

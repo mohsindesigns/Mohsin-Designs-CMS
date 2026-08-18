@@ -791,6 +791,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       secondaryCtaLink: dbService?.finalCta?.secondaryCtaLink || "/contact",
       founderImage: dbService?.finalCta?.founderImage || "/founder_portrait_nobg.png"
     },
+    blogSection: dbService?.blogSection,
     serviceArea: dbService?.serviceArea
   };
 
@@ -1971,7 +1972,17 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       )}
 
       {/* ── 12. LATEST ARTICLES ── */}
-      <Blog />
+      {service.blogSection && Array.isArray(service.blogSection.selectedPosts) && service.blogSection.selectedPosts.length > 0 && (
+        <Blog
+          data={{
+            title: service.blogSection.title,
+            subtitle: service.blogSection.subtitle,
+            description: service.blogSection.description,
+            data: service.blogSection,
+            posts: content?.allBlogs ? content.allBlogs.filter((p: any) => service.blogSection.selectedPosts.includes(p._id)) : []
+          }}
+        />
+      )}
 
       {/* ── 13. SERVICE AREA SECTION ── */}
       {service.serviceArea && <ServiceArea data={service.serviceArea} />}

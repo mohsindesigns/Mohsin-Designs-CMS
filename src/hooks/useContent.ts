@@ -291,9 +291,9 @@ export const useContent = () => {
             const raw = getSafe(completeData, 'faq', {});
             const defaults = {
                 sectionTag: "FREQUENTLY ASKED QUESTIONS",
-                titleIntro: "Common Questions,",
-                titleHighlight: "Clear Answers",
-                description: "Everything you need to know about our modern engineering process, turnaround times, and pricing models.",
+                titleIntro: "",
+                titleHighlight: "Frequently Asked Questions",
+                description: "",
                 strategyAudit: {
                     badge: "FREE ARCHITECTURE AUDIT",
                     title: "Have a complex custom build in mind?",

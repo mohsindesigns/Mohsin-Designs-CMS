@@ -532,12 +532,13 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
       />
 
       {/* ── 5. BLOG SECTION ────────────────────────────────────────────────── */}
-      {allBlogs && allBlogs.length > 0 && (
+      {pageData?.content?.blogSection && Array.isArray(pageData.content.blogSection.selectedPosts) && pageData.content.blogSection.selectedPosts.length > 0 && (
         <BlogSection
-          title={pageData?.content?.blogSection?.title || blogSection?.title || "Latest Insights & Strategy"}
-          subtitle={pageData?.content?.blogSection?.subtitle || blogSection?.subtitle || "FROM OUR ENGINEERING JOURNAL"}
-          description={pageData?.content?.blogSection?.description || blogSection?.description || "In-depth blueprints on digital architecture, search science, and scalable growth."}
-          posts={allBlogs.filter((p: any) => (pageData?.content?.blogSection?.selectedPosts || blogSection?.selectedPosts || []).includes(p._id))}
+          title={pageData.content.blogSection.title}
+          subtitle={pageData.content.blogSection.subtitle}
+          description={pageData.content.blogSection.description}
+          data={pageData.content.blogSection}
+          posts={allBlogs ? allBlogs.filter((p: any) => pageData.content.blogSection.selectedPosts.includes(p._id)) : []}
         />
       )}
 

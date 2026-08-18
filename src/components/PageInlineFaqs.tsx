@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Plus, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { useContent } from "@/hooks/useContent";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 interface FAQItem {
   id?: string;
@@ -40,7 +41,7 @@ export default function PageInlineFaqs({
 
   const rawFaq = propData || content.faq || {};
 
-  const sectionTag = badge || rawFaq.faqBadge || rawFaq.sectionTag || rawFaq.section?.badge || content.faq?.sectionTag || "FREQUENTLY ASKED QUESTIONS";
+  const sectionTag = badge || rawFaq.faqBadge || rawFaq.sectionTag || rawFaq.section?.badge || "FREQUENTLY ASKED QUESTIONS";
   
   // Clean dynamic heading resolution without unwanted hardcoded prefixes
   const explicitIntro = rawFaq.faqTitleIntro !== undefined ? rawFaq.faqTitleIntro : (rawFaq.titleIntro !== undefined ? rawFaq.titleIntro : undefined);
@@ -49,25 +50,29 @@ export default function PageInlineFaqs({
   let titleIntro = "";
   let titleHighlight = "";
 
-  if (explicitIntro !== undefined && explicitIntro.trim()) {
+  const isBoilerplateIntro = explicitIntro === "Common Questions," || explicitIntro === "Common Questions";
+
+  if (explicitIntro !== undefined && explicitIntro.trim() && !isBoilerplateIntro) {
     titleIntro = explicitIntro.trim();
     titleHighlight = (explicitHighlight || "").trim();
   } else if (explicitHighlight && explicitHighlight.trim()) {
     titleIntro = "";
     titleHighlight = explicitHighlight.trim();
   } else {
-    titleIntro = content.faq?.titleIntro || "Common Questions,";
-    titleHighlight = content.faq?.titleHighlight || "Clear Answers";
+    titleIntro = "";
+    titleHighlight = "Frequently Asked Questions";
   }
 
-  const desc = description || rawFaq.faqDescription || rawFaq.description || rawFaq.section?.description || content.faq?.description || "Everything you need to know about our modern engineering process, turnaround times, and pricing models.";
+  const rawDesc = description || rawFaq.faqDescription || rawFaq.description || rawFaq.section?.description || "";
+  // Filter out any legacy St. Louis boilerplate from old database records
+  const desc = (typeof rawDesc === 'string' && rawDesc.includes("St. Louis")) ? "" : rawDesc;
 
   const strategyAudit = {
-    badge: rawFaq.strategyAudit?.badge || content.faq?.strategyAudit?.badge || "FREE ARCHITECTURE AUDIT",
-    title: rawFaq.strategyAudit?.title || content.faq?.strategyAudit?.title || "Have a complex custom build in mind?",
-    desc: rawFaq.strategyAudit?.desc || content.faq?.strategyAudit?.desc || "Book a 30-minute high-level technical strategy session with our lead engineer.",
-    button: rawFaq.strategyAudit?.button || content.faq?.strategyAudit?.button || "Book Architecture Call",
-    href: rawFaq.strategyAudit?.href || content.faq?.strategyAudit?.href || "#contact"
+    badge: rawFaq.strategyAudit?.badge || "FREE ARCHITECTURE AUDIT",
+    title: rawFaq.strategyAudit?.title || "Have a complex custom build in mind?",
+    desc: rawFaq.strategyAudit?.desc || "Book a 30-minute high-level technical strategy session with our lead engineer.",
+    button: rawFaq.strategyAudit?.button || "Book Architecture Call",
+    href: rawFaq.strategyAudit?.href || "#contact"
   };
 
   // Fallback starter FAQs if none exist
@@ -175,9 +180,11 @@ export default function PageInlineFaqs({
               </h2>
               
               {/* Subdescription */}
-              <p className="text-sm sm:text-base font-sans text-slate-600 dark:text-zinc-300 font-normal leading-relaxed max-w-sm">
-                {desc}
-              </p>
+              {desc && (
+                <div className="text-sm sm:text-base font-sans text-slate-600 dark:text-zinc-300 font-normal leading-relaxed max-w-sm">
+                  <RichTextRenderer content={desc} />
+                </div>
+              )}
             </div>
 
             {/* Premium Clean Sticky Strategy Session Box */}

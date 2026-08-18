@@ -65,12 +65,15 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any, par
         />
       </section>
 
-      <BlogSection
-        title={pageData?.content?.blogSection?.title || blogSection?.title}
-        subtitle={pageData?.content?.blogSection?.subtitle || blogSection?.subtitle}
-        description={pageData?.content?.blogSection?.description || blogSection?.description}
-        posts={allBlogs.filter((p: any) => (pageData?.content?.blogSection?.selectedPosts || []).includes(p._id))}
-      />
+      {pageData?.content?.blogSection && Array.isArray(pageData.content.blogSection.selectedPosts) && pageData.content.blogSection.selectedPosts.length > 0 && (
+        <BlogSection
+          title={pageData.content.blogSection.title}
+          subtitle={pageData.content.blogSection.subtitle}
+          description={pageData.content.blogSection.description}
+          data={pageData.content.blogSection}
+          posts={allBlogs ? allBlogs.filter((p: any) => pageData.content.blogSection.selectedPosts.includes(p._id)) : []}
+        />
+      )}
 
 
 
