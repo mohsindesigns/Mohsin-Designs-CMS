@@ -86,6 +86,7 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
       { id: "about", label: "About" },
       { id: "services", label: "Services" },
       { id: "whyChooseUs", label: "Value Props" },
+      { id: "serviceArea", label: "Global Coverage" },
       { id: "leadership", label: "Leadership" },
       { id: "portfolio", label: "Work" },
       { id: "testimonials", label: "Reviews" },
@@ -675,6 +676,271 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                                  placeholder="e.g. 5.0 ★★★★★"
                               />
                            </div>
+                        </div>
+                     </div>
+                  </div>
+               )}
+
+               {/* GLOBAL SERVICE AREA / MAP */}
+               {activeTab === "serviceArea" && (
+                  <div className="space-y-12">
+                     <div className="space-y-6">
+                        <h3 className={UI.sectionHeader}>1. Section Header & Narrative</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Badge / Tag</label>
+                              <input
+                                 type="text"
+                                 value={data.serviceArea?.sectionTag || "GLOBAL COVERAGE"}
+                                 onChange={(e) => updateSection("serviceArea", "sectionTag", e.target.value)}
+                                 className={UI.input}
+                                 placeholder="e.g. GLOBAL COVERAGE"
+                              />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Headline Intro</label>
+                              <input
+                                 type="text"
+                                 value={data.serviceArea?.titleIntro || "Serving Clients"}
+                                 onChange={(e) => updateSection("serviceArea", "titleIntro", e.target.value)}
+                                 className={UI.input}
+                                 placeholder="e.g. Serving Clients"
+                              />
+                           </div>
+                        </div>
+
+                        <div className="space-y-1.5">
+                           <label className={UI.label}>Headline Highlight <span className="text-primary font-bold">(Italic / Highlight color)</span></label>
+                           <input
+                              type="text"
+                              value={data.serviceArea?.titleHighlight || "Worldwide"}
+                              onChange={(e) => updateSection("serviceArea", "titleHighlight", e.target.value)}
+                              className={UI.input + " font-bold border-[#2271b1]"}
+                              placeholder="e.g. Worldwide"
+                           />
+                        </div>
+
+                        <div className="space-y-1.5">
+                           <label className={UI.label}>Intro Description</label>
+                           <textarea
+                              rows={3}
+                              value={data.serviceArea?.description || ""}
+                              onChange={(e) => updateSection("serviceArea", "description", e.target.value)}
+                              className={UI.input}
+                              placeholder="e.g. With distributed engineering hubs and round-the-clock availability, we partner with industry leaders across North America, Europe, the Middle East, and Asia-Pacific."
+                           />
+                        </div>
+                     </div>
+
+                     {/* 2. CTA BUTTON */}
+                     <div className="space-y-6 pt-8 border-t border-[#f0f0f1]">
+                        <h3 className={UI.sectionHeader}>2. Call to Action Button</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Button Text</label>
+                              <input
+                                 type="text"
+                                 value={data.serviceArea?.ctaText || "Schedule Global Consultation"}
+                                 onChange={(e) => updateSection("serviceArea", "ctaText", e.target.value)}
+                                 className={UI.input}
+                                 placeholder="e.g. Schedule Global Consultation"
+                              />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Button Link</label>
+                              <input
+                                 type="text"
+                                 value={data.serviceArea?.ctaHref || "#contact"}
+                                 onChange={(e) => updateSection("serviceArea", "ctaHref", e.target.value)}
+                                 className={UI.input}
+                                 placeholder="e.g. #contact or /contact"
+                              />
+                           </div>
+                        </div>
+                     </div>
+
+                     {/* 3. MAP GRAPHIC */}
+                     <div className="space-y-6 pt-8 border-t border-[#f0f0f1]">
+                        <h3 className={UI.sectionHeader}>3. World Map Image</h3>
+                        <ImageField
+                           label="Map Graphic (SVG or PNG)"
+                           value={data.serviceArea?.mapSrc || "https://res.cloudinary.com/dyt4m9t6k/image/upload/v1723467823/world-map_h1y3qk.svg"}
+                           onChange={(url) => updateSection("serviceArea", "mapSrc", url)}
+                           description="Upload or pick a world map image from your Media Library"
+                        />
+                        <div className="space-y-1.5">
+                           <label className={UI.label}>Map Alt Text</label>
+                           <input
+                              type="text"
+                              value={data.serviceArea?.mapAlt || "Global Service Locations Map"}
+                              onChange={(e) => updateSection("serviceArea", "mapAlt", e.target.value)}
+                              className={UI.input}
+                              placeholder="e.g. Global Service Locations Map"
+                           />
+                        </div>
+                     </div>
+
+                     {/* 4. GLOBAL HUBS & LOCATION PINS */}
+                     <div className="space-y-6 pt-8 border-t border-[#f0f0f1]">
+                        <div className="flex justify-between items-center">
+                           <div>
+                              <h3 className={UI.sectionHeader}>4. Global Hubs & Map Pins</h3>
+                              <p className="text-xs text-[#646970]">Coordinates (X %, Y %) control pin placement directly over the world map.</p>
+                           </div>
+                           <button
+                              onClick={() => {
+                                 const currentHubs = (data.serviceArea?.hubs && data.serviceArea.hubs.length > 0)
+                                    ? data.serviceArea.hubs
+                                    : [
+                                       { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", x: "27.27%", y: "29.72%" },
+                                       { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", x: "24.63%", y: "33.63%" },
+                                       { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", x: "45.97%", y: "45.21%" },
+                                       { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", x: "49.66%", y: "43.78%" },
+                                       { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET", x: "49.00%", y: "47.84%" },
+                                       { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET", x: "46.49%", y: "46.30%" },
+                                       { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET", x: "50.53%", y: "50.18%" },
+                                       { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET", x: "51.07%", y: "44.34%" },
+                                       { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET", x: "48.27%", y: "44.90%" },
+                                       { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT", x: "26.67%", y: "77.03%" },
+                                       { id: "bh", name: "Bahrain / GCC", focus: "MENA Regional Hub", timezone: "AST", x: "61.08%", y: "58.22%" },
+                                       { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST", x: "82.34%", y: "82.47%" }
+                                    ];
+                                 const newHub = { id: `hub-${Date.now()}`, name: "New Hub Location", focus: "Full-Stack Development", timezone: "UTC", x: "50%", y: "50%" };
+                                 updateSection("serviceArea", "hubs", [...currentHubs, newHub]);
+                              }}
+                              className={UI.buttonAdd}
+                           >
+                              + Add Location Pin
+                           </button>
+                        </div>
+
+                        <div className="space-y-4">
+                           {((data.serviceArea?.hubs && data.serviceArea.hubs.length > 0)
+                              ? data.serviceArea.hubs
+                              : [
+                                 { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", x: "27.27%", y: "29.72%" },
+                                 { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", x: "24.63%", y: "33.63%" },
+                                 { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", x: "45.97%", y: "45.21%" },
+                                 { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", x: "49.66%", y: "43.78%" },
+                                 { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET", x: "49.00%", y: "47.84%" },
+                                 { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET", x: "46.49%", y: "46.30%" },
+                                 { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET", x: "50.53%", y: "50.18%" },
+                                 { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET", x: "51.07%", y: "44.34%" },
+                                 { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET", x: "48.27%", y: "44.90%" },
+                                 { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT", x: "26.67%", y: "77.03%" },
+                                 { id: "bh", name: "Bahrain / GCC", focus: "MENA Regional Hub", timezone: "AST", x: "61.08%", y: "58.22%" },
+                                 { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST", x: "82.34%", y: "82.47%" }
+                              ]
+                           ).map((hub: any, hIdx: number) => {
+                              const currentHubs = (data.serviceArea?.hubs && data.serviceArea.hubs.length > 0)
+                                 ? data.serviceArea.hubs
+                                 : [
+                                    { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", x: "27.27%", y: "29.72%" },
+                                    { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", x: "24.63%", y: "33.63%" },
+                                    { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", x: "45.97%", y: "45.21%" },
+                                    { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", x: "49.66%", y: "43.78%" },
+                                    { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET", x: "49.00%", y: "47.84%" },
+                                    { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET", x: "46.49%", y: "46.30%" },
+                                    { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET", x: "50.53%", y: "50.18%" },
+                                    { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET", x: "51.07%", y: "44.34%" },
+                                    { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET", x: "48.27%", y: "44.90%" },
+                                    { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT", x: "26.67%", y: "77.03%" },
+                                    { id: "bh", name: "Bahrain / GCC", focus: "MENA Regional Hub", timezone: "AST", x: "61.08%", y: "58.22%" },
+                                    { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST", x: "82.34%", y: "82.47%" }
+                                 ];
+                              return (
+                                 <div key={hIdx} className={UI.card + " space-y-3 bg-[#f6f7f7]"}>
+                                    <div className="flex justify-between items-center pb-2 border-b border-[#e2e4e7]">
+                                       <span className="text-[12px] font-bold text-[#1d2327]">Location #{hIdx + 1}: {hub.name}</span>
+                                       <button
+                                          onClick={() => {
+                                             const newHubs = currentHubs.filter((_: any, i: number) => i !== hIdx);
+                                             updateSection("serviceArea", "hubs", newHubs);
+                                          }}
+                                          className="text-[#d63638] hover:opacity-80 p-1"
+                                       >
+                                          <Trash2 className="w-4 h-4" />
+                                       </button>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                       <div className="space-y-1">
+                                          <label className="text-[10px] font-bold uppercase text-[#50575e]">Location Name</label>
+                                          <input
+                                             type="text"
+                                             value={hub.name || ""}
+                                             onChange={(e) => {
+                                                const newHubs = [...currentHubs];
+                                                newHubs[hIdx] = { ...newHubs[hIdx], name: e.target.value };
+                                                updateSection("serviceArea", "hubs", newHubs);
+                                             }}
+                                             className={UI.input + " font-bold"}
+                                             placeholder="e.g. United States"
+                                          />
+                                       </div>
+                                       <div className="space-y-1">
+                                          <label className="text-[10px] font-bold uppercase text-[#50575e]">Focus / Specialty</label>
+                                          <input
+                                             type="text"
+                                             value={hub.focus || ""}
+                                             onChange={(e) => {
+                                                const newHubs = [...currentHubs];
+                                                newHubs[hIdx] = { ...newHubs[hIdx], focus: e.target.value };
+                                                updateSection("serviceArea", "hubs", newHubs);
+                                             }}
+                                             className={UI.input}
+                                             placeholder="e.g. Architecture & Design"
+                                          />
+                                       </div>
+                                       <div className="space-y-1">
+                                          <label className="text-[10px] font-bold uppercase text-[#50575e]">Timezone</label>
+                                          <input
+                                             type="text"
+                                             value={hub.timezone || ""}
+                                             onChange={(e) => {
+                                                const newHubs = [...currentHubs];
+                                                newHubs[hIdx] = { ...newHubs[hIdx], timezone: e.target.value };
+                                                updateSection("serviceArea", "hubs", newHubs);
+                                             }}
+                                             className={UI.input + " font-mono"}
+                                             placeholder="e.g. EST / PST"
+                                          />
+                                       </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-[#e2e4e7]">
+                                       <div className="space-y-1">
+                                          <label className="text-[10px] font-bold uppercase text-[#50575e]">Pin X Coordinate (%)</label>
+                                          <input
+                                             type="text"
+                                             value={hub.x || ""}
+                                             onChange={(e) => {
+                                                const newHubs = [...currentHubs];
+                                                newHubs[hIdx] = { ...newHubs[hIdx], x: e.target.value };
+                                                updateSection("serviceArea", "hubs", newHubs);
+                                             }}
+                                             className={UI.input + " font-mono"}
+                                             placeholder="e.g. 27.27%"
+                                          />
+                                       </div>
+                                       <div className="space-y-1">
+                                          <label className="text-[10px] font-bold uppercase text-[#50575e]">Pin Y Coordinate (%)</label>
+                                          <input
+                                             type="text"
+                                             value={hub.y || ""}
+                                             onChange={(e) => {
+                                                const newHubs = [...currentHubs];
+                                                newHubs[hIdx] = { ...newHubs[hIdx], y: e.target.value };
+                                                updateSection("serviceArea", "hubs", newHubs);
+                                             }}
+                                             className={UI.input + " font-mono"}
+                                             placeholder="e.g. 29.72%"
+                                          />
+                                       </div>
+                                    </div>
+                                 </div>
+                              );
+                           })}
                         </div>
                      </div>
                   </div>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Save, Loader2, LayoutTemplate, Type, Image as ImageIcon, ChevronRight, Star, Phone, Plus, Trash2, Mail, Users } from "lucide-react";
+import { Save, Loader2, LayoutTemplate, Type, Image as ImageIcon, ChevronRight, Star, Phone, Plus, Trash2, Mail, Users, MapPin, Globe } from "lucide-react";
 import Link from "next/link";
 import ImageField from "@/components/admin/ImageField";
 import ContentSelector from "@/components/admin/ContentSelector";
@@ -39,10 +39,11 @@ export default function HomeEditor() {
         setMessage("Homepage content saved successfully!");
         setTimeout(() => setMessage(""), 3000);
       } else {
-        setMessage("Failed to save content.");
+        setMessage("Failed to save homepage content.");
       }
     } catch (err) {
-      setMessage("Error saving content.");
+      console.error(err);
+      setMessage("An error occurred while saving.");
     } finally {
       setSaving(false);
     }
@@ -74,6 +75,7 @@ export default function HomeEditor() {
     { id: "portfolio", label: "Portfolio Section", icon: ImageIcon },
     { id: "testimonials", label: "Testimonials", icon: Type },
     { id: "whyChooseUs", label: "Why Choose Us", icon: ImageIcon },
+    { id: "serviceArea", label: "Service Area (Global Map)", icon: MapPin },
     { id: "faq", label: "FAQ Section", icon: LayoutTemplate },
     { id: "quote", label: "Homepage Contact", icon: Mail },
   ];
@@ -1692,6 +1694,274 @@ export default function HomeEditor() {
                   placeholder="e.g. 5.0 ★★★★★"
                 />
               </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {activeTab === "serviceArea" && (
+        <motion.div key="serviceArea" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
+          <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Service Area (Global Coverage Map)</h2>
+              <p className="text-gray-500 text-sm mt-1">Manage global coverage narrative, world map graphic, and interactive location pins with coordinates.</p>
+            </div>
+            <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">Global Map</span>
+          </div>
+
+          {/* Section Headers */}
+          <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">1. Header Narrative</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Badge / Tag</label>
+                <input
+                  type="text"
+                  value={data.serviceArea?.sectionTag || "GLOBAL COVERAGE"}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, serviceArea: { ...(prev.serviceArea || {}), sectionTag: e.target.value } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. GLOBAL COVERAGE"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Headline Intro</label>
+                <input
+                  type="text"
+                  value={data.serviceArea?.titleIntro || "Serving Clients"}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, serviceArea: { ...(prev.serviceArea || {}), titleIntro: e.target.value } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. Serving Clients"
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Headline Highlight (Accent Italic)</label>
+                <input
+                  type="text"
+                  value={data.serviceArea?.titleHighlight || "Worldwide"}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, serviceArea: { ...(prev.serviceArea || {}), titleHighlight: e.target.value } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-bold text-primary focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. Worldwide"
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Description</label>
+                <textarea
+                  rows={3}
+                  value={data.serviceArea?.description || ""}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, serviceArea: { ...(prev.serviceArea || {}), description: e.target.value } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                  placeholder="e.g. With distributed engineering hubs and round-the-clock availability, we partner with industry leaders across North America, Europe, the Middle East, and Asia-Pacific."
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* CTA Settings */}
+          <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">2. CTA Button</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Button Text</label>
+                <input
+                  type="text"
+                  value={data.serviceArea?.ctaText || "Schedule Global Consultation"}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, serviceArea: { ...(prev.serviceArea || {}), ctaText: e.target.value } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Button Link</label>
+                <input
+                  type="text"
+                  value={data.serviceArea?.ctaHref || "#contact"}
+                  onChange={(e) => setData((prev: any) => ({ ...prev, serviceArea: { ...(prev.serviceArea || {}), ctaHref: e.target.value } }))}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Map Graphic */}
+          <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">3. World Map Image</h3>
+            <ImageField
+              label="World Map Graphic"
+              value={data.serviceArea?.mapSrc || "https://res.cloudinary.com/dyt4m9t6k/image/upload/v1723467823/world-map_h1y3qk.svg"}
+              onChange={(url) => setData((prev: any) => ({ ...prev, serviceArea: { ...(prev.serviceArea || {}), mapSrc: url } }))}
+              description="Upload or choose a world map graphic from your Media Library"
+            />
+            <div className="space-y-2 mt-4">
+              <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">Map Image Alt Text</label>
+              <input
+                type="text"
+                value={data.serviceArea?.mapAlt || "Global Service Locations Map"}
+                onChange={(e) => setData((prev: any) => ({ ...prev, serviceArea: { ...(prev.serviceArea || {}), mapAlt: e.target.value } }))}
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none shadow-sm transition-all"
+              />
+            </div>
+          </div>
+
+          {/* Hubs / Pin Locations */}
+          <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">4. Global Hubs & Location Pins</h3>
+                <p className="text-xs text-gray-500">X % and Y % set the exact position of the pin dot on the world map.</p>
+              </div>
+              <button
+                onClick={() => {
+                  const currentHubs = (data.serviceArea?.hubs && data.serviceArea.hubs.length > 0)
+                    ? data.serviceArea.hubs
+                    : [
+                      { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", x: "27.27%", y: "29.72%" },
+                      { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", x: "24.63%", y: "33.63%" },
+                      { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", x: "45.97%", y: "45.21%" },
+                      { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", x: "49.66%", y: "43.78%" },
+                      { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET", x: "49.00%", y: "47.84%" },
+                      { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET", x: "46.49%", y: "46.30%" },
+                      { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET", x: "50.53%", y: "50.18%" },
+                      { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET", x: "51.07%", y: "44.34%" },
+                      { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET", x: "48.27%", y: "44.90%" },
+                      { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT", x: "26.67%", y: "77.03%" },
+                      { id: "bh", name: "Bahrain / GCC", focus: "MENA Regional Hub", timezone: "AST", x: "61.08%", y: "58.22%" },
+                      { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST", x: "82.34%", y: "82.47%" }
+                    ];
+                  const newHub = { id: `hub-${Date.now()}`, name: "New Hub Location", focus: "Engineering Hub", timezone: "UTC", x: "50%", y: "50%" };
+                  setData((prev: any) => ({ ...prev, serviceArea: { ...(prev.serviceArea || {}), hubs: [...currentHubs, newHub] } }));
+                }}
+                className="text-xs bg-primary/10 text-primary hover:bg-primary/20 px-3 py-1.5 rounded-lg font-semibold transition-colors"
+              >
+                + Add Hub Pin
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {((data.serviceArea?.hubs && data.serviceArea.hubs.length > 0)
+                ? data.serviceArea.hubs
+                : [
+                  { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", x: "27.27%", y: "29.72%" },
+                  { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", x: "24.63%", y: "33.63%" },
+                  { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", x: "45.97%", y: "45.21%" },
+                  { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", x: "49.66%", y: "43.78%" },
+                  { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET", x: "49.00%", y: "47.84%" },
+                  { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET", x: "46.49%", y: "46.30%" },
+                  { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET", x: "50.53%", y: "50.18%" },
+                  { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET", x: "51.07%", y: "44.34%" },
+                  { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET", x: "48.27%", y: "44.90%" },
+                  { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT", x: "26.67%", y: "77.03%" },
+                  { id: "bh", name: "Bahrain / GCC", focus: "MENA Regional Hub", timezone: "AST", x: "61.08%", y: "58.22%" },
+                  { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST", x: "82.34%", y: "82.47%" }
+                ]
+              ).map((hub: any, hIdx: number) => {
+                const currentHubs = (data.serviceArea?.hubs && data.serviceArea.hubs.length > 0)
+                  ? data.serviceArea.hubs
+                  : [
+                    { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", x: "27.27%", y: "29.72%" },
+                    { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", x: "24.63%", y: "33.63%" },
+                    { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", x: "45.97%", y: "45.21%" },
+                    { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", x: "49.66%", y: "43.78%" },
+                    { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET", x: "49.00%", y: "47.84%" },
+                    { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET", x: "46.49%", y: "46.30%" },
+                    { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET", x: "50.53%", y: "50.18%" },
+                    { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET", x: "51.07%", y: "44.34%" },
+                    { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET", x: "48.27%", y: "44.90%" },
+                    { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT", x: "26.67%", y: "77.03%" },
+                    { id: "bh", name: "Bahrain / GCC", focus: "MENA Regional Hub", timezone: "AST", x: "61.08%", y: "58.22%" },
+                    { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST", x: "82.34%", y: "82.47%" }
+                  ];
+                return (
+                  <div key={hIdx} className="border border-gray-200 rounded-xl p-4 bg-gray-50 space-y-3 relative group">
+                    <div className="flex justify-between items-center pb-2 border-b border-gray-200">
+                      <span className="text-xs font-bold text-gray-800">Pin #{hIdx + 1}: {hub.name}</span>
+                      <button
+                        onClick={() => {
+                          const newHubs = currentHubs.filter((_: any, i: number) => i !== hIdx);
+                          setData((prev: any) => ({ ...prev, serviceArea: { ...(prev.serviceArea || {}), hubs: newHubs } }));
+                        }}
+                        className="text-xs font-semibold text-red-500 hover:text-red-700"
+                      >
+                        Delete
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <div>
+                        <label className="text-[10px] uppercase text-gray-500 font-bold">Country / Hub Name</label>
+                        <input
+                          type="text"
+                          value={hub.name || ""}
+                          onChange={(e) => {
+                            const newHubs = [...currentHubs];
+                            newHubs[hIdx] = { ...newHubs[hIdx], name: e.target.value };
+                            setData((prev: any) => ({ ...prev, serviceArea: { ...(prev.serviceArea || {}), hubs: newHubs } }));
+                          }}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-bold focus:border-primary/50 focus:outline-none"
+                          placeholder="e.g. United States"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[10px] uppercase text-gray-500 font-bold">Specialty / Focus</label>
+                        <input
+                          type="text"
+                          value={hub.focus || ""}
+                          onChange={(e) => {
+                            const newHubs = [...currentHubs];
+                            newHubs[hIdx] = { ...newHubs[hIdx], focus: e.target.value };
+                            setData((prev: any) => ({ ...prev, serviceArea: { ...(prev.serviceArea || {}), hubs: newHubs } }));
+                          }}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary/50 focus:outline-none"
+                          placeholder="e.g. Architecture & Design"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[10px] uppercase text-gray-500 font-bold">Timezone</label>
+                        <input
+                          type="text"
+                          value={hub.timezone || ""}
+                          onChange={(e) => {
+                            const newHubs = [...currentHubs];
+                            newHubs[hIdx] = { ...newHubs[hIdx], timezone: e.target.value };
+                            setData((prev: any) => ({ ...prev, serviceArea: { ...(prev.serviceArea || {}), hubs: newHubs } }));
+                          }}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:border-primary/50 focus:outline-none"
+                          placeholder="e.g. EST / PST"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-gray-200">
+                      <div>
+                        <label className="text-[10px] uppercase text-gray-500 font-bold">Map X Coord (%)</label>
+                        <input
+                          type="text"
+                          value={hub.x || ""}
+                          onChange={(e) => {
+                            const newHubs = [...currentHubs];
+                            newHubs[hIdx] = { ...newHubs[hIdx], x: e.target.value };
+                            setData((prev: any) => ({ ...prev, serviceArea: { ...(prev.serviceArea || {}), hubs: newHubs } }));
+                          }}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:border-primary/50 focus:outline-none"
+                          placeholder="e.g. 27.27%"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[10px] uppercase text-gray-500 font-bold">Map Y Coord (%)</label>
+                        <input
+                          type="text"
+                          value={hub.y || ""}
+                          onChange={(e) => {
+                            const newHubs = [...currentHubs];
+                            newHubs[hIdx] = { ...newHubs[hIdx], y: e.target.value };
+                            setData((prev: any) => ({ ...prev, serviceArea: { ...(prev.serviceArea || {}), hubs: newHubs } }));
+                          }}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:border-primary/50 focus:outline-none"
+                          placeholder="e.g. 29.72%"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </motion.div>

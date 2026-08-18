@@ -16,6 +16,7 @@ const FAQ = dynamic(() => import("@/components/FAQ"), { ssr: false });
 const QuickQuote = dynamic(() => import("@/components/QuickQuote"), { ssr: false });
 const BlogSection = dynamic(() => import("@/components/sections/BlogSection"), { ssr: false });
 const HowWeWork = dynamic(() => import("@/components/HowWeWork"), { ssr: false });
+const ServiceArea = dynamic(() => import("@/components/ServiceArea"), { ssr: false });
 
 import { useContent } from "@/hooks/useContent";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
@@ -40,8 +41,11 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any, par
         <Portfolio />
       </section>
       <Testimonials />
-      <section id="about">
+      <section id="how-we-work">
         <HowWeWork />
+      </section>
+      <section id="service-area">
+        <ServiceArea />
       </section>
       <section id="contact">
         <QAForm />

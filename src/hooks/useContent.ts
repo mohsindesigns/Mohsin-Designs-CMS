@@ -144,6 +144,46 @@ export const useContent = () => {
                         : defaults.reasons)
             };
         })(),
+        serviceArea: (() => {
+            const raw = getSafe(completeData, 'serviceArea', {});
+            const defaults = {
+                sectionTag: "GLOBAL COVERAGE",
+                titleIntro: "Serving Clients",
+                titleHighlight: "Worldwide",
+                description: "With distributed engineering hubs and round-the-clock availability, we partner with industry leaders across North America, Europe, the Middle East, and Asia-Pacific.",
+                ctaText: "Schedule Global Consultation",
+                ctaHref: "#contact",
+                mapSrc: "https://res.cloudinary.com/dyt4m9t6k/image/upload/v1723467823/world-map_h1y3qk.svg",
+                mapAlt: "Global Service Locations Map",
+                hubs: [
+                    { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", x: "27.27%", y: "29.72%" },
+                    { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", x: "24.63%", y: "33.63%" },
+                    { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", x: "45.97%", y: "45.21%" },
+                    { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", x: "49.66%", y: "43.78%" },
+                    { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET", x: "49.00%", y: "47.84%" },
+                    { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET", x: "46.49%", y: "46.30%" },
+                    { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET", x: "50.53%", y: "50.18%" },
+                    { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET", x: "51.07%", y: "44.34%" },
+                    { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET", x: "48.27%", y: "44.90%" },
+                    { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT", x: "26.67%", y: "77.03%" },
+                    { id: "bh", name: "Bahrain / GCC", focus: "MENA Regional Hub", timezone: "AST", x: "61.08%", y: "58.22%" },
+                    { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST", x: "82.34%", y: "82.47%" }
+                ]
+            };
+            return {
+                ...defaults,
+                ...raw,
+                sectionTag: raw.sectionTag || raw.section?.badge || defaults.sectionTag,
+                titleIntro: raw.titleIntro || raw.section?.headlinePrefix || defaults.titleIntro,
+                titleHighlight: raw.titleHighlight || raw.section?.headlineHighlight || defaults.titleHighlight,
+                description: raw.description || raw.section?.description || defaults.description,
+                ctaText: raw.ctaText || defaults.ctaText,
+                ctaHref: raw.ctaHref || defaults.ctaHref,
+                mapSrc: raw.mapSrc || defaults.mapSrc,
+                mapAlt: raw.mapAlt || defaults.mapAlt,
+                hubs: Array.isArray(raw.hubs) && raw.hubs.length > 0 ? raw.hubs : defaults.hubs
+            };
+        })(),
         faq: getSafe(completeData, 'faq', {
             section: { badge: "", headline: "", title: "", description: "" },
             categories: [],
