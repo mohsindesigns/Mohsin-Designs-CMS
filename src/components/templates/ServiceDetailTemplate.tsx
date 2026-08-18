@@ -768,12 +768,28 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               { q: "Do you offer ongoing support and updates?", a: "Yes, we provide flexible retainer and maintenance support options to ensure your platform remains fast, secure, and continuously optimized." },
               { q: "Will I have complete ownership of all assets?", a: "100%. You retain full ownership of all code, design files, domains, and analytics accounts upon project completion." }
             ]),
+    faqSection: {
+      sectionTag: dbService?.faqSection?.sectionTag || "14 // FREQUENTLY ASKED",
+      titleIntro: dbService?.faqSection?.titleIntro ?? "Service ",
+      titleHighlight: dbService?.faqSection?.titleHighlight || "FAQ",
+      description: dbService?.faqSection?.description || "",
+      ctaBadge: dbService?.faqSection?.ctaBadge || "FREE ARCHITECTURE AUDIT",
+      ctaTitle: dbService?.faqSection?.ctaTitle || "Have a complex custom build in mind?",
+      ctaDesc: dbService?.faqSection?.ctaDesc || "Book a 30-minute high-level technical strategy session with our lead engineer.",
+      ctaBtnText: dbService?.faqSection?.ctaBtnText || "Book Architecture Call",
+      ctaBtnLink: dbService?.faqSection?.ctaBtnLink || "#contact"
+    },
     finalCta: {
       eyebrow: dbService?.finalCta?.eyebrow || "READY TO ACCELERATE?",
       titleIntro: dbService?.finalCta?.titleIntro || "Let's Build Your Next",
       titleHighlight: dbService?.finalCta?.titleHighlight || "Competitive Edge",
       titleLine2: dbService?.finalCta?.titleLine2 || "Together.",
-      description: dbService?.finalCta?.description || "Schedule a free strategic consultation. We'll audit your existing presence and map out a concrete blueprint for scalable growth."
+      description: dbService?.finalCta?.description || "Schedule a free strategic consultation. We'll audit your existing presence and map out a concrete blueprint for scalable growth.",
+      primaryCtaText: dbService?.finalCta?.primaryCtaText || "Schedule Discovery Session",
+      primaryCtaLink: dbService?.finalCta?.primaryCtaLink || "#contact-form",
+      secondaryCtaText: dbService?.finalCta?.secondaryCtaText || "Contact Office",
+      secondaryCtaLink: dbService?.finalCta?.secondaryCtaLink || "/contact",
+      founderImage: dbService?.finalCta?.founderImage || "/founder_portrait_nobg.png"
     },
     serviceArea: dbService?.serviceArea
   };
@@ -1720,10 +1736,16 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                       </div>
                     </div>
 
-                    {/* Right Illustration container */}
+                    {/* Right Illustration container - dynamic image or SVG fallback */}
                     <div className="hidden md:block shrink-0 w-[140px] h-[88px] rounded-2xl border border-brand-blue/10 bg-gradient-to-br from-brand-blue/4 to-transparent overflow-hidden group-hover:border-brand-blue/20 group-hover:from-brand-blue/8 transition-all duration-400">
-                      <div className="w-full h-full p-2 group-hover:scale-[1.03] transition-transform duration-400 origin-center">
-                        {differentiatorsIllustrations[idx % differentiatorsIllustrations.length]}
+                      <div className="w-full h-full group-hover:scale-[1.03] transition-transform duration-400 origin-center">
+                        {item.image ? (
+                          <Image src={item.image} alt={item.title || ""} width={140} height={88} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full p-2">
+                            {differentiatorsIllustrations[idx % differentiatorsIllustrations.length]}
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -1952,9 +1974,17 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       {/* ── 14. FAQ SECTION ── */}
       <FAQ
         data={{
-          sectionTag: "14 // FREQUENTLY ASKED",
-          titleIntro: "Service ",
-          titleHighlight: "FAQ",
+          sectionTag: service.faqSection?.sectionTag || "14 // FREQUENTLY ASKED",
+          faqTitleIntro: service.faqSection?.titleIntro ?? "Service ",
+          faqTitleHighlight: service.faqSection?.titleHighlight || "FAQ",
+          faqDescription: service.faqSection?.description || "",
+          strategyAudit: {
+            badge: service.faqSection?.ctaBadge || undefined,
+            title: service.faqSection?.ctaTitle || undefined,
+            desc: service.faqSection?.ctaDesc || undefined,
+            button: service.faqSection?.ctaBtnText || undefined,
+            href: service.faqSection?.ctaBtnLink || undefined
+          },
           list: (service.faqs || []).map((f: any) => ({
             category: service.title,
             question: f.q || f.question,
@@ -2000,12 +2030,12 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               </p>
 
               <div className="flex flex-wrap items-center gap-4 pt-2">
-                <a href="#contact-form" className="btn-primary-cta">
-                  <span>Schedule Discovery Session</span>
+                <a href={service.finalCta.primaryCtaLink || "#contact-form"} className="btn-primary-cta">
+                  <span>{service.finalCta.primaryCtaText || "Schedule Discovery Session"}</span>
                   <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
                 </a>
-                <a href="/contact" className="btn-secondary-cta">
-                  <span>Contact Office</span>
+                <a href={service.finalCta.secondaryCtaLink || "/contact"} className="btn-secondary-cta">
+                  <span>{service.finalCta.secondaryCtaText || "Contact Office"}</span>
                   <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
                 </a>
               </div>
@@ -2015,7 +2045,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               <div className="absolute bottom-0 w-[320px] h-[320px] bg-gradient-to-t from-[#020485] to-[#0408d9] rounded-full opacity-90 border border-white/20 shadow-2xl" />
               <div className="relative z-10 w-[280px] h-[370px] self-end drop-shadow-2xl overflow-hidden rounded-t-[32px] border-t border-l border-r border-white/25 shadow-2xl">
                 <Image
-                  src="/founder_portrait_nobg.png"
+                  src={service.finalCta.founderImage || "/founder_portrait_nobg.png"}
                   alt="Founder Strategy Session"
                   width={320}
                   height={420}

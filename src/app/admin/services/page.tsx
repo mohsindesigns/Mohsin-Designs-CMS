@@ -328,12 +328,28 @@ const DEFAULT_SERVICE_TEMPLATE = {
     { q: "Do you offer ongoing support and updates?", a: "Yes, we provide flexible retainer and maintenance support options to ensure your platform remains fast, secure, and continuously optimized." },
     { q: "Will I have complete ownership of all assets?", a: "100%. You retain full ownership of all code, design files, domains, and analytics accounts upon project completion." }
   ],
+  faqSection: {
+    sectionTag: "14 // FREQUENTLY ASKED",
+    titleIntro: "Service",
+    titleHighlight: "FAQ",
+    description: "",
+    ctaBadge: "FREE ARCHITECTURE AUDIT",
+    ctaTitle: "Have a complex custom build in mind?",
+    ctaDesc: "Book a 30-minute high-level technical strategy session with our lead engineer.",
+    ctaBtnText: "Book Architecture Call",
+    ctaBtnLink: "#contact"
+  },
   finalCta: {
     eyebrow: "READY TO ACCELERATE?",
     titleIntro: "Let's Build Your Next",
     titleHighlight: "Competitive Edge",
     titleLine2: "Together.",
-    description: "Schedule a free strategic consultation. We'll audit your existing presence and map out a concrete blueprint for scalable growth."
+    description: "Schedule a free strategic consultation. We'll audit your existing presence and map out a concrete blueprint for scalable growth.",
+    primaryCtaText: "Schedule Discovery Session",
+    primaryCtaLink: "#contact-form",
+    secondaryCtaText: "Contact Office",
+    secondaryCtaLink: "/contact",
+    founderImage: ""
   }
 };
 
@@ -2000,7 +2016,7 @@ export default function ServicesAdminPage() {
                               <input
                                 type="text"
                                 placeholder="Title"
-                                value={item.title}
+                                value={item.title || ""}
                                 onChange={(e) => {
                                   const list = [...form.whyChooseUs.list];
                                   list[idx] = { ...list[idx], title: e.target.value };
@@ -2012,7 +2028,7 @@ export default function ServicesAdminPage() {
                             <textarea
                               rows={2}
                               placeholder="Description"
-                              value={item.desc}
+                              value={item.desc || ""}
                               onChange={(e) => {
                                 const list = [...form.whyChooseUs.list];
                                 list[idx] = { ...list[idx], desc: e.target.value };
@@ -2020,6 +2036,19 @@ export default function ServicesAdminPage() {
                               }}
                               className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
                             />
+                            {/* Illustration Image Upload */}
+                            <div className="space-y-1">
+                              <label className="text-[11px] font-bold text-[#50575e]">Illustration Image (replaces SVG)</label>
+                              <ImageField
+                                label="Illustration Image"
+                                value={item.image || ""}
+                                onChange={(url: string) => {
+                                  const list = [...form.whyChooseUs.list];
+                                  list[idx] = { ...list[idx], image: url };
+                                  setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, list } });
+                                }}
+                              />
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -2270,12 +2299,149 @@ export default function ServicesAdminPage() {
                           className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
                         />
                       </div>
+
+                      {/* CTA Buttons */}
+                      <div className="bg-[#f0f6fc] border border-[#72aee6] p-3 rounded-[3px] space-y-3">
+                        <h4 className="font-bold text-[13px] text-[#2271b1]">CTA Buttons</h4>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold text-[#50575e]">Primary Button Text</label>
+                            <input type="text" placeholder="Schedule Discovery Session"
+                              value={form.finalCta?.primaryCtaText || ""}
+                              onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, primaryCtaText: e.target.value } })}
+                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold text-[#50575e]">Primary Button Link</label>
+                            <input type="text" placeholder="#contact-form"
+                              value={form.finalCta?.primaryCtaLink || ""}
+                              onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, primaryCtaLink: e.target.value } })}
+                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold text-[#50575e]">Secondary Button Text</label>
+                            <input type="text" placeholder="Contact Office"
+                              value={form.finalCta?.secondaryCtaText || ""}
+                              onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, secondaryCtaText: e.target.value } })}
+                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold text-[#50575e]">Secondary Button Link</label>
+                            <input type="text" placeholder="/contact"
+                              value={form.finalCta?.secondaryCtaLink || ""}
+                              onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, secondaryCtaLink: e.target.value } })}
+                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Founder Image */}
+                      <div className="space-y-1">
+                        <label className="text-[13px] font-bold text-[#1d2327]">Founder / CTA Image</label>
+                        <p className="text-[11px] text-[#50575e]">Shown on the right side of the CTA banner (desktop only)</p>
+                        <ImageField
+                          label="Founder / CTA Image"
+                          value={form.finalCta?.founderImage || ""}
+                          onChange={(url: string) => setForm({ ...form, finalCta: { ...form.finalCta, founderImage: url } })}
+                        />
+                      </div>
                     </div>
                   )}
 
                   {/* TAB 13: FAQS */}
                   {activeTab === "faq" && (
                     <div className="space-y-4">
+                      {/* FAQ Section Header */}
+                      <div className="bg-[#f0f6fc] border border-[#72aee6] p-3 rounded-[3px] space-y-3">
+                        <h4 className="font-bold text-[13px] text-[#2271b1]">FAQ Section Header</h4>
+                        <div className="grid grid-cols-3 gap-3">
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold text-[#50575e]">Section Tag</label>
+                            <input type="text" placeholder="14 // FREQUENTLY ASKED"
+                              value={form.faqSection?.sectionTag || ""}
+                              onChange={(e) => setForm({ ...form, faqSection: { ...form.faqSection, sectionTag: e.target.value } })}
+                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-mono"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold text-[#50575e]">Title Intro</label>
+                            <input type="text" placeholder="Service"
+                              value={form.faqSection?.titleIntro || ""}
+                              onChange={(e) => setForm({ ...form, faqSection: { ...form.faqSection, titleIntro: e.target.value } })}
+                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold text-[#50575e]">Title Highlight</label>
+                            <input type="text" placeholder="FAQ"
+                              value={form.faqSection?.titleHighlight || ""}
+                              onChange={(e) => setForm({ ...form, faqSection: { ...form.faqSection, titleHighlight: e.target.value } })}
+                              className="w-full border border-[#2271b1] px-2 py-1 text-xs rounded-[3px] font-bold"
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-bold text-[#50575e]">Description</label>
+                          <textarea rows={2} placeholder="Answers to common questions about our services..."
+                            value={form.faqSection?.description || ""}
+                            onChange={(e) => setForm({ ...form, faqSection: { ...form.faqSection, description: e.target.value } })}
+                            className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
+                          />
+                        </div>
+                      </div>
+
+                      {/* FAQ Strategy Audit CTA Box */}
+                      <div className="bg-[#f0f6fc] border border-[#72aee6] p-3 rounded-[3px] space-y-3">
+                        <h4 className="font-bold text-[13px] text-[#2271b1]">Sidebar CTA Box</h4>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold text-[#50575e]">Badge Text</label>
+                            <input type="text" placeholder="FREE ARCHITECTURE AUDIT"
+                              value={form.faqSection?.ctaBadge || ""}
+                              onChange={(e) => setForm({ ...form, faqSection: { ...form.faqSection, ctaBadge: e.target.value } })}
+                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-mono"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold text-[#50575e]">Button Text</label>
+                            <input type="text" placeholder="Book Architecture Call"
+                              value={form.faqSection?.ctaBtnText || ""}
+                              onChange={(e) => setForm({ ...form, faqSection: { ...form.faqSection, ctaBtnText: e.target.value } })}
+                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
+                            />
+                          </div>
+                          <div className="col-span-2 space-y-1">
+                            <label className="text-[11px] font-bold text-[#50575e]">CTA Title</label>
+                            <input type="text" placeholder="Have a complex custom build in mind?"
+                              value={form.faqSection?.ctaTitle || ""}
+                              onChange={(e) => setForm({ ...form, faqSection: { ...form.faqSection, ctaTitle: e.target.value } })}
+                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-bold"
+                            />
+                          </div>
+                          <div className="col-span-2 space-y-1">
+                            <label className="text-[11px] font-bold text-[#50575e]">CTA Description</label>
+                            <textarea rows={2} placeholder="Book a 30-minute strategy session..."
+                              value={form.faqSection?.ctaDesc || ""}
+                              onChange={(e) => setForm({ ...form, faqSection: { ...form.faqSection, ctaDesc: e.target.value } })}
+                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
+                            />
+                          </div>
+                          <div className="col-span-2 space-y-1">
+                            <label className="text-[11px] font-bold text-[#50575e]">Button Link / URL</label>
+                            <input type="text" placeholder="#contact"
+                              value={form.faqSection?.ctaBtnLink || ""}
+                              onChange={(e) => setForm({ ...form, faqSection: { ...form.faqSection, ctaBtnLink: e.target.value } })}
+                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* FAQ Items */}
                       <div className="flex items-center justify-between">
                         <label className="text-[13px] font-bold text-[#1d2327]">Service Specific FAQs</label>
                         <button

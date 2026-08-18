@@ -6,7 +6,7 @@ import { Image as ImageIcon, Upload, Search, X, Edit3, Link as LinkIcon, Refresh
 import MediaSelector from "./MediaSelector";
 
 interface ImageFieldProps {
-  label: string;
+  label?: string;
   value: string;
   onChange: (url: string) => void;
   altValue?: string;
@@ -15,7 +15,7 @@ interface ImageFieldProps {
 }
 
 export default function ImageField({
-  label,
+  label = "",
   value,
   onChange,
   altValue,
