@@ -43,7 +43,7 @@ const ICON_NAMES = Array.from(new Set(Object.keys(LucideIcons).filter(
 export default function IconSelector({ 
   value, 
   onChange, 
-  label = "Select Icon" 
+  label 
 }: { 
   value: string; 
   onChange: (val: string) => void;
@@ -53,7 +53,7 @@ export default function IconSelector({
   const [search, setSearch] = useState("");
 
   const filteredIcons = useMemo(() => {
-    const limit = 80; 
+    const limit = 100; 
     if (!search) return ICON_NAMES.slice(0, limit); 
     return ICON_NAMES.filter(name => 
       name.toLowerCase().includes(search.toLowerCase())
@@ -87,44 +87,48 @@ export default function IconSelector({
   const CheckIcon = (LucideIcons as any)["Check"];
 
   return (
-    <div className="space-y-2">
-      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">{label}</label>
+    <div className="space-y-1 relative">
+      {label && (
+        <label className="text-[10px] font-bold text-[#50575e] uppercase tracking-wider block">{label}</label>
+      )}
       
       <div className="relative">
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="w-full flex items-center gap-3 px-4 py-3 bg-white border border-slate-200 rounded-xl hover:border-primary/50 transition-all text-left shadow-sm group"
+          className="w-full flex items-center justify-between gap-2 px-2.5 py-1.5 bg-white border border-[#8c8f94] rounded-[3px] hover:border-[#2271b1] transition-all text-left shadow-sm focus:outline-none focus:ring-1 focus:ring-[#2271b1]"
         >
-          <div className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-            <SafeIcon icon={SelectedIconComp} className="w-4 h-4 text-slate-600 group-hover:text-primary transition-colors" />
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="w-5 h-5 bg-[#f0f0f1] rounded flex items-center justify-center shrink-0">
+              <SafeIcon icon={SelectedIconComp} className="w-3.5 h-3.5 text-[#1d2327]" />
+            </div>
+            <span className="text-xs font-semibold text-[#1d2327] truncate">{value || "Select icon"}</span>
           </div>
-          <span className="text-sm font-medium text-slate-700 flex-1">{value || "Choose an icon..."}</span>
-          <SafeIcon icon={ChevronDownIcon} className={`w-4 h-4 text-slate-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+          <SafeIcon icon={ChevronDownIcon} className={`w-3.5 h-3.5 text-[#50575e] shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`} />
         </button>
 
         {isOpen && (
           <>
             <div 
-              className="fixed inset-0 z-[60]" 
+              className="fixed inset-0 z-[9990]" 
               onClick={() => setIsOpen(false)} 
             />
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-2xl shadow-2xl z-[70] overflow-hidden">
-              <div className="p-4 border-b border-slate-100 bg-slate-50/50">
+            <div className="absolute top-full left-0 mt-1 w-72 sm:w-80 min-w-[280px] max-w-[90vw] bg-white border border-[#c3c4c7] rounded-[4px] shadow-2xl z-[9999] overflow-hidden">
+              <div className="p-2 border-b border-[#f0f0f1] bg-[#f6f7f7]">
                 <div className="relative">
-                  <SafeIcon icon={SearchIcon} className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <SafeIcon icon={SearchIcon} className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#8c8f94]" />
                   <input
                     autoFocus
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search icons..."
-                    className="w-full bg-white pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                    placeholder="Search icons (e.g. phone, mail, globe)..."
+                    className="w-full bg-white pl-8 pr-3 py-1.5 rounded-[3px] border border-[#8c8f94] text-xs focus:ring-1 focus:ring-[#2271b1] focus:border-[#2271b1] outline-none"
                   />
                 </div>
               </div>
 
-              <div className="max-h-[250px] overflow-y-auto p-2 grid grid-cols-4 gap-2 custom-scrollbar">
+              <div className="max-h-[220px] overflow-y-auto p-2 grid grid-cols-4 sm:grid-cols-5 gap-1.5 custom-scrollbar">
                 {filteredIcons.map((name) => {
                   const IconComp = (LucideIcons as any)[name];
                   const isSelected = value === name;
@@ -138,25 +142,25 @@ export default function IconSelector({
                         setIsOpen(false);
                         setSearch("");
                       }}
-                      className={`relative flex flex-col items-center justify-center p-3 rounded-xl transition-all gap-2 group ${
+                      className={`relative flex flex-col items-center justify-center p-2 rounded-[3px] transition-all gap-1 text-center group ${
                         isSelected 
-                          ? "bg-primary text-white shadow-lg" 
-                          : "hover:bg-slate-50 text-slate-600 hover:text-primary"
+                          ? "bg-[#2271b1] text-white shadow-sm font-bold" 
+                          : "hover:bg-[#f0f0f1] text-[#2c3338] hover:text-[#2271b1]"
                       }`}
                       title={name}
                     >
-                      <SafeIcon icon={IconComp} className="w-5 h-5" />
-                      <span className="text-[8px] font-bold truncate w-full text-center uppercase tracking-tighter">
+                      <SafeIcon icon={IconComp} className="w-4 h-4 shrink-0" />
+                      <span className="text-[9px] truncate w-full text-center tracking-tight leading-tight">
                         {name}
                       </span>
-                      {isSelected && (
-                        <div className="absolute top-1 right-1">
-                          <SafeIcon icon={CheckIcon} className="w-2 h-2 text-white" />
-                        </div>
-                      )}
                     </button>
                   );
                 })}
+                {filteredIcons.length === 0 && (
+                  <div className="col-span-4 sm:col-span-5 text-center text-xs text-[#8c8f94] py-4">
+                    No icons found for &quot;{search}&quot;
+                  </div>
+                )}
               </div>
             </div>
           </>

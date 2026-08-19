@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Submission from '@/models/Submission';
 import Content from '@/models/Content';
+import Page from '@/models/Page';
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";
@@ -60,23 +61,32 @@ export async function POST(request: Request) {
       });
     } else {
       const body = await request.json();
-      ({ name, email, phone, message, subject, type, ...extraData } = body);
+      name = body.name || body.fullName;
+      email = body.email;
+      phone = body.phone;
+      message = body.message;
+      subject = body.subject;
+      type = body.type || 'Contact Form';
+
+      // Collect other fields
+      for (const [key, value] of Object.entries(body)) {
+        if (!['name', 'fullName', 'email', 'phone', 'message', 'subject', 'type'].includes(key)) {
+          extraData[key] = value;
+        }
+      }
     }
 
-    // Resilience: ensure required fields for DB save
-    name = name || extraData.name || extraData.fullname || extraData.fullName || extraData.contact_name || 'Anonymous';
-    email = email || extraData.email || extraData.user_email || extraData.contact_email || 'no-email@provided.com';
-    message = message || extraData.message || extraData.comments || extraData.inquiry || 'No message content provided.';
+    if (!email) {
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+    }
 
     // Save to Database
-    console.log('Saving submission with data:', { name, email, type, attachmentUrl });
-    let submission;
+    let submission: any = null;
     try {
       submission = await Submission.create({
-        name,
+        name: name || 'Anonymous',
         email,
         phone,
-        subject,
         message,
         type: type || 'Contact Form',
         attachmentUrl,
@@ -85,20 +95,37 @@ export async function POST(request: Request) {
       console.log('Submission saved successfully:', submission._id);
     } catch (dbError: any) {
       console.error('DATABASE SAVE ERROR:', dbError);
-      // We still try to send the email even if DB save fails, but we want to know why it failed
     }
 
-    // Fetch dynamic email from Content CMS
-    let receiverEmail = 'banderson@eaglerevolution.com';
+    // Fetch dynamic email from Page or Content CMS
+    let receiverEmail = '';
     try {
-      const contentDoc = await Content.findOne({ key: "complete_data" }).lean() as any;
-      if (contentDoc && contentDoc.data) {
-        if (type === 'Quote Request' && contentDoc.data.quote?.email) {
-          receiverEmail = contentDoc.data.quote.email;
-        } else if (contentDoc.data.contactPage?.email) {
-          receiverEmail = contentDoc.data.contactPage.email;
-        } else if (contentDoc.data.quote?.email) {
-          receiverEmail = contentDoc.data.quote.email;
+      // 1. Check Page collection for contact document first
+      const contactPageDoc = await Page.findOne({ slug: { $in: ['contact', '/contact'] } }).lean() as any;
+      if (contactPageDoc && contactPageDoc.content) {
+        const cContent = contactPageDoc.content;
+        receiverEmail = cContent.contactPage?.receiverEmail ||
+                        cContent.contactPage?.email ||
+                        cContent.contactPage?.office?.email ||
+                        cContent.receiverEmail ||
+                        cContent.email || '';
+      }
+
+      // 2. If not found, check Content collection (complete_data)
+      if (!receiverEmail) {
+        const contentDoc = await Content.findOne({ key: "complete_data" }).lean() as any;
+        if (contentDoc && contentDoc.data) {
+          if (type === 'Quote Request' && contentDoc.data.quote?.email) {
+            receiverEmail = contentDoc.data.quote.email;
+          } else if (contentDoc.data.contactPage?.receiverEmail) {
+            receiverEmail = contentDoc.data.contactPage.receiverEmail;
+          } else if (contentDoc.data.contactPage?.email) {
+            receiverEmail = contentDoc.data.contactPage.email;
+          } else if (contentDoc.data.contactPage?.office?.email) {
+            receiverEmail = contentDoc.data.contactPage.office.email;
+          } else if (contentDoc.data.quote?.email) {
+            receiverEmail = contentDoc.data.quote.email;
+          }
         }
       }
     } catch (e) {
@@ -110,23 +137,21 @@ export async function POST(request: Request) {
     }
 
     if (!receiverEmail || !receiverEmail.includes('@')) {
-      receiverEmail = 'banderson@eaglerevolution.com';
+      receiverEmail = 'hello@mohsindesigns.com';
     }
-
-    const to = receiverEmail;
 
     // Construct email HTML
     let html = `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 20px; border-radius: 10px;">
-        <h2 style="color: #2563eb; border-bottom: 2px solid #2563eb; padding-bottom: 10px;">🦅 Eagle Revolution - New Submission</h2>
-        <p><strong>Type:</strong> ${type || 'General Inquiry'}</p>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
-        ${subject ? `<p><strong>Subject:</strong> ${subject}</p>` : ''}
-        <div style="background: #f9f9f9; padding: 15px; border-radius: 5px; margin-top: 20px;">
-          <p><strong>Message:</strong></p>
-          <p style="white-space: pre-wrap;">${message}</p>
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; padding: 24px; border-radius: 12px; background: #ffffff;">
+        <h2 style="color: #0306AC; border-bottom: 2px solid #E9BD36; padding-bottom: 12px; margin-top: 0; font-size: 20px;">⚡ Mohsin Designs - New ${type || 'Inquiry'}</h2>
+        <p style="margin: 8px 0;"><strong>Type:</strong> <span style="background: #f1f5f9; padding: 2px 8px; border-radius: 4px; font-weight: 600;">${type || 'General Inquiry'}</span></p>
+        <p style="margin: 8px 0;"><strong>Name:</strong> ${name}</p>
+        <p style="margin: 8px 0;"><strong>Email:</strong> <a href="mailto:${email}" style="color: #0306AC;">${email}</a></p>
+        <p style="margin: 8px 0;"><strong>Phone:</strong> ${phone || 'Not provided'}</p>
+        ${subject ? `<p style="margin: 8px 0;"><strong>Subject:</strong> ${subject}</p>` : ''}
+        <div style="background: #f8fafc; padding: 16px; border-radius: 8px; margin-top: 16px; border-left: 4px solid #0306AC;">
+          <p style="margin-top: 0; font-weight: bold; color: #334155;">Message:</p>
+          <p style="white-space: pre-wrap; margin-bottom: 0; color: #0f172a; line-height: 1.5;">${message || 'No message provided'}</p>
         </div>
     `;
 
@@ -138,9 +163,9 @@ export async function POST(request: Request) {
 
     // Add extra data if any
     if (Object.keys(extraData).length > 0) {
-      html += `<div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;">
-        <p><strong>Additional Details:</strong></p>
-        <ul style="list-style: none; padding: 0;">`;
+      html += `<div style="margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 12px;">
+        <p style="font-weight: bold; color: #334155; margin-bottom: 8px;">Additional Details:</p>
+        <ul style="list-style: none; padding: 0; margin: 0;">`;
 
       for (const [key, value] of Object.entries(extraData)) {
         if (value && typeof value !== 'object') {

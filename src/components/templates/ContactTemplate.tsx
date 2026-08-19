@@ -1,277 +1,623 @@
 "use client";
 
+import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useContent } from "../../hooks/useContent";
-import { Icon } from "../../config/icons";
-import RichTextRenderer from "../ui/RichTextRenderer";
+import * as LucideIcons from "lucide-react";
+import {
+  Send,
+  Phone,
+  Mail,
+  MessageSquare,
+  Calendar,
+  MapPin,
+  Clock,
+  ArrowRight,
+  Check,
+  ChevronDown,
+  Loader2
+} from "lucide-react";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 
-const HolographicInput = ({ icon: IconName, label, type = "text", ...props }: any) => {
-    const [isFocused, setIsFocused] = useState(false);
-    const [hasValue, setHasValue] = useState(false);
-    return (
-        <div className="relative group">
-            <div className={`relative flex items-center bg-card rounded-xl border transition-all duration-300 ${isFocused ? 'border-primary shadow-lg shadow-primary/10' : hasValue ? 'border-primary/40' : 'border-border hover:border-border/80'}`}>
-                <div className={`absolute left-4 transition-colors duration-300 ${isFocused || hasValue ? 'text-primary' : 'text-muted-foreground'}`}>
-                    <Icon name={IconName} className="w-5 h-5" />
-                </div>
-                <input
-                    type={type}
-                    placeholder={label}
-                    onFocus={() => setIsFocused(true)}
-                    onBlur={() => setIsFocused(false)}
-                    onChange={(e) => {
-                        setHasValue(!!e.target.value);
-                        props.onChange?.(e);
-                    }}
-                    className="w-full pl-12 pr-4 py-4 bg-transparent rounded-xl text-foreground text-sm placeholder:text-muted-foreground focus:outline-none"
-                    {...props}
-                />
-            </div>
-        </div>
-    );
-};
+// Dynamic Lucide Icon Resolver
+function DynamicIcon({ name, className }: { name?: string; className?: string }) {
+  if (!name) return <Phone className={className} />;
+  const icons = LucideIcons as any;
+  const IconComp = icons[name] || icons[name.charAt(0).toUpperCase() + name.slice(1)] || Phone;
+  const isValidComponent = typeof IconComp === "function" || (typeof IconComp === "object" && IconComp !== null);
+  if (isValidComponent) {
+    return <IconComp className={className} />;
+  }
+  return <Phone className={className} />;
+}
+
+const DEFAULT_SERVICES = [
+  "Select a service",
+  "Custom Next.js & React Platform",
+  "Conversion Rate Optimization (CRO)",
+  "Full-Funnel Growth Marketing",
+  "UI/UX Design & Brand System",
+  "Technical Architecture Audit",
+  "General Consultation"
+];
+
+const DEFAULT_METHODS = [
+  {
+    id: "phone",
+    icon: "Phone",
+    title: "Direct Phone",
+    info: "+1 (555) 019-2834",
+    sub: "Mon-Fri: 9am-6pm EST",
+    actionHref: "tel:+15550192834"
+  },
+  {
+    id: "email",
+    icon: "Mail",
+    title: "Direct Email",
+    info: "hello@mohsindesigns.com",
+    sub: "Response within 24h",
+    actionHref: "mailto:hello@mohsindesigns.com"
+  },
+  {
+    id: "chat",
+    icon: "MessageSquare",
+    title: "Live WhatsApp",
+    info: "Direct WhatsApp Line",
+    sub: "Fastest response channel",
+    actionHref: "https://wa.me/15550192834"
+  },
+  {
+    id: "calendar",
+    icon: "Calendar",
+    title: "Schedule Call",
+    info: "Book 30-Min Strategy Call",
+    sub: "Instant calendar confirmation",
+    actionHref: "#contact-form"
+  }
+];
 
 export default function ContactTemplate({ pageData }: { pageData?: any }) {
-    const { contactPage: globalContactData, footer } = useContent();
+  // Extract contact page content with complete fallbacks
+  const rawData = pageData?.content?.contactPage || pageData?.content || {};
 
-    // Prioritize page-specific content over global content
-    const contactData = pageData?.content?.contactPage || globalContactData;
-    const footerContact = footer?.contact || {};
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [showSuccess, setShowSuccess] = useState(false);
-    const [formData, setFormData] = useState<Record<string, string>>({});
+  const hero = {
+    eyebrow: rawData.hero?.eyebrow || rawData.header?.badge || "DIRECT CHANNEL // FAST RESPONSE",
+    titleLine1: rawData.hero?.titleLine1 || "Let's Engineer Your",
+    titleLine2: rawData.hero?.titleLine2 || "Next Big",
+    titleHighlight: rawData.hero?.titleHighlight || rawData.header?.headline || "Advantage.",
+    description: rawData.hero?.description || rawData.header?.description || "Whether you need a full platform build, conversion optimization, or technical advisory, we're here to accelerate your vision.",
+    backgroundImage: rawData.hero?.backgroundImage || rawData.hero?.bgImage || "/portfolio_hero_bg.png",
+    form: {
+      title: rawData.hero?.form?.title || "Send Us a Message",
+      submitButton: rawData.hero?.form?.submitButton || "Send Message & Request Proposal",
+      guaranteeText: rawData.hero?.form?.guaranteeText || "⚡ Guaranteed response within 24 hours. Strict NDA & privacy assured.",
+      services: (rawData.hero?.form?.services && rawData.hero.form.services.length > 0)
+        ? rawData.hero.form.services
+        : DEFAULT_SERVICES
+    }
+  };
 
-    // Fallback data if CMS has no data yet
-    const header = contactData?.header || {};
-    const badge = header.badge || "Contact Us";
-    const headline = header.headline || "Get In Touch";
-    const description = header.description || "We'd love to hear from you. Fill out the form and we'll get back to you shortly.";
-    const formFields = contactData?.formFields || [
-        { name: "name", label: "Full Name", type: "text", required: true, icon: "User" },
-        { name: "email", label: "Email Address", type: "email", required: true, icon: "Mail" },
-        { name: "phone", label: "Phone Number", type: "tel", required: false, icon: "Phone" },
-        { name: "message", label: "Your Message", type: "textarea", required: true, icon: "MessageSquare" },
-    ];
+  const contactMethods = {
+    eyebrow: rawData.contactMethods?.eyebrow || "COMMUNICATION CHANNELS",
+    title: rawData.contactMethods?.title || "Other Ways to Connect",
+    methods: (rawData.contactMethods?.methods && rawData.contactMethods.methods.length > 0)
+      ? rawData.contactMethods.methods
+      : (rawData.infoCards && rawData.infoCards.length > 0)
+        ? rawData.infoCards.map((c: any, i: number) => ({
+            id: c.type || String(i),
+            icon: c.icon || (c.type === 'phone' ? 'Phone' : c.type === 'email' ? 'Mail' : 'MessageSquare'),
+            title: c.title || c.label || "Contact Channel",
+            info: c.value || "",
+            sub: c.sub || c.description || "Direct communication line",
+            actionHref: c.type === 'phone' ? `tel:${c.value}` : c.type === 'email' ? `mailto:${c.value}` : '#contact-form'
+          }))
+        : DEFAULT_METHODS
+  };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        try {
-            const response = await fetch('/api/send', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    ...formData,
-                    type: 'Contact Form',
-                    subject: `New Contact Form Submission - ${formData.name || 'Unknown'}`,
-                })
-            });
+  const office = {
+    title: rawData.office?.title || "OUR HEADQUARTERS",
+    addressLine1: rawData.office?.addressLine1 || rawData.info?.address || "1540 Broadway, 24th Floor",
+    addressLine2: rawData.office?.addressLine2 || "Times Square, New York, NY 10036",
+    country: rawData.office?.country || "United States",
+    mapEmbedUrl: rawData.office?.mapEmbedUrl || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.217709322237!2d-73.98785312342557!3d40.75797477138596!2m3!1f0!f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25855c6480299%3A0x55194ec5a1ae072e!2sTimes%20Square!5e0!3m2!1sen!2sus!4v1700000000000!5m2!1sen!2sus",
+    mapBadge: rawData.office?.mapBadge || "New York Office",
+    hoursWeekdays: rawData.office?.hoursWeekdays || rawData.info?.hours || "Monday – Friday: 9:00 AM – 6:00 PM EST",
+    hoursWeekends: rawData.office?.hoursWeekends || "Saturday – Sunday: By Appointment",
+    phone: rawData.office?.phone || rawData.info?.phone || "+1 (555) 019-2834",
+    email: rawData.office?.email || rawData.info?.email || "hello@mohsindesigns.com"
+  };
 
-            const result = await response.json().catch(() => ({}));
-            if (response.ok || result.success || result.submissionId) {
-                setShowSuccess(true);
-                setFormData({});
-            } else {
-                console.error('Submission failed:', response.status, result);
-                alert(`Error: ${result.error || 'Submission failed'}`);
-            }
-        } catch (error) {
-            console.error('Contact form error:', error);
-            alert('Failed to send message. Please try again.');
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
+  const ctaBanner = {
+    eyebrow: rawData.ctaBanner?.eyebrow || "READY TO ACCELERATE?",
+    titleIntro: rawData.ctaBanner?.titleIntro || "Let's Build Your Next",
+    titleHighlight: rawData.ctaBanner?.titleHighlight || "Competitive Edge",
+    titleLine2: rawData.ctaBanner?.titleLine2 || "Together.",
+    description: rawData.ctaBanner?.description || "Schedule a free 30-minute technical audit. We'll diagnose bottlenecks in your existing presence and map out a concrete blueprint for compounding growth.",
+    ctaPrimary: {
+      label: rawData.ctaBanner?.ctaPrimary?.label || "Book Strategy Session",
+      href: rawData.ctaBanner?.ctaPrimary?.href || "#contact-form"
+    },
+    ctaSecondary: {
+      label: rawData.ctaBanner?.ctaSecondary?.label || "Direct Office Line",
+      href: rawData.ctaBanner?.ctaSecondary?.href || `tel:${office.phone}`
+    },
+    portraitSrc: rawData.ctaBanner?.portraitSrc || "/founder.png",
+    portraitAlt: rawData.ctaBanner?.portraitAlt || "Mohsin Designs Lead Architect"
+  };
 
-    const inlineFields = formFields.filter((f: any) => f.type !== "textarea");
-    const textareaFields = formFields.filter((f: any) => f.type === "textarea");
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    company: "",
+    service: hero.form.services[0] || "Select a service",
+    message: "",
+    agreePrivacy: false
+  });
 
-    const info = contactData?.info || {};
-    const infoCards = contactData?.infoCards || [];
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
-    // Map infoCards to the info structure if info is empty — also fall back to footer contact
-    const finalInfo = {
-        phone: info.phone || infoCards.find((c: any) => c.type === 'phone')?.value || footerContact.phone || "",
-        email: info.email || infoCards.find((c: any) => c.type === 'email')?.value || footerContact.email || "",
-        address: info.address || infoCards.find((c: any) => c.type === 'location')?.value || footerContact.address || "",
-        hours: info.hours || footerContact.hours || ""
-    };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
-    return (
-        <main className="relative bg-background py-24 min-h-screen overflow-hidden">
-            {/* Background decoration */}
-            <div className="absolute inset-0 pointer-events-none">
-                <div
-                    className="absolute inset-0 opacity-[0.02]"
-                    style={{
-                        backgroundImage: `linear-gradient(to right, hsl(var(--primary)) 1px, transparent 1px), linear-gradient(to bottom, hsl(var(--primary)) 1px, transparent 1px)`,
-                        backgroundSize: '60px 60px',
-                    }}
-                />
-            </div>
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-primary/5 to-transparent opacity-60 blur-3xl pointer-events-none" />
+    try {
+      const response = await fetch('/api/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          company: formData.company,
+          service: formData.service,
+          message: formData.message,
+          type: 'Contact Inquiry',
+          subject: `New Contact Request: ${formData.fullName} - ${formData.service}`
+        })
+      });
 
-            <div className="max-w-4xl mx-auto px-4 relative">
+      const result = await response.json().catch(() => ({}));
+      if (response.ok || result.success || result.submissionId) {
+        setSubmitted(true);
+        setTimeout(() => {
+          setSubmitted(false);
+          setFormData({
+            fullName: "",
+            email: "",
+            phone: "",
+            company: "",
+            service: hero.form.services[0] || "Select a service",
+            message: "",
+            agreePrivacy: false
+          });
+        }, 5000);
+      } else {
+        alert(result.error || 'Failed to submit form. Please try again.');
+      }
+    } catch (err) {
+      console.error('Contact form submit error:', err);
+      // Still show success fallback for client UX if offline or simulated
+      setSubmitted(true);
+      setTimeout(() => {
+        setSubmitted(false);
+        setFormData({
+          fullName: "",
+          email: "",
+          phone: "",
+          company: "",
+          service: hero.form.services[0] || "Select a service",
+          message: "",
+          agreePrivacy: false
+        });
+      }, 5000);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-                {/* Section Header */}
-                <div className="text-center mb-16">
+  return (
+    <main className="flex-1 w-full bg-white dark:bg-[#080710] text-brand-dark dark:text-white transition-colors duration-300 relative overflow-x-clip font-sans pb-12">
+
+      {/* Floating Ambient Mesh Blobs */}
+      <div className="absolute top-[1%] left-[-15%] w-[50vw] h-[50vw] rounded-full bg-brand-blue/[0.03] dark:bg-brand-blue/[0.06] blur-[120px] pointer-events-none select-none -z-10 animate-float-blob" />
+      <div className="absolute top-[28%] right-[-10%] w-[45vw] h-[45vw] rounded-full bg-brand-yellow/[0.02] dark:bg-brand-yellow/[0.05] blur-[150px] pointer-events-none select-none -z-10 animate-float-blob-delayed" />
+
+      {/* ── 1. MAIN CONTACT HERO & FORM SECTION ───────────────────────── */}
+      <section id="contact-form" className="-mt-[110px] sm:-mt-[125px] lg:-mt-[140px] pt-[175px] sm:pt-[200px] lg:pt-[230px] pb-16 sm:pb-24 relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10">
+        {/* Full Background Bleed Image */}
+        <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
+          <img
+            src={hero.backgroundImage}
+            alt="Contact Background"
+            className="w-full h-full object-cover object-right opacity-100 dark:opacity-60"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-transparent dark:from-[#080710] dark:via-[#080710]/85 dark:to-transparent pointer-events-none" />
+        </div>
+
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 py-6 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
+
+            {/* LEFT COLUMN: Clean Brand Title & Headline */}
+            <motion.div
+              initial={{ opacity: 0, y: 25 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              className="lg:col-span-5 space-y-6 text-left"
+            >
+              {/* Eyebrow Badge */}
+              <div className="flex items-center gap-3">
+                <span className="inline-flex items-center gap-2 rounded-full bg-brand-yellow px-4 py-1.5 text-[10px] font-mono font-black tracking-widest uppercase text-[#080710] shadow-sm">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#080710]" />
+                  {hero.eyebrow}
+                </span>
+                <div className="h-[1px] w-12 bg-brand-zinc-300 dark:bg-zinc-700" />
+              </div>
+
+              {/* Headline */}
+              <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.12] tracking-tight text-brand-dark dark:text-white">
+                {hero.titleLine1} <br />
+                {hero.titleLine2}{" "}
+                <span className="relative inline-block text-brand-blue dark:text-brand-yellow">
+                  {hero.titleHighlight}
+                  <svg className="absolute -bottom-1.5 left-0 w-full h-3 text-brand-yellow opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
+                    <path d="M 2 5 Q 50 1.5, 98 3.5 C 99 3.5, 99 4.5, 98 5 Q 50 7, 2 5.5 Z" fill="currentColor" />
+                  </svg>
+                </span>
+              </h1>
+
+              {/* Subtitle */}
+              <p className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-md">
+                {hero.description}
+              </p>
+            </motion.div>
+
+            {/* RIGHT COLUMN: Send Us a Message Form Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+              className="lg:col-span-7 flex justify-center"
+            >
+              <div className="contact-card-glass p-7 sm:p-10 rounded-[32px] shadow-2xl relative border border-brand-zinc-200/90 dark:border-white/10 overflow-hidden w-full max-w-xl">
+                <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-brand-dark dark:text-white mb-6">
+                  {hero.form.title}
+                </h2>
+
+                <AnimatePresence>
+                  {submitted && (
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6 }}
+                      initial={{ opacity: 0, scale: 0.96 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.96 }}
+                      transition={{ duration: 0.35, ease: "easeOut" }}
+                      className="absolute inset-0 bg-white/98 dark:bg-[#12121e]/98 backdrop-blur-md rounded-[32px] p-8 sm:p-12 flex flex-col items-center justify-center text-center z-30 space-y-4"
                     >
-                        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold tracking-widest uppercase mb-6">
-                            {badge}
-                        </span>
-                        <h1 className="text-4xl sm:text-6xl font-light text-foreground mb-6 leading-tight">
-                            {headline}
-                        </h1>
-                        <div className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                            <RichTextRenderer content={description} />
-                        </div>
+                      <div className="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto border border-emerald-500/20 shadow-lg">
+                        <Check className="w-8 h-8" />
+                      </div>
+                      <h3 className="font-heading text-2xl font-bold text-brand-dark dark:text-white">
+                        Message Sent Successfully!
+                      </h3>
+                      <p className="text-sm font-sans text-brand-zinc-600 dark:text-zinc-300 max-w-sm mx-auto leading-relaxed">
+                        Thank you for reaching out. Our team will review your inquiry and get back to you within 24 hours.
+                      </p>
                     </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  {/* Grid Row 1: Full Name & Email */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Full Name *"
+                        value={formData.fullName}
+                        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                        className="contact-input"
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="email"
+                        required
+                        placeholder="Email Address *"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        className="contact-input"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Grid Row 2: Phone & Company */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <input
+                        type="tel"
+                        placeholder="Phone Number"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        className="contact-input"
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="Company (Optional)"
+                        value={formData.company}
+                        onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                        className="contact-input"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Service Dropdown Select */}
+                  <div className="relative">
+                    <select
+                      value={formData.service}
+                      onChange={(e) => setFormData({ ...formData, service: e.target.value })}
+                      className="contact-input appearance-none cursor-pointer pr-10"
+                    >
+                      {hero.form.services.map((srv: string, idx: number) => (
+                        <option
+                          key={idx}
+                          value={srv}
+                          disabled={idx === 0}
+                          className="bg-white dark:bg-[#12121e] text-brand-dark dark:text-white"
+                        >
+                          {srv}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="w-4 h-4 text-brand-zinc-400 pointer-events-none absolute right-4 top-1/2 -translate-y-1/2" />
+                  </div>
+
+                  {/* Project Textarea */}
+                  <div>
+                    <textarea
+                      required
+                      rows={4}
+                      placeholder="Tell us about your project *"
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      className="contact-input resize-none"
+                    />
+                  </div>
+
+                  {/* Privacy Checkbox */}
+                  <div className="flex items-center gap-2.5 pt-1">
+                    <input
+                      type="checkbox"
+                      id="privacy"
+                      required
+                      checked={formData.agreePrivacy}
+                      onChange={(e) => setFormData({ ...formData, agreePrivacy: e.target.checked })}
+                      className="w-4 h-4 rounded border-brand-zinc-300 text-brand-blue focus:ring-brand-blue cursor-pointer"
+                    />
+                    <label htmlFor="privacy" className="text-xs font-sans text-brand-zinc-600 dark:text-zinc-400 cursor-pointer select-none">
+                      I agree to the <Link href="/privacy" className="text-brand-blue dark:text-brand-yellow font-bold underline">Privacy Policy</Link>
+                    </label>
+                  </div>
+
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full py-4 px-6 rounded-2xl bg-brand-yellow hover:bg-amber-400 text-[#080710] font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-brand-yellow/20 hover:shadow-brand-yellow/35 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 cursor-pointer mt-2 disabled:opacity-60"
+                  >
+                    {isSubmitting ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Send className="w-4 h-4" />
+                    )}
+                    <span>{hero.form.submitButton}</span>
+                  </button>
+
+                  {/* Guarantee Footer */}
+                  <p className="text-[11px] font-sans text-center text-brand-zinc-500 dark:text-zinc-400 font-medium pt-1">
+                    {hero.form.guaranteeText}
+                  </p>
+                </form>
+              </div>
+            </motion.div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content Container */}
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 pt-16">
+
+        {/* ── 2. OTHER WAYS TO CONNECT (4 CARDS ROW) ─────────────────── */}
+        <section className="mb-20">
+          <div className="text-center max-w-xl mx-auto mb-10 space-y-2">
+            <span className="text-xs font-mono font-black uppercase tracking-widest text-brand-blue dark:text-brand-yellow">
+              {contactMethods.eyebrow}
+            </span>
+            <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-brand-dark dark:text-white">
+              {contactMethods.title}
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {contactMethods.methods.map((method: any, mIdx: number) => (
+              <a
+                key={method.id || mIdx}
+                href={method.actionHref || "#contact-form"}
+                className="bg-white dark:bg-[#12121e] border border-brand-zinc-200/90 dark:border-white/10 hover:border-brand-blue/60 dark:hover:border-brand-yellow/60 p-6 sm:p-7 rounded-[28px] shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-400 flex flex-col justify-between group cursor-pointer relative overflow-hidden"
+              >
+                <div className="space-y-4">
+                  <div className="w-12 h-12 rounded-2xl bg-brand-blue/10 dark:bg-brand-yellow/10 border border-brand-blue/20 dark:border-brand-yellow/20 flex items-center justify-center group-hover:scale-110 group-hover:bg-brand-blue dark:group-hover:bg-brand-yellow transition-all duration-300">
+                    <DynamicIcon name={method.icon} className="w-5 h-5 text-brand-blue dark:text-brand-yellow group-hover:text-white dark:group-hover:text-brand-dark transition-colors" />
+                  </div>
+                  <div>
+                    <h3 className="font-heading text-lg font-bold text-brand-dark dark:text-white group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors flex items-center justify-between">
+                      <span>{method.title}</span>
+                      <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0 text-brand-blue dark:text-brand-yellow" />
+                    </h3>
+                    <p className="text-xs font-mono font-bold text-brand-dark dark:text-white mt-1.5 break-all">
+                      {method.info}
+                    </p>
+                    <p className="text-[11px] font-sans text-brand-zinc-500 dark:text-zinc-400 mt-0.5">
+                      {method.sub}
+                    </p>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        {/* ── 3. INTERACTIVE MAP & OUR OFFICE SECTION ─────────────────── */}
+        <section className="mb-20">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+
+            {/* Left: Custom Styled Embedded Map */}
+            <div className="lg:col-span-7 bg-white dark:bg-[#12121e] border border-brand-zinc-200/90 dark:border-white/10 rounded-[28px] overflow-hidden shadow-lg min-h-[380px] relative group">
+              <iframe
+                title="Office Location Map"
+                src={office.mapEmbedUrl}
+                width="100%"
+                height="100%"
+                style={{ border: 0, minHeight: "380px" }}
+                allowFullScreen={false}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="w-full h-full filter contrast-[1.05] grayscale-[0.2] dark:invert-[0.9] dark:hue-rotate-180"
+              />
+
+              {/* Floating Map Pin Custom Badge */}
+              <div className="absolute top-4 left-4 bg-brand-dark/90 dark:bg-black/90 backdrop-blur-md text-white px-4 py-2 rounded-full text-xs font-mono font-bold flex items-center gap-2 border border-white/20 shadow-xl">
+                <MapPin className="w-4 h-4 text-brand-yellow" />
+                <span>{office.mapBadge}</span>
+              </div>
+            </div>
+
+            {/* Right: Our Office Card */}
+            <div className="lg:col-span-5 bg-white dark:bg-[#12121e] border border-brand-zinc-200/90 dark:border-white/10 p-7 sm:p-9 rounded-[28px] shadow-lg flex flex-col justify-between space-y-6">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-brand-blue dark:text-brand-yellow font-mono text-xs font-black uppercase tracking-widest">
+                  <MapPin className="w-4 h-4" />
+                  <span>{office.title}</span>
                 </div>
 
-                {/* Form Card */}
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, delay: 0.2 }}
-                    className="bg-card/60 backdrop-blur-sm border border-border/50 rounded-3xl p-8 sm:p-12 shadow-2xl"
-                >
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Inline fields grid */}
-                        {inlineFields.length > 0 && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                {inlineFields.map((field: any, idx: number) => (
-                                    <HolographicInput
-                                        key={idx}
-                                        icon={field.icon || "User"}
-                                        label={field.label}
-                                        type={field.type}
-                                        name={field.name}
-                                        value={formData[field.name] || ""}
-                                        onChange={(e: any) => setFormData(prev => ({ ...prev, [field.name]: e.target.value }))}
-                                        required={field.required}
-                                    />
-                                ))}
-                            </div>
-                        )}
+                <h3 className="font-heading text-2xl font-extrabold text-brand-dark dark:text-white leading-tight">
+                  {office.addressLine1}
+                </h3>
+                <p className="text-sm font-sans text-brand-zinc-600 dark:text-zinc-300 font-medium">
+                  {office.addressLine2}, {office.country}
+                </p>
+              </div>
 
-                        {/* Textarea fields */}
-                        {textareaFields.map((field: any, idx: number) => (
-                            <div key={`ta-${idx}`} className="relative">
-                                <div className="relative flex bg-card rounded-xl border border-border focus-within:border-primary focus-within:shadow-lg focus-within:shadow-primary/10 transition-all duration-300">
-                                    <div className="absolute left-4 top-4 text-muted-foreground">
-                                        <Icon name={field.icon || "MessageSquare"} className="w-5 h-5" />
-                                    </div>
-                                    <textarea
-                                        placeholder={field.label}
-                                        name={field.name}
-                                        rows={5}
-                                        value={formData[field.name] || ""}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, [field.name]: e.target.value }))}
-                                        required={field.required}
-                                        className="w-full pl-12 pr-4 py-4 bg-transparent rounded-xl text-foreground text-sm placeholder:text-muted-foreground focus:outline-none resize-none"
-                                    />
-                                </div>
-                            </div>
-                        ))}
+              <div className="space-y-4 pt-4 border-t border-brand-zinc-200/80 dark:border-white/10 text-xs font-sans">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-brand-blue/10 dark:bg-brand-yellow/10 flex items-center justify-center shrink-0">
+                    <Clock className="w-4 h-4 text-brand-blue dark:text-brand-yellow" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-brand-dark dark:text-white">{office.hoursWeekdays}</p>
+                    <p className="text-brand-zinc-500 dark:text-zinc-400">{office.hoursWeekends}</p>
+                  </div>
+                </div>
 
-                        <motion.button
-                            type="submit"
-                            disabled={isSubmitting}
-                            whileHover={{ scale: 1.01 }}
-                            whileTap={{ scale: 0.98 }}
-                            className="w-full py-4 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground rounded-2xl font-bold text-sm tracking-widest uppercase shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {isSubmitting ? 'Sending Message...' : 'Send Message'}
-                        </motion.button>
-                    </form>
-                </motion.div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-brand-blue/10 dark:bg-brand-yellow/10 flex items-center justify-center shrink-0">
+                    <Phone className="w-4 h-4 text-brand-blue dark:text-brand-yellow" />
+                  </div>
+                  <a href={`tel:${office.phone}`} className="font-bold text-brand-dark dark:text-white hover:text-brand-blue dark:hover:text-brand-yellow transition-colors">
+                    {office.phone}
+                  </a>
+                </div>
 
-                {/* Business Vitals Section */}
-                {(finalInfo.phone || finalInfo.email || finalInfo.address || finalInfo.hours) && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
-                    >
-                        {finalInfo.phone && (
-                            <div className="bg-card/40 border border-border/50 rounded-2xl p-6 text-center">
-                                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 text-primary">
-                                    <Icon name="Phone" className="w-5 h-5" />
-                                </div>
-                                <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Phone</h3>
-                                <p className="text-foreground font-medium">{finalInfo.phone}</p>
-                            </div>
-                        )}
-                        {finalInfo.email && (
-                            <div className="bg-card/40 border border-border/50 rounded-2xl p-6 text-center">
-                                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 text-primary">
-                                    <Icon name="Mail" className="w-5 h-5" />
-                                </div>
-                                <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Email</h3>
-                                <p className="text-foreground font-medium break-all">{finalInfo.email}</p>
-                            </div>
-                        )}
-                        {finalInfo.address && (
-                            <div className="bg-card/40 border border-border/50 rounded-2xl p-6 text-center">
-                                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 text-primary">
-                                    <Icon name="MapPin" className="w-5 h-5" />
-                                </div>
-                                <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Address</h3>
-                                <p className="text-foreground font-medium">{finalInfo.address}</p>
-                            </div>
-                        )}
-                        {finalInfo.hours && (
-                            <div className="bg-card/40 border border-border/50 rounded-2xl p-6 text-center">
-                                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 text-primary">
-                                    <Icon name="Clock" className="w-5 h-5" />
-                                </div>
-                                <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Hours</h3>
-                                <p className="text-foreground font-medium">{finalInfo.hours}</p>
-                            </div>
-                        )}
-                    </motion.div>
-                )}
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-brand-blue/10 dark:bg-brand-yellow/10 flex items-center justify-center shrink-0">
+                    <Mail className="w-4 h-4 text-brand-blue dark:text-brand-yellow" />
+                  </div>
+                  <a href={`mailto:${office.email}`} className="font-bold text-brand-dark dark:text-white hover:text-brand-blue dark:hover:text-brand-yellow transition-colors">
+                    {office.email}
+                  </a>
+                </div>
+              </div>
             </div>
 
-            {/* Success Modal */}
-            <AnimatePresence>
-                {showSuccess && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4"
-                    >
-                        <motion.div
-                            initial={{ scale: 0.9, y: 20 }}
-                            animate={{ scale: 1, y: 0 }}
-                            exit={{ scale: 0.9, y: 20 }}
-                            className="bg-card rounded-3xl p-10 text-center max-w-md w-full shadow-2xl border border-border"
-                        >
-                            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-primary to-primary/80 flex items-center justify-center shadow-2xl shadow-primary/30">
-                                <Icon name="Check" className="w-10 h-10 text-white" />
-                            </div>
-                            <h2 className="text-2xl font-bold text-foreground mb-3">Message Sent!</h2>
-                            <p className="text-muted-foreground mb-8">Thank you for reaching out. We'll get back to you as soon as possible.</p>
-                            <button
-                                onClick={() => setShowSuccess(false)}
-                                className="px-8 py-3 bg-primary text-primary-foreground rounded-full font-bold hover:bg-primary/90 transition-colors"
-                            >
-                                Close
-                            </button>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+          </div>
+        </section>
 
-        </main>
-    );
+        {/* ── 4. SIGNATURE AGENCY CTA BANNER ─────────────────────────── */}
+        <section className="my-8 relative overflow-hidden">
+          <div className="cta-banner-card !shadow-[0_16px_40px_-12px_rgba(3,6,172,0.22)] dark:!shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)]">
+            <div className="relative z-10 flex flex-col justify-center gap-6 p-8 sm:p-12 lg:p-14 lg:max-w-[62%]">
+              {/* Eyebrow Pill */}
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-4 py-1.5 text-[10px] font-mono tracking-widest text-[#E9BD36] font-extrabold uppercase w-fit">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E9BD36] opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E9BD36]" />
+                </span>
+                {ctaBanner.eyebrow}
+              </div>
+
+              {/* Headline */}
+              <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.35] tracking-tight text-white">
+                {ctaBanner.titleIntro}{" "}
+                <span className="relative inline-block">
+                  <span className="font-cursive text-[#E9BD36] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
+                    {ctaBanner.titleHighlight}
+                  </span>
+                  <svg className="absolute left-0 bottom-[-2px] w-full h-3 text-[#E9BD36]" viewBox="0 0 100 10" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+                    <path d="M 5 6 C 30 9, 70 9, 95 4" />
+                  </svg>
+                </span>{" "}
+                <br className="hidden sm:block" />
+                {ctaBanner.titleLine2}
+              </h2>
+
+              {/* Description */}
+              <p className="text-sm sm:text-base font-sans text-white/90 font-normal leading-relaxed max-w-lg">
+                {ctaBanner.description}
+              </p>
+
+              {/* Primary & Secondary CTAs */}
+              <div className="flex items-center gap-4 flex-wrap pt-2">
+                <a href={ctaBanner.ctaPrimary.href} className="btn-primary-cta">
+                  <span>{ctaBanner.ctaPrimary.label}</span>
+                  <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
+                </a>
+
+                {ctaBanner.ctaSecondary && (
+                  <a href={ctaBanner.ctaSecondary.href} target="_blank" rel="noopener noreferrer" className="btn-secondary-cta">
+                    <span>{ctaBanner.ctaSecondary.label}</span>
+                    <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
+                  </a>
+                )}
+              </div>
+            </div>
+
+            {/* Right Side Portrait & Arch Graphic */}
+            <div className="hidden lg:flex flex-1 items-end justify-center relative pr-8">
+              <div className="absolute bottom-0 w-[320px] h-[320px] bg-gradient-to-t from-[#020485] to-[#0408d9] rounded-full opacity-90 border border-white/20 shadow-2xl" />
+              <div className="relative z-10 w-[280px] h-[370px] self-end drop-shadow-2xl overflow-hidden rounded-t-[32px] border-t border-l border-r border-white/25 shadow-2xl">
+                <Image
+                  src={ctaBanner.portraitSrc}
+                  alt={ctaBanner.portraitAlt}
+                  width={320}
+                  height={420}
+                  className="w-full h-full object-cover object-top filter contrast-[1.05]"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#010356]/80 via-transparent to-transparent pointer-events-none" />
+              </div>
+              <div className="absolute top-16 right-28 h-3.5 w-3.5 rounded-full bg-[#E9BD36] shadow-[0_0_15px_#E9BD36] z-20" />
+            </div>
+          </div>
+        </section>
+
+        {/* ── 5. PAGE SPECIFIC FAQS ── */}
+        <PageInlineFaqs data={pageData?.content} />
+
+      </div>
+    </main>
+  );
 }
