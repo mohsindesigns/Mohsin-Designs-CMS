@@ -1,41 +1,52 @@
 'use client';
 
-import { Share2, Link as LinkIcon, Check } from 'lucide-react';
+import { Share2, Check } from 'lucide-react';
 import { useState } from 'react';
 
-export default function ShareButton({ title, url }: { title: string; url: string }) {
+export default function ShareButton({ title, url }: { title: string; url?: string }) {
   const [copied, setCopied] = useState(false);
 
   const handleShare = async () => {
+    if (typeof window === 'undefined') return;
+    const currentUrl = window.location.href;
+
     if (navigator.share) {
       try {
         await navigator.share({
           title,
-          url: window.location.href,
+          url: currentUrl,
         });
+        return;
       } catch (err) {
-        console.log('Error sharing:', err);
+        // user cancelled or fallback
       }
-    } else {
-      // Fallback: Copy to clipboard
-      navigator.clipboard.writeText(window.location.href);
+    }
+
+    try {
+      await navigator.clipboard.writeText(currentUrl);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
     }
   };
 
   return (
     <button 
+      type="button"
       onClick={handleShare}
-      className="w-full flex items-center justify-center gap-3 bg-blue-600 text-white px-8 py-4 rounded-2xl font-black text-sm hover:bg-blue-700 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-blue-600/20"
+      className="w-full flex items-center justify-center gap-2.5 bg-brand-blue dark:bg-brand-yellow text-white dark:text-[#080710] px-6 py-3.5 rounded-xl font-mono font-black text-xs uppercase tracking-wider hover:opacity-90 active:scale-[0.98] transition-all shadow-lg shadow-brand-blue/20 dark:shadow-brand-yellow/15 cursor-pointer"
     >
       {copied ? (
         <>
-          <Check className="w-4 h-4" /> Copied Link!
+          <Check className="w-4 h-4 text-emerald-400 dark:text-emerald-800 shrink-0" />
+          <span>Link Copied to Clipboard!</span>
         </>
       ) : (
         <>
-          <Share2 className="w-4 h-4" /> Share This Article
+          <Share2 className="w-4 h-4 shrink-0" />
+          <span>Share This Article</span>
         </>
       )}
     </button>

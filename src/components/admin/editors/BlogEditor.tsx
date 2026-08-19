@@ -25,17 +25,29 @@ const DEFAULT_BLOG_DATA = {
   filterMode: "all", // "all" | "selective"
   selectedBlogIds: [],
   postsPerPage: 6,
-  categorySettings: {
-    allTabLabel: "All Articles",
-    allTabIcon: "LayoutGrid",
-    customCategories: [
-      { id: "engineering", label: "Engineering & Architecture", icon: "Code", slug: "engineering" },
-      { id: "cro", label: "Conversion Rate (CRO)", icon: "Zap", slug: "cro" },
-      { id: "growth", label: "Growth Strategy", icon: "Globe", slug: "growth" },
-      { id: "design", label: "UI/UX Design", icon: "Palette", slug: "design" }
-    ]
-  },
   ctaBanner: {
+    eyebrow: "READY TO ACCELERATE?",
+    titleIntro: "Let's Build Your Next",
+    titleHighlight: "Competitive Edge",
+    titleLine2: "Together.",
+    description: "Schedule a free 30-minute technical audit. We'll diagnose bottlenecks in your existing presence and map out a concrete blueprint for compounding growth.",
+    ctaPrimary: { label: "Book Strategy Session", href: "/contact" },
+    ctaSecondary: { label: "Watch Showreel", href: "/gallery" },
+    portraitSrc: "/founder.png",
+    portraitAlt: "Mohsin Designs Lead Architect"
+  },
+  detailSidebarCta: {
+    badge: "EXPERT CONSULTATION",
+    title: "Scale Your Organic Revenue Today",
+    description: "Get a custom local SEO and web architecture strategy tailored for your business.",
+    buttonText: "GET FREE ESTIMATE",
+    buttonHref: "/#contact"
+  },
+  relatedSection: {
+    eyebrow: "EXPLORE MORE INSIGHTS",
+    title: "Related Articles & Guides"
+  },
+  detailCtaBanner: {
     eyebrow: "READY TO ACCELERATE?",
     titleIntro: "Let's Build Your Next",
     titleHighlight: "Competitive Edge",
@@ -70,7 +82,10 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
     ...DEFAULT_BLOG_DATA,
     ...(data.blogPage || {}),
     hero: { ...DEFAULT_BLOG_DATA.hero, ...(data.blogPage?.hero || {}) },
-    ctaBanner: { ...DEFAULT_BLOG_DATA.ctaBanner, ...(data.blogPage?.ctaBanner || {}) }
+    ctaBanner: { ...DEFAULT_BLOG_DATA.ctaBanner, ...(data.blogPage?.ctaBanner || {}) },
+    detailSidebarCta: { ...DEFAULT_BLOG_DATA.detailSidebarCta, ...(data.blogPage?.detailSidebarCta || {}) },
+    relatedSection: { ...DEFAULT_BLOG_DATA.relatedSection, ...(data.blogPage?.relatedSection || {}) },
+    detailCtaBanner: { ...DEFAULT_BLOG_DATA.detailCtaBanner, ...(data.blogPage?.detailCtaBanner || {}) }
   };
 
   const updateBlog = (updater: (prev: typeof blog) => typeof blog) => {
@@ -84,7 +99,8 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
   const tabs = [
     { id: "hero", label: "01. Hero Banner & Intro", icon: Type },
     { id: "feed", label: "02. Blog Selection & Mode", icon: BookOpen },
-    { id: "cta", label: "03. Conversion CTA Banner", icon: Sparkles },
+    { id: "cta", label: "03. Index CTA Banner", icon: Sparkles },
+    { id: "detail", label: "04. Detail Page (Sidebar & CTAs)", icon: Layers },
   ];
 
   return (
@@ -514,6 +530,279 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
                     placeholder="Mohsin Designs Lead Architect"
                   />
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── TAB 4: BLOG DETAIL PAGE (SIDEBAR & CTAS) ── */}
+        {activeTab === "detail" && (
+          <div className="space-y-5">
+            {/* Sidebar Consultation CTA Box */}
+            <div className="bg-[#f8f9fa] border border-[#dcdcde] p-4 rounded-[4px] space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#1d2327]">Sticky Sidebar Consultation Box</h3>
+              <p className="text-[11px] text-[#646970]">
+                Customizes the dark gradient CTA card in the sticky right sidebar of every blog article.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-[#50575e]">Badge Eyebrow</label>
+                  <input
+                    type="text"
+                    value={blog.detailSidebarCta?.badge || ""}
+                    onChange={(e) => updateBlog(prev => ({
+                      ...prev,
+                      detailSidebarCta: { ...(prev.detailSidebarCta || {}), badge: e.target.value }
+                    }))}
+                    className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
+                    placeholder="EXPERT CONSULTATION"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-[#50575e]">Headline Title</label>
+                  <input
+                    type="text"
+                    value={blog.detailSidebarCta?.title || ""}
+                    onChange={(e) => updateBlog(prev => ({
+                      ...prev,
+                      detailSidebarCta: { ...(prev.detailSidebarCta || {}), title: e.target.value }
+                    }))}
+                    className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
+                    placeholder="Scale Your Organic Revenue Today"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold text-[#50575e]">Description</label>
+                <textarea
+                  rows={2}
+                  value={blog.detailSidebarCta?.description || ""}
+                  onChange={(e) => updateBlog(prev => ({
+                    ...prev,
+                    detailSidebarCta: { ...(prev.detailSidebarCta || {}), description: e.target.value }
+                  }))}
+                  className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white resize-none"
+                  placeholder="Get a custom local SEO and web architecture strategy tailored for your business."
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-[#50575e]">Button Label</label>
+                  <input
+                    type="text"
+                    value={blog.detailSidebarCta?.buttonText || ""}
+                    onChange={(e) => updateBlog(prev => ({
+                      ...prev,
+                      detailSidebarCta: { ...(prev.detailSidebarCta || {}), buttonText: e.target.value }
+                    }))}
+                    className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
+                    placeholder="GET FREE ESTIMATE"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-[#50575e]">Button Link URL</label>
+                  <input
+                    type="text"
+                    value={blog.detailSidebarCta?.buttonHref || ""}
+                    onChange={(e) => updateBlog(prev => ({
+                      ...prev,
+                      detailSidebarCta: { ...(prev.detailSidebarCta || {}), buttonHref: e.target.value }
+                    }))}
+                    className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white font-mono text-[11px]"
+                    placeholder="/#contact"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Related Articles Section Header */}
+            <div className="bg-[#f8f9fa] border border-[#dcdcde] p-4 rounded-[4px] space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#1d2327]">Related Articles Header</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-[#50575e]">Section Eyebrow</label>
+                  <input
+                    type="text"
+                    value={blog.relatedSection?.eyebrow || ""}
+                    onChange={(e) => updateBlog(prev => ({
+                      ...prev,
+                      relatedSection: { ...(prev.relatedSection || {}), eyebrow: e.target.value }
+                    }))}
+                    className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
+                    placeholder="EXPLORE MORE INSIGHTS"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-[#50575e]">Section Title</label>
+                  <input
+                    type="text"
+                    value={blog.relatedSection?.title || ""}
+                    onChange={(e) => updateBlog(prev => ({
+                      ...prev,
+                      relatedSection: { ...(prev.relatedSection || {}), title: e.target.value }
+                    }))}
+                    className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
+                    placeholder="Related Articles & Guides"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Detail Signature CTA Banner */}
+            <div className="bg-[#f8f9fa] border border-[#dcdcde] p-4 rounded-[4px] space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#1d2327]">Detail Page Bottom Signature CTA Banner</h3>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold text-[#50575e]">Eyebrow Badge Pill</label>
+                <input
+                  type="text"
+                  value={blog.detailCtaBanner?.eyebrow || ""}
+                  onChange={(e) => updateBlog(prev => ({
+                    ...prev,
+                    detailCtaBanner: { ...(prev.detailCtaBanner || {}), eyebrow: e.target.value }
+                  }))}
+                  className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
+                  placeholder="READY TO ACCELERATE?"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-[#50575e]">Title Intro</label>
+                  <input
+                    type="text"
+                    value={blog.detailCtaBanner?.titleIntro || ""}
+                    onChange={(e) => updateBlog(prev => ({
+                      ...prev,
+                      detailCtaBanner: { ...(prev.detailCtaBanner || {}), titleIntro: e.target.value }
+                    }))}
+                    className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
+                    placeholder="Let's Build Your Next"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-[#50575e]">Title Line 2</label>
+                  <input
+                    type="text"
+                    value={blog.detailCtaBanner?.titleLine2 || ""}
+                    onChange={(e) => updateBlog(prev => ({
+                      ...prev,
+                      detailCtaBanner: { ...(prev.detailCtaBanner || {}), titleLine2: e.target.value }
+                    }))}
+                    className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
+                    placeholder="Competitive Edge"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-[#50575e]">Highlighted Word (Yellow Script)</label>
+                  <input
+                    type="text"
+                    value={blog.detailCtaBanner?.titleHighlight || ""}
+                    onChange={(e) => updateBlog(prev => ({
+                      ...prev,
+                      detailCtaBanner: { ...(prev.detailCtaBanner || {}), titleHighlight: e.target.value }
+                    }))}
+                    className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
+                    placeholder="Together."
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold text-[#50575e]">Description Paragraph</label>
+                <textarea
+                  rows={3}
+                  value={blog.detailCtaBanner?.description || ""}
+                  onChange={(e) => updateBlog(prev => ({
+                    ...prev,
+                    detailCtaBanner: { ...(prev.detailCtaBanner || {}), description: e.target.value }
+                  }))}
+                  className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white resize-none"
+                  placeholder="Schedule a free 30-minute technical audit..."
+                />
+              </div>
+
+              {/* CTAs */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <div className="p-3 bg-white border border-[#dcdcde] rounded-[3px] space-y-2">
+                  <span className="text-[11px] font-bold text-[#1d2327] block">Primary Button</span>
+                  <input
+                    type="text"
+                    value={blog.detailCtaBanner?.ctaPrimary?.label || ""}
+                    onChange={(e) => updateBlog(prev => ({
+                      ...prev,
+                      detailCtaBanner: {
+                        ...(prev.detailCtaBanner || {}),
+                        ctaPrimary: { ...(prev.detailCtaBanner?.ctaPrimary || {}), label: e.target.value }
+                      }
+                    }))}
+                    className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
+                    placeholder="Book Strategy Session"
+                  />
+                  <input
+                    type="text"
+                    value={blog.detailCtaBanner?.ctaPrimary?.href || ""}
+                    onChange={(e) => updateBlog(prev => ({
+                      ...prev,
+                      detailCtaBanner: {
+                        ...(prev.detailCtaBanner || {}),
+                        ctaPrimary: { ...(prev.detailCtaBanner?.ctaPrimary || {}), href: e.target.value }
+                      }
+                    }))}
+                    className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-mono text-[11px]"
+                    placeholder="/contact"
+                  />
+                </div>
+
+                <div className="p-3 bg-white border border-[#dcdcde] rounded-[3px] space-y-2">
+                  <span className="text-[11px] font-bold text-[#1d2327] block">Secondary Button</span>
+                  <input
+                    type="text"
+                    value={blog.detailCtaBanner?.ctaSecondary?.label || ""}
+                    onChange={(e) => updateBlog(prev => ({
+                      ...prev,
+                      detailCtaBanner: {
+                        ...(prev.detailCtaBanner || {}),
+                        ctaSecondary: { ...(prev.detailCtaBanner?.ctaSecondary || {}), label: e.target.value }
+                      }
+                    }))}
+                    className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
+                    placeholder="Watch Showreel"
+                  />
+                  <input
+                    type="text"
+                    value={blog.detailCtaBanner?.ctaSecondary?.href || ""}
+                    onChange={(e) => updateBlog(prev => ({
+                      ...prev,
+                      detailCtaBanner: {
+                        ...(prev.detailCtaBanner || {}),
+                        ctaSecondary: { ...(prev.detailCtaBanner?.ctaSecondary || {}), href: e.target.value }
+                      }
+                    }))}
+                    className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-mono text-[11px]"
+                    placeholder="/gallery"
+                  />
+                </div>
+              </div>
+
+              {/* Portrait Image */}
+              <div className="pt-3 border-t border-[#dcdcde] space-y-3">
+                <ImageField
+                  label="Portrait Image (Arch Shape Graphics)"
+                  value={blog.detailCtaBanner?.portraitSrc || ""}
+                  onChange={(url) => updateBlog(prev => ({
+                    ...prev,
+                    detailCtaBanner: { ...(prev.detailCtaBanner || {}), portraitSrc: url }
+                  }))}
+                />
               </div>
             </div>
           </div>
