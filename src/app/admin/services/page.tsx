@@ -81,6 +81,70 @@ function IconSelector({ value, onChange }: { value: string, onChange: (v: string
   );
 }
 
+function BulletListEditor({
+  label,
+  items,
+  onChange,
+  placeholder = "Enter item..."
+}: {
+  label: string;
+  items: string[];
+  onChange: (items: string[]) => void;
+  placeholder?: string;
+}) {
+  const currentItems = Array.isArray(items) ? items : (items ? [items] : []);
+
+  return (
+    <div className="space-y-2 bg-[#f8f9fa] border border-[#dcdcde] p-3 rounded-[4px]">
+      <div className="flex items-center justify-between">
+        <label className="text-[11px] font-bold uppercase tracking-wider text-[#50575e]">{label}</label>
+        <button
+          type="button"
+          onClick={() => onChange([...currentItems, ""])}
+          className="inline-flex items-center gap-1 text-[11px] font-bold text-[#2271b1] hover:text-[#135e96] hover:underline"
+        >
+          + Add Point
+        </button>
+      </div>
+
+      <div className="space-y-1.5">
+        {currentItems.map((item, idx) => (
+          <div key={idx} className="flex items-center gap-2">
+            <span className="text-[11px] font-mono font-bold text-[#8c8f94] w-5 text-right shrink-0">{idx + 1}.</span>
+            <input
+              type="text"
+              value={item}
+              placeholder={placeholder}
+              onChange={(e) => {
+                const updated = [...currentItems];
+                updated[idx] = e.target.value;
+                onChange(updated);
+              }}
+              className="flex-1 border border-[#8c8f94] px-2.5 py-1 text-xs rounded-[3px] bg-white focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
+            />
+            <button
+              type="button"
+              onClick={() => {
+                const updated = currentItems.filter((_, i) => i !== idx);
+                onChange(updated);
+              }}
+              className="text-[#d63638] hover:text-red-700 p-1 text-xs font-bold shrink-0"
+              title="Delete this point"
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+        {currentItems.length === 0 && (
+          <div className="text-[11px] text-[#8c8f94] italic py-1">
+            No items yet. Click <span className="font-bold text-[#2271b1] cursor-pointer" onClick={() => onChange([""])}>+ Add Point</span> to add points.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 const DEFAULT_SERVICE_TEMPLATE = {
   title: "",
   slug: "",
@@ -679,17 +743,19 @@ export default function ServicesAdminPage() {
               <div className="postbox bg-white border border-[#c3c4c7] shadow-sm rounded-[3px] overflow-hidden">
 
                 {/* Horizontal WP Tabs */}
-                <div className="flex flex-wrap border-b border-[#c3c4c7] bg-[#f6f7f7]">
-                  {tabs.map((tab) => (
+                <div className="flex overflow-x-auto border-b border-[#c3c4c7] bg-[#f0f0f1] no-scrollbar">
+                  {tabs.map((tab, idx) => (
                     <button
                       key={tab.id}
                       type="button"
                       onClick={() => setActiveTab(tab.id)}
-                      className={`px-3 py-2 text-[13px] font-medium border-r border-[#c3c4c7] transition-all ${activeTab === tab.id
-                        ? "bg-white text-[#1d2327] font-bold border-b-2 border-b-[#2271b1] -mb-[1px]"
-                        : "text-[#2271b1] hover:bg-[#f0f0f1]"
-                        }`}
+                      className={`px-3.5 py-2.5 text-[12px] font-medium border-r border-[#dcdcde] whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 ${
+                        activeTab === tab.id
+                          ? "bg-white text-[#1d2327] font-bold border-b-2 border-b-[#2271b1] -mb-[1px] shadow-sm"
+                          : "text-[#50575e] hover:bg-white/60 hover:text-[#1d2327]"
+                      }`}
                     >
+                      <span className="text-[10px] text-[#8c8f94] font-mono">{(idx + 1).toString().padStart(2, '0')}</span>
                       {tab.label}
                     </button>
                   ))}
@@ -841,45 +907,13 @@ export default function ServicesAdminPage() {
                         </div>
                       </div>
 
-                      <div className="space-y-2 pt-3 border-t border-[#c3c4c7]">
-                        <div className="flex items-center justify-between">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Hero Key Benefits Checklist</label>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const b = [...(form.hero?.benefits || [])];
-                              b.push("New verified advantage");
-                              setForm({ ...form, hero: { ...form.hero, benefits: b } });
-                            }}
-                            className="text-[12px] text-[#2271b1] hover:underline font-bold"
-                          >
-                            + Add Benefit
-                          </button>
-                        </div>
-                        {(form.hero?.benefits || []).map((ben: string, idx: number) => (
-                          <div key={idx} className="flex items-center gap-2">
-                            <input
-                              type="text"
-                              value={ben}
-                              onChange={(e) => {
-                                const b = [...form.hero.benefits];
-                                b[idx] = e.target.value;
-                                setForm({ ...form, hero: { ...form.hero, benefits: b } });
-                              }}
-                              className="flex-1 border border-[#8c8f94] px-3 py-1 text-[13px] rounded-[3px]"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const b = form.hero.benefits.filter((_: any, i: number) => i !== idx);
-                                setForm({ ...form, hero: { ...form.hero, benefits: b } });
-                              }}
-                              className="text-[#d63638] hover:text-red-800 p-1"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        ))}
+                      <div className="pt-3 border-t border-[#c3c4c7]">
+                        <BulletListEditor
+                          label="Hero Key Benefits Checklist"
+                          items={form.hero?.benefits || []}
+                          onChange={(b) => setForm({ ...form, hero: { ...form.hero, benefits: b } })}
+                          placeholder="e.g. Data-Driven Growth Strategies"
+                        />
                       </div>
                     </div>
                   )}
@@ -1059,16 +1093,15 @@ export default function ServicesAdminPage() {
                               }}
                               className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
                             />
-                            <input
-                              type="text"
-                              placeholder="Features (comma separated)"
-                              value={(pillar.features || []).join(", ")}
-                              onChange={(e) => {
+                            <BulletListEditor
+                              label="Key Capabilities & Inclusions"
+                              items={pillar.features || []}
+                              onChange={(features) => {
                                 const p = [...form.whatIncluded.pillars];
-                                p[idx] = { ...p[idx], features: e.target.value.split(",").map((s: string) => s.trim()).filter(Boolean) };
+                                p[idx] = { ...p[idx], features };
                                 setForm({ ...form, whatIncluded: { ...form.whatIncluded, pillars: p } });
                               }}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
+                              placeholder="e.g. Strategic Discovery & Technical Scoping"
                             />
                           </div>
                         ))}
@@ -1447,20 +1480,16 @@ export default function ServicesAdminPage() {
                               }}
                               className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
                             />
-                            <div className="space-y-1">
-                              <label className="text-[11px] font-semibold text-[#646970]">Deliverables Checklist (Comma separated)</label>
-                              <input
-                                type="text"
-                                value={(step.deliverables || []).join(", ")}
-                                onChange={(e) => {
-                                  const s = [...form.process.steps];
-                                  s[idx] = { ...s[idx], deliverables: e.target.value.split(",").map((item: string) => item.trim()).filter(Boolean) };
-                                  setForm({ ...form, process: { ...form.process, steps: s } });
-                                }}
-                                className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                                placeholder="Google Search Console audit, Core Web Vitals check, Schema injection"
-                              />
-                            </div>
+                            <BulletListEditor
+                              label="Phase Deliverables Checklist"
+                              items={step.deliverables || []}
+                              onChange={(deliverables) => {
+                                const s = [...form.process.steps];
+                                s[idx] = { ...s[idx], deliverables };
+                                setForm({ ...form, process: { ...form.process, steps: s } });
+                              }}
+                              placeholder="e.g. Google Search Console audit, Core Web Vitals check"
+                            />
                             <div className="grid grid-cols-2 gap-2">
                               <input
                                 type="text"
@@ -2325,16 +2354,15 @@ export default function ServicesAdminPage() {
                               />
                             </div>
 
-                            <input
-                              type="text"
-                              placeholder="Features (comma separated)"
-                              value={(plan.features || []).join(", ")}
-                              onChange={(e) => {
+                            <BulletListEditor
+                              label="Plan Features & Inclusions"
+                              items={plan.features || []}
+                              onChange={(features) => {
                                 const plans = [...form.pricing.plans];
-                                plans[idx] = { ...plans[idx], features: e.target.value.split(",").map((s: string) => s.trim()).filter(Boolean) };
+                                plans[idx] = { ...plans[idx], features };
                                 setForm({ ...form, pricing: { ...form.pricing, plans } });
                               }}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
+                              placeholder="e.g. Dedicated technical architect & 24/7 SLA"
                             />
                           </div>
                         ))}
