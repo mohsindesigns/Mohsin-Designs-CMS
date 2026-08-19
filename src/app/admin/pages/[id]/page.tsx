@@ -30,6 +30,8 @@ const EDITOR_TEMPLATES = [
   { id: 'reviews', label: 'Client Reviews', icon: Star },
   { id: 'faq', label: 'Support FAQ', icon: CircleHelp },
   { id: 'contact', label: 'Contact Center', icon: Phone },
+  { id: 'location', label: 'Locations Hub', icon: Globe },
+  { id: 'locations', label: 'Locations Hub', icon: Globe },
   { id: 'service-area', label: 'Service Area', icon: Globe },
   { id: 'blog', label: 'Blog Index', icon: BookOpen },
 ];

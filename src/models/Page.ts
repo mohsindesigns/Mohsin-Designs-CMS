@@ -18,6 +18,8 @@ const PageSchema = new mongoose.Schema({
       'services', 
       'service-detail',
       'service-area',
+      'location',
+      'locations',
       'blog'
     ] 
   },

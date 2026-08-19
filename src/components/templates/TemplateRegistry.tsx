@@ -10,6 +10,7 @@ import ContactTemplate from './ContactTemplate';
 import GalleryTemplate from './GalleryTemplate';
 import ServicesTemplate from './ServicesTemplate';
 import ServiceAreaTemplate from './ServiceAreaTemplate';
+import LocationTemplate from './LocationTemplate';
 import BlogTemplate from './BlogTemplate';
 import PageInlineFaqs from '../PageInlineFaqs';
 
@@ -27,6 +28,8 @@ export const TEMPLATE_MAP: Record<string, React.ComponentType<any>> = {
   'gallery': GalleryTemplate,
   'services': ServicesTemplate,
   'service-area': ServiceAreaTemplate,
+  'location': LocationTemplate,
+  'locations': LocationTemplate,
   'blog': BlogTemplate,
 };
 
@@ -37,7 +40,7 @@ export const getTemplate = (name: string) => {
 export const TemplateWrapper = ({ templateName, pageData, globalData, params }: any) => {
   const Template = getTemplate(templateName);
 
-  const hasInlineFaqs = !['home', 'faq', 'service-detail', 'about', 'service-area', 'services', 'contact', 'blog'].includes(templateName) &&
+  const hasInlineFaqs = !['home', 'faq', 'service-detail', 'about', 'service-area', 'location', 'locations', 'services', 'contact', 'blog'].includes(templateName) &&
     ((pageData?.content?.faqs && Array.isArray(pageData.content.faqs) && pageData.content.faqs.length > 0) ||
       (pageData?.content?.faqSchemaMarkup && typeof pageData.content.faqSchemaMarkup === 'string' && pageData.content.faqSchemaMarkup.trim()));
 
@@ -50,9 +53,9 @@ export const TemplateWrapper = ({ templateName, pageData, globalData, params }: 
     <ContentProvider initialData={providerData}>
       <Template pageData={pageData} params={params} />
       {hasInlineFaqs && (
-        <PageInlineFaqs 
-          faqs={pageData.content.faqs} 
-          faqSchemaMarkup={pageData.content.faqSchemaMarkup} 
+        <PageInlineFaqs
+          faqs={pageData.content.faqs}
+          faqSchemaMarkup={pageData.content.faqSchemaMarkup}
           badge={pageData.content.faqBadge}
           title={pageData.content.faqTitleHighlight || pageData.content.faqTitle}
           description={pageData.content.faqDescription}
