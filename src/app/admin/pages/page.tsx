@@ -427,6 +427,7 @@ export default function PagesDashboard() {
                         <option value="faq">FAQ Template</option>
                         <option value="contact">Contact Template</option>
                         <option value="service-area">Service Area Template</option>
+                        <option value="blog">Blog Template</option>
                       </select>
                    </div>
                 </div>
@@ -496,6 +497,7 @@ export default function PagesDashboard() {
                         <option value="faq">FAQ Template</option>
                         <option value="contact">Contact Template</option>
                         <option value="service-area">Service Area Template</option>
+                        <option value="blog">Blog Template</option>
                       </select>
                     </div>
                     <div>

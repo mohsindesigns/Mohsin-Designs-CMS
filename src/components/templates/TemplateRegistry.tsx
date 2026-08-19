@@ -10,6 +10,7 @@ import ContactTemplate from './ContactTemplate';
 import GalleryTemplate from './GalleryTemplate';
 import ServicesTemplate from './ServicesTemplate';
 import ServiceAreaTemplate from './ServiceAreaTemplate';
+import BlogTemplate from './BlogTemplate';
 import PageInlineFaqs from '../PageInlineFaqs';
 
 import { ContentProvider } from "@/context/ContentContext";
@@ -26,6 +27,7 @@ export const TEMPLATE_MAP: Record<string, React.ComponentType<any>> = {
   'gallery': GalleryTemplate,
   'services': ServicesTemplate,
   'service-area': ServiceAreaTemplate,
+  'blog': BlogTemplate,
 };
 
 export const getTemplate = (name: string) => {
@@ -35,7 +37,7 @@ export const getTemplate = (name: string) => {
 export const TemplateWrapper = ({ templateName, pageData, globalData, params }: any) => {
   const Template = getTemplate(templateName);
 
-  const hasInlineFaqs = !['home', 'faq', 'service-detail', 'about', 'service-area', 'services', 'contact'].includes(templateName) &&
+  const hasInlineFaqs = !['home', 'faq', 'service-detail', 'about', 'service-area', 'services', 'contact', 'blog'].includes(templateName) &&
     ((pageData?.content?.faqs && Array.isArray(pageData.content.faqs) && pageData.content.faqs.length > 0) ||
       (pageData?.content?.faqSchemaMarkup && typeof pageData.content.faqSchemaMarkup === 'string' && pageData.content.faqSchemaMarkup.trim()));
 

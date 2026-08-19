@@ -17,7 +17,8 @@ const PageSchema = new mongoose.Schema({
       'gallery', 
       'services', 
       'service-detail',
-      'service-area'
+      'service-area',
+      'blog'
     ] 
   },
   status: { type: String, enum: ['draft', 'published'], default: 'published' },

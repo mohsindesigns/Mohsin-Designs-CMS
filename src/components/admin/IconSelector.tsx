@@ -43,11 +43,13 @@ const ICON_NAMES = Array.from(new Set(Object.keys(LucideIcons).filter(
 export default function IconSelector({ 
   value, 
   onChange, 
-  label 
+  label,
+  align = "right"
 }: { 
   value: string; 
   onChange: (val: string) => void;
   label?: string;
+  align?: "left" | "right";
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -84,7 +86,6 @@ export default function IconSelector({
   const SelectedIconComp = resolveIcon(value);
   const ChevronDownIcon = (LucideIcons as any)["ChevronDown"];
   const SearchIcon = (LucideIcons as any)["Search"];
-  const CheckIcon = (LucideIcons as any)["Check"];
 
   return (
     <div className="space-y-1 relative">
@@ -113,7 +114,7 @@ export default function IconSelector({
               className="fixed inset-0 z-[9990]" 
               onClick={() => setIsOpen(false)} 
             />
-            <div className="absolute top-full left-0 mt-1 w-72 sm:w-80 min-w-[280px] max-w-[90vw] bg-white border border-[#c3c4c7] rounded-[4px] shadow-2xl z-[9999] overflow-hidden">
+            <div className={`absolute top-full ${align === "left" ? "left-0" : "right-0"} mt-1 w-72 sm:w-80 min-w-[260px] max-w-[calc(100vw-32px)] bg-white border border-[#c3c4c7] rounded-[4px] shadow-2xl z-[9999] overflow-hidden`}>
               <div className="p-2 border-b border-[#f0f0f1] bg-[#f6f7f7]">
                 <div className="relative">
                   <SafeIcon icon={SearchIcon} className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#8c8f94]" />
@@ -142,7 +143,7 @@ export default function IconSelector({
                         setIsOpen(false);
                         setSearch("");
                       }}
-                      className={`relative flex flex-col items-center justify-center p-2 rounded-[3px] transition-all gap-1 text-center group ${
+                      className={`relative flex flex-col items-center justify-center p-2 rounded-[3px] transition-all gap-1 text-center group cursor-pointer ${
                         isSelected 
                           ? "bg-[#2271b1] text-white shadow-sm font-bold" 
                           : "hover:bg-[#f0f0f1] text-[#2c3338] hover:text-[#2271b1]"

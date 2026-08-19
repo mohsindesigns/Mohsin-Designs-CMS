@@ -6,7 +6,7 @@ import {
   Save, Loader2, LayoutTemplate, ChevronRight,
   Settings, Type, Image as ImageIcon, Briefcase,
   Star, CircleHelp, Phone, Users, Globe, ArrowUpRight, Trash2, ArrowLeft, ExternalLink,
-  ChevronDown, Calendar, Eye
+  ChevronDown, Calendar, Eye, BookOpen
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -31,6 +31,7 @@ const EDITOR_TEMPLATES = [
   { id: 'faq', label: 'Support FAQ', icon: CircleHelp },
   { id: 'contact', label: 'Contact Center', icon: Phone },
   { id: 'service-area', label: 'Service Area', icon: Globe },
+  { id: 'blog', label: 'Blog Index', icon: BookOpen },
 ];
 
 export default function DynamicPageEditor({ params }: { params: Promise<{ id: string }> }) {
@@ -189,7 +190,7 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
           </div>
 
           {/* Main Editor Tabs */}
-          <div className="bg-white border border-[#c3c4c7] shadow-sm overflow-hidden">
+          <div className="bg-white border border-[#c3c4c7] shadow-sm">
             <div className="flex border-b border-[#f0f0f1] bg-[#f6f7f7]">
               {page?.template !== 'faq' && (
                 <button
@@ -216,7 +217,7 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
               </button>
             </div>
 
-            <div className="p-0 overflow-x-auto">
+            <div className="p-0">
               {activeTab === 'content' ? (
                 <div className="p-4 sm:p-5">
                   {TemplateEditors[page.template] ? (
