@@ -30,11 +30,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const pageUrl = `${BASE_URL}/gallery`;
 
   const metaTitle = seo.metaTitle || 
+                    galleryData?.hero?.titlePrefix ? [galleryData.hero.titlePrefix, galleryData.hero.titleHighlight].filter(Boolean).join(" ") :
                     galleryData?.header?.title || 
                     [galleryData?.header?.titlePrefix, galleryData?.header?.titleHighlight, galleryData?.header?.titleSuffix].filter(Boolean).join(" ") || 
-                    "Project Gallery";
+                    "Creative Work. Real Results. | Our Portfolio";
 
-  const metaDescription = seo.metaDescription || galleryData?.header?.description?.replace(/<[^>]*>/g, '') || "";
+  const metaDescription = seo.metaDescription || galleryData?.hero?.subtitle || galleryData?.header?.description?.replace(/<[^>]*>/g, '') || "";
 
   return {
     metadataBase: new URL(BASE_URL),
@@ -91,11 +92,13 @@ export default async function GalleryPage() {
   const portfolioData = page?.content?.portfolio || globalData?.portfolio || {};
 
   const title = page?.seo?.metaTitle || 
+                (galleryData?.hero?.titlePrefix ? [galleryData.hero.titlePrefix, galleryData.hero.titleHighlight].filter(Boolean).join(" ") : null) ||
                 galleryData?.header?.title || 
                 [galleryData?.header?.titlePrefix, galleryData?.header?.titleHighlight, galleryData?.header?.titleSuffix].filter(Boolean).join(" ") || 
-                "Project Gallery";
+                "Our Portfolio";
 
   const description = page?.seo?.metaDescription || 
+                      galleryData?.hero?.subtitle ||
                       galleryData?.header?.description?.replace(/<[^>]*>/g, '') || 
                       portfolioData?.section?.description || 
                       "";

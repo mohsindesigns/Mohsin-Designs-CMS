@@ -8,4 +8,5 @@ export const UI = {
   inputPrimary: "w-full bg-white border border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] px-3.5 py-2.5 rounded-[3px] text-[16px] font-bold text-[#1d2327] outline-none",
   textarea: "w-full bg-white border border-[#c3c4c7] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] px-3 py-2 text-[14px] leading-relaxed rounded-[3px] transition-all outline-none",
   buttonAdd: "w-full border border-dashed border-[#c3c4c7] py-3 rounded-[3px] text-[12px] font-bold text-[#2271b1] uppercase hover:bg-[#f0f6fb] hover:border-[#2271b1] transition-all bg-white",
+  helpText: "text-[12px] text-[#646970] mt-1 mb-4 block",
 };
