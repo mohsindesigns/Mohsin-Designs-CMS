@@ -3,10 +3,6 @@ import mongoose from 'mongoose';
 const MONGODB_URI = process.env.MONGODB_URI || "";
 const MONGODB_DB = process.env.MONGODB_DB || "eagle_revolution";
 
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
-}
-
 /**
  * Global is used here to maintain a cached connection across hot reloads
  * in development. This prevents connections from growing exponentially
@@ -19,6 +15,12 @@ if (!cached) {
 }
 
 async function connectToDatabase() {
+  const uri = process.env.MONGODB_URI || MONGODB_URI;
+  if (!uri) {
+    console.warn('MongoDB URI is not defined, skipping database connection.');
+    return null;
+  }
+
   if (cached.conn) {
     return cached.conn;
   }
@@ -26,11 +28,17 @@ async function connectToDatabase() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
-      dbName: MONGODB_DB, // Force the database name
+      dbName: process.env.MONGODB_DB || MONGODB_DB,
+      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of hanging build
+      connectTimeoutMS: 5000,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      return mongoose;
+    cached.promise = mongoose.connect(uri, opts).then((mongooseInstance) => {
+      return mongooseInstance;
+    }).catch((err) => {
+      cached.promise = null;
+      console.error('Failed to connect to MongoDB:', err?.message || err);
+      return null;
     });
   }
 
@@ -38,7 +46,8 @@ async function connectToDatabase() {
     cached.conn = await cached.promise;
   } catch (e) {
     cached.promise = null;
-    throw e;
+    console.error('Error awaiting MongoDB connection:', e);
+    return null;
   }
 
   return cached.conn;

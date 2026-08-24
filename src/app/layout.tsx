@@ -31,9 +31,11 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 
   try {
-    await connectToDatabase();
-    const content = await SiteContent.findOne({ key: 'complete_data' });
-    if (content?.data?.settings) settings = content.data.settings;
+    const conn = await connectToDatabase();
+    if (conn) {
+      const content = await SiteContent.findOne({ key: 'complete_data' });
+      if (content?.data?.settings) settings = content.data.settings;
+    }
   } catch (e) {
     console.error("Failed to fetch settings for metadata", e);
   }
@@ -115,9 +117,11 @@ export default async function RootLayout({
   interface SiteScript { id: string; name: string; location: string; code: string; active: boolean; }
   let siteScripts: SiteScript[] = [];
   try {
-    await connectToDatabase();
-    const doc = await SiteContent.findOne({ key: 'site_scripts_v2' });
-    if (Array.isArray(doc?.data)) siteScripts = doc.data;
+    const conn = await connectToDatabase();
+    if (conn) {
+      const doc = await SiteContent.findOne({ key: 'site_scripts_v2' });
+      if (Array.isArray(doc?.data)) siteScripts = doc.data;
+    }
   } catch (e) {
     // Non-fatal — site renders fine without CMS scripts
   }
@@ -130,13 +134,16 @@ export default async function RootLayout({
   let initialGlobalData = null;
   let initialBlogs = [];
   try {
-    const [globalContent, blogPosts] = await Promise.all([
-      SiteContent.findOne({ key: 'complete_data' }),
-      import('@/models/Post').then(m => m.default.find({ status: 'published', isTrashed: { $ne: true } }).sort({ date: -1 }).limit(10).lean())
-    ]);
+    const conn = await connectToDatabase();
+    if (conn) {
+      const [globalContent, blogPosts] = await Promise.all([
+        SiteContent.findOne({ key: 'complete_data' }),
+        import('@/models/Post').then(m => m.default.find({ status: 'published', isTrashed: { $ne: true } }).sort({ date: -1 }).limit(10).lean())
+      ]);
 
-    if (globalContent?.data) initialGlobalData = globalContent.data;
-    if (blogPosts) initialBlogs = JSON.parse(JSON.stringify(blogPosts));
+      if (globalContent?.data) initialGlobalData = globalContent.data;
+      if (blogPosts) initialBlogs = JSON.parse(JSON.stringify(blogPosts));
+    }
   } catch (e) {
     console.error("Failed to fetch initial data for provider", e);
   }
