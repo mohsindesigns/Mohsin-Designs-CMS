@@ -39,8 +39,9 @@ function LoginForm() {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        router.push(from);
-        router.refresh();
+        const rawFrom = searchParams.get("from");
+        const destination = rawFrom && !rawFrom.startsWith("/admin/login") ? rawFrom : "/admin";
+        window.location.href = destination;
       } else {
         setError(data.error || "Invalid credentials. Please try again.");
       }

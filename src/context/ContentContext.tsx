@@ -34,9 +34,10 @@ export const ContentProvider = ({ children, initialData, initialBlogs }: { child
   const [isLoading, setIsLoading] = useState(!initialData);
 
   useEffect(() => {
-    // Only fetch if initialData is missing (fallback)
-    // In production, RootLayout should always provide initialData
-    if (initialData && initialBlogs && initialBlogs.length > 0) {
+    // If initialData is provided (such as for a specific CMS page, country, or state),
+    // NEVER fetch and merge global homepage content into it (prevents data leakage).
+    if (initialData) {
+      setContent(initialData);
       setIsLoading(false);
       return;
     }
@@ -50,7 +51,7 @@ export const ContentProvider = ({ children, initialData, initialBlogs }: { child
 
         if (contentRes.ok) {
           const globalData = await contentRes.json();
-          setContent(initialData ? deepMerge(globalData, initialData) : globalData);
+          setContent(globalData);
         }
 
         if (blogRes.ok) {
@@ -65,7 +66,7 @@ export const ContentProvider = ({ children, initialData, initialBlogs }: { child
     };
 
     fetchContent();
-  }, [initialData, initialBlogs]);
+  }, [initialData]);
 
   return (
     <ContentContext.Provider value={{ ...content, allBlogs: blogs }}>

@@ -708,55 +708,327 @@ export default function SettingsEditor() {
           )}
 
           {activeTab === "contact" && (
-            <motion.div key="contact" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-               <h2 className="text-xl font-normal text-[#1d2327] mb-6 font-serif">Global Contact Information</h2>
-               <p className="text-[12px] text-[#646970] italic mb-6">HTML is supported in all fields below (e.g. &lt;br&gt;, &lt;strong&gt;, &lt;a href=&quot;...&quot;&gt;, &lt;span&gt;). Content is safely sanitized.</p>
-               <SettingsRow label="Primary Email" description="Supports HTML. E.g. &lt;a href='mailto:...'&gt;email&lt;/a&gt;">
-                  <RichTextEditor
-                    content={data.footer?.contact?.email || ""}
-                    onChange={(v) => updateData("footer", "contact", { ...data.footer.contact, email: v })}
-                  />
-               </SettingsRow>
-               <SettingsRow label="Primary Phone" description="Supports HTML. E.g. &lt;a href='tel:...'&gt;number&lt;/a&gt;">
-                  <RichTextEditor
-                    content={data.footer?.contact?.phone || ""}
-                    onChange={(v) => updateData("footer", "contact", { ...data.footer.contact, phone: v })}
-                  />
-               </SettingsRow>
-               <SettingsRow label="Office Address" description="Supports HTML. E.g. use &lt;br&gt; for line breaks.">
-                  <RichTextEditor
-                    content={data.footer?.contact?.address || ""}
-                    onChange={(v) => updateData("footer", "contact", { ...data.footer.contact, address: v })}
-                  />
-               </SettingsRow>
-               <SettingsRow label="24/7 Emergency Text" description="Supports HTML.">
-                  <RichTextEditor
-                    content={data.footer?.contact?.emergency || ""}
-                    onChange={(v) => updateData("footer", "contact", { ...data.footer.contact, emergency: v })}
-                  />
-               </SettingsRow>
-               <SettingsRow label="Service Areas" description="Supports HTML.">
-                  <RichTextEditor
-                    content={data.footer?.contact?.areas || ""}
-                    onChange={(v) => updateData("footer", "contact", { ...data.footer.contact, areas: v })}
-                  />
-               </SettingsRow>
-               <SettingsRow label="Office Hours">
-                  <div className="grid grid-cols-3 gap-2">
-                     <div className="space-y-1">
-                        <label className="text-[11px] text-[#646970]">Mon-Fri</label>
-                        <input type="text" value={data.hours?.monday} onChange={(e) => updateData("hours", "monday", e.target.value)} className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]" />
+            <motion.div key="contact" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+               {/* Lead Notification Email Configuration */}
+               <div className="bg-[#f0f6fc] border border-[#c5d9ed] p-5 rounded-md space-y-4">
+                  <div className="flex items-center gap-2 text-[#005a9c]">
+                     <Mail className="w-5 h-5" />
+                     <h3 className="text-base font-semibold font-serif m-0">Lead Notification & Email Routing</h3>
+                  </div>
+                  <p className="text-[12px] text-[#4a5568] m-0">
+                     Whenever a client fills out the Contact Form, their lead is automatically stored in your <Link href="/admin/submissions" className="text-[#2271b1] underline font-bold">Submissions Dashboard</Link> and an instant email alert is sent to the address below.
+                  </p>
+                  <SettingsRow label="Notification Receiver Email" description="All leads from the Contact Form will be forwarded to this inbox.">
+                     <input
+                       type="email"
+                       placeholder="e.g. leads@mohsindesigns.com"
+                       value={data.contact?.receiverEmail || data.contact?.email || ""}
+                       onChange={(e) => updateData("contact", "receiverEmail", e.target.value)}
+                       className="w-full max-w-md border border-[#8c8f94] bg-white px-3 py-1.5 text-[14px] rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
+                     />
+                  </SettingsRow>
+               </div>
+
+               {/* Contact Form Header & Left Column Badges */}
+               <div>
+                  <h3 className="text-lg font-normal text-[#1d2327] mb-4 font-serif border-b border-[#c3c4c7] pb-2">Contact Form Header & Badges</h3>
+                  <SettingsRow label="Section Eyebrow Tag" description="Top pill badge text (e.g. GET IN TOUCH)">
+                     <input
+                       type="text"
+                       value={data.contact?.sectionTag || "GET IN TOUCH"}
+                       onChange={(e) => updateData("contact", "sectionTag", e.target.value)}
+                       className="w-full max-w-md border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]"
+                     />
+                  </SettingsRow>
+                  <SettingsRow label="Main Heading Intro" description="Prefix text of main headline (e.g. Let's Build Something)">
+                     <input
+                       type="text"
+                       value={data.contact?.titleIntro || "Let's Build Something"}
+                       onChange={(e) => updateData("contact", "titleIntro", e.target.value)}
+                       className="w-full max-w-md border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]"
+                     />
+                  </SettingsRow>
+                  <SettingsRow label="Headline Highlight Word" description="Highlighted italic word (e.g. Extraordinary.)">
+                     <input
+                       type="text"
+                       value={data.contact?.titleHighlight || "Extraordinary."}
+                       onChange={(e) => updateData("contact", "titleHighlight", e.target.value)}
+                       className="w-full max-w-md border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]"
+                     />
+                  </SettingsRow>
+                  <SettingsRow label="Section Description">
+                     <textarea
+                       rows={3}
+                       value={data.contact?.description || "Have a project in mind or want to discuss modern digital architecture? Reach out directly or fill out the form below."}
+                       onChange={(e) => updateData("contact", "description", e.target.value)}
+                       className="w-full max-w-lg border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px] resize-none"
+                     />
+                  </SettingsRow>
+                  <SettingsRow label="Direct Channels Header" description="Label above contact items (e.g. DIRECT CHANNELS)">
+                     <input
+                       type="text"
+                       value={data.contact?.directChannelsLabel || "DIRECT CHANNELS"}
+                       onChange={(e) => updateData("contact", "directChannelsLabel", e.target.value)}
+                       className="w-full max-w-md border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]"
+                     />
+                  </SettingsRow>
+                  <SettingsRow label="Response Guarantee Badge" description="Green status pill (e.g. < 2hr response time)">
+                     <input
+                       type="text"
+                       value={data.contact?.responseGuarantee || "< 2hr response time"}
+                       onChange={(e) => updateData("contact", "responseGuarantee", e.target.value)}
+                       className="w-full max-w-md border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]"
+                     />
+                  </SettingsRow>
+               </div>
+
+               {/* Direct Channels (Email, Phone, Location) */}
+               <div>
+                  <h3 className="text-lg font-normal text-[#1d2327] mb-4 font-serif border-b border-[#c3c4c7] pb-2">Direct Contact Channels</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[#f8f9fa] p-4 border border-[#c3c4c7] rounded-sm mb-4">
+                     <div>
+                        <label className="text-[12px] font-bold text-[#1d2327] block mb-1">Email Label</label>
+                        <input
+                          type="text"
+                          value={data.contact?.emailLabel || "DIRECT INBOX"}
+                          onChange={(e) => updateData("contact", "emailLabel", e.target.value)}
+                          className="w-full border border-[#8c8f94] px-3 py-1 text-[13px] rounded-[3px]"
+                        />
                      </div>
-                     <div className="space-y-1">
-                        <label className="text-[11px] text-[#646970]">Saturday</label>
-                        <input type="text" value={data.hours?.saturday} onChange={(e) => updateData("hours", "saturday", e.target.value)} className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]" />
-                     </div>
-                     <div className="space-y-1">
-                        <label className="text-[11px] text-[#646970]">Sunday</label>
-                        <input type="text" value={data.hours?.sunday} onChange={(e) => updateData("hours", "sunday", e.target.value)} className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]" />
+                     <div>
+                        <label className="text-[12px] font-bold text-[#1d2327] block mb-1">Display Email</label>
+                        <input
+                          type="text"
+                          value={data.contact?.email || "hello@mohsindesigns.com"}
+                          onChange={(e) => updateData("contact", "email", e.target.value)}
+                          className="w-full border border-[#8c8f94] px-3 py-1 text-[13px] rounded-[3px]"
+                        />
                      </div>
                   </div>
-               </SettingsRow>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[#f8f9fa] p-4 border border-[#c3c4c7] rounded-sm mb-4">
+                     <div>
+                        <label className="text-[12px] font-bold text-[#1d2327] block mb-1">Phone Label</label>
+                        <input
+                          type="text"
+                          value={data.contact?.phoneLabel || "PHONE / WHATSAPP"}
+                          onChange={(e) => updateData("contact", "phoneLabel", e.target.value)}
+                          className="w-full border border-[#8c8f94] px-3 py-1 text-[13px] rounded-[3px]"
+                        />
+                     </div>
+                     <div>
+                        <label className="text-[12px] font-bold text-[#1d2327] block mb-1">Display Phone</label>
+                        <input
+                          type="text"
+                          value={data.contact?.phone || "+1 (555) 234-5678"}
+                          onChange={(e) => updateData("contact", "phone", e.target.value)}
+                          className="w-full border border-[#8c8f94] px-3 py-1 text-[13px] rounded-[3px]"
+                        />
+                     </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[#f8f9fa] p-4 border border-[#c3c4c7] rounded-sm mb-4">
+                     <div>
+                        <label className="text-[12px] font-bold text-[#1d2327] block mb-1">Location Label</label>
+                        <input
+                          type="text"
+                          value={data.contact?.locationLabel || "HEADQUARTERS"}
+                          onChange={(e) => updateData("contact", "locationLabel", e.target.value)}
+                          className="w-full border border-[#8c8f94] px-3 py-1 text-[13px] rounded-[3px]"
+                        />
+                     </div>
+                     <div>
+                        <label className="text-[12px] font-bold text-[#1d2327] block mb-1">Display Location</label>
+                        <input
+                          type="text"
+                          value={data.contact?.location || "Austin, TX & Remote Worldwide"}
+                          onChange={(e) => updateData("contact", "location", e.target.value)}
+                          className="w-full border border-[#8c8f94] px-3 py-1 text-[13px] rounded-[3px]"
+                        />
+                     </div>
+                  </div>
+               </div>
+
+               {/* Form Card Headings & Placeholders */}
+               <div>
+                  <h3 className="text-lg font-normal text-[#1d2327] mb-4 font-serif border-b border-[#c3c4c7] pb-2">Form Card Content & Input Placeholders</h3>
+                  <SettingsRow label="Form Card Heading">
+                     <input
+                       type="text"
+                       value={data.contact?.formHeading || "Send a Direct Message"}
+                       onChange={(e) => updateData("contact", "formHeading", e.target.value)}
+                       className="w-full max-w-md border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]"
+                     />
+                  </SettingsRow>
+                  <SettingsRow label="Form Card Subheading">
+                     <input
+                       type="text"
+                       value={data.contact?.formSubheading || "Fill out the details below and our team will get back to you within 2 business hours."}
+                       onChange={(e) => updateData("contact", "formSubheading", e.target.value)}
+                       className="w-full max-w-md border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]"
+                     />
+                  </SettingsRow>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[#f8f9fa] p-4 border border-[#c3c4c7] rounded-sm mb-4">
+                     <div>
+                        <label className="text-[12px] font-bold text-[#1d2327] block mb-1">Name Field Label</label>
+                        <input
+                          type="text"
+                          value={data.contact?.labelName || "Full Name"}
+                          onChange={(e) => updateData("contact", "labelName", e.target.value)}
+                          className="w-full border border-[#8c8f94] px-3 py-1 text-[13px] rounded-[3px]"
+                        />
+                     </div>
+                     <div>
+                        <label className="text-[12px] font-bold text-[#1d2327] block mb-1">Name Placeholder</label>
+                        <input
+                          type="text"
+                          value={data.contact?.placeholderName || "e.g. John Doe"}
+                          onChange={(e) => updateData("contact", "placeholderName", e.target.value)}
+                          className="w-full border border-[#8c8f94] px-3 py-1 text-[13px] rounded-[3px]"
+                        />
+                     </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[#f8f9fa] p-4 border border-[#c3c4c7] rounded-sm mb-4">
+                     <div>
+                        <label className="text-[12px] font-bold text-[#1d2327] block mb-1">Email Field Label</label>
+                        <input
+                          type="text"
+                          value={data.contact?.labelEmail || "Work Email"}
+                          onChange={(e) => updateData("contact", "labelEmail", e.target.value)}
+                          className="w-full border border-[#8c8f94] px-3 py-1 text-[13px] rounded-[3px]"
+                        />
+                     </div>
+                     <div>
+                        <label className="text-[12px] font-bold text-[#1d2327] block mb-1">Email Placeholder</label>
+                        <input
+                          type="text"
+                          value={data.contact?.placeholderEmail || "john@company.com"}
+                          onChange={(e) => updateData("contact", "placeholderEmail", e.target.value)}
+                          className="w-full border border-[#8c8f94] px-3 py-1 text-[13px] rounded-[3px]"
+                        />
+                     </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[#f8f9fa] p-4 border border-[#c3c4c7] rounded-sm mb-4">
+                     <div>
+                        <label className="text-[12px] font-bold text-[#1d2327] block mb-1">Phone Field Label</label>
+                        <input
+                          type="text"
+                          value={data.contact?.labelPhone || "Phone Number"}
+                          onChange={(e) => updateData("contact", "labelPhone", e.target.value)}
+                          className="w-full border border-[#8c8f94] px-3 py-1 text-[13px] rounded-[3px]"
+                        />
+                     </div>
+                     <div>
+                        <label className="text-[12px] font-bold text-[#1d2327] block mb-1">Phone Placeholder</label>
+                        <input
+                          type="text"
+                          value={data.contact?.placeholderPhone || "+1 (555) 000-0000"}
+                          onChange={(e) => updateData("contact", "placeholderPhone", e.target.value)}
+                          className="w-full border border-[#8c8f94] px-3 py-1 text-[13px] rounded-[3px]"
+                        />
+                     </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[#f8f9fa] p-4 border border-[#c3c4c7] rounded-sm mb-4">
+                     <div>
+                        <label className="text-[12px] font-bold text-[#1d2327] block mb-1">Message Field Label</label>
+                        <input
+                          type="text"
+                          value={data.contact?.labelMessage || "Project Details / Message"}
+                          onChange={(e) => updateData("contact", "labelMessage", e.target.value)}
+                          className="w-full border border-[#8c8f94] px-3 py-1 text-[13px] rounded-[3px]"
+                        />
+                     </div>
+                     <div>
+                        <label className="text-[12px] font-bold text-[#1d2327] block mb-1">Message Placeholder</label>
+                        <input
+                          type="text"
+                          value={data.contact?.placeholderMessage || "Tell us about your project goals, scope, and timeline..."}
+                          onChange={(e) => updateData("contact", "placeholderMessage", e.target.value)}
+                          className="w-full border border-[#8c8f94] px-3 py-1 text-[13px] rounded-[3px]"
+                        />
+                     </div>
+                  </div>
+               </div>
+
+               {/* Buttons & Success Screen */}
+               <div>
+                  <h3 className="text-lg font-normal text-[#1d2327] mb-4 font-serif border-b border-[#c3c4c7] pb-2">Buttons & Success Message</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                     <SettingsRow label="Submit Button Text">
+                        <input
+                          type="text"
+                          value={data.contact?.btnSubmit || "Send Message"}
+                          onChange={(e) => updateData("contact", "btnSubmit", e.target.value)}
+                          className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]"
+                        />
+                     </SettingsRow>
+                     <SettingsRow label="Submitting Button Text">
+                        <input
+                          type="text"
+                          value={data.contact?.btnSubmitting || "Sending Message..."}
+                          onChange={(e) => updateData("contact", "btnSubmitting", e.target.value)}
+                          className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]"
+                        />
+                     </SettingsRow>
+                  </div>
+
+                  <SettingsRow label="Success Title">
+                     <input
+                       type="text"
+                       value={data.contact?.successTitle || "Message Sent Successfully!"}
+                       onChange={(e) => updateData("contact", "successTitle", e.target.value)}
+                       className="w-full max-w-md border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]"
+                     />
+                  </SettingsRow>
+                  <SettingsRow label="Success Paragraph">
+                     <div className="flex gap-2 items-center">
+                        <input
+                          type="text"
+                          placeholder="Prefix"
+                          value={data.contact?.successParagraph1 || "Thank you,"}
+                          onChange={(e) => updateData("contact", "successParagraph1", e.target.value)}
+                          className="w-32 border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]"
+                        />
+                        <span className="text-xs font-mono font-bold text-[#8c8f94]">[Client Name]</span>
+                        <input
+                          type="text"
+                          placeholder="Suffix"
+                          value={data.contact?.successParagraph2 || ". We have received your inquiry and will respond within 2 business hours."}
+                          onChange={(e) => updateData("contact", "successParagraph2", e.target.value)}
+                          className="flex-1 border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]"
+                        />
+                     </div>
+                  </SettingsRow>
+                  <SettingsRow label="Send Another Button Text">
+                     <input
+                       type="text"
+                       value={data.contact?.btnSendAnother || "Send Another Message"}
+                       onChange={(e) => updateData("contact", "btnSendAnother", e.target.value)}
+                       className="w-full max-w-md border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]"
+                     />
+                  </SettingsRow>
+               </div>
+
+               {/* Footer / Legacy Contact Details */}
+               <div>
+                  <h3 className="text-lg font-normal text-[#1d2327] mb-4 font-serif border-b border-[#c3c4c7] pb-2">Footer & Global Contact Details</h3>
+                  <SettingsRow label="Primary Phone (Footer/General)">
+                     <RichTextEditor
+                       content={data.footer?.contact?.phone || ""}
+                       onChange={(v) => updateData("footer", "contact", { ...data.footer?.contact, phone: v })}
+                     />
+                  </SettingsRow>
+                  <SettingsRow label="Office Address (Footer/General)">
+                     <RichTextEditor
+                       content={data.footer?.contact?.address || ""}
+                       onChange={(v) => updateData("footer", "contact", { ...data.footer?.contact, address: v })}
+                     />
+                  </SettingsRow>
+               </div>
             </motion.div>
           )}
 

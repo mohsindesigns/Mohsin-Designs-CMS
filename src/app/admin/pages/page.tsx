@@ -429,6 +429,8 @@ export default function PagesDashboard() {
                         <option value="location">Locations Hub Template</option>
                         <option value="service-area">Service Area Template</option>
                         <option value="blog">Blog Template</option>
+                        <option value="country">Country Template</option>
+                        <option value="state">State Template</option>
                       </select>
                    </div>
                 </div>
@@ -500,6 +502,8 @@ export default function PagesDashboard() {
                         <option value="location">Locations Hub Template</option>
                         <option value="service-area">Service Area Template</option>
                         <option value="blog">Blog Template</option>
+                        <option value="country">Country Template</option>
+                        <option value="state">State Template</option>
                       </select>
                     </div>
                     <div>

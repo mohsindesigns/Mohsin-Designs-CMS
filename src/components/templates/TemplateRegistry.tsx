@@ -12,6 +12,8 @@ import ServicesTemplate from './ServicesTemplate';
 import ServiceAreaTemplate from './ServiceAreaTemplate';
 import LocationTemplate from './LocationTemplate';
 import BlogTemplate from './BlogTemplate';
+import CountryTemplate from './CountryTemplate';
+import StateTemplate from './StateTemplate';
 import PageInlineFaqs from '../PageInlineFaqs';
 
 import { ContentProvider } from "@/context/ContentContext";
@@ -31,6 +33,8 @@ export const TEMPLATE_MAP: Record<string, React.ComponentType<any>> = {
   'location': LocationTemplate,
   'locations': LocationTemplate,
   'blog': BlogTemplate,
+  'country': CountryTemplate,
+  'state': StateTemplate,
 };
 
 export const getTemplate = (name: string) => {
@@ -40,14 +44,23 @@ export const getTemplate = (name: string) => {
 export const TemplateWrapper = ({ templateName, pageData, globalData, params }: any) => {
   const Template = getTemplate(templateName);
 
-  const hasInlineFaqs = !['home', 'faq', 'service-detail', 'about', 'service-area', 'location', 'locations', 'services', 'contact', 'blog'].includes(templateName) &&
+  const hasInlineFaqs = !['home', 'faq', 'service-detail', 'about', 'service-area', 'location', 'locations', 'services', 'contact', 'blog', 'country', 'state'].includes(templateName) &&
     ((pageData?.content?.faqs && Array.isArray(pageData.content.faqs) && pageData.content.faqs.length > 0) ||
       (pageData?.content?.faqSchemaMarkup && typeof pageData.content.faqSchemaMarkup === 'string' && pageData.content.faqSchemaMarkup.trim()));
 
-  const providerData = {
-    ...(globalData || {}),
-    ...(pageData?.content || {}),
-  };
+  // For country and state templates, isolate content completely to prevent any homepage data leakage
+  const isIsolatedTemplate = ['country', 'state'].includes(templateName);
+
+  const providerData = isIsolatedTemplate
+    ? {
+        ...(pageData?.content || {}),
+        settings: globalData?.settings || {},
+        globalServices: globalData?.services?.services || globalData?.globalServices || [],
+      }
+    : {
+        ...(globalData || {}),
+        ...(pageData?.content || {}),
+      };
 
   return (
     <ContentProvider initialData={providerData}>

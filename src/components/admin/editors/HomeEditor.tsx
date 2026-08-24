@@ -1522,71 +1522,189 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
 
 
 
-               {/* QUOTE SECTION */}
+               {/* CONTACT FORM SECTION */}
                {activeTab === "quote" && (
-                  <div className="space-y-12">
+                  <div className="space-y-10">
+                     {/* 1. Header & Badges */}
                      <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>1. Narrative</h3>
-                        <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.quote?.section?.badge || ""} onChange={(e) => updateSection("quote", "section", { ...(data.quote?.section || {}), badge: e.target.value })} className={UI.input} /></div>
+                        <h3 className={UI.sectionHeader}>1. Header & Eyebrow Badges</h3>
                         <div className="space-y-1.5">
-                           <label className={UI.label}>Headline — Prefix (plain text)</label>
-                           <input type="text" value={data.quote?.section?.headlinePrefix || ""} onChange={(e) => updateSection("quote", "section", { ...(data.quote?.section || {}), headlinePrefix: e.target.value })} className={UI.input} placeholder="e.g. Ready to" />
+                           <label className={UI.label}>Eyebrow Section Tag</label>
+                           <input
+                              type="text"
+                              value={data.contact?.sectionTag || "GET IN TOUCH"}
+                              onChange={(e) => updateSection("contact", "sectionTag", e.target.value)}
+                              className={UI.input}
+                              placeholder="e.g. GET IN TOUCH"
+                           />
                         </div>
-                        <div className="space-y-1.5">
-                           <label className={UI.label}>Headline — Highlight <span className="text-primary font-bold">(shown in primary color)</span></label>
-                           <input type="text" value={data.quote?.section?.headlineHighlight || ""} onChange={(e) => updateSection("quote", "section", { ...(data.quote?.section || {}), headlineHighlight: e.target.value })} className={UI.input + " font-bold border-[#2271b1]"} placeholder="e.g. Begin" />
-                        </div>
-                        <div className="space-y-1.5">
-                           <label className={UI.label}>Headline — Suffix (plain text)</label>
-                           <input type="text" value={data.quote?.section?.headlineSuffix || ""} onChange={(e) => updateSection("quote", "section", { ...(data.quote?.section || {}), headlineSuffix: e.target.value })} className={UI.input} placeholder="e.g. Your Project?" />
-                        </div>
-                        <RichTextEditor
-                           label="Intro Narrative"
-                           content={data.quote?.section?.description || ""}
-                           onChange={(html) => updateSection("quote", "section", { ...(data.quote?.section || {}), description: html })}
-                        />
-                     </div>
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>2. Success State</h3>
-                        <div className={UI.card + " space-y-4"}>
-                           <div className="space-y-1.5"><label className={UI.label}>Title</label><input type="text" value={data.quote?.success?.title || ""} onChange={(e) => updateSection("quote", "success", { ...(data.quote?.success || {}), title: e.target.value })} className={UI.input} /></div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                            <div className="space-y-1.5">
-                              <label className={UI.label}>Message</label>
-                              <RichTextEditor
-                                 content={data.quote?.success?.message || ""}
-                                 onChange={(html) => updateSection("quote", "success", { ...(data.quote?.success || {}), message: html })}
+                              <label className={UI.label}>Headline Intro (Prefix)</label>
+                              <input
+                                 type="text"
+                                 value={data.contact?.titleIntro || "Let's Build Something"}
+                                 onChange={(e) => updateSection("contact", "titleIntro", e.target.value)}
+                                 className={UI.input}
+                                 placeholder="e.g. Let's Build Something"
                               />
                            </div>
-                           <div className="space-y-1.5"><label className={UI.label}>Button Text</label><input type="text" value={data.quote?.success?.buttonText || ""} onChange={(e) => updateSection("quote", "success", { ...(data.quote?.success || {}), buttonText: e.target.value })} className={UI.input} /></div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Headline Highlight (Accent)</label>
+                              <input
+                                 type="text"
+                                 value={data.contact?.titleHighlight || "Extraordinary."}
+                                 onChange={(e) => updateSection("contact", "titleHighlight", e.target.value)}
+                                 className={UI.input + " font-bold border-[#2271b1] text-[#2271b1]"}
+                                 placeholder="e.g. Extraordinary."
+                              />
+                           </div>
+                        </div>
+                        <div className="space-y-1.5">
+                           <label className={UI.label}>Description</label>
+                           <textarea
+                              rows={3}
+                              value={data.contact?.description || "Have a project in mind or want to discuss modern digital architecture? Reach out directly or fill out the form below."}
+                              onChange={(e) => updateSection("contact", "description", e.target.value)}
+                              className={UI.input}
+                           />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Direct Channels Label</label>
+                              <input
+                                 type="text"
+                                 value={data.contact?.directChannelsLabel || "DIRECT CHANNELS"}
+                                 onChange={(e) => updateSection("contact", "directChannelsLabel", e.target.value)}
+                                 className={UI.input}
+                              />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Response Guarantee Badge</label>
+                              <input
+                                 type="text"
+                                 value={data.contact?.responseGuarantee || "< 2hr response time"}
+                                 onChange={(e) => updateSection("contact", "responseGuarantee", e.target.value)}
+                                 className={UI.input}
+                              />
+                           </div>
                         </div>
                      </div>
-                     <div className="space-y-8 pt-10 border-t border-[#f0f0f1]">
-                        <h3 className={UI.sectionHeader}>3. Options</h3>
-                        <div className="space-y-8">
-                           <div className="space-y-4">
-                              <label className={UI.label}>Project Types</label>
-                              <div className="space-y-2">
-                                 {(data.quote?.services || []).map((s: any, i: number) => (
-                                    <div key={i} className="flex gap-2 bg-[#f6f7f7] p-2 border border-[#c3c4c7]">
-                                       <input type="text" value={s.title || ""} onChange={(e) => { const newS = [...data.quote.services]; newS[i].title = e.target.value; updateSection("quote", "services", newS); }} className="flex-1 bg-transparent border-none text-[13px] font-bold outline-none" />
-                                       <button onClick={() => { const newS = data.quote.services.filter((_: any, idx: number) => idx !== i); updateSection("quote", "services", newS); }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
-                                    </div>
-                                 ))}
-                                 <button onClick={() => updateSection("quote", "services", [...(data.quote?.services || []), { title: "New Service", id: Date.now() }])} className="text-[#2271b1] text-[12px] font-bold">+ Add Service</button>
-                              </div>
+
+                     {/* 2. Direct Channels */}
+                     <div className="space-y-6 pt-6 border-t border-[#f0f0f1]">
+                        <h3 className={UI.sectionHeader}>2. Direct Contact Channels</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#f8f9fa] p-4 border border-[#c3c4c7] rounded-sm">
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Email Label</label>
+                              <input
+                                 type="text"
+                                 value={data.contact?.emailLabel || "DIRECT INBOX"}
+                                 onChange={(e) => updateSection("contact", "emailLabel", e.target.value)}
+                                 className={UI.input}
+                              />
                            </div>
-                           <div className="space-y-4 border-t border-[#f0f0f1] pt-6">
-                              <label className={UI.label}>Timelines</label>
-                              <div className="space-y-2">
-                                 {(data.quote?.timelines || []).map((t: any, i: number) => (
-                                    <div key={i} className="flex gap-2 bg-[#f6f7f7] p-2 border border-[#c3c4c7]">
-                                       <input type="text" value={t.label || ""} onChange={(e) => { const newT = [...data.quote.timelines]; newT[i].label = e.target.value; updateSection("quote", "timelines", newT); }} className="flex-1 bg-transparent border-none text-[13px] font-bold outline-none" />
-                                       <button onClick={() => { const newT = data.quote.timelines.filter((_: any, idx: number) => idx !== i); updateSection("quote", "timelines", newT); }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
-                                    </div>
-                                 ))}
-                                 <button onClick={() => updateSection("quote", "timelines", [...(data.quote?.timelines || []), { label: "Immediate", value: "immediate" }])} className="text-[#2271b1] text-[12px] font-bold">+ Add Timeline</button>
-                              </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Display Email</label>
+                              <input
+                                 type="text"
+                                 value={data.contact?.email || "hello@mohsindesigns.com"}
+                                 onChange={(e) => updateSection("contact", "email", e.target.value)}
+                                 className={UI.input}
+                              />
                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#f8f9fa] p-4 border border-[#c3c4c7] rounded-sm">
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Phone Label</label>
+                              <input
+                                 type="text"
+                                 value={data.contact?.phoneLabel || "PHONE / WHATSAPP"}
+                                 onChange={(e) => updateSection("contact", "phoneLabel", e.target.value)}
+                                 className={UI.input}
+                              />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Display Phone</label>
+                              <input
+                                 type="text"
+                                 value={data.contact?.phone || "+1 (555) 234-5678"}
+                                 onChange={(e) => updateSection("contact", "phone", e.target.value)}
+                                 className={UI.input}
+                              />
+                           </div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#f8f9fa] p-4 border border-[#c3c4c7] rounded-sm">
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Location Label</label>
+                              <input
+                                 type="text"
+                                 value={data.contact?.locationLabel || "HEADQUARTERS"}
+                                 onChange={(e) => updateSection("contact", "locationLabel", e.target.value)}
+                                 className={UI.input}
+                              />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Display Location</label>
+                              <input
+                                 type="text"
+                                 value={data.contact?.location || "Austin, TX & Remote Worldwide"}
+                                 onChange={(e) => updateSection("contact", "location", e.target.value)}
+                                 className={UI.input}
+                              />
+                           </div>
+                        </div>
+                     </div>
+
+                     {/* 3. Form Card & Success */}
+                     <div className="space-y-6 pt-6 border-t border-[#f0f0f1]">
+                        <h3 className={UI.sectionHeader}>3. Form Headings & Success Message</h3>
+                        <div className="space-y-1.5">
+                           <label className={UI.label}>Form Card Heading</label>
+                           <input
+                              type="text"
+                              value={data.contact?.formHeading || "Send a Direct Message"}
+                              onChange={(e) => updateSection("contact", "formHeading", e.target.value)}
+                              className={UI.input}
+                           />
+                        </div>
+                        <div className="space-y-1.5">
+                           <label className={UI.label}>Form Card Subheading</label>
+                           <input
+                              type="text"
+                              value={data.contact?.formSubheading || "Fill out the details below and our team will get back to you within 2 business hours."}
+                              onChange={(e) => updateSection("contact", "formSubheading", e.target.value)}
+                              className={UI.input}
+                           />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Submit Button Text</label>
+                              <input
+                                 type="text"
+                                 value={data.contact?.btnSubmit || "Send Message"}
+                                 onChange={(e) => updateSection("contact", "btnSubmit", e.target.value)}
+                                 className={UI.input}
+                              />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Submitting Button Text</label>
+                              <input
+                                 type="text"
+                                 value={data.contact?.btnSubmitting || "Sending Message..."}
+                                 onChange={(e) => updateSection("contact", "btnSubmitting", e.target.value)}
+                                 className={UI.input}
+                              />
+                           </div>
+                        </div>
+                        <div className="space-y-1.5">
+                           <label className={UI.label}>Success Title</label>
+                           <input
+                              type="text"
+                              value={data.contact?.successTitle || "Message Sent Successfully!"}
+                              onChange={(e) => updateSection("contact", "successTitle", e.target.value)}
+                              className={UI.input}
+                           />
                         </div>
                      </div>
                   </div>

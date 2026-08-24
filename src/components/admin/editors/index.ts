@@ -16,4 +16,6 @@ export const TemplateEditors: Record<string, any> = {
   'service-area': dynamic(() => import('./LocationEditor')),
   location: dynamic(() => import('./LocationEditor')),
   locations: dynamic(() => import('./LocationEditor')),
+  country: dynamic(() => import('./CountryEditor')),
+  state: dynamic(() => import('./StateEditor')),
 };

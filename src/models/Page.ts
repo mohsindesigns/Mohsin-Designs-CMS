@@ -20,7 +20,9 @@ const PageSchema = new mongoose.Schema({
       'service-area',
       'location',
       'locations',
-      'blog'
+      'blog',
+      'country',
+      'state'
     ] 
   },
   status: { type: String, enum: ['draft', 'published'], default: 'published' },

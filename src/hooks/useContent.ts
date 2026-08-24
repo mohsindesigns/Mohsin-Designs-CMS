@@ -224,6 +224,7 @@ export const useContent = () => {
             };
         })(),
 
+        contact: getSafe(completeData, 'contact', {}),
         quote: getSafe(completeData, 'quote', {
             section: { badge: "", headline: "", description: "" },
             services: [],

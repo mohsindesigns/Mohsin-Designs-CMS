@@ -115,7 +115,13 @@ export async function POST(request: Request) {
       if (!receiverEmail) {
         const contentDoc = await Content.findOne({ key: "complete_data" }).lean() as any;
         if (contentDoc && contentDoc.data) {
-          if (type === 'Quote Request' && contentDoc.data.quote?.email) {
+          if (contentDoc.data.contact?.receiverEmail) {
+            receiverEmail = contentDoc.data.contact.receiverEmail;
+          } else if (contentDoc.data.contact?.email) {
+            receiverEmail = contentDoc.data.contact.email;
+          } else if (contentDoc.data.settings?.notificationEmail) {
+            receiverEmail = contentDoc.data.settings.notificationEmail;
+          } else if (type === 'Quote Request' && contentDoc.data.quote?.email) {
             receiverEmail = contentDoc.data.quote.email;
           } else if (contentDoc.data.contactPage?.receiverEmail) {
             receiverEmail = contentDoc.data.contactPage.receiverEmail;
@@ -125,6 +131,8 @@ export async function POST(request: Request) {
             receiverEmail = contentDoc.data.contactPage.office.email;
           } else if (contentDoc.data.quote?.email) {
             receiverEmail = contentDoc.data.quote.email;
+          } else if (contentDoc.data.footer?.contact?.email) {
+            receiverEmail = contentDoc.data.footer.contact.email;
           }
         }
       }
@@ -133,11 +141,15 @@ export async function POST(request: Request) {
     }
 
     if (receiverEmail) {
-      receiverEmail = receiverEmail.replace(/\s+/g, '').toLowerCase();
+      // If receiverEmail contains HTML or multiple commas, extract clean email
+      const match = receiverEmail.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+      if (match) {
+        receiverEmail = match[0].toLowerCase();
+      }
     }
 
     if (!receiverEmail || !receiverEmail.includes('@')) {
-      receiverEmail = 'hello@mohsindesigns.com';
+      receiverEmail = process.env.ADMIN_NOTIFICATION_EMAIL || 'hello@mohsindesigns.com';
     }
 
     // Construct email HTML

@@ -34,6 +34,8 @@ const EDITOR_TEMPLATES = [
   { id: 'locations', label: 'Locations Hub', icon: Globe },
   { id: 'service-area', label: 'Service Area', icon: Globe },
   { id: 'blog', label: 'Blog Index', icon: BookOpen },
+  { id: 'country', label: 'Country Page', icon: Globe },
+  { id: 'state', label: 'State Page', icon: Globe },
 ];
 
 export default function DynamicPageEditor({ params }: { params: Promise<{ id: string }> }) {

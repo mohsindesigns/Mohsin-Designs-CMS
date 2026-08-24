@@ -11,6 +11,7 @@ const Leadership = dynamic(() => import("@/components/Leadership"));
 const BrandStore = dynamic(() => import("@/components/BrandStore"), { ssr: false });
 const Testimonials = dynamic(() => import("@/components/Testimonials"), { ssr: false });
 const AboutOwner = dynamic(() => import("@/components/AboutOwner"), { ssr: false });
+const ContactForm = dynamic(() => import("@/components/ContactForm"));
 const QAForm = dynamic(() => import("@/components/QAForm"), { ssr: false });
 const FAQ = dynamic(() => import("@/components/FAQ"), { ssr: false });
 const QuickQuote = dynamic(() => import("@/components/QuickQuote"), { ssr: false });
@@ -34,9 +35,7 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any, par
       <section id="services">
         <Services />
       </section>
-      <section id="leadership">
-        <Leadership />
-      </section>
+
       <section id="portfolio">
         <Portfolio />
       </section>
@@ -47,9 +46,7 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any, par
       <section id="service-area">
         <ServiceArea />
       </section>
-      <section id="contact">
-        <QAForm />
-      </section>
+
 
 
 
@@ -75,8 +72,10 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any, par
         />
       )}
 
-
-
+      {/* Direct Contact Form Section */}
+      <section id="contact">
+        <ContactForm data={pageData?.content?.contact} />
+      </section>
     </div>
   );
 }

@@ -22,8 +22,29 @@ export async function verifyToken(token: string) {
 }
 
 export async function getAuthSession(req?: NextRequest) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("mohsin_admin_session")?.value;
+  let token: string | undefined;
+
+  if (req && req.cookies) {
+    token = req.cookies.get("mohsin_admin_session")?.value;
+  }
+
+  if (!token && req) {
+    const rawCookie = req.headers.get("cookie");
+    if (rawCookie) {
+      const match = rawCookie.match(/mohsin_admin_session=([^;]+)/);
+      if (match) token = decodeURIComponent(match[1]);
+    }
+  }
+
+  if (!token) {
+    try {
+      const cookieStore = await cookies();
+      token = cookieStore.get("mohsin_admin_session")?.value;
+    } catch {
+      // Ignore if cookies() is called outside request context
+    }
+  }
+
   if (!token) return null;
   return await verifyToken(token);
 }
