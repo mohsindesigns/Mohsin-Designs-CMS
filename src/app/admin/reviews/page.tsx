@@ -30,10 +30,28 @@ export default function ReviewsAdminPage() {
   });
 
   useEffect(() => {
-    fetch("/api/content").then(res => res.json()).then(json => {
-        setData(json);
-        setTestimonials(json.testimonials?.testimonials || []);
+    let active = true;
+    fetch("/api/content")
+      .then((res) => {
+        if (!res.ok) throw new Error("Network response not ok");
+        return res.json();
+      })
+      .then((json) => {
+        if (active && json) {
+          setData(json);
+          setTestimonials(json.testimonials?.testimonials || []);
+        }
+      })
+      .catch((err) => {
+        if (active) {
+          console.warn("Reviews load fallback:", err?.message || err);
+          setData({});
+          setTestimonials([]);
+        }
       });
+    return () => {
+      active = false;
+    };
   }, []);
 
   const saveToDb = async (newTestimonials: any[]) => {

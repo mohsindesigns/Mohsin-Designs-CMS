@@ -138,7 +138,10 @@ export const Icon = ({ name, className = "w-5 h-5", ...props }: {
 
     // 4. Default fallback so it never returns empty/null when an icon is configured
     if (!IconComponent) {
-        console.warn(`Icon "${name}" (cleaned: "${cleanName}") not found in icons config or lucide-react`);
+        if (cleanName && cleanName.length > 2) {
+            // only log if it's a substantive unrecognized icon name
+            // console.warn(`Icon "${name}" not found`);
+        }
         IconComponent = LucideIcons.CircleHelp || LucideIcons.HelpCircle || LucideIcons.Star;
     }
 

@@ -264,6 +264,7 @@ export const useContent = () => {
             ...(completeData?.ctaBanner ? { ctaBanner: completeData.ctaBanner } : {}),
             ...(completeData?.recognition ? { recognition: completeData.recognition } : {}),
         },
+        newAboutPage: completeData?.newAboutPage || {},
         images: getSafe(completeData, 'images', {}),
         loader: getSafe(completeData, 'loader', { company: { name: "Mohsin Designs", tagline: "Premium Agency Solutions" }, phases: { simpleDark: 200, roofDraw: 300, logoText: 400, ready: 100 } }),
         quickQuote: getSafe(completeData, 'quickQuote', {

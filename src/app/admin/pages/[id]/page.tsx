@@ -22,7 +22,7 @@ const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor")
 
 const EDITOR_TEMPLATES = [
   { id: 'home', label: 'Home Page', icon: LayoutTemplate },
-  { id: 'about', label: 'About Us', icon: Type },
+  { id: 'new-about', label: 'New About Studio Page', icon: Type },
   { id: 'services', label: 'Services Index', icon: Briefcase },
   { id: 'gallery', label: 'Project Gallery', icon: ImageIcon },
   { id: 'team', label: 'Team Directory', icon: Users },

@@ -205,10 +205,10 @@ export default function PagesDashboard() {
   const filteredPages = pages.filter(p => {
     const matchesSearch = p.title.toLowerCase().includes(search.toLowerCase()) || p.slug.toLowerCase().includes(search.toLowerCase());
     const isTrashed = !!p.isTrashed;
-    
+
     if (filter === 'trash') return matchesSearch && isTrashed;
     if (isTrashed) return false;
-    
+
     if (filter === "all") return matchesSearch;
     return matchesSearch && p.status === filter;
   });
@@ -250,7 +250,7 @@ export default function PagesDashboard() {
       {/* Top Bar: Bulk Actions & Search */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-2">
-          <select 
+          <select
             className="border border-[#8c8f94] bg-white text-[#2c3338] px-2 py-1 text-[13px] rounded-[3px] outline-none focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1]"
             value={bulkAction}
             onChange={(e) => setBulkAction(e.target.value)}
@@ -269,7 +269,7 @@ export default function PagesDashboard() {
               </>
             )}
           </select>
-          <button 
+          <button
             onClick={() => { handleBulkAction(bulkAction); setBulkAction(""); }}
             className="bg-white border border-[#8c8f94] text-[#2c3338] px-3 py-1 text-[13px] rounded-[3px] hover:bg-[#f6f7f7] transition-colors"
           >
@@ -278,20 +278,20 @@ export default function PagesDashboard() {
         </div>
 
         <div className="flex items-center gap-2">
-           <input
-             type="text"
-             placeholder="Search Pages"
-             value={search}
-             onChange={(e) => setSearch(e.target.value)}
-             className="border border-[#8c8f94] bg-white px-3 py-1 text-[13px] rounded-[3px] outline-none focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1]"
-           />
-           <button className="bg-white border border-[#8c8f94] text-[#2c3338] px-3 py-1 text-[13px] rounded-[3px] hover:bg-[#f6f7f7] transition-colors">Search Pages</button>
+          <input
+            type="text"
+            placeholder="Search Pages"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="border border-[#8c8f94] bg-white px-3 py-1 text-[13px] rounded-[3px] outline-none focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1]"
+          />
+          <button className="bg-white border border-[#8c8f94] text-[#2c3338] px-3 py-1 text-[13px] rounded-[3px] hover:bg-[#f6f7f7] transition-colors">Search Pages</button>
         </div>
       </div>
 
       {/* Table Pagination Info */}
       <div className="flex justify-end text-[13px] text-[#50575e]">
-         {filteredPages.length} items
+        {filteredPages.length} items
       </div>
 
       {/* WP-Style Table */}
@@ -378,71 +378,71 @@ export default function PagesDashboard() {
       <AnimatePresence>
         {showAddModal && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowAddModal(false)} className="absolute inset-0 bg-[#00000066]" />
-             <motion.div
-               initial={{ y: -10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -10, opacity: 0 }}
-               className="relative w-full max-w-xl bg-[#f1f1f1] border border-[#c3c4c7] shadow-lg rounded-[3px] overflow-hidden flex flex-col"
-             >
-                <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-[#c3c4c7]">
-                   <h2 className="text-[#1d2327] text-lg font-normal font-serif">Add New Page</h2>
-                   <button onClick={() => setShowAddModal(false)} className="text-[#787c82] hover:text-[#d63638]"><X className="w-5 h-5" /></button>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowAddModal(false)} className="absolute inset-0 bg-[#00000066]" />
+            <motion.div
+              initial={{ y: -10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -10, opacity: 0 }}
+              className="relative w-full max-w-xl bg-[#f1f1f1] border border-[#c3c4c7] shadow-lg rounded-[3px] overflow-hidden flex flex-col"
+            >
+              <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-[#c3c4c7]">
+                <h2 className="text-[#1d2327] text-lg font-normal font-serif">Add New Page</h2>
+                <button onClick={() => setShowAddModal(false)} className="text-[#787c82] hover:text-[#d63638]"><X className="w-5 h-5" /></button>
+              </div>
+              <div className="p-4 space-y-4 bg-[#f0f0f1]">
+                <div>
+                  <label className="block text-[#1d2327] text-sm font-semibold mb-1">Title</label>
+                  <input
+                    type="text"
+                    value={newPage.title}
+                    onChange={(e) => {
+                      const slug = e.target.value.toLowerCase().replace(/[^a-z0-9 ]/g, "").replace(/\s+/g, "-");
+                      setNewPage({ ...newPage, title: e.target.value, slug });
+                    }}
+                    placeholder="Enter page title here"
+                    className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[14px] rounded-[3px] shadow-[inset_0_1px_2px_rgba(0,0,0,0.07)] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
+                  />
                 </div>
-                <div className="p-4 space-y-4 bg-[#f0f0f1]">
-                   <div>
-                      <label className="block text-[#1d2327] text-sm font-semibold mb-1">Title</label>
-                      <input
-                        type="text"
-                        value={newPage.title}
-                        onChange={(e) => {
-                          const slug = e.target.value.toLowerCase().replace(/[^a-z0-9 ]/g, "").replace(/\s+/g, "-");
-                          setNewPage({ ...newPage, title: e.target.value, slug });
-                        }}
-                        placeholder="Enter page title here"
-                        className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[14px] rounded-[3px] shadow-[inset_0_1px_2px_rgba(0,0,0,0.07)] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
-                      />
-                   </div>
-                   <div>
-                      <label className="block text-[#1d2327] text-sm font-semibold mb-1">Slug</label>
-                      <input
-                        type="text"
-                        value={newPage.slug}
-                        onChange={(e) => setNewPage({ ...newPage, slug: e.target.value })}
-                        className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[14px] rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
-                      />
-                   </div>
-                   <div>
-                      <label className="block text-[#1d2327] text-sm font-semibold mb-1">Template</label>
-                      <select
-                        value={newPage.template}
-                        onChange={(e) => setNewPage({ ...newPage, template: e.target.value })}
-                        className="w-full border border-[#8c8f94] bg-white px-2 py-1.5 text-[14px] rounded-[3px] outline-none"
-                      >
-                        <option value="home">Home Template</option>
-                        <option value="about">About Template</option>
-                        <option value="services">Services Template</option>
-                        <option value="team">Team Template</option>
-                        <option value="careers">Careers Template</option>
-                        <option value="gallery">Gallery Template</option>
-                        <option value="reviews">Reviews Template</option>
-                        <option value="faq">FAQ Template</option>
-                        <option value="contact">Contact Template</option>
-                        <option value="location">Locations Hub Template</option>
-                        <option value="service-area">Service Area Template</option>
-                        <option value="blog">Blog Template</option>
-                        <option value="country">Country Template</option>
-                        <option value="state">State Template</option>
-                      </select>
-                   </div>
+                <div>
+                  <label className="block text-[#1d2327] text-sm font-semibold mb-1">Slug</label>
+                  <input
+                    type="text"
+                    value={newPage.slug}
+                    onChange={(e) => setNewPage({ ...newPage, slug: e.target.value })}
+                    className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[14px] rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
+                  />
                 </div>
-                <div className="flex items-center justify-end px-4 py-3 bg-[#f6f7f7] border-t border-[#c3c4c7]">
-                   <button
-                     onClick={handleCreatePage}
-                     className="bg-[#2271b1] text-white text-[13px] px-4 py-1.5 rounded-[3px] border border-[#2271b1] hover:bg-[#135e96] hover:border-[#135e96] transition-colors"
-                   >
-                     Publish
-                   </button>
+                <div>
+                  <label className="block text-[#1d2327] text-sm font-semibold mb-1">Template</label>
+                  <select
+                    value={newPage.template}
+                    onChange={(e) => setNewPage({ ...newPage, template: e.target.value })}
+                    className="w-full border border-[#8c8f94] bg-white px-2 py-1.5 text-[14px] rounded-[3px] outline-none"
+                  >
+                    <option value="home">Home Template</option>
+                    <option value="new-about">New About Template</option>
+                    <option value="services">Services Template</option>
+                    <option value="team">Team Template</option>
+                    <option value="careers">Careers Template</option>
+                    <option value="gallery">Gallery Template</option>
+                    <option value="reviews">Reviews Template</option>
+                    <option value="faq">FAQ Template</option>
+                    <option value="contact">Contact Template</option>
+                    <option value="location">Locations Hub Template</option>
+                    <option value="service-area">Service Area Template</option>
+                    <option value="blog">Blog Template</option>
+                    <option value="country">Country Template</option>
+                    <option value="state">State Template</option>
+                  </select>
                 </div>
-             </motion.div>
+              </div>
+              <div className="flex items-center justify-end px-4 py-3 bg-[#f6f7f7] border-t border-[#c3c4c7]">
+                <button
+                  onClick={handleCreatePage}
+                  className="bg-[#2271b1] text-white text-[13px] px-4 py-1.5 rounded-[3px] border border-[#2271b1] hover:bg-[#135e96] hover:border-[#135e96] transition-colors"
+                >
+                  Publish
+                </button>
+              </div>
+            </motion.div>
           </div>
         )}
       </AnimatePresence>
@@ -491,7 +491,7 @@ export default function PagesDashboard() {
                         className="w-full border border-[#8c8f94] bg-white px-2 py-1 text-[13px] rounded-[3px] outline-none"
                       >
                         <option value="home">Home Template</option>
-                        <option value="about">About Template</option>
+                        <option value="new-about">New About Template</option>
                         <option value="services">Services Template</option>
                         <option value="team">Team Template</option>
                         <option value="careers">Careers Template</option>

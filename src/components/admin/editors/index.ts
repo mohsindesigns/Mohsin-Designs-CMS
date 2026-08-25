@@ -2,7 +2,8 @@ import dynamic from 'next/dynamic';
 
 export const TemplateEditors: Record<string, any> = {
   home: dynamic(() => import('./HomeEditor')),
-  about: dynamic(() => import('./AboutEditor')),
+  'new-about': dynamic(() => import('./NewAboutEditor')),
+  newabout: dynamic(() => import('./NewAboutEditor')),
   services: dynamic(() => import('./ServicesEditor')),
   team: dynamic(() => import('./TeamEditor')),
   careers: dynamic(() => import('./CareersEditor')),

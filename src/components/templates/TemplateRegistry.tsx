@@ -1,6 +1,7 @@
 import React from 'react';
 import HomeTemplate from './HomeTemplate';
 import AboutTemplate from './AboutTemplate';
+import NewAboutTemplate from './NewAboutTemplate';
 import ServiceDetailTemplate from './ServiceDetailTemplate';
 import TeamTemplate from './TeamTemplate';
 import CareersTemplate from './CareersTemplate';
@@ -20,7 +21,8 @@ import { ContentProvider } from "@/context/ContentContext";
 
 export const TEMPLATE_MAP: Record<string, React.ComponentType<any>> = {
   'home': HomeTemplate,
-  'about': AboutTemplate,
+  'new-about': NewAboutTemplate,
+  'newabout': NewAboutTemplate,
   'service-detail': ServiceDetailTemplate,
   'team': TeamTemplate,
   'careers': CareersTemplate,
@@ -53,14 +55,14 @@ export const TemplateWrapper = ({ templateName, pageData, globalData, params }: 
 
   const providerData = isIsolatedTemplate
     ? {
-        ...(pageData?.content || {}),
-        settings: globalData?.settings || {},
-        globalServices: globalData?.services?.services || globalData?.globalServices || [],
-      }
+      ...(pageData?.content || {}),
+      settings: globalData?.settings || {},
+      globalServices: globalData?.services?.services || globalData?.globalServices || [],
+    }
     : {
-        ...(globalData || {}),
-        ...(pageData?.content || {}),
-      };
+      ...(globalData || {}),
+      ...(pageData?.content || {}),
+    };
 
   return (
     <ContentProvider initialData={providerData}>

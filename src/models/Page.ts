@@ -3,19 +3,20 @@ import mongoose from 'mongoose';
 const PageSchema = new mongoose.Schema({
   slug: { type: String, required: true, unique: true },
   title: { type: String, required: true },
-  template: { 
-    type: String, 
-    required: true, 
+  template: {
+    type: String,
+    required: true,
     enum: [
-      'home', 
-      'about', 
-      'team', 
-      'careers', 
-      'reviews', 
-      'faq', 
-      'contact', 
-      'gallery', 
-      'services', 
+      'home',
+      'new-about',
+      'newabout',
+      'team',
+      'careers',
+      'reviews',
+      'faq',
+      'contact',
+      'gallery',
+      'services',
       'service-detail',
       'service-area',
       'location',
@@ -23,7 +24,7 @@ const PageSchema = new mongoose.Schema({
       'blog',
       'country',
       'state'
-    ] 
+    ]
   },
   status: { type: String, enum: ['draft', 'published'], default: 'published' },
   seo: {
