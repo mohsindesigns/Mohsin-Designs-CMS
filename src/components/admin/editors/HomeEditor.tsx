@@ -86,11 +86,10 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
       { id: "hero", label: "Home" },
       { id: "about", label: "About" },
       { id: "services", label: "Services" },
-      { id: "whyChooseUs", label: "Value Props" },
-      { id: "serviceArea", label: "Global Coverage" },
-      { id: "leadership", label: "Leadership" },
       { id: "portfolio", label: "Work" },
       { id: "testimonials", label: "Reviews" },
+      { id: "whyChooseUs", label: "Value Props" },
+      { id: "serviceArea", label: "Global Coverage" },
       { id: "blog", label: "Blog" },
       { id: "quote", label: "Contact Form" },
    ];
@@ -123,7 +122,7 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                   <div className="space-y-12">
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>1. Branding</h3>
-                        <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.hero?.badge || ""} onChange={(e) => updateSection("hero", "badge", e.target.value)} className={UI.input} /></div>
+                        <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.hero?.badge ?? data.hero?.badgeText ?? ""} onChange={(e) => updateSection("hero", "badge", e.target.value)} className={UI.input} placeholder="e.g. Premium Exterior Solutions" /></div>
                      </div>
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>2. Premium Hero Title</h3>
@@ -133,30 +132,7 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                            <div className="space-y-1.5"><label className={UI.label}>Title Line 2 (Highlighted/Underlined)</label><input type="text" value={data.hero?.titleLine2 || ""} onChange={(e) => updateSection("hero", "titleLine2", e.target.value)} className={UI.input} /></div>
                         </div>
                      </div>
-                     <div className="space-y-8">
-                        <h3 className={UI.sectionHeader}>3. Animated Headline (Legacy)</h3>
-                        <div className="space-y-4">
-                           {(data.hero?.headlines || []).map((h: any, i: number) => (
-                              <div key={i} className={UI.card + " space-y-4"}>
-                                 <div className="flex justify-between items-center border-b border-[#f0f0f1] pb-2">
-                                    <span className="text-[10px] font-bold text-[#646970]">Line #{i + 1}</span>
-                                    <button onClick={() => {
-                                       const newH = data.hero.headlines.filter((_: any, idx: number) => idx !== i); updateSection("hero", "headlines", newH);
-                                    }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
-                                 </div>
-                                 <input type="text" value={h.text || ""} onChange={(e) => {
-                                    const newH = [...data.hero.headlines]; newH[i].text = e.target.value; updateSection("hero", "headlines", newH);
-                                 }} className={UI.input + " font-bold"} />
-                                 <label className="flex items-center gap-2 cursor-pointer text-[12px]">
-                                    <input type="checkbox" checked={h.highlight} onChange={(e) => {
-                                       const newH = [...data.hero.headlines]; newH[i].highlight = e.target.checked; updateSection("hero", "headlines", newH);
-                                    }} /> Highlighted Style
-                                 </label>
-                              </div>
-                           ))}
-                           <button onClick={() => updateSection("hero", "headlines", [...(data.hero?.headlines || []), { text: "", highlight: false }])} className={UI.buttonAdd}>+ Add Line</button>
-                        </div>
-                     </div>
+
                      <div className="space-y-6">
                         <RichTextEditor
                            label="3. Description Narrative"
@@ -167,16 +143,102 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>4. Buttons</h3>
                         <div className="space-y-4">
-                           {(data.hero?.buttons || []).map((btn: any, i: number) => (
-                              <div key={i} className={UI.card + " space-y-4"}>
-                                 <div className="space-y-1.5"><label className={UI.label}>Text</label><input type="text" value={btn.text || ""} onChange={(e) => { const newB = [...data.hero.buttons]; newB[i].text = e.target.value; updateSection("hero", "buttons", newB); }} className={UI.input} /></div>
-                                 <div className="space-y-1.5"><label className={UI.label}>Link</label><input type="text" value={btn.href || ""} onChange={(e) => { const newB = [...data.hero.buttons]; newB[i].href = e.target.value; updateSection("hero", "buttons", newB); }} className={UI.input} /></div>
-                                 <div className="space-y-1.5"><label className={UI.label}>Icon Name</label><input type="text" value={btn.icon || ""} onChange={(e) => { const newB = [...data.hero.buttons]; newB[i].icon = e.target.value; updateSection("hero", "buttons", newB); }} className={UI.input} placeholder="e.g. ArrowRight" /></div>
-                                 <label className="flex items-center gap-2 cursor-pointer text-[12px]"><input type="checkbox" checked={btn.primary} onChange={(e) => { const newB = [...data.hero.buttons]; newB[i].primary = e.target.checked; updateSection("hero", "buttons", newB); }} /> Primary Style</label>
-                                 <button onClick={() => { const newB = data.hero.buttons.filter((_: any, idx: number) => idx !== i); updateSection("hero", "buttons", newB); }} className="text-[#d63638] text-[11px] font-bold">Remove Button</button>
-                              </div>
-                           ))}
-                           <button onClick={() => updateSection("hero", "buttons", [...(data.hero?.buttons || []), { text: "", href: "", primary: false, icon: "" }])} className={UI.buttonAdd}>+ Add Button</button>
+                           {((Array.isArray(data.hero?.buttons) && data.hero.buttons.length > 0)
+                              ? data.hero.buttons
+                              : [
+                                 { text: data.hero?.ctaPrimaryText || "Get Estimate", href: data.hero?.ctaPrimaryHref || "/contact-us", icon: "ArrowRight", primary: true },
+                                 { text: data.hero?.ctaSecondaryText || "Our Services", href: data.hero?.ctaSecondaryHref || "/services", icon: "ArrowUpRight", primary: false }
+                              ]
+                           ).map((btn: any, i: number) => {
+                              const heroButtons = (Array.isArray(data.hero?.buttons) && data.hero.buttons.length > 0)
+                                 ? data.hero.buttons
+                                 : [
+                                    { text: data.hero?.ctaPrimaryText || "Get Estimate", href: data.hero?.ctaPrimaryHref || "/contact-us", icon: "ArrowRight", primary: true },
+                                    { text: data.hero?.ctaSecondaryText || "Our Services", href: data.hero?.ctaSecondaryHref || "/services", icon: "ArrowUpRight", primary: false }
+                                 ];
+
+                              return (
+                                 <div key={i} className={UI.card + " space-y-4"}>
+                                    <div className="space-y-1.5">
+                                       <label className={UI.label}>Text / Label</label>
+                                       <input
+                                          type="text"
+                                          value={btn.text ?? btn.label ?? ""}
+                                          onChange={(e) => {
+                                             const newB = [...heroButtons];
+                                             newB[i] = { ...newB[i], text: e.target.value };
+                                             updateSection("hero", "buttons", newB);
+                                          }}
+                                          className={UI.input}
+                                          placeholder="e.g. Get Estimate"
+                                       />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                       <label className={UI.label}>Link (href)</label>
+                                       <input
+                                          type="text"
+                                          value={btn.href ?? btn.link ?? ""}
+                                          onChange={(e) => {
+                                             const newB = [...heroButtons];
+                                             newB[i] = { ...newB[i], href: e.target.value };
+                                             updateSection("hero", "buttons", newB);
+                                          }}
+                                          className={UI.input}
+                                          placeholder="e.g. /contact-us"
+                                       />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                       <label className={UI.label}>Icon Name</label>
+                                       <input
+                                          type="text"
+                                          value={btn.icon ?? btn.iconName ?? ""}
+                                          onChange={(e) => {
+                                             const newB = [...heroButtons];
+                                             newB[i] = { ...newB[i], icon: e.target.value };
+                                             updateSection("hero", "buttons", newB);
+                                          }}
+                                          className={UI.input}
+                                          placeholder="e.g. ArrowRight, ArrowUpRight, Phone"
+                                       />
+                                    </div>
+                                    <label className="flex items-center gap-2 cursor-pointer text-[12px]">
+                                       <input
+                                          type="checkbox"
+                                          checked={btn.primary !== undefined ? btn.primary : i === 0}
+                                          onChange={(e) => {
+                                             const newB = [...heroButtons];
+                                             newB[i] = { ...newB[i], primary: e.target.checked };
+                                             updateSection("hero", "buttons", newB);
+                                          }}
+                                       />
+                                       Primary Style
+                                    </label>
+                                    <button
+                                       onClick={() => {
+                                          const newB = heroButtons.filter((_: any, idx: number) => idx !== i);
+                                          updateSection("hero", "buttons", newB);
+                                       }}
+                                       className="text-[#d63638] text-[11px] font-bold"
+                                    >
+                                       Remove Button
+                                    </button>
+                                 </div>
+                              );
+                           })}
+                           <button
+                              onClick={() => {
+                                 const heroButtons = (Array.isArray(data.hero?.buttons) && data.hero.buttons.length > 0)
+                                    ? data.hero.buttons
+                                    : [
+                                       { text: data.hero?.ctaPrimaryText || "Get Estimate", href: data.hero?.ctaPrimaryHref || "/contact-us", icon: "ArrowRight", primary: true },
+                                       { text: data.hero?.ctaSecondaryText || "Our Services", href: data.hero?.ctaSecondaryHref || "/services", icon: "ArrowUpRight", primary: false }
+                                    ];
+                                 updateSection("hero", "buttons", [...heroButtons, { text: "", href: "", primary: heroButtons.length === 0, icon: "ArrowRight" }]);
+                              }}
+                              className={UI.buttonAdd}
+                           >
+                              + Add Button
+                           </button>
                         </div>
                      </div>
                      <div className="space-y-6">
@@ -243,7 +305,7 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                            <div className="space-y-2">
                               <input type="text" value={data.about?.headline?.prefix || ""} onChange={(e) => updateSection("about", "headline", { ...(data.about?.headline || {}), prefix: e.target.value })} className={UI.input} placeholder="Prefix" />
                               <input type="text" value={data.about?.headline?.highlight || ""} onChange={(e) => updateSection("about", "headline", { ...(data.about?.headline || {}), highlight: e.target.value })} className={UI.input + " font-bold border-[#2271b1]"} placeholder="Highlighted" />
-                              <input type="text" value={data.about?.headline?.suffix || ""} onChange={(e) => updateSection("about", "headline", { ...(data.about?.headline || {}), suffix: e.target.value })} className={UI.input} placeholder="Suffix" />
+
                            </div>
                         </div>
                      </div>
@@ -253,10 +315,7 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                            content={data.about?.description || ""}
                            onChange={(html) => updateSection("about", "description", html)}
                         />
-                        <div className="space-y-4 pt-4 border-t border-[#f0f0f1] mt-4">
-                           <div className="space-y-1.5"><label className={UI.label}>Lead Biography Paragraph (Bold/Large)</label><textarea value={data.about?.bioParagraph1 || ""} onChange={(e) => updateSection("about", "bioParagraph1", e.target.value)} className={UI.input} rows={2} /></div>
-                           <div className="space-y-1.5"><label className={UI.label}>Body Biography Paragraph (Standard)</label><textarea value={data.about?.bioParagraph2 || ""} onChange={(e) => updateSection("about", "bioParagraph2", e.target.value)} className={UI.input} rows={4} /></div>
-                        </div>
+
                      </div>
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>3. Action Buttons</h3>
@@ -293,27 +352,9 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                            <button onClick={() => updateSection("about", "stats", [...(data.about?.stats || []), { value: 0, suffix: "+", label: "" }])} className={UI.buttonAdd}>+ Add Stat</button>
                         </div>
                      </div>
+
                      <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>5. Trust Badges</h3>
-                        <div className={UI.card + " space-y-4"}>
-                           <div className="space-y-1.5"><label className={UI.label}>Happy Clients Count</label><input type="number" value={data.about?.trustBadges?.happyClients || 0} onChange={(e) => updateSection("about", "trustBadges", { ...(data.about?.trustBadges || {}), happyClients: parseInt(e.target.value) })} className={UI.inputLarge} /></div>
-                           <div className="space-y-1.5"><label className={UI.label}>Emergency Availability</label><input type="text" value={data.about?.trustBadges?.emergency || ""} onChange={(e) => updateSection("about", "trustBadges", { ...(data.about?.trustBadges || {}), emergency: e.target.value })} className={UI.input} placeholder="e.g. 24/7" /></div>
-                        </div>
-                     </div>
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>6. Core Values</h3>
-                        <div className="space-y-3">
-                           {(data.about?.coreValues || []).map((v: string, i: number) => (
-                              <div key={i} className="flex gap-2">
-                                 <input type="text" value={v} onChange={(e) => { const newV = [...data.about.coreValues]; newV[i] = e.target.value; updateSection("about", "coreValues", newV); }} className={UI.input} />
-                                 <button onClick={() => { const newV = data.about.coreValues.filter((_: any, idx: number) => idx !== i); updateSection("about", "coreValues", newV); }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
-                              </div>
-                           ))}
-                           <button onClick={() => updateSection("about", "coreValues", [...(data.about?.coreValues || []), ""])} className="text-[#2271b1] text-[12px] font-bold uppercase">+ Add Value</button>
-                        </div>
-                     </div>
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>7. Media</h3>
+                        <h3 className={UI.sectionHeader}>5. Media</h3>
                         <ImageField
                            label="Section Image"
                            value={data.about?.image?.src || ""}
@@ -321,7 +362,6 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                            altValue={data.about?.image?.alt || ""}
                            onAltChange={(alt) => updateSection("about", "image", { ...(data.about?.image || {}), alt: alt })}
                         />
-                        <div className="space-y-1.5"><label className={UI.label}>Floating Badge</label><input type="text" value={data.about?.image?.badge || ""} onChange={(e) => updateSection("about", "image", { ...(data.about?.image || {}), badge: e.target.value })} className={UI.input} /></div>
                         <div className="space-y-1.5"><label className={UI.label}>Rotating Circle Text</label><input type="text" value={data.about?.circleText || ""} onChange={(e) => updateSection("about", "circleText", e.target.value)} className={UI.input} /></div>
                         <div className="space-y-1.5"><label className={UI.label}>Rotating Circle Center Letter</label><input type="text" value={data.about?.circleLetter || ""} onChange={(e) => updateSection("about", "circleLetter", e.target.value)} className={UI.input} /></div>
                      </div>
@@ -652,33 +692,6 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                            })}
                         </div>
                      </div>
-
-                     {/* 4. ILLUSTRATION LABELS */}
-                     <div className="space-y-6 pt-8 border-t border-[#f0f0f1]">
-                        <h3 className={UI.sectionHeader}>4. Illustration Graphic Badges</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                           <div className="space-y-1.5">
-                              <label className={UI.label}>Terminal Score Badge</label>
-                              <input
-                                 type="text"
-                                 value={data.whyChooseUs?.illustrations?.scoreLabel || "100"}
-                                 onChange={(e) => updateSection("whyChooseUs", "illustrations", { ...(data.whyChooseUs?.illustrations || {}), scoreLabel: e.target.value })}
-                                 className={UI.input}
-                                 placeholder="e.g. 100"
-                              />
-                           </div>
-                           <div className="space-y-1.5">
-                              <label className={UI.label}>Rating Badge Label</label>
-                              <input
-                                 type="text"
-                                 value={data.whyChooseUs?.illustrations?.ratingLabel || "5.0 ★★★★★"}
-                                 onChange={(e) => updateSection("whyChooseUs", "illustrations", { ...(data.whyChooseUs?.illustrations || {}), ratingLabel: e.target.value })}
-                                 className={UI.input}
-                                 placeholder="e.g. 5.0 ★★★★★"
-                              />
-                           </div>
-                        </div>
-                     </div>
                   </div>
                )}
 
@@ -918,107 +931,7 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                   </div>
                )}
 
-               {/* LEADERSHIP SECTION */}
-               {activeTab === "leadership" && (
-                  <div className="space-y-12">
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>1. Section Intro</h3>
-                        <div className="space-y-1.5">
-                           <label className={UI.label}>Badge</label>
-                           <input type="text" value={data.leadership?.section?.badge || ""} onChange={(e) => updateSection("leadership", "section", { ...(data.leadership?.section || {}), badge: e.target.value })} className={UI.input} placeholder="e.g. OUR LEADERSHIP" />
-                        </div>
-                        <div className="space-y-1.5">
-                           <label className={UI.label}>Headline — Prefix (plain text)</label>
-                           <input type="text" value={data.leadership?.section?.headlinePrefix || ""} onChange={(e) => updateSection("leadership", "section", { ...(data.leadership?.section || {}), headlinePrefix: e.target.value })} className={UI.input} placeholder="e.g. Driven by" />
-                        </div>
-                        <div className="space-y-1.5">
-                           <label className={UI.label}>Headline — Highlight <span className="text-primary font-bold">(shown in primary color)</span></label>
-                           <input type="text" value={data.leadership?.section?.headlineHighlight || ""} onChange={(e) => updateSection("leadership", "section", { ...(data.leadership?.section || {}), headlineHighlight: e.target.value })} className={UI.input + " font-bold border-[#2271b1]"} placeholder="e.g. Passion" />
-                        </div>
-                        <div className="space-y-1.5">
-                           <label className={UI.label}>Headline — Suffix (plain text)</label>
-                           <input type="text" value={data.leadership?.section?.headlineSuffix || ""} onChange={(e) => updateSection("leadership", "section", { ...(data.leadership?.section || {}), headlineSuffix: e.target.value })} className={UI.input} placeholder="e.g. & Purpose" />
-                        </div>
-                        <QuillEditor
-                           label="Description Paragraph"
-                           content={data.leadership?.section?.description || ""}
-                           onChange={(html) => updateSection("leadership", "section", { ...(data.leadership?.section || {}), description: html })}
-                        />
-                     </div>
 
-                     <div className="space-y-8 pt-10 border-t border-[#f0f0f1]">
-                        <h3 className={UI.sectionHeader}>2. Leader Details</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                           <div className="space-y-1.5">
-                              <label className={UI.label}>Name</label>
-                              <input type="text" value={data.leadership?.ceo?.name || ""} onChange={(e) => updateSection("leadership", "ceo", { ...(data.leadership?.ceo || {}), name: e.target.value })} className={UI.input} />
-                           </div>
-                           <div className="space-y-1.5">
-                              <label className={UI.label}>Title</label>
-                              <input type="text" value={data.leadership?.ceo?.title || ""} onChange={(e) => updateSection("leadership", "ceo", { ...(data.leadership?.ceo || {}), title: e.target.value })} className={UI.input} />
-                           </div>
-                        </div>
-
-                        <div className="space-y-6">
-                           <ImageField
-                              label="Leader Portrait"
-                              value={data.leadership?.ceo?.image?.src || ""}
-                              onChange={(url) => updateSection("leadership", "ceo", { ...(data.leadership?.ceo || {}), image: { ...(data.leadership?.ceo?.image || {}), src: url } })}
-                              altValue={data.leadership?.ceo?.image?.alt || ""}
-                              onAltChange={(alt) => updateSection("leadership", "ceo", { ...(data.leadership?.ceo || {}), image: { ...(data.leadership?.ceo?.image || {}), alt: alt } })}
-                           />
-                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                              <div className="space-y-1.5">
-                                 <label className={UI.label}>Top Badge</label>
-                                 <input type="text" value={data.leadership?.ceo?.badges?.top || ""} onChange={(e) => updateSection("leadership", "ceo", { ...(data.leadership?.ceo || {}), badges: { ...(data.leadership?.ceo?.badges || {}), top: e.target.value } })} className={UI.input} />
-                              </div>
-                              <div className="space-y-1.5">
-                                 <label className={UI.label}>Bottom Badge</label>
-                                 <input type="text" value={data.leadership?.ceo?.badges?.bottom || ""} onChange={(e) => updateSection("leadership", "ceo", { ...(data.leadership?.ceo || {}), badges: { ...(data.leadership?.ceo?.badges || {}), bottom: e.target.value } })} className={UI.input} />
-                              </div>
-                           </div>
-                        </div>
-
-                        <QuillEditor
-                           label="Leader Quote"
-                           content={data.leadership?.ceo?.quotes?.[0] || ""}
-                           onChange={(html) => updateSection("leadership", "ceo", { ...(data.leadership?.ceo || {}), quotes: [html] })}
-                        />
-
-                        <QuillEditor
-                           label="Full Biography/Description"
-                           content={data.leadership?.ceo?.description || ""}
-                           onChange={(html) => updateSection("leadership", "ceo", { ...(data.leadership?.ceo || {}), description: html })}
-                        />
-
-                        <div className="space-y-4">
-                           <div className="flex justify-between items-center">
-                              <label className={UI.label}>Social Links</label>
-                              <button onClick={() => {
-                                 const socials = [...(data.leadership?.ceo?.socials || [])];
-                                 socials.push({ icon: "Linkedin", url: "" });
-                                 updateSection("leadership", "ceo", { ...data.leadership.ceo, socials });
-                              }} className={UI.buttonAdd}>+ Add Social</button>
-                           </div>
-                           <div className="space-y-2">
-                              {(data.leadership?.ceo?.socials || []).map((s: any, i: number) => (
-                                 <div key={i} className="flex gap-2 items-center bg-[#f6f7f7] p-2 border border-[#c3c4c7]">
-                                    <input type="text" value={s.icon} onChange={(e) => {
-                                       const ns = [...data.leadership.ceo.socials]; ns[i].icon = e.target.value; updateSection("leadership", "ceo", { ...data.leadership.ceo, socials: ns });
-                                    }} className={UI.input + " w-24"} placeholder="Icon (e.g. Linkedin)" />
-                                    <input type="text" value={s.url} onChange={(e) => {
-                                       const ns = [...data.leadership.ceo.socials]; ns[i].url = e.target.value; updateSection("leadership", "ceo", { ...data.leadership.ceo, socials: ns });
-                                    }} className={UI.input + " flex-1"} placeholder="URL" />
-                                    <button onClick={() => {
-                                       const ns = data.leadership.ceo.socials.filter((_: any, idx: number) => idx !== i); updateSection("leadership", "ceo", { ...data.leadership.ceo, socials: ns });
-                                    }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
-                                 </div>
-                              ))}
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-               )}
 
                {/* PORTFOLIO SECTION */}
                {activeTab === "portfolio" && (

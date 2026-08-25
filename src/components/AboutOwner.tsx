@@ -5,6 +5,7 @@ import { motion, useInView } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import { useContent } from "../hooks/useContent";
+import RichTextRenderer from "./ui/RichTextRenderer";
 
 // Variants for repeating hand-drawn paths animations on scroll
 const drawVariants = {
@@ -74,8 +75,12 @@ export default function AboutOwner() {
   const titleIntro = about?.headline?.prefix || "Leading with Vision,";
   const titleHighlight = about?.headline?.highlight || "Building with Trust.";
   
-  const bioParagraph1 = about?.bioParagraph1 || "I help brands scale dynamically using advanced design and tech systems.";
-  const bioParagraph2 = about?.bioParagraph2 || "With over a decade of design experience, we specialize in high-end design systems, custom development, and comprehensive marketing architectures.";
+  // Rich description from QuillEditor (falls back to plain bio paragraphs for legacy data)
+  const description = about?.description || "";
+  const legacyBio = about?.bioParagraph1 || about?.bioParagraph2
+    ? `<p><strong>${about?.bioParagraph1 || ""}</strong></p><p>${about?.bioParagraph2 || ""}</p>`
+    : "";
+  const bioContent = description || legacyBio || "<p><strong>I help brands scale dynamically using advanced design and tech systems.</strong></p><p>With over a decade of design experience, we specialize in high-end design systems, custom development, and comprehensive marketing architectures.</p>";
   
   // Only use image if it looks like a real path/URL
   const rawPortraitSrc = about?.image?.src || "";
@@ -237,13 +242,8 @@ export default function AboutOwner() {
             </div>
 
             {/* Narrative biography */}
-            <div className="space-y-5 font-sans">
-              <p className="text-lg md:text-xl text-brand-dark dark:text-zinc-100 leading-relaxed font-semibold">
-                {bioParagraph1}
-              </p>
-              <p className="text-sm md:text-base text-brand-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
-                {bioParagraph2}
-              </p>
+            <div className="space-y-5 font-sans prose prose-sm sm:prose-base max-w-none prose-p:text-brand-zinc-600 dark:prose-p:text-zinc-400 prose-p:leading-relaxed prose-strong:text-brand-dark dark:prose-strong:text-zinc-100 prose-strong:text-lg md:prose-strong:text-xl prose-strong:leading-relaxed prose-strong:font-semibold">
+              <RichTextRenderer content={bioContent} />
             </div>
 
             {/* Stats Row */}

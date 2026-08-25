@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, ArrowUpRight, Star } from "lucide-react";
 import Image from "next/image";
 import { useContent } from "../hooks/useContent";
+import { Icon } from "../config/icons";
 import RichTextRenderer from "./ui/RichTextRenderer";
 
 const clipVariants = {
@@ -24,16 +25,29 @@ export default function Hero() {
   const { hero } = content;
 
   // Extract variables with proper default fallbacks for CMS dynamicity
-  const badgeText = hero?.badgeText || hero?.badge || "Premium Exterior Solutions";
+  const badgeText = hero?.badge || hero?.badgeText || "Premium Exterior Solutions";
   const titleLine1 = hero?.titleLine1 || "Exterior Remodeling";
   const titleConnector = hero?.titleConnector || "with";
   const titleLine2 = hero?.titleLine2 || "Honor & Precision";
   const description = hero?.description || "Veteran-owned roofing & home improvement in St. Louis, MO.";
   
-  const ctaPrimaryText = hero?.ctaPrimaryText || hero?.buttons?.[0]?.text || "Get Estimate";
-  const ctaPrimaryHref = hero?.ctaPrimaryHref || hero?.buttons?.[0]?.href || "/contact-us";
-  const ctaSecondaryText = hero?.ctaSecondaryText || hero?.buttons?.[1]?.text || "Our Services";
-  const ctaSecondaryHref = hero?.ctaSecondaryHref || hero?.buttons?.[1]?.href || "/services";
+  // Resolve buttons dynamically from CMS array or fallback to defaults
+  const buttonsList = (Array.isArray(hero?.buttons) && hero.buttons.length > 0)
+    ? hero.buttons
+    : [
+        {
+          text: hero?.ctaPrimaryText || "Get Estimate",
+          href: hero?.ctaPrimaryHref || "/contact-us",
+          icon: hero?.ctaPrimaryIcon || "ArrowRight",
+          primary: true,
+        },
+        {
+          text: hero?.ctaSecondaryText || "Our Services",
+          href: hero?.ctaSecondaryHref || "/services",
+          icon: hero?.ctaSecondaryIcon || "ArrowUpRight",
+          primary: false,
+        },
+      ];
   
   const circleText = hero?.circleText || "VETERAN OWNED • VETERAN OPERATED •";
   const circleLetter = hero?.circleLetter || "M";
@@ -233,32 +247,34 @@ export default function Hero() {
             </motion.div>
 
             {/* CTA Buttons */}
-            <motion.div
-              variants={itemVariants}
-              className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-1 w-full sm:w-auto"
-            >
-              {/* Primary CTA */}
-              <a
-                href={ctaPrimaryHref}
-                className="btn-primary-cta pointer-events-auto"
+            {buttonsList.length > 0 && (
+              <motion.div
+                variants={itemVariants}
+                className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-1 w-full sm:w-auto"
               >
-                <span>{ctaPrimaryText}</span>
-                <span className="btn-icon">
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </span>
-              </a>
+                {buttonsList.map((btn: any, idx: number) => {
+                  const btnText = btn.text || btn.label || btn.title || (idx === 0 ? "Get Estimate" : "Our Services");
+                  const btnHref = btn.href || btn.link || btn.url || (idx === 0 ? "/contact-us" : "/services");
+                  const btnIcon = btn.icon || btn.iconName || (idx === 0 ? "ArrowRight" : "ArrowUpRight");
+                  const isPrimary = btn.primary !== undefined ? Boolean(btn.primary) : idx === 0;
 
-              {/* Secondary CTA */}
-              <a
-                href={ctaSecondaryHref}
-                className="btn-secondary-cta pointer-events-auto"
-              >
-                <span>{ctaSecondaryText}</span>
-                <span className="btn-icon">
-                  <ArrowUpRight className="h-3.5 w-3.5" />
-                </span>
-              </a>
-            </motion.div>
+                  return (
+                    <a
+                      key={idx}
+                      href={btnHref}
+                      className={`${isPrimary ? "btn-primary-cta" : "btn-secondary-cta"} pointer-events-auto`}
+                    >
+                      <span>{btnText}</span>
+                      {btnIcon && (
+                        <span className="btn-icon">
+                          <Icon name={btnIcon} className="h-3.5 w-3.5" />
+                        </span>
+                      )}
+                    </a>
+                  );
+                })}
+              </motion.div>
+            )}
 
           </motion.div>
 
