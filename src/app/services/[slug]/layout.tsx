@@ -18,7 +18,7 @@ const seoMap: Record<
 > = {
   "residential-roofing": {
     title:
-      "Residential Roofing St. Louis MO | Roof Replacement & Repair | Eagle Revolution",
+      "Residential Roofing St. Louis MO | Roof Replacement & Repair | Mohsin Designs",
     description:
       "Expert residential roof replacement & repair in St. Louis, MO. 50-year warranty, Class 4 impact-resistant shingles, IKO & CertainTeed certified. Veteran-owned. Free drone inspection. Hail & storm damage specialists. Call 636-449-9714.",
     keywords: [
@@ -82,7 +82,7 @@ const seoMap: Record<
       description:
         "Expert residential roof replacement, repair, and storm damage restoration in St. Louis, MO. Architectural asphalt shingles with 50-year manufacturer warranties. Free drone inspections and full insurance claim assistance.",
       url: `${BASE_URL}/services/residential-roofing`,
-      image: `${BASE_URL}/eagle-logo.png`,
+      image: `${BASE_URL}/portfolio_hero_bg.png`,
       offers: {
         "@type": "Offer",
         priceCurrency: "USD",
@@ -110,23 +110,23 @@ const seoMap: Record<
           name: "How long does a residential roof replacement take in St. Louis?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Most residential roofs in St. Louis are fully replaced and cleaned up in just 1–2 days by Eagle Revolution's disciplined crews. Larger or more complex homes may take 2–3 days.",
+            text: "Most residential roofs in St. Louis are fully replaced and cleaned up in just 1–2 days by Mohsin Designs's disciplined crews. Larger or more complex homes may take 2–3 days.",
           },
         },
         {
           "@type": "Question",
-          name: "Does Eagle Revolution help with roof insurance claims?",
+          name: "Does Mohsin Designs help with roof insurance claims?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes. Eagle Revolution works directly with your insurance adjuster to document all storm and hail damage, ensuring you receive the maximum coverage for a complete roof replacement — often at no out-of-pocket cost beyond your deductible.",
+            text: "Yes. Mohsin Designs works directly with your insurance adjuster to document all storm and hail damage, ensuring you receive the maximum coverage for a complete roof replacement — often at no out-of-pocket cost beyond your deductible.",
           },
         },
         {
           "@type": "Question",
-          name: "What roofing warranty does Eagle Revolution offer?",
+          name: "What roofing warranty does Mohsin Designs offer?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Eagle Revolution offers industry-leading 50-year fully transferable manufacturer warranties on premium shingle installations. We are IKO Certified Pro and CertainTeed Certified Shingle Masters, qualifying us to offer the highest warranty tiers available.",
+            text: "Mohsin Designs offers industry-leading 50-year fully transferable manufacturer warranties on premium shingle installations. We are IKO Certified Pro and CertainTeed Certified Shingle Masters, qualifying us to offer the highest warranty tiers available.",
           },
         },
         {
@@ -134,7 +134,7 @@ const seoMap: Record<
           name: "How do I know if my roof has hail damage?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Look for dents on gutters or downspouts, dark spots or bruising on shingle surfaces, granule loss in gutters, and cracked or missing shingles. Eagle Revolution offers free drone-assisted roof inspections to accurately assess storm damage without disturbing your roof.",
+            text: "Look for dents on gutters or downspouts, dark spots or bruising on shingle surfaces, granule loss in gutters, and cracked or missing shingles. Mohsin Designs offers free drone-assisted roof inspections to accurately assess storm damage without disturbing your roof.",
           },
         },
         {
@@ -142,7 +142,7 @@ const seoMap: Record<
           name: "When is storm season in St. Louis Missouri?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "St. Louis storm season peaks from April through June, with severe hail and tornado-producing storms most common in May and June. Eagle Revolution recommends a professional roof inspection every spring and after every major storm event.",
+            text: "St. Louis storm season peaks from April through June, with severe hail and tornado-producing storms most common in May and June. Mohsin Designs recommends a professional roof inspection every spring and after every major storm event.",
           },
         },
       ],
@@ -151,7 +151,7 @@ const seoMap: Record<
 
   "commercial-roofing": {
     title:
-      "Commercial Roofing St. Louis MO | TPO, EPDM & Flat Roof | Eagle Revolution",
+      "Commercial Roofing St. Louis MO | TPO, EPDM & Flat Roof | Mohsin Designs",
     description:
       "Expert commercial roofing in St. Louis, MO. TPO & EPDM flat roof systems with No Dollar Limit (NDL) warranties. 5M+ sqft installed. 24/7 emergency response. Certified by leading manufacturers. Free estimate. Call 636-449-9714.",
     keywords: [
@@ -213,7 +213,7 @@ const seoMap: Record<
           name: "What is the difference between TPO and EPDM commercial roofing?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "TPO is a white heat-reflective membrane hot-air welded for superior seam strength and energy savings. EPDM (rubber) is highly impact-resistant but absorbs heat. Eagle Revolution recommends TPO for most St. Louis commercial buildings due to its energy efficiency and watertight seam integrity.",
+            text: "TPO is a white heat-reflective membrane hot-air welded for superior seam strength and energy savings. EPDM (rubber) is highly impact-resistant but absorbs heat. Mohsin Designs recommends TPO for most St. Louis commercial buildings due to its energy efficiency and watertight seam integrity.",
           },
         },
         {
@@ -221,7 +221,7 @@ const seoMap: Record<
           name: "What is a No Dollar Limit (NDL) warranty?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "An NDL warranty covers 100% of all labor and material costs required to repair a leak during the warranty period, backed directly by the manufacturer — not just the contractor. Eagle Revolution's certifications allow us to offer NDL warranties of up to 20 years.",
+            text: "An NDL warranty covers 100% of all labor and material costs required to repair a leak during the warranty period, backed directly by the manufacturer — not just the contractor. Mohsin Designs's certifications allow us to offer NDL warranties of up to 20 years.",
           },
         },
         {
@@ -229,7 +229,7 @@ const seoMap: Record<
           name: "Will commercial roof work disrupt my business operations?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Eagle Revolution strategically stages all equipment, cranes, and dumpsters to minimize impact on your parking, loading docks, and daily operations. We can schedule phased installations or weekend work to ensure zero business disruption.",
+            text: "Mohsin Designs strategically stages all equipment, cranes, and dumpsters to minimize impact on your parking, loading docks, and daily operations. We can schedule phased installations or weekend work to ensure zero business disruption.",
           },
         },
       ],
@@ -238,7 +238,7 @@ const seoMap: Record<
 
   "custom-decks": {
     title:
-      "Custom Deck Builder St. Louis MO | Composite & PVC Decks | Eagle Revolution",
+      "Custom Deck Builder St. Louis MO | Composite & PVC Decks | Mohsin Designs",
     description:
       "Expert custom deck builder in St. Louis, MO. Premium composite & PVC decking, pergolas, built-in lighting & outdoor kitchens. Free 3D CAD design. 50-year fade warranty. Permit handling included. Veteran-owned. Call 636-449-9714.",
     keywords: [
@@ -302,7 +302,7 @@ const seoMap: Record<
       description:
         "Custom outdoor living deck design and construction in St. Louis, MO. Premium composite and PVC decking with 50-year warranties. Free 3D CAD design, full permit handling, and built-in lighting available.",
       url: `${BASE_URL}/services/custom-decks`,
-      image: `${BASE_URL}/eagle-logo.png`,
+      image: `${BASE_URL}/portfolio_hero_bg.png`,
       offers: {
         "@type": "Offer",
         priceCurrency: "USD",
@@ -330,7 +330,7 @@ const seoMap: Record<
           name: "What is the best decking material: composite or PVC?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Both are excellent low-maintenance options. Composite decking blends wood fibers and plastic for a natural look. Cellular PVC is 100% polymer — fully waterproof, lighter, and available in brighter colors, making it ideal for pool decks or shaded areas in St. Louis. Eagle Revolution offers free 3D design consultations for both.",
+            text: "Both are excellent low-maintenance options. Composite decking blends wood fibers and plastic for a natural look. Cellular PVC is 100% polymer — fully waterproof, lighter, and available in brighter colors, making it ideal for pool decks or shaded areas in St. Louis. Mohsin Designs offers free 3D design consultations for both.",
           },
         },
         {
@@ -338,7 +338,7 @@ const seoMap: Record<
           name: "How much does a composite deck cost in St. Louis?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "A custom composite deck in St. Louis typically costs between $15,000 and $45,000+ depending on size, materials, railings, and add-ons like pergolas or built-in lighting. Eagle Revolution provides free, no-obligation detailed quotes.",
+            text: "A custom composite deck in St. Louis typically costs between $15,000 and $45,000+ depending on size, materials, railings, and add-ons like pergolas or built-in lighting. Mohsin Designs provides free, no-obligation detailed quotes.",
           },
         },
         {
@@ -346,7 +346,7 @@ const seoMap: Record<
           name: "Do I need a permit to build a deck in Missouri?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes. Most Missouri municipalities require a building permit for attached decks or decks above a certain height. Eagle Revolution handles the entire permitting process — from rendering blueprints to meeting city inspectors — so you never have to worry about it.",
+            text: "Yes. Most Missouri municipalities require a building permit for attached decks or decks above a certain height. Mohsin Designs handles the entire permitting process — from rendering blueprints to meeting city inspectors — so you never have to worry about it.",
           },
         },
         {
@@ -354,7 +354,7 @@ const seoMap: Record<
           name: "How long does it take to build a custom deck?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Most custom decks built by Eagle Revolution take 1–2 weeks from breaking ground, depending on size and municipal inspection timelines. We provide a complete project schedule upfront so you always know what to expect.",
+            text: "Most custom decks built by Mohsin Designs take 1–2 weeks from breaking ground, depending on size and municipal inspection timelines. We provide a complete project schedule upfront so you always know what to expect.",
           },
         },
         {
@@ -371,7 +371,7 @@ const seoMap: Record<
 
   "pvc-decking": {
     title:
-      "PVC Decking Installation St. Louis MO | 100% Waterproof Decks | Eagle Revolution",
+      "PVC Decking Installation St. Louis MO | 100% Waterproof Decks | Mohsin Designs",
     description:
       "100% waterproof cellular PVC decking installation in St. Louis, MO. Lifetime rot warranty, mold-proof, pool-ready. Lighter & cooler than composite. Azek, TimberTech & Fiberon installers. Free design consultation. Call 636-449-9714.",
     keywords: [
@@ -431,7 +431,7 @@ const seoMap: Record<
           name: "Does PVC decking get hot in summer?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "PVC decking in lighter colors stays significantly cooler than darker composite boards in direct summer sun. Eagle Revolution recommends specific cool-touch PVC lines for pool areas and sunny Missouri decks to ensure barefoot comfort even in July.",
+            text: "PVC decking in lighter colors stays significantly cooler than darker composite boards in direct summer sun. Mohsin Designs recommends specific cool-touch PVC lines for pool areas and sunny Missouri decks to ensure barefoot comfort even in July.",
           },
         },
         {
@@ -439,7 +439,7 @@ const seoMap: Record<
           name: "Is PVC decking slippery when wet?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Premium PVC brands feature an embossed wood-grain texture that provides excellent traction even around pools. Eagle Revolution specifically recommends wet-application PVC lines for pool surrounds and dock areas.",
+            text: "Premium PVC brands feature an embossed wood-grain texture that provides excellent traction even around pools. Mohsin Designs specifically recommends wet-application PVC lines for pool surrounds and dock areas.",
           },
         },
       ],
@@ -448,7 +448,7 @@ const seoMap: Record<
 
   "siding-soffit-fascia": {
     title:
-      "Siding, Soffit & Fascia Installation St. Louis MO | Eagle Revolution",
+      "Siding, Soffit & Fascia Installation St. Louis MO | Mohsin Designs",
     description:
       "Premium vinyl & composite siding installation in St. Louis, MO. 500+ color options, 200+ MPH wind rating, insulated upgrade R-10. Soffit & fascia aluminum capping. Veteran-owned. Free estimate. Call 636-449-9714.",
     keywords: [
@@ -500,7 +500,7 @@ const seoMap: Record<
           name: "How long does vinyl siding last in Missouri?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "High-quality premium vinyl siding can last 30–50 years or longer in Missouri's climate, maintaining its color without needing to be repainted. Eagle Revolution installs siding with fade-resistant finishes backed by lifetime manufacturer warranties.",
+            text: "High-quality premium vinyl siding can last 30–50 years or longer in Missouri's climate, maintaining its color without needing to be repainted. Mohsin Designs installs siding with fade-resistant finishes backed by lifetime manufacturer warranties.",
           },
         },
         {
@@ -517,7 +517,7 @@ const seoMap: Record<
 
   "windows-doors": {
     title:
-      "Window & Door Replacement St. Louis MO | Energy Star Rated | Eagle Revolution",
+      "Window & Door Replacement St. Louis MO | Energy Star Rated | Mohsin Designs",
     description:
       "Energy Star rated window & door replacement in St. Louis, MO. Save up to 35% on energy bills. Low-E glass, argon gas, custom vinyl options. Sound-reducing insulation. Multi-point door locks. Veteran-owned. Call 636-449-9714.",
     keywords: [
@@ -569,7 +569,7 @@ const seoMap: Record<
           name: "How much can I save on energy bills with new windows?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Homeowners in St. Louis typically save 25–35% on heating and cooling costs after installing Energy Star rated windows with Low-E coating and argon gas fills. Eagle Revolution exclusively installs Energy Star certified products backed by up to 99-year glass warranties.",
+            text: "Homeowners in St. Louis typically save 25–35% on heating and cooling costs after installing Energy Star rated windows with Low-E coating and argon gas fills. Mohsin Designs exclusively installs Energy Star certified products backed by up to 99-year glass warranties.",
           },
         },
         {
@@ -577,7 +577,7 @@ const seoMap: Record<
           name: "Are your windows Energy Star certified?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes. Eagle Revolution exclusively installs Energy Star rated windows utilizing Low-E coatings and argon gas technology. All our window installations meet or exceed Missouri's climate zone energy efficiency requirements.",
+            text: "Yes. Mohsin Designs exclusively installs Energy Star rated windows utilizing Low-E coatings and argon gas technology. All our window installations meet or exceed Missouri's climate zone energy efficiency requirements.",
           },
         },
       ],
@@ -586,7 +586,7 @@ const seoMap: Record<
 
   "gutters-protection": {
     title:
-      "Seamless Gutter Installation St. Louis MO | Leaf Guards | Eagle Revolution",
+      "Seamless Gutter Installation St. Louis MO | Leaf Guards | Mohsin Designs",
     description:
       "Seamless aluminum gutter installation & micro-mesh leaf guards in St. Louis, MO. On-site fabrication, 6-inch capacity, zero-clog guarantee. Foundation protection specialist. Veteran-owned. 24h turnaround. Call 636-449-9714.",
     keywords: [
@@ -646,7 +646,7 @@ const seoMap: Record<
           name: "How do seamless gutters work?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Eagle Revolution brings a machine directly to your home that rolls out a single continuous piece of aluminum cut to the exact length of your roofline. No mid-run seams means no mid-run leaks — ever.",
+            text: "Mohsin Designs brings a machine directly to your home that rolls out a single continuous piece of aluminum cut to the exact length of your roofline. No mid-run seams means no mid-run leaks — ever.",
           },
         },
       ],
@@ -699,7 +699,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: "website",
       images: [
         {
-          url: seo.featuredImage || seo.ogImage || `${BASE_URL}/eagle-logo.png`,
+          url: seo.featuredImage || seo.ogImage || `${BASE_URL}/portfolio_hero_bg.png`,
           width: 1200,
           height: 630,
           alt: service.title,
@@ -710,7 +710,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: "summary_large_image",
       title,
       description,
-      images: [seo.featuredImage || seo.twitterImage || seo.ogImage || `${BASE_URL}/eagle-logo.png`],
+      images: [seo.featuredImage || seo.twitterImage || seo.ogImage || `${BASE_URL}/portfolio_hero_bg.png`],
     },
   };
 }

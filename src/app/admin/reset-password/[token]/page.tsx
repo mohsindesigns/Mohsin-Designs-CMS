@@ -61,9 +61,9 @@ export default function ResetPasswordPage() {
         {/* Logo Section */}
         <div className="flex flex-col items-center mb-8">
           <div className="w-20 h-20 bg-white rounded-2xl shadow-xl flex items-center justify-center mb-4 border border-slate-100 p-2">
-             <img src="/eagle-logo.png" alt="Logo" className="w-full h-full object-contain" />
+             <Shield className="w-10 h-10 text-[#2430d2]" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Eagle Revolution</h1>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Mohsin Designs</h1>
           <p className="text-slate-500 text-sm mt-1">Admin Control Center</p>
         </div>
 
@@ -161,7 +161,7 @@ export default function ResetPasswordPage() {
         </div>
 
         <p className="text-center mt-8 text-slate-400 text-xs">
-          &copy; {new Date().getFullYear()} Eagle Revolution. All rights reserved.
+          &copy; {new Date().getFullYear()} Mohsin Designs. All rights reserved.
         </p>
       </div>
     </div>

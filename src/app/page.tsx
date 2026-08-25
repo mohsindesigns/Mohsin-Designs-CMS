@@ -26,13 +26,13 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     openGraph: {
       url: pageUrl,
-      siteName: "Eagle Revolution",
+      siteName: "Mohsin Designs",
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      site: "@EagleRevolution",
-      creator: "@EagleRevolution",
+      site: "@MohsinDesigns",
+      creator: "@MohsinDesigns",
     }
   };
 
@@ -114,7 +114,7 @@ export async function generateMetadata(): Promise<Metadata> {
       ...metadata.openGraph,
       title: seo.ogTitle || seo.metaTitle || homeData?.hero?.headline || settings?.siteTitle,
       description: seo.ogDescription || seo.metaDescription || homeData?.hero?.subheadline,
-      images: [seo.featuredImage || `${BASE_URL}/eagle-logo.png`].filter(Boolean) as string[],
+      images: [seo.featuredImage || `${BASE_URL}/portfolio_hero_bg.png`].filter(Boolean) as string[],
     },
     robots: {
       index: seo.metaRobotsIndex !== 'noindex',
@@ -157,7 +157,7 @@ export default async function Index() {
         slug: "/",
         type: "WebPage",
         faqs: faqs,
-        image: `${BASE_URL}/eagle-logo.png`
+        image: `${BASE_URL}/portfolio_hero_bg.png`
       });
       return (
         <>
@@ -191,7 +191,7 @@ export default async function Index() {
         slug: "/",
         type: "Service",
         faqs: faqs,
-        image: `${BASE_URL}/eagle-logo.png`
+        image: `${BASE_URL}/portfolio_hero_bg.png`
       });
       return (
         <>

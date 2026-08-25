@@ -146,7 +146,7 @@ export default function CareersPageEditor() {
                 value={data.careers?.section?.badge || ""}
                 onChange={(e) => updateSection("badge", e.target.value)}
                 className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 text-slate-900 font-bold focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-inner"
-                placeholder="e.g. Join Eagle Revolution"
+                placeholder="e.g. Join Mohsin Designs"
               />
             </div>
 

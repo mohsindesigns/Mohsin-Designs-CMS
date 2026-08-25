@@ -2,7 +2,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-const SECRET = new TextEncoder().encode(process.env.ADMIN_SESSION_SECRET || "eagle-secret-key-change-me-in-env");
+const SECRET = new TextEncoder().encode(process.env.ADMIN_SESSION_SECRET || "mohsin-designs-secret-key-change-me-in-env");
 
 export async function signToken(payload: any) {
   return await new SignJWT(payload)

@@ -376,9 +376,9 @@ export default function ServicesPageEditor() {
   ];
 
   const gridSection = data.services?.gridSection || {
-    badge: "Eagle Revolution",
+    badge: "Mohsin Designs",
     headline: "World Class <span class='text-primary'>Capabilities</span>",
-    description: "Every detail matters when it comes to structural integrity. Our team brings military-grade standards to every project across the St. Louis area."
+    description: "Every detail matters when it comes to digital performance. Our team brings architectural standards to every project worldwide."
   };
 
   const cta = data.services?.cta || {
@@ -724,7 +724,7 @@ export default function ServicesPageEditor() {
                     value={gridSection.badge || ""}
                     onChange={(e) => updateGridSection("badge", e.target.value)}
                     className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 text-slate-900 font-bold focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-inner"
-                    placeholder="e.g. Eagle Revolution"
+                    placeholder="e.g. Mohsin Designs"
                   />
                 </div>
 

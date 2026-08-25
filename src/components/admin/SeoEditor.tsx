@@ -255,7 +255,7 @@ export default function SeoEditor({ data, setData, pageSlug, pageTitle, pageCont
           <div className="space-y-4">
             <h3 className="text-[10px] font-bold text-[#646970] uppercase tracking-wider">Search Preview</h3>
             <div className="bg-white border border-[#c3c4c7] p-4 rounded-[3px] shadow-sm space-y-1">
-              <div className="text-[11px] text-[#4d5156] line-clamp-1">eaglerevolution.com › {pageSlug}</div>
+              <div className="text-[11px] text-[#4d5156] line-clamp-1">mohsindesigns.com › {pageSlug}</div>
               <h4 className="text-[15px] text-[#1a0dab] hover:underline cursor-pointer font-normal line-clamp-1">
                 {data.metaTitle || pageTitle}
               </h4>
@@ -271,7 +271,7 @@ export default function SeoEditor({ data, setData, pageSlug, pageTitle, pageCont
                 {data.ogImage ? <img src={data.ogImage} className="w-full h-full object-cover" /> : <ImageIcon className="w-6 h-6 text-[#c3c4c7]" />}
               </div>
               <div className="p-3 border-t border-[#f0f0f1]">
-                <div className="text-[9px] text-[#646970] uppercase font-bold">eaglerevolution.com</div>
+                <div className="text-[9px] text-[#646970] uppercase font-bold">mohsindesigns.com</div>
                 <div className="text-[13px] font-bold text-[#1d2327] line-clamp-1">{data.ogTitle || data.metaTitle || pageTitle}</div>
               </div>
             </div>

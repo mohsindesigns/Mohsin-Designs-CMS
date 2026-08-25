@@ -138,7 +138,7 @@ function LoginForm() {
         {/* Links */}
         <div className="mt-4 flex flex-col gap-2 text-[13px] text-[#2271b1]">
            <Link href="/admin/forgot-password" title="Lost your password?" className="hover:text-[#135e96]">Lost your password?</Link>
-           <Link href="/" title="Go to Eagle Revolution" className="hover:text-[#135e96]">← Go to Eagle Revolution</Link>
+           <Link href="/" title="Go to Mohsin Designs" className="hover:text-[#135e96]">← Go to Mohsin Designs</Link>
         </div>
       </div>
     </div>

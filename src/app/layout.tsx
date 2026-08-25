@@ -43,21 +43,21 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(BASE_URL),
     icons: {
-      icon: settings.favicon || `${BASE_URL}/eagle-logo.png`,
-      apple: settings.favicon || `${BASE_URL}/eagle-logo.png`,
+      icon: settings.favicon || `${BASE_URL}/portfolio_hero_bg.png`,
+      apple: settings.favicon || `${BASE_URL}/portfolio_hero_bg.png`,
     },
     facebook: {
-      appId: "Eagle-Revolution-61564977483096",
+      appId: "Mohsin-Designs",
     },
     title: {
-      default: settings.siteTitle,
-      template: settings.siteTemplate,
+      default: settings.siteTitle || "Mohsin Designs",
+      template: settings.siteTemplate || "%s | Mohsin Designs",
     },
-    description: settings.siteDescription,
-    keywords: settings.siteKeywords || ["Eagle Revolution"],
-    authors: [{ name: "Eagle Revolution", url: BASE_URL }],
-    creator: "Eagle Revolution",
-    publisher: "Eagle Revolution",
+    description: settings.siteDescription || "Modern Web Architecture, SEO & Digital Marketing Solutions by Mohsin Designs.",
+    keywords: settings.siteKeywords || ["Mohsin Designs", "Web Design", "SEO Services", "Digital Marketing"],
+    authors: [{ name: "Mohsin Designs", url: BASE_URL }],
+    creator: "Mohsin Designs",
+    publisher: "Mohsin Designs",
 
     // ── Robots & Canonical ──
     robots: {
@@ -76,15 +76,15 @@ export async function generateMetadata(): Promise<Metadata> {
       type: "website",
       locale: "en_US",
       url: BASE_URL,
-      siteName: "Eagle Revolution",
-      title: settings.siteTitle,
-      description: settings.siteDescription,
+      siteName: "Mohsin Designs",
+      title: settings.siteTitle || "Mohsin Designs",
+      description: settings.siteDescription || "Modern Web Architecture, SEO & Digital Marketing Solutions by Mohsin Designs.",
       images: [
         {
-          url: settings.favicon || `${BASE_URL}/eagle-logo.png`,
+          url: settings.favicon || `${BASE_URL}/portfolio_hero_bg.png`,
           width: 1200,
           height: 630,
-          alt: "Eagle Revolution – Veteran Owned Roofing & Home Improvement",
+          alt: "Mohsin Designs – Web Design, SEO & Digital Marketing Agency",
           type: "image/png",
         },
       ],
@@ -93,11 +93,11 @@ export async function generateMetadata(): Promise<Metadata> {
     // ── Twitter Cards ──
     twitter: {
       card: "summary_large_image",
-      title: settings.siteTitle,
-      description: settings.siteDescription,
-      images: [settings.favicon || `${BASE_URL}/eagle-logo.png`],
-      creator: "@EagleRevolution",
-      site: "@EagleRevolution",
+      title: settings.siteTitle || "Mohsin Designs",
+      description: settings.siteDescription || "Modern Web Architecture, SEO & Digital Marketing Solutions by Mohsin Designs.",
+      images: [settings.favicon || `${BASE_URL}/portfolio_hero_bg.png`],
+      creator: "@MohsinDesigns",
+      site: "@MohsinDesigns",
     },
 
     other: {

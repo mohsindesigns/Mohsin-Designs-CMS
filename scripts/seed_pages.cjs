@@ -25,8 +25,8 @@ async function seedPages() {
                 template: 'home',
                 status: 'published',
                 metadata: {
-                    title: 'Eagle Revolution | Home',
-                    description: 'Welcome to Eagle Revolution - Your Home Improvement Experts.'
+                    title: 'Mohsin Designs | Home',
+                    description: 'Welcome to Mohsin Designs - Your Home Improvement Experts.'
                 },
                 createdAt: new Date(),
                 updatedAt: new Date()
@@ -37,7 +37,7 @@ async function seedPages() {
                 template: 'about',
                 status: 'published',
                 metadata: {
-                    title: 'About Eagle Revolution',
+                    title: 'About Mohsin Designs',
                     description: 'Learn about our history, mission, and commitment to excellence.'
                 },
                 createdAt: new Date(),
@@ -49,7 +49,7 @@ async function seedPages() {
                 template: 'services',
                 status: 'published',
                 metadata: {
-                    title: 'Our Services | Eagle Revolution',
+                    title: 'Our Services | Mohsin Designs',
                     description: 'Explore our wide range of home improvement services.'
                 },
                 createdAt: new Date(),
@@ -61,8 +61,8 @@ async function seedPages() {
                 template: 'team',
                 status: 'published',
                 metadata: {
-                    title: 'Our Team | Eagle Revolution',
-                    description: 'Meet the professionals behind Eagle Revolution.'
+                    title: 'Our Team | Mohsin Designs',
+                    description: 'Meet the professionals behind Mohsin Designs.'
                 },
                 createdAt: new Date(),
                 updatedAt: new Date()
@@ -73,8 +73,8 @@ async function seedPages() {
                 template: 'careers',
                 status: 'published',
                 metadata: {
-                    title: 'Careers | Eagle Revolution',
-                    description: 'Explore career opportunities with Eagle Revolution.'
+                    title: 'Careers | Mohsin Designs',
+                    description: 'Explore career opportunities with Mohsin Designs.'
                 },
                 createdAt: new Date(),
                 updatedAt: new Date()
@@ -85,7 +85,7 @@ async function seedPages() {
                 template: 'reviews',
                 status: 'published',
                 metadata: {
-                    title: 'Reviews | Eagle Revolution',
+                    title: 'Reviews | Mohsin Designs',
                     description: 'Read what our customers have to say about us.'
                 },
                 createdAt: new Date(),
@@ -97,7 +97,7 @@ async function seedPages() {
                 template: 'faq',
                 status: 'published',
                 metadata: {
-                    title: 'FAQ | Eagle Revolution',
+                    title: 'FAQ | Mohsin Designs',
                     description: 'Find answers to common questions about our services.'
                 },
                 createdAt: new Date(),
@@ -109,7 +109,7 @@ async function seedPages() {
                 template: 'gallery',
                 status: 'published',
                 metadata: {
-                    title: 'Portfolio | Eagle Revolution',
+                    title: 'Portfolio | Mohsin Designs',
                     description: 'View our completed projects and quality workmanship.'
                 },
                 createdAt: new Date(),
@@ -121,7 +121,7 @@ async function seedPages() {
                 template: 'contact',
                 status: 'published',
                 metadata: {
-                    title: 'Contact | Eagle Revolution',
+                    title: 'Contact | Mohsin Designs',
                     description: 'Get in touch with us for a free estimate.'
                 },
                 createdAt: new Date(),

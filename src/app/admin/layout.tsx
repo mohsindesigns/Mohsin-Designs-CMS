@@ -41,7 +41,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const isPublicPath = pathname === "/admin/login" || pathname === "/admin/forgot-password" || pathname?.startsWith("/admin/reset-password");
 
   useEffect(() => {
-    document.title = "Eagle Dashboard Mohsin Design";
+    document.title = "Mohsin Designs Admin Dashboard";
 
     if (isPublicPath) {
       setLoading(false);
@@ -116,7 +116,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <button onClick={() => setMobileOpen(!mobileOpen)} className="lg:hidden hover:bg-[#2c3338] px-3 h-full"><Menu className="w-4 h-4" /></button>
             <Link href="/admin" className="hover:bg-[#2c3338] px-4 h-full flex items-center gap-2">
                <Shield className="w-4.5 h-4.5 text-[#72aee6]" />
-               <span className="font-bold text-[#f0f0f1]">Eagle Revolution</span>
+               <span className="font-bold text-[#f0f0f1]">Mohsin Designs</span>
             </Link>
             <Link href="/" target="_blank" className="hover:bg-[#2c3338] px-3.5 h-full flex items-center gap-1.5 hidden sm:flex">
                <Globe className="w-3.5 h-3.5 text-[#8f959c]" />

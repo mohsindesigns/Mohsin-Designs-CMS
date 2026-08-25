@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI || "";
-const MONGODB_DB = process.env.MONGODB_DB || "eagle_revolution";
+const MONGODB_DB = process.env.MONGODB_DB || "mdseo2025";
 
 /**
  * Global is used here to maintain a cached connection across hot reloads

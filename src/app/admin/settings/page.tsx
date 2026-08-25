@@ -223,8 +223,8 @@ export default function SettingsEditor() {
   useEffect(() => {
     fetch("/api/content").then((res) => res.json()).then((json) => {
         const d = { ...json };
-        if (!d.settings) d.settings = { siteTitle: "Eagle Revolution", siteTemplate: "%s | Eagle Revolution", favicon: "/eagle-logo.png" };
-        if (!d.navbar) d.navbar = { companyLinks: [], ctaText: "Book Now", ctaLink: "/contact-us", logo: "/eagle-logo.png" };
+        if (!d.settings) d.settings = { siteTitle: "Mohsin Designs", siteTemplate: "%s | Mohsin Designs", favicon: "/portfolio_hero_bg.png" };
+        if (!d.navbar) d.navbar = { companyLinks: [], ctaText: "Book Now", ctaLink: "/contact-us", logo: "/portfolio_hero_bg.png" };
         setData(d);
       });
     Promise.all([

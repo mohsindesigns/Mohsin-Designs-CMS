@@ -51,4 +51,4 @@ Allow: /
 User-agent: Meta-ExternalFetcher
 Allow: /
 
-Sitemap: https://eaglerevolution.com/sitemap.xml
+Sitemap: https://mohsindesigns.com/sitemap.xml

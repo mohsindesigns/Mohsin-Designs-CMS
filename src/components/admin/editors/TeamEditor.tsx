@@ -28,7 +28,7 @@ export default function TeamEditor({ pageId, data, setData }: { pageId: string, 
     if (data && Object.keys(data).length === 0) {
        setData({
          team: {
-           section: { badge: "Our Leadership", headline: "Expert hands with Visionary minds", description: "Meet the dedicated professionals leading the charge at Eagle Revolution." },
+           section: { badge: "Our Leadership", headline: "Expert hands with Visionary minds", description: "Meet the dedicated professionals leading the charge at Mohsin Designs." },
            members: []
          }
        });
@@ -101,7 +101,7 @@ export default function TeamEditor({ pageId, data, setData }: { pageId: string, 
       <div className="space-y-6">
         <div className="mb-6">
            <h2 className={UI.sectionHeader}>{activeTabTitle}</h2>
-           <p className="text-[12px] text-[#646970] -mt-2">Manage the leadership and specialists representing Eagle Revolution.</p>
+           <p className="text-[12px] text-[#646970] -mt-2">Manage the leadership and specialists representing Mohsin Designs.</p>
         </div>
 
         <AnimatePresence mode="wait">
@@ -204,7 +204,7 @@ export default function TeamEditor({ pageId, data, setData }: { pageId: string, 
                                      <label className={UI.label}>Direct Email</label>
                                      <input type="text" value={member.email || ""} onChange={(e) => {
                                         const newM = [...data.team.members]; newM[i].email = e.target.value; updateTeam("members", null, newM);
-                                     }} className={UI.input} placeholder="name@eaglerevolution.com" />
+                                     }} className={UI.input} placeholder="name@mohsindesigns.com" />
                                   </div>
                                </div>
                             </div>

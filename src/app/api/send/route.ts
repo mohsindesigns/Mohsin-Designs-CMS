@@ -191,14 +191,14 @@ export async function POST(request: Request) {
     html += `
         <p style="font-size: 12px; color: #666; margin-top: 30px; border-top: 1px solid #eee; padding-top: 10px;">
           ⏱️ Submitted: ${new Date().toLocaleString()}<br>
-          🇺🇸 Veteran Owned & Operated
+          🚀 Mohsin Designs Web & SEO Agency
         </p>
       </div>
     `;
 
     // Prepare email content
     const emailContent = `
-NEW SUBMISSION - EAGLE REVOLUTION
+NEW SUBMISSION - MOHSIN DESIGNS
 ----------------------------------
 Name: ${name}
 Email: ${email}
@@ -220,7 +220,7 @@ Source: Website
 
     // Send email using Resend
     const { data: resendData, error: resendError } = await resend.emails.send({
-      from: 'Eagle Revolution <onboarding@resend.dev>',
+      from: 'Mohsin Designs <onboarding@resend.dev>',
       to: [receiverEmail],
       subject: subject || `New Lead: ${name}`,
       html: `

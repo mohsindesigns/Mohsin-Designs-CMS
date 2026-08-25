@@ -40,19 +40,19 @@ export default function SettingsEditor({ pageId, data, setData }: { pageId: stri
   useEffect(() => {
     if (data && Object.keys(data).length === 0) {
        setData({
-         settings: { siteTitle: "Eagle Revolution", siteTemplate: "%s | Eagle Revolution", favicon: "" },
-         navbar: { logo: "", siteTitle: "Eagle Revolution", ctaText: "Book Now", ctaLink: "/contact-us", companyLinks: [] },
+         settings: { siteTitle: "Mohsin Designs", siteTemplate: "%s | Mohsin Designs", favicon: "" },
+         navbar: { logo: "", siteTitle: "Mohsin Designs", ctaText: "Book Now", ctaLink: "/contact-us", companyLinks: [] },
          footer: { 
-           company: { name: "Eagle Revolution", tagline: "Heritage. Integrity. Precision.", description: "", logo: "" },
+           company: { name: "Mohsin Designs", tagline: "Vision. Creativity. Performance.", description: "", logo: "" },
            newsletter: { placeholder: "Enter your email", buttonText: "Subscribe" },
-           services: { title: "Our Expertise", materials: { title: "Premium Materials", items: [] } },
+           services: { title: "Our Services", materials: { title: "Specializations", items: [] } },
            contact: { title: "Contact Us", email: "", phone: "", address: "", emergency: "", areas: "" },
            certifications: [],
            social: [],
-           marquee: { speed: 30, repeats: 8, texts: ["Heritage", "Precision", "Integrity"] },
-           bottom: { copyright: "© 2024 Eagle Revolution", rights: "All Rights Reserved", tagline: "Crafted with Precision", links: [] }
+           marquee: { speed: 30, repeats: 8, texts: ["Design", "Performance", "Growth"] },
+           bottom: { copyright: `© ${new Date().getFullYear()} Mohsin Designs`, rights: "All Rights Reserved", tagline: "Crafted with Precision", links: [] }
          },
-         hours: { monday: "8am - 6pm", saturday: "9am - 3pm", sunday: "Closed" }
+         hours: { monday: "9am - 6pm", saturday: "10am - 4pm", sunday: "Closed" }
        });
     }
   }, [data, setData]);

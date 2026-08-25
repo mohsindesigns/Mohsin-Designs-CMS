@@ -51,9 +51,9 @@ export async function POST(req: Request) {
     // Send email
     try {
       await transporter.sendMail({
-        from: `"Eagle Revolution" <${process.env.SMTP_USER}>`,
+        from: `"Mohsin Designs" <${process.env.SMTP_USER}>`,
         to: user.email,
-        subject: 'Password Reset Request - Eagle Revolution',
+        subject: 'Password Reset Request - Mohsin Designs',
         html: `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
             <div style="background-color: #2430d2; padding: 20px; text-align: center;">
@@ -61,7 +61,7 @@ export async function POST(req: Request) {
             </div>
             <div style="padding: 30px; text-align: center;">
               <p style="color: #64748b; font-size: 16px; margin-bottom: 30px;">
-                You requested a password reset for your Eagle Revolution Admin account. Click the button below to set a new password. This link will expire in 1 hour.
+                You requested a password reset for your Mohsin Designs Admin account. Click the button below to set a new password. This link will expire in 1 hour.
               </p>
               <a href="${resetUrl}" style="background-color: #2430d2; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;">
                 Reset My Password

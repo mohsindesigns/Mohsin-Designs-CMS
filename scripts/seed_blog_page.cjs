@@ -49,7 +49,7 @@ async function run() {
       seo: {
         metaTitle: "Blog & Engineering Insights | Mohsin Designs",
         metaDescription: "Actionable blueprints, architectural deep-dives, and conversion rate science to build compounding market advantage.",
-        canonicalUrl: "https://eaglerevolution.com/blog",
+        canonicalUrl: "https://mohsindesigns.com/blog",
         metaRobotsIndex: "index",
         metaRobotsFollow: "follow"
       }

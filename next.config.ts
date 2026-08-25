@@ -17,6 +17,12 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'mohsindesigns.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'eaglerevolution.com',
         port: '',
         pathname: '/**',
