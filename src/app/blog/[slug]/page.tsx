@@ -274,7 +274,7 @@ export default async function BlogPostPage({ params }: Props) {
   let tableOfContents: { id: string; text: string; level: number }[] = [];
   let processedContent = rawHtmlContent;
 
-  const headingRegex = /<(h[123])>(.*?)<\/h[123]>/gi;
+  const headingRegex = /<(h[123])\b[^>]*>(.*?)<\/h[123]>/gi;
   let match;
   const slugify = (text: string) =>
     text
@@ -284,16 +284,18 @@ export default async function BlogPostPage({ params }: Props) {
 
   while ((match = headingRegex.exec(rawHtmlContent)) !== null) {
     const tag = match[1].toLowerCase();
-    const text = match[2].replace(/<[^>]*>/g, "");
-    const id = slugify(text) || `section-${tableOfContents.length + 1}`;
+    const cleanText = match[2].replace(/<[^>]*>/g, "").trim();
+    if (!cleanText || cleanText.length < 2) continue;
 
-    const finalTag = tag === "h1" ? "h2" : tag;
-    const level = parseInt(finalTag[1]);
+    const id = slugify(cleanText) || `section-${tableOfContents.length + 1}`;
+    const level = parseInt(tag[1]);
 
-    tableOfContents.push({ id, text, level });
+    tableOfContents.push({ id, text: cleanText, level });
 
     const originalTag = match[0];
-    const newTag = `<${finalTag} id="${id}" class="scroll-mt-32 font-heading text-2xl sm:text-3xl font-black text-brand-dark dark:text-white mt-12 mb-4 leading-snug">${match[2]}</${finalTag}>`;
+    const newTag = `<${tag} id="${id}" class="scroll-mt-32 font-heading ${
+      level <= 2 ? "text-2xl sm:text-3xl mt-12 mb-4" : "text-xl sm:text-2xl mt-8 mb-3"
+    } font-black text-brand-dark dark:text-white leading-snug">${match[2]}</${tag}>`;
     processedContent = processedContent.replace(originalTag, newTag);
   }
 
@@ -447,20 +449,20 @@ export default async function BlogPostPage({ params }: Props) {
 
                 {/* Table of Contents Links */}
                 {tableOfContents.length > 0 ? (
-                  <nav className="space-y-1.5 max-h-[380px] overflow-y-auto pr-1">
+                  <nav className="space-y-1.5 max-h-[380px] overflow-y-auto pr-2 custom-scrollbar">
                     {tableOfContents.map((item, idx) => (
                       <a
                         key={idx}
                         href={`#${item.id}`}
-                        className={`flex items-center gap-3.5 py-2.5 px-3.5 rounded-xl transition-all duration-300 group ${
-                          item.level === 1
+                        className={`flex items-center gap-3.5 py-2 px-3 rounded-xl transition-all duration-300 group ${
+                          item.level <= 2
                             ? "text-brand-dark dark:text-white font-bold hover:bg-brand-blue/10 dark:hover:bg-brand-yellow/10 hover:text-brand-blue dark:hover:text-brand-yellow bg-brand-zinc-50/50 dark:bg-zinc-900/40"
-                            : "pl-8 text-brand-zinc-500 dark:text-zinc-400 hover:text-brand-blue dark:hover:text-brand-yellow hover:bg-brand-zinc-50 dark:hover:bg-zinc-900/40"
+                            : "pl-7 text-brand-zinc-500 dark:text-zinc-400 hover:text-brand-blue dark:hover:text-brand-yellow hover:bg-brand-zinc-50 dark:hover:bg-zinc-900/40"
                         }`}
                       >
                         <div
                           className={`shrink-0 w-2 h-2 rounded-full transition-all duration-300 ${
-                            item.level === 1
+                            item.level <= 2
                               ? "bg-brand-blue dark:bg-brand-yellow scale-100 shadow-[0_0_8px_rgba(3,6,172,0.4)] dark:shadow-[0_0_8px_rgba(233,189,54,0.4)]"
                               : "bg-brand-zinc-300 dark:bg-zinc-700 scale-75 group-hover:bg-brand-blue group-hover:scale-100"
                           }`}
