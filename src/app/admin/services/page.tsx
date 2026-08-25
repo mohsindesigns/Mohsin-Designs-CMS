@@ -1,116 +1,56 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  Plus, Pencil, Trash2, Loader2, CircleHelp, Save, X,
-  ChevronRight, Globe, Layers, ListFilter, Layout,
-  Settings, Info, Shield, CheckCircle, CircleHelp as FaqIcon,
-  Search, ExternalLink, Image as ImageIcon, Upload,
-  Check, MoveUp, MoveDown, Home, Building2, Building,
-  Droplets, ShieldCheck, Clock, Award, Users, TrendingUp,
-  BadgeCheck, Star, Zap, Sparkles, Palette, Sun, Snowflake,
-  Trophy, Hammer, Truck, ClipboardCheck, FileText, ArrowRight,
-  Wrench, HardHat, Ruler, Paintbrush, Wind, Flame, Thermometer,
-  Copy, Shovel, Fence, Drill, Square, Box, Construction, PenTool as Tool,
-  MapPin, Phone, Mail, DollarSign, Target, Briefcase, Cpu, Monitor, Megaphone
+  Plus, Pencil, Trash2, Loader2, Save, X,
+  ChevronRight, ExternalLink, Image as ImageIcon,
+  Check, MoveUp, MoveDown, Star, Sparkles, Layout,
+  Layers, Settings, Info, Shield, CheckCircle2,
+  Search, ArrowRight, Eye, Copy, RefreshCw, FileText,
+  Calendar, Edit3
 } from "lucide-react";
-import * as LucideIcons from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import ImageField from "@/components/admin/ImageField";
+import IconSelector from "@/components/admin/IconSelector";
 import SeoEditor from "@/components/admin/SeoEditor";
-import dynamic from "next/dynamic";
+import MediaSelector from "@/components/admin/MediaSelector";
+import { BASE_URL } from "@/lib/constants";
+import { UI } from "@/components/admin/editors/styles";
 
-const QuillEditor = dynamic(() => import("@/components/admin/QuillEditor"), {
-  ssr: false,
-  loading: () => <div className="h-48 bg-[#f6f7f7] animate-pulse border border-[#c3c4c7] rounded-sm flex items-center justify-center text-[#8c8f94] text-xs">Loading Editor...</div>
-});
-
-const ICON_LIST = Array.from(new Set([
-  "Search", "Monitor", "Megaphone", "MousePointerClick", "Palette", "PenTool",
-  "ShoppingCart", "BarChart2", "CheckCircle2", "Globe", "MapPin", "Star",
-  "Trophy", "ShieldCheck", "Award", "DollarSign", "Briefcase", "Cpu",
-  "TrendingUp", "Building2", "Target", "Terminal", "Zap", "HeartHandshake",
-  "Shield", "Layers", "Home", "Droplet", "Clock", "Layout", "Users", "Sparkles"
-]));
-
-const IconComponentMap: Record<string, any> = LucideIcons;
-
-function IconSelector({ value, onChange }: { value: string, onChange: (v: string) => void }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const SelectedIcon = IconComponentMap[value] || CircleHelp;
-
-  return (
-    <div className="relative inline-block">
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 bg-white border border-[#8c8f94] rounded-[3px] px-3 py-1 text-[13px] hover:border-[#2271b1] transition-all"
-      >
-        <SelectedIcon className="w-3.5 h-3.5 text-[#50575e]" />
-        <span>{value || "Select Icon"}</span>
-      </button>
-
-      {isOpen && (
-        <div className="absolute z-50 mt-1 w-64 bg-white border border-[#c3c4c7] shadow-md p-3 rounded-[3px]">
-          <div className="grid grid-cols-6 gap-1 max-h-48 overflow-y-auto">
-            {ICON_LIST.map((iconName) => {
-              const IconComp = IconComponentMap[iconName];
-              return (
-                <button
-                  key={iconName}
-                  onClick={() => {
-                    onChange(iconName);
-                    setIsOpen(false);
-                  }}
-                  className={`p-1.5 rounded hover:bg-[#f0f0f1] ${value === iconName ? "bg-[#2271b1] text-white" : "text-[#50575e]"}`}
-                  title={iconName}
-                >
-                  {IconComp ? (
-                    <IconComp className="w-4 h-4" />
-                  ) : (
-                    <div className="w-4 h-4 border border-dashed rounded-full" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
+// ── Bullet Point / Array Input Helper ────────────────────────────────────────
 function BulletListEditor({
   label,
-  items,
+  items = [],
   onChange,
-  placeholder = "Enter item..."
+  placeholder = "Add an item..."
 }: {
   label: string;
   items: string[];
   onChange: (items: string[]) => void;
   placeholder?: string;
 }) {
-  const currentItems = Array.isArray(items) ? items : (items ? [items] : []);
+  const currentItems = Array.isArray(items) ? items : [];
 
   return (
-    <div className="space-y-2 bg-[#f8f9fa] border border-[#dcdcde] p-3 rounded-[4px]">
+    <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <label className="text-[11px] font-bold uppercase tracking-wider text-[#50575e]">{label}</label>
+        <label className={UI.label}>{label}</label>
         <button
           type="button"
           onClick={() => onChange([...currentItems, ""])}
-          className="inline-flex items-center gap-1 text-[11px] font-bold text-[#2271b1] hover:text-[#135e96] hover:underline"
+          className="text-[12px] font-bold text-[#2271b1] hover:underline flex items-center gap-1"
         >
-          + Add Point
+          <Plus className="w-3.5 h-3.5" /> Add Point
         </button>
       </div>
 
-      <div className="space-y-1.5">
+      <div className="space-y-2">
         {currentItems.map((item, idx) => (
           <div key={idx} className="flex items-center gap-2">
-            <span className="text-[11px] font-mono font-bold text-[#8c8f94] w-5 text-right shrink-0">{idx + 1}.</span>
+            <span className="text-[12px] font-mono font-bold text-[#8c8f94] w-6 text-right shrink-0">
+              {idx + 1}.
+            </span>
             <input
               type="text"
               value={item}
@@ -120,7 +60,7 @@ function BulletListEditor({
                 updated[idx] = e.target.value;
                 onChange(updated);
               }}
-              className="flex-1 border border-[#8c8f94] px-2.5 py-1 text-xs rounded-[3px] bg-white focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
+              className={UI.input}
             />
             <button
               type="button"
@@ -128,16 +68,16 @@ function BulletListEditor({
                 const updated = currentItems.filter((_, i) => i !== idx);
                 onChange(updated);
               }}
-              className="text-[#d63638] hover:text-red-700 p-1 text-xs font-bold shrink-0"
-              title="Delete this point"
+              className="text-[#d63638] hover:text-red-700 p-1.5 shrink-0"
+              title="Delete point"
             >
-              ✕
+              <Trash2 className="w-4 h-4" />
             </button>
           </div>
         ))}
         {currentItems.length === 0 && (
-          <div className="text-[11px] text-[#8c8f94] italic py-1">
-            No items yet. Click <span className="font-bold text-[#2271b1] cursor-pointer" onClick={() => onChange([""])}>+ Add Point</span> to add points.
+          <div className="text-[12px] text-[#8c8f94] italic py-1">
+            No items yet. Click <span className="font-bold text-[#2271b1] cursor-pointer" onClick={() => onChange([""])}>+ Add Point</span> to add entries.
           </div>
         )}
       </div>
@@ -145,12 +85,54 @@ function BulletListEditor({
   );
 }
 
+// ── Comma Separated Text Input ───────────────────────────────────────────────
+function CommaSeparatedInput({
+  value,
+  onChange,
+  className,
+  placeholder,
+}: {
+  value: string[];
+  onChange: (val: string[]) => void;
+  className?: string;
+  placeholder?: string;
+}) {
+  const [text, setText] = useState(() => (Array.isArray(value) ? value.join(", ") : ""));
+
+  useEffect(() => {
+    const current = Array.isArray(value) ? value.join(", ") : "";
+    const parsedCurrent = current.split(",").map((s) => s.trim()).filter(Boolean);
+    const parsedText = text.split(",").map((s) => s.trim()).filter(Boolean);
+    if (JSON.stringify(parsedCurrent) !== JSON.stringify(parsedText)) {
+      setText(current);
+    }
+  }, [value]);
+
+  return (
+    <input
+      type="text"
+      autoComplete="off"
+      value={text}
+      onChange={(e) => {
+        const raw = e.target.value;
+        setText(raw);
+        const parsed = raw.split(",").map((s) => s.trim()).filter(Boolean);
+        onChange(parsed);
+      }}
+      className={className}
+      placeholder={placeholder}
+    />
+  );
+}
+
+// ── Default Template ─────────────────────────────────────────────────────────
 const DEFAULT_SERVICE_TEMPLATE = {
   title: "",
   slug: "",
   tag: "Premium Solution",
   icon: "Search",
   status: "published",
+  createdAt: new Date().toISOString(),
   hero: {
     titleIntro: "Transform Your Business With",
     titleHighlight: "Expert Solutions",
@@ -219,224 +201,175 @@ const DEFAULT_SERVICE_TEMPLATE = {
     eyebrow: "05 // MEASURABLE OUTCOMES",
     titleIntro: "Key Business",
     titleHighlight: "Advantages",
-    outcomeText: "Guaranteed Outcome",
+    description: "Delivering concrete enterprise value through robust technical architecture and conversion science.",
     list: [
-      { metric: "350%", title: "Organic Visibility", desc: "Accelerating discovery on top search engines through clean structured code.", outcomeText: "Guaranteed Outcome" },
-      { metric: "4.8x", title: "Conversion Yield", desc: "Frictionless UX funnels designed specifically to capture and convert leads.", outcomeText: "Guaranteed Outcome" },
-      { metric: "99.9%", title: "Reliability & Uptime", desc: "Enterprise infrastructure built on modern serverless edge architecture.", outcomeText: "Guaranteed Outcome" },
-      { metric: "<1s", title: "Load Performance", desc: "Lightning fast asset delivery boosting Core Web Vitals and SEO rankings.", outcomeText: "Guaranteed Outcome" }
+      { num: "01", title: "Compounding Traffic & Authority", desc: "Sustainable search visibility built on clean semantic markup and fast core web vitals.", tag: "Organic Reach" },
+      { num: "02", title: "Maximized Conversion Velocity", desc: "User flows and page speed optimized to turn first-time visitors into long-term enterprise clients.", tag: "Conversion" },
+      { num: "03", title: "Enterprise Scalability", desc: "Zero technical debt architecture ready to scale without performance degradation.", tag: "Engineering" }
     ]
   },
   process: {
-    eyebrow: "06 // IMPLEMENTATION ROADMAP",
-    titleIntro: "Our Step-by-Step",
-    titleHighlight: "Roadmap",
-    description: "We orchestrate campaigns sequentially, guaranteeing structured code deliverables and auditable checkpoints at each stage of your roadmap.",
-    calloutTag: "// PROCESS COMPLIANCE",
-    calloutText: "Every milestone is cataloged in the shared workspace, providing real-time deployment logs and verification reports.",
+    eyebrow: "06 // EXECUTION PROCESS",
+    titleIntro: "A Systematic Path To",
+    titleHighlight: "Market Leadership",
+    description: "From discovery to post-launch optimization, our methodology is built for speed and precision.",
     steps: [
-      {
-        title: "Discovery & Technical Diagnostics",
-        desc: "Full audit of your digital ecosystem, tech stack, and user funnels.",
-        phaseTag: "PHASE 01 // CAMPAIGN",
-        deliverables: ["Google Search Console crawl diagnostics log", "Competitor backlinks overlapping index", "Core Web Vitals loading bottleneck check"],
-        footerLeft: "Verification Checkpoint",
-        footerRight: "Verified Node"
-      },
-      {
-        title: "Architecture & Wireframing",
-        desc: "Structuring high-converting user flows and component hierarchies.",
-        phaseTag: "PHASE 02 // CAMPAIGN",
-        deliverables: ["Commercial search priority map authoring", "Intent-based topic structure planning", "Semantic keyword clusters setup"],
-        footerLeft: "Verification Checkpoint",
-        footerRight: "Verified Node"
-      },
-      {
-        title: "Production Build & Optimization",
-        desc: "Clean development with modern frameworks and strict performance standards.",
-        phaseTag: "PHASE 03 // CAMPAIGN",
-        deliverables: ["H1-H4 headings structures rewrite rules", "Title & Meta description tags optimizations", "JSON-LD schema structured data injection"],
-        footerLeft: "Verification Checkpoint",
-        footerRight: "Verified Node"
-      },
-      {
-        title: "Verification & Quality Assurance",
-        desc: "Multi-device cross-browser testing and performance stress audits.",
-        phaseTag: "PHASE 04 // CAMPAIGN",
-        deliverables: ["Render-blocking scripts async tags setup", "Vercel edge CDN cache configuration", "Image formats (WebP/AVIF) audit fixes"],
-        footerLeft: "Verification Checkpoint",
-        footerRight: "Verified Node"
-      },
-      {
-        title: "Deployment & Attribution Sync",
-        desc: "Live rollout with custom event telemetry and analytics tracking.",
-        phaseTag: "PHASE 05 // CAMPAIGN",
-        deliverables: ["High-authority editorial mentions pitches", "Niche local citation indexes registry", "Toxic backlink removal & disavow log"],
-        footerLeft: "Verification Checkpoint",
-        footerRight: "Verified Node"
-      },
-      {
-        title: "Iterative Growth & Scaling",
-        desc: "Continuous improvements driven by verified performance data.",
-        phaseTag: "PHASE 06 // CAMPAIGN",
-        deliverables: ["Custom GA4 key event tracking logs", "Attributed phone calls & forms tracking", "Bi-weekly Looker Studio conversion audit"],
-        footerLeft: "Verification Checkpoint",
-        footerRight: "Verified Node"
-      }
+      { step: "01", title: "Discovery & Analysis", desc: "Comprehensive technical review and competitive audit.", badge: "PHASE 01" },
+      { step: "02", title: "System Architecture", desc: "Designing scalable blueprints and modular component design.", badge: "PHASE 02" },
+      { step: "03", title: "Production Build", desc: "Writing clean, performant Next.js code with zero compromises.", badge: "PHASE 03" },
+      { step: "04", title: "QA & Deployment", desc: "Rigorous automated testing and live production deployment.", badge: "PHASE 04" }
     ]
   },
   results: {
-    eyebrow: "07 // PROVEN PERFORMANCE",
-    titleIntro: "Real-World",
-    titleHighlight: "Impact & ROI",
-    caseStudies: [
-      {
-        title: "Enterprise Brand Growth",
-        challenge: "Outdated legacy site experiencing slow load speeds and declining conversions.",
-        strategy: "Engineered headless architecture with streamlined conversion pathways.",
-        outcome: "+240% Qualified Inbound Inquiries"
-      },
-      {
-        title: "Commercial Multi-Location Reach",
-        challenge: "Fragmented map listings and poor regional organic rankings.",
-        strategy: "Deployed localized landing architecture and high-authority citation schema.",
-        outcome: "+410% Map Pack Actions"
-      }
-    ],
+    eyebrow: "07 // PROVEN IMPACT",
+    titleIntro: "Real Results For",
+    titleHighlight: "Ambitious Brands",
+    description: "Data-driven outcomes delivered across high-growth industries.",
     metrics: [
-      { value: "450%", label: "TRAFFIC GROWTH", desc: "Average organic session boost across 12-month engagements." },
-      { value: "3.8x", label: "ROI MULTIPLIER", desc: "Documented revenue acceleration from attributed funnels." },
-      { value: "99%", label: "CLIENT RETENTION", desc: "Long-term client partnerships built on consistent delivery." },
-      { value: "24/7", label: "SUPPORT SYNC", desc: "Continuous uptime and real-time response capability." }
-    ]
+      { value: "+340%", label: "Organic Search Lift", subtext: "Average client lift within 90 days of rollout" },
+      { value: "<0.8s", label: "Page Load Speed", subtext: "Global average largest contentful paint" },
+      { value: "4.9/5", label: "Client Satisfaction", subtext: "Across 120+ custom enterprise deployments" }
+    ],
+    caseStudy: {
+      title: "Global Logistics Redesign",
+      metric: "+420% Inbound Pipeline",
+      desc: "Complete re-architecture of the enterprise booking flow resulting in 4.2x qualified inbound lead volume.",
+      image: "/portfolio_hero_bg.png",
+      link: "/portfolio"
+    }
   },
   industries: {
-    eyebrow: "08 // SECTORS WE ACCELERATE",
-    titleIntro: "Industries",
-    titleHighlight: "We Specialize In",
-    list: [
-      { title: "Home Services & Contracting", desc: "Roofing, decking, remodeling, and local trade contractors scaling regional territories." },
-      { title: "Technology & SaaS", desc: "Fast-growth software startups and tech firms demanding high conversion rates." },
-      { title: "Commercial Real Estate", desc: "Property developers, architectural firms, and luxury real estate agencies." },
-      { title: "E-Commerce & Retail", desc: "Direct-to-consumer and B2B brands scaling transactions with seamless checkout." },
-      { title: "Professional Services", desc: "Law firms, financial consultancies, and executive agencies building trust." },
-      { title: "Healthcare & Wellness", desc: "Clinics, medical practices, and private health facilities seeking patient acquisition." }
+    eyebrow: "08 // DOMAIN EXPERTISE",
+    titleIntro: "Tailored For High-Growth",
+    titleHighlight: "Industry Verticals",
+    description: "Specialized engineering tailored to the unique regulatory, technical, and conversion demands of your sector.",
+    items: [
+      { name: "SaaS & Enterprise Tech", desc: "Product-led growth architecture, interactive documentation, and high-converting onboarding funnels.", icon: "Cpu" },
+      { name: "E-Commerce & Retail", desc: "Headless storefronts, ultra-fast checkout flows, and dynamic inventory synchronization.", icon: "ShoppingCart" },
+      { name: "Finance & Fintech", desc: "SOC2 compliant UI, data encryption standards, and real-time transaction dashboards.", icon: "DollarSign" },
+      { name: "Healthcare & MedTech", desc: "HIPAA-aligned web infrastructure, patient portals, and accessible responsive interfaces.", icon: "Shield" }
     ]
   },
   tools: {
-    eyebrow: "09 // TECH STACK",
-    titleIntro: "Modern",
-    titleHighlight: "Frameworks & Tools",
-    list: [
-      { name: "Next.js", iconName: "Monitor" },
-      { name: "React.js", iconName: "Cpu" },
-      { name: "Tailwind CSS", iconName: "Palette" },
-      { name: "Google Analytics 4", iconName: "BarChart2" },
-      { name: "Google Search", iconName: "Search" },
-      { name: "Vercel", iconName: "Globe" }
+    eyebrow: "09 // TECHNICAL STACK",
+    titleIntro: "Modern Technologies We",
+    titleHighlight: "Master & Deploy",
+    description: "We build on an elite, battle-tested modern web stack for maximum performance, security, and long-term maintainability.",
+    categories: [
+      { category: "Frontend & Frameworks", items: ["Next.js 16", "React 19", "TypeScript", "Tailwind CSS", "Framer Motion"] },
+      { category: "Backend & Database", items: ["Node.js", "MongoDB", "PostgreSQL", "Prisma", "Redis"] },
+      { category: "Infrastructure & Edge", items: ["Vercel Edge", "AWS CloudFront", "Cloudflare", "Docker", "GitHub Actions"] }
     ]
   },
   whyChooseUs: {
-    eyebrow: "10 // OUR ADVANTAGE",
-    titleIntro: "Why Leaders Choose",
-    titleHighlight: "Mohsin Designs",
-    stats: [
-      { value: "100%", label: "PERFORMANCE", sublabel: "Next.js Headless\\nSpeed Optimization", percentage: 1.0 },
-      { value: "4.5x", label: "AVERAGE ROI", sublabel: "Attributed Leads\\nGrowth Scaling", percentage: 0.9 },
-      { value: "24/7", label: "DATA SYNC", sublabel: "Live Tracking\\nReal-time Reports", percentage: 0.85 }
-    ],
-    list: [
-      { title: "Engineered For Speed & ROI", desc: "We write clean, high-performance code with zero bloated themes or brittle templates." },
-      { title: "Direct Strategic Communication", desc: "No junior middlemen — work directly with senior architects dedicated to your vision." },
-      { title: "Transparent Telemetry & Ownership", desc: "Full ownership of your code, design assets, and marketing data at every step." },
-      { title: "Compounding Growth Systems", desc: "Solutions designed to build continuous momentum that outperforms competitors over time." }
+    eyebrow: "10 // WHY CHOOSE US",
+    titleIntro: "Why Industry Leaders",
+    titleHighlight: "Partner With Us",
+    description: "We don't just build websites; we engineer durable competitive advantages for market-leading brands.",
+    points: [
+      { title: "Zero Technical Debt", desc: "Clean, modular, fully typed codebase structured for lifetime extensibility.", icon: "CheckCircle2" },
+      { title: "Direct Architect Access", desc: "Work directly with senior engineers and designers with zero middle-management bloat.", icon: "Users" },
+      { title: "Performance Guarantees", desc: "Every deployment is guaranteed 95+ Google Lighthouse scores across all metrics.", icon: "Zap" },
+      { title: "Transparent Fixed Pricing", desc: "Clear milestones, defined deliverables, and predictable timelines with zero hidden fees.", icon: "Award" }
     ]
   },
   pricing: {
-    eyebrow: "11 // TRANSPARENT TIERS",
-    titleIntro: "Scalable Growth",
-    titleHighlight: "Investment Packages",
+    eyebrow: "11 // ENGAGEMENT MODELS",
+    titleIntro: "Transparent Pricing For",
+    titleHighlight: "Every Scale",
+    description: "Choose the right engagement tier for your immediate goals, with flexible scaling as your brand expands.",
     plans: [
       {
-        name: "Sprint Tier",
-        desc: "Targeted execution for focused optimization and rapid turnaround.",
-        price: "$2,450",
-        period: "sprint",
-        isPopular: false,
-        isCustom: false,
-        ctaText: "Select Sprint",
-        features: ["Full Technical Diagnostic", "Core Feature Implementation", "Speed & Security Hardening", "2 Weeks Dedicated Support"]
+        name: "Growth Sprint",
+        price: "$4,500",
+        period: "/ project",
+        description: "Ideal for growing brands needing a high-performance targeted overhaul or single core feature.",
+        popular: false,
+        features: [
+          "Complete Technical & UX Audit",
+          "Custom Single-Page Architecture",
+          "Mobile-First Performance Tuning",
+          "Basic Analytics & Tracking Setup",
+          "2 Weeks Dedicated Support"
+        ],
+        ctaText: "Start Growth Sprint",
+        ctaLink: "/contact"
       },
       {
-        name: "Growth Tier",
-        desc: "Complete comprehensive solution built to dominate competitive markets.",
-        price: "$4,850",
-        period: "project",
-        isPopular: true,
-        isCustom: false,
-        ctaText: "Start Growth Plan",
-        features: ["End-to-End Custom Build", "Conversion Rate Optimization", "Custom Analytics & Tracking", "SEO & Speed Maxima", "30 Days Hypercare Support"]
-      },
-      {
-        name: "Enterprise Tier",
-        desc: "Custom architected multi-location and enterprise-grade infrastructure.",
-        price: "Custom",
-        period: "custom scope",
-        isPopular: false,
-        isCustom: true,
-        ctaText: "Request Scope",
-        features: ["Unlimited Dynamic Architecture", "Headless CMS Integration", "Dedicated Lead Engineering", "Priority SLA & SLA Support"]
+        name: "Enterprise Architecture",
+        price: "$9,500",
+        period: "/ project",
+        description: "Full-scale custom engineering, brand positioning, and conversion architecture for established market leaders.",
+        popular: true,
+        features: [
+          "Full Multi-Page Next.js Architecture",
+          "Headless CMS Integration",
+          "Custom Interactive UI & Animations",
+          "Advanced Telemetry & A/B Setup",
+          "Full SEO Schema & Speed Optimization",
+          "60 Days Priority Engineering Support"
+        ],
+        ctaText: "Book Architecture Session",
+        ctaLink: "/contact"
       }
     ]
   },
-  faqs: [
-    { q: "How quickly can we get started?", a: "We typically onboard new projects within 3-5 business days following the initial strategy discovery call." },
-    { q: "Do you offer ongoing support and updates?", a: "Yes, we provide flexible retainer and maintenance support options to ensure your platform remains fast, secure, and continuously optimized." },
-    { q: "Will I have complete ownership of all assets?", a: "100%. You retain full ownership of all code, design files, domains, and analytics accounts upon project completion." }
-  ],
-  faqSection: {
-    sectionTag: "14 // FREQUENTLY ASKED",
-    titleIntro: "Service",
-    titleHighlight: "FAQ",
-    description: "",
-    ctaBadge: "FREE ARCHITECTURE AUDIT",
-    ctaTitle: "Have a complex custom build in mind?",
-    ctaDesc: "Book a 30-minute high-level technical strategy session with our lead engineer.",
-    ctaBtnText: "Book Architecture Call",
-    ctaBtnLink: "#contact"
-  },
   finalCta: {
-    eyebrow: "READY TO ACCELERATE?",
-    titleIntro: "Let's Build Your Next",
-    titleHighlight: "Competitive Edge",
-    titleLine2: "Together.",
-    description: "Schedule a free strategic consultation. We'll audit your existing presence and map out a concrete blueprint for scalable growth.",
-    primaryCtaText: "Schedule Discovery Session",
-    primaryCtaLink: "#contact-form",
-    secondaryCtaText: "Contact Office",
-    secondaryCtaLink: "/contact",
-    founderImage: ""
-  }
+    eyebrow: "12 // START BUILDING",
+    titleIntro: "Ready to Transform Your",
+    titleHighlight: "Digital Presence?",
+    description: "Schedule a technical consultation today. We'll audit your current bottlenecks and build a concrete roadmap.",
+    primaryCta: { text: "Schedule Strategy Call", link: "/contact" },
+    secondaryCta: { text: "View Portfolio", link: "/portfolio" },
+    backgroundImage: "/portfolio_hero_bg.png"
+  },
+  faqBadge: "FREQUENTLY ASKED QUESTIONS",
+  faqTitleIntro: "Got Questions?",
+  faqTitleHighlight: "We Have Answers.",
+  faqDescription: "Explore common questions regarding our turnaround times, process, deliverables, and engineering standards.",
+  faqSchemaMarkup: "",
+  faqs: [
+    { question: "What is your typical turnaround time for this service?", answer: "Most standard deployments take 2 to 4 weeks depending on scope, custom design requirements, and integrations.", category: "Timeline" },
+    { question: "Do you offer post-launch maintenance and support?", answer: "Yes, every deployment includes 30-60 days of guaranteed priority engineering support, with optional monthly retainer plans available.", category: "Support" },
+    { question: "Can this service be customized for our specific technology stack?", answer: "Absolutely. We adapt our architectures to integrate seamlessly with your existing APIs, third-party databases, and cloud infrastructure.", category: "Technical" }
+  ]
 };
 
+// ── Main Component ───────────────────────────────────────────────────────────
 export default function ServicesAdminPage() {
   const [data, setData] = useState<any>(null);
   const [services, setServices] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState("hero");
+  const [mainTab, setMainTab] = useState<'content' | 'seo' | 'faqs'>('content');
+  const [activeSubTab, setActiveSubTab] = useState("hero");
   const [seo, setSeo] = useState<any>({});
   const [saving, setSaving] = useState(false);
-  const [toast, setToast] = useState<{ type: "ok" | "err"; msg: string } | null>(null);
-  const [filter, setFilter] = useState("all");
+  const [message, setMessage] = useState("");
+
+  // Directory View States (Matching /admin/pages UI)
   const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("all");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkAction, setBulkAction] = useState("");
-  const [quickEditing, setQuickEditing] = useState<any>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editingService, setEditingService] = useState<any>(null);
+  const [showMediaSelector, setShowMediaSelector] = useState(false);
+
+  // New Service Quick Creation Form State
+  const [newService, setNewService] = useState({
+    title: "",
+    slug: "",
+    tag: "Premium Solution",
+    status: "published"
+  });
 
   const [form, setForm] = useState<any>(DEFAULT_SERVICE_TEMPLATE);
 
-  useEffect(() => {
-    fetch("/api/content").then(res => res.json()).then(json => {
+  const fetchServices = async () => {
+    try {
+      const res = await fetch(`/api/content?t=${Date.now()}`);
+      const json = await res.json();
       setData(json);
       const list = Array.isArray(json.services?.services) && json.services.services.length > 0
         ? json.services.services
@@ -446,7 +379,15 @@ export default function ServicesAdminPage() {
             ? json.globalServices
             : (Array.isArray(json.services?.list) && json.services.list.length > 0 ? json.services.list : [])));
       setServices(list);
-    });
+    } catch (err) {
+      console.error("Failed to fetch services:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchServices();
   }, []);
 
   useEffect(() => {
@@ -476,8 +417,8 @@ export default function ServicesAdminPage() {
       if (res.ok) {
         setData(updatedData);
         setServices(newServices);
-        setToast({ type: "ok", msg: "Service updated successfully." });
-        setTimeout(() => setToast(null), 3000);
+        setMessage("Service updated.");
+        setTimeout(() => setMessage(""), 3000);
         if (keepEditingIdx !== undefined) {
           setIsEditing(keepEditingIdx);
           if (updatedForm) {
@@ -487,10 +428,10 @@ export default function ServicesAdminPage() {
           setIsEditing(null);
         }
       } else {
-        setToast({ type: "err", msg: "Failed to save." });
+        setMessage("Error saving changes.");
       }
     } catch {
-      setToast({ type: "err", msg: "Failed to save." });
+      setMessage("Error saving changes.");
     } finally { setSaving(false); }
   };
 
@@ -579,6 +520,11 @@ export default function ServicesAdminPage() {
         ...DEFAULT_SERVICE_TEMPLATE.pricing,
         ...(service.pricing || {})
       },
+      faqBadge: service.faqBadge || service.sectionTag || DEFAULT_SERVICE_TEMPLATE.faqBadge,
+      faqTitleIntro: service.faqTitleIntro || DEFAULT_SERVICE_TEMPLATE.faqTitleIntro,
+      faqTitleHighlight: service.faqTitleHighlight || DEFAULT_SERVICE_TEMPLATE.faqTitleHighlight,
+      faqDescription: service.faqDescription || DEFAULT_SERVICE_TEMPLATE.faqDescription,
+      faqSchemaMarkup: service.faqSchemaMarkup || "",
       faqs: service.faqs || service.faq || DEFAULT_SERVICE_TEMPLATE.faqs,
       finalCta: {
         ...DEFAULT_SERVICE_TEMPLATE.finalCta,
@@ -587,7 +533,45 @@ export default function ServicesAdminPage() {
     });
     setSeo(service.seo || {});
     setIsEditing(originalIdx !== -1 ? originalIdx : 0);
-    setActiveTab("hero");
+    setMainTab("content");
+    setActiveSubTab("hero");
+  };
+
+  const handleCreateNewService = () => {
+    if (!newService.title || !newService.slug) return alert("Title and Slug are required.");
+
+    const created = {
+      ...DEFAULT_SERVICE_TEMPLATE,
+      id: Date.now().toString(),
+      title: newService.title,
+      slug: newService.slug,
+      tag: newService.tag || "Premium Solution",
+      status: newService.status || "published",
+      createdAt: new Date().toISOString()
+    };
+
+    const newServices = [...services, created];
+    saveToDb(newServices, services.length, created);
+    setShowAddModal(false);
+  };
+
+  const handleQuickEditSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingService) return;
+
+    const originalIdx = services.findIndex(orig => (orig.id && orig.id === editingService.id) || orig.slug === editingService.slug);
+    if (originalIdx !== -1) {
+      const newServices = [...services];
+      newServices[originalIdx] = {
+        ...newServices[originalIdx],
+        title: editingService.title,
+        slug: editingService.slug,
+        tag: editingService.tag,
+        status: editingService.status
+      };
+      saveToDb(newServices);
+      setEditingService(null);
+    }
   };
 
   const toggleStatus = (service: any) => {
@@ -602,2123 +586,2136 @@ export default function ServicesAdminPage() {
     }
   };
 
-  const handleDelete = (index: number) => {
-    if (!confirm("Are you sure you want to delete this service?")) return;
-    const newServices = services.filter((_, i) => i !== index);
+  const handleMoveToTrash = (service: any) => {
+    const newServices = [...services];
+    const originalIdx = services.findIndex(orig => (orig.id && orig.id === service.id) || orig.slug === service.slug);
+    if (originalIdx !== -1) {
+      newServices[originalIdx] = {
+        ...newServices[originalIdx],
+        isTrashed: true
+      };
+      saveToDb(newServices);
+    }
+  };
+
+  const handleRestore = (service: any) => {
+    const newServices = [...services];
+    const originalIdx = services.findIndex(orig => (orig.id && orig.id === service.id) || orig.slug === service.slug);
+    if (originalIdx !== -1) {
+      newServices[originalIdx] = {
+        ...newServices[originalIdx],
+        isTrashed: false
+      };
+      saveToDb(newServices);
+    }
+  };
+
+  const handleDeletePermanently = (service: any) => {
+    if (!confirm("Permanently delete this service?")) return;
+    const newServices = services.filter(s => (s.id ? s.id !== service.id : s.slug !== service.slug));
     saveToDb(newServices);
-    if (isEditing === index) setIsEditing(null);
   };
 
   const handleDuplicate = (service: any) => {
-    const newService = {
+    const duplicated = {
       ...service,
       id: Date.now().toString(),
       title: `${service.title} (Copy)`,
       slug: `${service.slug}-copy`,
-      status: 'draft'
+      status: 'draft',
+      createdAt: new Date().toISOString()
     };
-    const newServices = [...services, newService];
+    const newServices = [...services, duplicated];
     saveToDb(newServices);
   };
 
-  const handleQuickEditSave = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!quickEditing) return;
-    const newServices = [...services];
-    const idx = services.findIndex((s) => (s.id && s.id === quickEditing.id) || s.slug === quickEditing.originalSlug);
-    if (idx !== -1) {
-      newServices[idx] = {
-        ...newServices[idx],
-        title: quickEditing.title,
-        slug: quickEditing.slug,
-        tag: quickEditing.tag,
-        status: quickEditing.status,
-        icon: quickEditing.icon
-      };
+  const handleBulkAction = (action: string) => {
+    if (!action || selectedIds.length === 0) return;
+
+    if (action === 'delete') {
+      if (!confirm(`Permanently delete ${selectedIds.length} services?`)) return;
+      const newServices = services.filter(s => !selectedIds.includes(s.id || s.slug));
+      setSelectedIds([]);
       saveToDb(newServices);
-      setQuickEditing(null);
+      return;
+    }
+
+    if (action === 'trash') {
+      const newServices = services.map(s => selectedIds.includes(s.id || s.slug) ? { ...s, isTrashed: true } : s);
+      setSelectedIds([]);
+      saveToDb(newServices);
+      return;
+    }
+
+    if (action === 'restore') {
+      const newServices = services.map(s => selectedIds.includes(s.id || s.slug) ? { ...s, isTrashed: false } : s);
+      setSelectedIds([]);
+      saveToDb(newServices);
+      return;
+    }
+
+    if (action === 'publish' || action === 'draft') {
+      const status = action === 'publish' ? 'published' : 'draft';
+      const newServices = services.map(s => selectedIds.includes(s.id || s.slug) ? { ...s, status } : s);
+      setSelectedIds([]);
+      saveToDb(newServices);
+      return;
     }
   };
 
-  const handleAddNew = () => {
-    setForm(DEFAULT_SERVICE_TEMPLATE);
-    setSeo({});
-    setIsEditing(services.length);
-    setActiveTab("hero");
+  const toggleSelectAll = () => {
+    if (selectedIds.length === filteredServices.length) setSelectedIds([]);
+    else setSelectedIds(filteredServices.map(s => s.id || s.slug));
   };
 
-  const publishedCount = services.filter((s: any) => s.status !== 'draft').length;
-  const draftCount = services.filter((s: any) => s.status === 'draft').length;
+  const toggleSelect = (idOrSlug: string) => {
+    setSelectedIds(prev =>
+      prev.includes(idOrSlug) ? prev.filter(i => i !== idOrSlug) : [...prev, idOrSlug]
+    );
+  };
+
+  const handleAddNew = () => {
+    setNewService({
+      title: "",
+      slug: "",
+      tag: "Premium Solution",
+      status: "published"
+    });
+    setShowAddModal(true);
+  };
+
+  const publishedCount = services.filter((s: any) => s.status !== 'draft' && !s.isTrashed).length;
+  const draftCount = services.filter((s: any) => s.status === 'draft' && !s.isTrashed).length;
+  const trashCount = services.filter((s: any) => !!s.isTrashed).length;
 
   const filteredServices = services.filter((s: any) => {
-    const matchesFilter = filter === 'all' || (filter === 'published' ? s.status !== 'draft' : s.status === 'draft');
-    const matchesSearch = !search || s.title?.toLowerCase().includes(search.toLowerCase()) || s.slug?.toLowerCase().includes(search.toLowerCase());
-    return matchesFilter && matchesSearch;
+    const matchesSearch = (s.title || "").toLowerCase().includes(search.toLowerCase()) || (s.slug || "").toLowerCase().includes(search.toLowerCase());
+    const isTrashed = !!s.isTrashed;
+
+    if (filter === 'trash') return matchesSearch && isTrashed;
+    if (isTrashed) return false;
+
+    if (filter === "all") return matchesSearch;
+    return matchesSearch && (s.status || "published") === filter;
   });
 
-  const tabs = [
-    { id: "hero", label: "General & Hero" },
-    { id: "trust", label: "Client Trust" },
-    { id: "what-included", label: "What's Included" },
+  const subTabs = [
+    { id: "hero", label: "Hero" },
+    { id: "trust", label: "Trust" },
+    { id: "what-included", label: "Deliverables" },
     { id: "strategy", label: "Strategy" },
-    { id: "benefits", label: "Benefits" },
-    { id: "process", label: "Process Roadmap" },
-    { id: "results", label: "Results & Cases" },
+    { id: "benefits", label: "Outcomes" },
+    { id: "process", label: "Process" },
+    { id: "results", label: "Case Study" },
     { id: "industries", label: "Industries" },
-    { id: "tools", label: "Tools & Tech" },
-    { id: "why-us", label: "Why Choose Us" },
-    { id: "pricing", label: "Pricing Plans" },
-    { id: "final-cta", label: "Final CTA" },
-    { id: "faq", label: "FAQs" },
-    { id: "seo", label: "SEO" }
+    { id: "tools", label: "Tech Stack" },
+    { id: "why-us", label: "Why Partner" },
+    { id: "pricing", label: "Pricing" },
+    { id: "final-cta", label: "CTA Banner" },
   ];
 
+  if (loading) {
+    return <div className="flex h-screen items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-[#2271b1]" /></div>;
+  }
+
   return (
-    <div className="space-y-4">
-
-      {/* WP Header Area */}
-      <div className="flex items-center gap-4 mb-2">
-        <h1 className="text-[23px] font-normal text-[#1d2327] font-serif m-0">
-          {isEditing !== null ? "Edit Service" : "Services"}
-        </h1>
-        {isEditing === null && (
-          <button
-            onClick={handleAddNew}
-            className="bg-white border border-[#2271b1] text-[#2271b1] hover:bg-[#f6f7f7] hover:text-[#135e96] hover:border-[#135e96] px-2 py-1 text-[13px] rounded-[3px] transition-colors"
-          >
-            Add New Service
-          </button>
-        )}
-      </div>
-
-      {toast && (
-        <div className={`notice px-3 py-2 border-l-4 text-[13px] bg-white shadow-sm mb-4 ${toast.type === 'ok' ? 'border-[#00a32a]' : 'border-[#d63638]'}`}>
-          <p>{toast.msg}</p>
-        </div>
-      )}
-
+    <div className="bg-[#f0f0f1] font-sans pb-10 max-w-full overflow-hidden">
       {isEditing !== null ? (
-        /* WordPress Classic Edit Post View */
-        <div className="space-y-4">
-          <div className="flex items-center gap-1 text-[13px] text-[#2271b1] mb-2">
-            <button onClick={() => setIsEditing(null)} className="hover:underline">← All Services</button>
+        /* ──────────────────────────────────────────────────────────────────────────
+           EXACT WORDPRESS CLASSIC SERVICE EDITOR (MATCHING /admin/pages/[id] UI)
+        ────────────────────────────────────────────────────────────────────────── */
+        <div>
+          {/* Breadcrumbs */}
+          <div className="flex items-center gap-1 text-[13px] text-[#2271b1] mb-3 px-1">
+            <button onClick={() => setIsEditing(null)} className="hover:underline">Services</button>
             <ChevronRight className="w-3.5 h-3.5 text-[#646970] shrink-0" />
-            <span className="text-[#646970]">{form.title || "New Service"}</span>
+            <span className="text-[#646970] truncate">{form.title || "Edit Service"}</span>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-
-            {/* Left Column (#post-body-content) */}
-            <div className="lg:col-span-3 space-y-4">
-
-              {/* Title input */}
-              <input
-                type="text"
-                value={form.title}
-                onChange={(e) => setForm({ ...form, title: e.target.value })}
-                className="w-full border border-[#8c8f94] bg-white px-3 py-2 text-[18px] font-medium rounded-[3px] focus:border-[#2271b1] focus:shadow-[0_0_0_1px_#2271b1] outline-none"
-                placeholder="Enter title here"
-              />
-
-              {/* Permalink Bar */}
-              <div className="text-[13px] text-[#646970] flex items-center gap-1.5 flex-wrap bg-[#f6f7f7] border border-[#c3c4c7] p-2 rounded-[3px]">
-                <strong className="text-[#1d2327]">Permalink:</strong>
-                <span className="text-[#646970]">https://mohsindesigns.com/services/</span>
-                <input
-                  type="text"
-                  value={form.slug}
-                  onChange={(e) => setForm({ ...form, slug: e.target.value })}
-                  className="border border-[#8c8f94] px-1.5 py-0.5 rounded-[2px] text-xs font-mono bg-white text-[#2271b1] font-bold"
-                />
+          {/* WP Header Area */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <h1 className="text-[20px] font-normal text-[#1d2327] font-serif">Edit Service</h1>
+              <button
+                type="button"
+                onClick={handleAddNew}
+                className="bg-white border border-[#2271b1] text-[#2271b1] text-[12px] px-1.5 py-0.5 rounded-[3px] hover:bg-[#f0f6fb] transition-colors"
+              >
+                Add New
+              </button>
+              {form.slug && (
                 <Link
                   href={`/services/${form.slug}`}
                   target="_blank"
-                  className="border border-[#2271b1] text-[#2271b1] hover:bg-[#2271b1] hover:text-white px-2 py-0.5 rounded-[3px] text-[11px] font-semibold ml-auto flex items-center gap-1"
+                  className="bg-white border border-[#c3c4c7] text-[#2c3338] text-[12px] px-1.5 py-0.5 rounded-[3px] hover:bg-[#f6f7f7] transition-colors flex items-center gap-1"
                 >
                   View Service <ExternalLink className="w-3 h-3" />
                 </Link>
+              )}
+            </div>
+          </div>
+
+          <div className="flex flex-col lg:flex-row gap-4 items-start">
+            {/* Main Content (Left Column) */}
+            <div className="flex-1 min-w-0 w-full space-y-4">
+              {/* Title Input Field */}
+              <div className="bg-white">
+                <input
+                  type="text"
+                  value={form.title || ""}
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  className="w-full border border-[#c3c4c7] px-3 py-1.5 text-[16px] font-medium text-[#1d2327] focus:border-[#2271b1] focus:ring-0 outline-none placeholder:text-[#c3c4c7]"
+                  placeholder="Enter title here"
+                />
               </div>
 
-              {/* WP Tabbed Metabox */}
-              <div className="postbox bg-white border border-[#c3c4c7] shadow-sm rounded-[3px] overflow-hidden">
+              {/* Permalink / Slug Area */}
+              <div className="flex flex-wrap items-center gap-1 text-[12px] text-[#646970] px-1">
+                <strong>Permalink:</strong>
+                <span className="bg-[#f0f0f1] border border-[#c3c4c7] px-1 rounded-sm text-[#1d2327] break-all">
+                  {BASE_URL}/services/{form.slug}
+                </span>
+                <button
+                  onClick={() => {
+                    const ns = prompt("Enter new slug:", form.slug);
+                    if (ns) setForm({ ...form, slug: ns });
+                  }}
+                  className="bg-white border border-[#c3c4c7] px-1.5 py-0.5 rounded-[3px] text-[#2c3338] hover:bg-[#f6f7f7]"
+                >
+                  Edit
+                </button>
+              </div>
 
-                {/* Horizontal WP Tabs */}
-                <div className="flex overflow-x-auto border-b border-[#c3c4c7] bg-[#f0f0f1] no-scrollbar">
-                  {tabs.map((tab, idx) => (
-                    <button
-                      key={tab.id}
-                      type="button"
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`px-3.5 py-2.5 text-[12px] font-medium border-r border-[#dcdcde] whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 ${
-                        activeTab === tab.id
-                          ? "bg-white text-[#1d2327] font-bold border-b-2 border-b-[#2271b1] -mb-[1px] shadow-sm"
-                          : "text-[#50575e] hover:bg-white/60 hover:text-[#1d2327]"
-                      }`}
-                    >
-                      <span className="text-[10px] text-[#8c8f94] font-mono">{(idx + 1).toString().padStart(2, '0')}</span>
-                      {tab.label}
-                    </button>
-                  ))}
+              {/* Main Editor Tabs (Page Content | SEO Settings | Service FAQs) */}
+              <div className="bg-white border border-[#c3c4c7] shadow-sm">
+                <div className="flex border-b border-[#f0f0f1] bg-[#f6f7f7]">
+                  <button
+                    onClick={() => setMainTab('content')}
+                    className={`px-3 py-2 text-[12px] font-semibold border-r border-[#c3c4c7] transition-all ${
+                      mainTab === 'content' ? "bg-white text-[#1d2327]" : "text-[#2271b1] hover:text-[#135e96]"
+                    }`}
+                  >
+                    Service Content
+                  </button>
+                  <button
+                    onClick={() => setMainTab('seo')}
+                    className={`px-3 py-2 text-[12px] font-semibold border-r border-[#c3c4c7] transition-all ${
+                      mainTab === 'seo' ? "bg-white text-[#1d2327]" : "text-[#2271b1] hover:text-[#135e96]"
+                    }`}
+                  >
+                    SEO Settings
+                  </button>
+                  <button
+                    onClick={() => setMainTab('faqs')}
+                    className={`px-3 py-2 text-[12px] font-semibold border-r border-[#c3c4c7] transition-all ${
+                      mainTab === 'faqs' ? "bg-white text-[#1d2327]" : "text-[#2271b1] hover:text-[#135e96]"
+                    }`}
+                  >
+                    Service FAQs
+                  </button>
                 </div>
 
-                <div className="p-5 space-y-5 min-h-[420px]">
-
-                  {/* TAB 01: HERO */}
-                  {activeTab === "hero" && (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Category Tag</label>
-                          <input
-                            type="text"
-                            value={form.tag || ""}
-                            onChange={(e) => setForm({ ...form, tag: e.target.value })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                            placeholder="e.g. Premium Solution"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Menu Icon</label>
-                          <div><IconSelector value={form.icon || "Search"} onChange={(v) => setForm({ ...form, icon: v })} /></div>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Hero Title Intro</label>
-                          <input
-                            type="text"
-                            value={form.hero?.titleIntro || ""}
-                            onChange={(e) => setForm({ ...form, hero: { ...form.hero, titleIntro: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                            placeholder="Transform Your Business With"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Hero Title Highlight</label>
-                          <input
-                            type="text"
-                            value={form.hero?.titleHighlight || ""}
-                            onChange={(e) => setForm({ ...form, hero: { ...form.hero, titleHighlight: e.target.value } })}
-                            className="w-full border border-[#2271b1] px-3 py-1.5 text-[13px] rounded-[3px]"
-                            placeholder="Expert Solutions"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold text-[#1d2327]">Hero Description</label>
-                        <textarea
-                          rows={3}
-                          value={form.hero?.description || ""}
-                          onChange={(e) => setForm({ ...form, hero: { ...form.hero, description: e.target.value } })}
-                          className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                        />
-                      </div>
-
-                      {/* Hero Background Image */}
-                      <div className="space-y-1 pt-2">
-                        <ImageField
-                          label="Hero Background Image (Bleed Header Banner)"
-                          value={form.hero?.backgroundImage || form.hero?.bgImage || ""}
-                          onChange={(url) => setForm({
-                            ...form,
-                            hero: {
-                              ...form.hero,
-                              backgroundImage: url,
-                              bgImage: url
-                            }
-                          })}
-                        />
-                      </div>
-
-                      {/* Hero Buttons */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-[#c3c4c7]">
-                        <div className="bg-[#f6f7f7] border border-[#c3c4c7] p-3 rounded-[3px] space-y-2">
-                          <h4 className="font-bold text-xs text-[#1d2327]">Primary Button (Yellow)</h4>
-                          <div className="space-y-1">
-                            <label className="text-[11px] font-semibold text-[#646970]">Label</label>
-                            <input
-                              type="text"
-                              value={form.hero?.primaryCta?.text || ""}
-                              onChange={(e) => setForm({
-                                ...form,
-                                hero: {
-                                  ...form.hero,
-                                  primaryCta: { ...form.hero?.primaryCta, text: e.target.value }
-                                }
-                              })}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                              placeholder="Start Your Project"
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[11px] font-semibold text-[#646970]">Link / Anchor</label>
-                            <input
-                              type="text"
-                              value={form.hero?.primaryCta?.link || ""}
-                              onChange={(e) => setForm({
-                                ...form,
-                                hero: {
-                                  ...form.hero,
-                                  primaryCta: { ...form.hero?.primaryCta, link: e.target.value }
-                                }
-                              })}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                              placeholder="#contact-form"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="bg-[#f6f7f7] border border-[#c3c4c7] p-3 rounded-[3px] space-y-2">
-                          <h4 className="font-bold text-xs text-[#1d2327]">Secondary Button (White Outline)</h4>
-                          <div className="space-y-1">
-                            <label className="text-[11px] font-semibold text-[#646970]">Label</label>
-                            <input
-                              type="text"
-                              value={form.hero?.secondaryCta?.text || ""}
-                              onChange={(e) => setForm({
-                                ...form,
-                                hero: {
-                                  ...form.hero,
-                                  secondaryCta: { ...form.hero?.secondaryCta, text: e.target.value }
-                                }
-                              })}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                              placeholder="Explore Inclusions"
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[11px] font-semibold text-[#646970]">Link / Anchor</label>
-                            <input
-                              type="text"
-                              value={form.hero?.secondaryCta?.link || ""}
-                              onChange={(e) => setForm({
-                                ...form,
-                                hero: {
-                                  ...form.hero,
-                                  secondaryCta: { ...form.hero?.secondaryCta, link: e.target.value }
-                                }
-                              })}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                              placeholder="#what-included"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="pt-3 border-t border-[#c3c4c7]">
-                        <BulletListEditor
-                          label="Hero Key Benefits Checklist"
-                          items={form.hero?.benefits || []}
-                          onChange={(b) => setForm({ ...form, hero: { ...form.hero, benefits: b } })}
-                          placeholder="e.g. Data-Driven Growth Strategies"
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* TAB 02: TRUST */}
-                  {activeTab === "trust" && (
-                    <div className="space-y-4">
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold text-[#1d2327]">Marquee Heading</label>
-                        <input
-                          type="text"
-                          value={form.clientTrust?.heading || ""}
-                          onChange={(e) => setForm({ ...form, clientTrust: { ...form.clientTrust, heading: e.target.value } })}
-                          className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                        />
-                      </div>
-
-                      <div className="space-y-3 pt-3 border-t border-[#c3c4c7]">
-                        <div className="flex items-center justify-between">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Platform Logos & Icons in Marquee</label>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const l = [...(form.clientTrust?.logos || [])];
-                              l.push({ name: "Platform Name", icon: "Search", image: "" });
-                              setForm({ ...form, clientTrust: { ...form.clientTrust, logos: l } });
-                            }}
-                            className="text-[12px] text-[#2271b1] hover:underline font-bold"
-                          >
-                            + Add Platform Logo
-                          </button>
-                        </div>
-                        {(form.clientTrust?.logos || []).map((logo: any, idx: number) => (
-                          <div key={idx} className="bg-[#f6f7f7] border border-[#c3c4c7] p-3 rounded-[3px] space-y-2">
-                            <div className="flex items-center justify-between">
-                              <span className="font-bold text-xs text-[#1d2327]">Logo Item 0{idx + 1}</span>
+                <div className="p-0">
+                  {/* TAB 1: SERVICE CONTENT */}
+                  {mainTab === 'content' && (
+                    <div className="p-4 sm:p-5">
+                      <div className="bg-white max-w-3xl mx-auto pb-20">
+                        {/* Sub-tabs Navigation */}
+                        <div className="flex flex-wrap items-center gap-1 mb-10 text-[13px] border-b border-[#f0f0f1] pb-1 sticky top-0 bg-white z-10 pt-2">
+                          {subTabs.map((tab, idx) => (
+                            <React.Fragment key={tab.id}>
                               <button
                                 type="button"
-                                onClick={() => {
-                                  const l = form.clientTrust.logos.filter((_: any, i: number) => i !== idx);
-                                  setForm({ ...form, clientTrust: { ...form.clientTrust, logos: l } });
-                                }}
-                                className="text-[#d63638] text-xs font-bold hover:underline"
+                                onClick={() => setActiveSubTab(tab.id)}
+                                className={`px-1 py-1 transition-colors ${
+                                  activeSubTab === tab.id
+                                    ? 'text-[#1d2327] font-bold border-b-2 border-[#2271b1]'
+                                    : 'text-[#2271b1] hover:text-[#135e96]'
+                                }`}
                               >
-                                Delete
+                                {tab.label}
                               </button>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                              <div className="space-y-1">
-                                <label className="text-[11px] font-semibold text-[#646970]">Platform / Brand Name</label>
-                                <input
-                                  type="text"
-                                  value={logo.name}
-                                  onChange={(e) => {
-                                    const l = [...form.clientTrust.logos];
-                                    l[idx] = { ...l[idx], name: e.target.value };
-                                    setForm({ ...form, clientTrust: { ...form.clientTrust, logos: l } });
-                                  }}
-                                  className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                                  placeholder="e.g. Google Ads, Shopify"
-                                />
-                              </div>
-                              <div className="space-y-1">
-                                <label className="text-[11px] font-semibold text-[#646970]">Icon</label>
-                                <div>
-                                  <IconSelector
-                                    value={logo.icon || "Search"}
-                                    onChange={(v) => {
-                                      const l = [...form.clientTrust.logos];
-                                      l[idx] = { ...l[idx], icon: v };
-                                      setForm({ ...form, clientTrust: { ...form.clientTrust, logos: l } });
-                                    }}
+                              {idx < subTabs.length - 1 && <span className="text-[#c3c4c7] px-1">|</span>}
+                            </React.Fragment>
+                          ))}
+                        </div>
+
+                        <AnimatePresence mode="wait">
+                          <motion.div
+                            key={activeSubTab}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.15 }}
+                            className="space-y-12"
+                          >
+                            {/* SUBTAB: HERO */}
+                            {activeSubTab === "hero" && (
+                              <div className="space-y-12">
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>1. Branding & Icon</h3>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Category Tag</label>
+                                      <input
+                                        type="text"
+                                        value={form.tag || ""}
+                                        onChange={(e) => setForm({ ...form, tag: e.target.value })}
+                                        className={UI.input}
+                                        placeholder="e.g. Premium Solution"
+                                      />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Menu Icon</label>
+                                      <IconSelector value={form.icon || "Search"} onChange={(v) => setForm({ ...form, icon: v })} />
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>2. Premium Hero Title</h3>
+                                  <div className="space-y-4">
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Title Intro</label>
+                                      <input
+                                        type="text"
+                                        value={form.hero?.titleIntro || ""}
+                                        onChange={(e) => setForm({ ...form, hero: { ...form.hero, titleIntro: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="Transform Your Business With"
+                                      />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Title Highlight (Underlined / Accent)</label>
+                                      <input
+                                        type="text"
+                                        value={form.hero?.titleHighlight || ""}
+                                        onChange={(e) => setForm({ ...form, hero: { ...form.hero, titleHighlight: e.target.value } })}
+                                        className={UI.input + " font-bold border-[#2271b1]"}
+                                        placeholder="Expert Solutions"
+                                      />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Hero Narrative Description</label>
+                                      <textarea
+                                        rows={3}
+                                        value={form.hero?.description || ""}
+                                        onChange={(e) => setForm({ ...form, hero: { ...form.hero, description: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="High-performance digital engineering..."
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>3. Action Buttons</h3>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className={UI.card + " space-y-4"}>
+                                      <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
+                                        <span className="text-[10px] font-bold text-[#646970] uppercase">Primary Button</span>
+                                      </div>
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Text / Label</label>
+                                        <input
+                                          type="text"
+                                          value={form.hero?.primaryCta?.text || ""}
+                                          onChange={(e) => setForm({
+                                            ...form,
+                                            hero: { ...form.hero, primaryCta: { ...form.hero?.primaryCta, text: e.target.value } }
+                                          })}
+                                          className={UI.input}
+                                          placeholder="Start Your Project"
+                                        />
+                                      </div>
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Link (href)</label>
+                                        <input
+                                          type="text"
+                                          value={form.hero?.primaryCta?.link || ""}
+                                          onChange={(e) => setForm({
+                                            ...form,
+                                            hero: { ...form.hero, primaryCta: { ...form.hero?.primaryCta, link: e.target.value } }
+                                          })}
+                                          className={UI.input}
+                                          placeholder="#contact-form"
+                                        />
+                                      </div>
+                                    </div>
+
+                                    <div className={UI.card + " space-y-4"}>
+                                      <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
+                                        <span className="text-[10px] font-bold text-[#646970] uppercase">Secondary Button</span>
+                                      </div>
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Text / Label</label>
+                                        <input
+                                          type="text"
+                                          value={form.hero?.secondaryCta?.text || ""}
+                                          onChange={(e) => setForm({
+                                            ...form,
+                                            hero: { ...form.hero, secondaryCta: { ...form.hero?.secondaryCta, text: e.target.value } }
+                                          })}
+                                          className={UI.input}
+                                          placeholder="Explore Inclusions"
+                                        />
+                                      </div>
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Link (href)</label>
+                                        <input
+                                          type="text"
+                                          value={form.hero?.secondaryCta?.link || ""}
+                                          onChange={(e) => setForm({
+                                            ...form,
+                                            hero: { ...form.hero, secondaryCta: { ...form.hero?.secondaryCta, link: e.target.value } }
+                                          })}
+                                          className={UI.input}
+                                          placeholder="#what-included"
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>4. Media</h3>
+                                  <ImageField
+                                    label="Hero Bleed Background Banner"
+                                    value={form.hero?.backgroundImage || form.hero?.bgImage || ""}
+                                    onChange={(url) => setForm({
+                                      ...form,
+                                      hero: { ...form.hero, backgroundImage: url, bgImage: url }
+                                    })}
+                                  />
+                                </div>
+
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>5. Highlights & Checklist</h3>
+                                  <BulletListEditor
+                                    label="Hero Checklist Inclusions"
+                                    items={form.hero?.benefits || []}
+                                    onChange={(b) => setForm({ ...form, hero: { ...form.hero, benefits: b } })}
+                                    placeholder="e.g. Data-Driven Growth Strategies"
                                   />
                                 </div>
                               </div>
-                            </div>
-                            <div className="space-y-1 pt-1">
-                              <ImageField
-                                label="Custom Logo Image (Replaces icon if uploaded)"
-                                value={logo.image || ""}
-                                onChange={(url) => {
-                                  const l = [...form.clientTrust.logos];
-                                  l[idx] = { ...l[idx], image: url };
-                                  setForm({ ...form, clientTrust: { ...form.clientTrust, logos: l } });
-                                }}
-                              />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                            )}
 
-                  {/* TAB 03: WHAT'S INCLUDED */}
-                  {activeTab === "what-included" && (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Eyebrow</label>
-                          <input
-                            type="text"
-                            value={form.whatIncluded?.eyebrow || ""}
-                            onChange={(e) => setForm({ ...form, whatIncluded: { ...form.whatIncluded, eyebrow: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Title Intro</label>
-                          <input
-                            type="text"
-                            value={form.whatIncluded?.titleIntro || ""}
-                            onChange={(e) => setForm({ ...form, whatIncluded: { ...form.whatIncluded, titleIntro: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Title Highlight</label>
-                          <input
-                            type="text"
-                            value={form.whatIncluded?.titleHighlight || ""}
-                            onChange={(e) => setForm({ ...form, whatIncluded: { ...form.whatIncluded, titleHighlight: e.target.value } })}
-                            className="w-full border border-[#2271b1] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                      </div>
+                            {/* SUBTAB: TRUST */}
+                            {activeSubTab === "trust" && (
+                              <div className="space-y-12">
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>1. Section Heading</h3>
+                                  <div className="space-y-1.5">
+                                    <label className={UI.label}>Marquee Heading</label>
+                                    <input
+                                      type="text"
+                                      value={form.clientTrust?.heading || ""}
+                                      onChange={(e) => setForm({ ...form, clientTrust: { ...form.clientTrust, heading: e.target.value } })}
+                                      className={UI.input}
+                                      placeholder="ENTERPRISE PLATFORMS WE INTEGRATE & ACCELERATE"
+                                    />
+                                  </div>
+                                </div>
 
-                      <div className="space-y-4 pt-3 border-t border-[#c3c4c7]">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-bold text-[13px] text-[#1d2327]">Core Pillars (3 Cards)</h4>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const p = [...(form.whatIncluded?.pillars || [])];
-                              p.push({ title: "New Pillar", desc: "Pillar description", features: ["Feature 1", "Feature 2"] });
-                              setForm({ ...form, whatIncluded: { ...form.whatIncluded, pillars: p } });
-                            }}
-                            className="text-[12px] text-[#2271b1] hover:underline font-bold"
-                          >
-                            + Add Pillar
-                          </button>
-                        </div>
-
-                        {(form.whatIncluded?.pillars || []).map((pillar: any, idx: number) => (
-                          <div key={idx} className="bg-[#f6f7f7] border border-[#c3c4c7] p-3 rounded-[3px] space-y-2">
-                            <div className="flex items-center justify-between border-b border-[#c3c4c7] pb-1.5">
-                              <span className="font-bold text-xs text-[#1d2327]">Pillar 0{idx + 1}</span>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const p = form.whatIncluded.pillars.filter((_: any, i: number) => i !== idx);
-                                  setForm({ ...form, whatIncluded: { ...form.whatIncluded, pillars: p } });
-                                }}
-                                className="text-[#d63638] text-xs font-bold hover:underline"
-                              >
-                                Delete
-                              </button>
-                            </div>
-                            <input
-                              type="text"
-                              placeholder="Pillar Title"
-                              value={pillar.title}
-                              onChange={(e) => {
-                                const p = [...form.whatIncluded.pillars];
-                                p[idx] = { ...p[idx], title: e.target.value };
-                                setForm({ ...form, whatIncluded: { ...form.whatIncluded, pillars: p } });
-                              }}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-bold"
-                            />
-                            <textarea
-                              rows={2}
-                              placeholder="Description"
-                              value={pillar.desc}
-                              onChange={(e) => {
-                                const p = [...form.whatIncluded.pillars];
-                                p[idx] = { ...p[idx], desc: e.target.value };
-                                setForm({ ...form, whatIncluded: { ...form.whatIncluded, pillars: p } });
-                              }}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                            />
-                            <BulletListEditor
-                              label="Key Capabilities & Inclusions"
-                              items={pillar.features || []}
-                              onChange={(features) => {
-                                const p = [...form.whatIncluded.pillars];
-                                p[idx] = { ...p[idx], features };
-                                setForm({ ...form, whatIncluded: { ...form.whatIncluded, pillars: p } });
-                              }}
-                              placeholder="e.g. Strategic Discovery & Technical Scoping"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* TAB 04: STRATEGY */}
-                  {activeTab === "strategy" && (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Eyebrow</label>
-                          <input
-                            type="text"
-                            value={form.strategy?.eyebrow || ""}
-                            onChange={(e) => setForm({ ...form, strategy: { ...form.strategy, eyebrow: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Title Intro</label>
-                          <input
-                            type="text"
-                            value={form.strategy?.titleIntro || ""}
-                            onChange={(e) => setForm({ ...form, strategy: { ...form.strategy, titleIntro: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Title Highlight</label>
-                          <input
-                            type="text"
-                            value={form.strategy?.titleHighlight || ""}
-                            onChange={(e) => setForm({ ...form, strategy: { ...form.strategy, titleHighlight: e.target.value } })}
-                            className="w-full border border-[#2271b1] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold text-[#1d2327]">Strategy Section Description</label>
-                        <textarea
-                          rows={2}
-                          value={form.strategy?.description || ""}
-                          onChange={(e) => setForm({ ...form, strategy: { ...form.strategy, description: e.target.value } })}
-                          className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          placeholder="A custom implementation plan targeting bottlenecks and compounding acquisition flows."
-                        />
-                      </div>
-
-                      <div className="space-y-3 pt-3 border-t border-[#c3c4c7]">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-bold text-[13px] text-[#1d2327]">Strategy Components</h4>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const c = [...(form.strategy?.components || [])];
-                              c.push({ num: `0${c.length + 1}`, title: "New Component", desc: "Details here" });
-                              setForm({ ...form, strategy: { ...form.strategy, components: c } });
-                            }}
-                            className="text-[12px] text-[#2271b1] hover:underline font-bold"
-                          >
-                            + Add Component
-                          </button>
-                        </div>
-
-                        {(form.strategy?.components || []).map((comp: any, idx: number) => (
-                          <div key={idx} className="bg-[#f6f7f7] border border-[#c3c4c7] p-2.5 rounded-[3px] space-y-2">
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="text"
-                                placeholder="01"
-                                value={comp.num}
-                                onChange={(e) => {
-                                  const c = [...form.strategy.components];
-                                  c[idx] = { ...c[idx], num: e.target.value };
-                                  setForm({ ...form, strategy: { ...form.strategy, components: c } });
-                                }}
-                                className="w-14 border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                              />
-                              <input
-                                type="text"
-                                placeholder="Component Title"
-                                value={comp.title}
-                                onChange={(e) => {
-                                  const c = [...form.strategy.components];
-                                  c[idx] = { ...c[idx], title: e.target.value };
-                                  setForm({ ...form, strategy: { ...form.strategy, components: c } });
-                                }}
-                                className="flex-1 border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-bold"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const c = form.strategy.components.filter((_: any, i: number) => i !== idx);
-                                  setForm({ ...form, strategy: { ...form.strategy, components: c } });
-                                }}
-                                className="text-[#d63638] p-1"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                            <textarea
-                              rows={2}
-                              placeholder="Description"
-                              value={comp.desc}
-                              onChange={(e) => {
-                                const c = [...form.strategy.components];
-                                c[idx] = { ...c[idx], desc: e.target.value };
-                                setForm({ ...form, strategy: { ...form.strategy, components: c } });
-                              }}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* TAB 05: BENEFITS */}
-                  {activeTab === "benefits" && (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Eyebrow</label>
-                          <input
-                            type="text"
-                            value={form.benefits?.eyebrow || ""}
-                            onChange={(e) => setForm({ ...form, benefits: { ...form.benefits, eyebrow: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Title Intro</label>
-                          <input
-                            type="text"
-                            value={form.benefits?.titleIntro || ""}
-                            onChange={(e) => setForm({ ...form, benefits: { ...form.benefits, titleIntro: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Title Highlight</label>
-                          <input
-                            type="text"
-                            value={form.benefits?.titleHighlight || ""}
-                            onChange={(e) => setForm({ ...form, benefits: { ...form.benefits, titleHighlight: e.target.value } })}
-                            className="w-full border border-[#2271b1] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-3 pt-3 border-t border-[#c3c4c7]">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-bold text-[13px] text-[#1d2327]">Benefits with Animated Numbers</h4>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const l = [...(form.benefits?.list || [])];
-                              l.push({ metric: "100%", title: "New Benefit", desc: "Benefit description", outcomeText: "Guaranteed Outcome" });
-                              setForm({ ...form, benefits: { ...form.benefits, list: l } });
-                            }}
-                            className="text-[12px] text-[#2271b1] hover:underline font-bold"
-                          >
-                            + Add Metric Benefit
-                          </button>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          {(form.benefits?.list || []).map((b: any, idx: number) => (
-                            <div key={idx} className="bg-[#f6f7f7] border border-[#c3c4c7] p-2.5 rounded-[3px] space-y-2">
-                              <div className="flex items-center justify-between">
-                                <span className="font-bold text-xs text-[#1d2327]">Benefit 0{idx + 1}</span>
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const l = form.benefits.list.filter((_: any, i: number) => i !== idx);
-                                    setForm({ ...form, benefits: { ...form.benefits, list: l } });
-                                  }}
-                                  className="text-[#d63638] text-xs font-bold hover:underline"
-                                >
-                                  Delete
-                                </button>
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>2. Platform Logos</h3>
+                                  <div className="space-y-4">
+                                    {(form.clientTrust?.logos || []).map((logo: any, idx: number) => (
+                                      <div key={idx} className={UI.card + " space-y-4"}>
+                                        <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
+                                          <span className="text-[10px] font-bold text-[#646970] uppercase">Platform Logo #{idx + 1}</span>
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              const l = form.clientTrust.logos.filter((_: any, i: number) => i !== idx);
+                                              setForm({ ...form, clientTrust: { ...form.clientTrust, logos: l } });
+                                            }}
+                                            className="text-[#d63638]"
+                                          >
+                                            <Trash2 className="w-4 h-4" />
+                                          </button>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Brand Name</label>
+                                            <input
+                                              type="text"
+                                              value={logo.name || ""}
+                                              onChange={(e) => {
+                                                const l = [...form.clientTrust.logos];
+                                                l[idx] = { ...l[idx], name: e.target.value };
+                                                setForm({ ...form, clientTrust: { ...form.clientTrust, logos: l } });
+                                              }}
+                                              className={UI.input}
+                                              placeholder="e.g. Google Ads, Shopify"
+                                            />
+                                          </div>
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Fallback Icon</label>
+                                            <IconSelector
+                                              value={logo.icon || "Search"}
+                                              onChange={(v) => {
+                                                const l = [...form.clientTrust.logos];
+                                                l[idx] = { ...l[idx], icon: v };
+                                                setForm({ ...form, clientTrust: { ...form.clientTrust, logos: l } });
+                                              }}
+                                            />
+                                          </div>
+                                        </div>
+                                        <ImageField
+                                          label="Brand Logo Image (Replaces icon if uploaded)"
+                                          value={logo.image || ""}
+                                          onChange={(url) => {
+                                            const l = [...form.clientTrust.logos];
+                                            l[idx] = { ...l[idx], image: url };
+                                            setForm({ ...form, clientTrust: { ...form.clientTrust, logos: l } });
+                                          }}
+                                        />
+                                      </div>
+                                    ))}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const l = [...(form.clientTrust?.logos || [])];
+                                        l.push({ name: "Platform Name", icon: "Search", image: "" });
+                                        setForm({ ...form, clientTrust: { ...form.clientTrust, logos: l } });
+                                      }}
+                                      className={UI.buttonAdd}
+                                    >
+                                      + Add Platform Logo
+                                    </button>
+                                  </div>
+                                </div>
                               </div>
-                              <div className="grid grid-cols-3 gap-2">
-                                <input
-                                  type="text"
-                                  placeholder="Metric (350%)"
-                                  value={b.metric}
-                                  onChange={(e) => {
-                                    const l = [...form.benefits.list];
-                                    l[idx] = { ...l[idx], metric: e.target.value };
-                                    setForm({ ...form, benefits: { ...form.benefits, list: l } });
-                                  }}
-                                  className="col-span-1 border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-bold text-[#2271b1]"
-                                />
-                                <input
-                                  type="text"
-                                  placeholder="Title"
-                                  value={b.title}
-                                  onChange={(e) => {
-                                    const l = [...form.benefits.list];
-                                    l[idx] = { ...l[idx], title: e.target.value };
-                                    setForm({ ...form, benefits: { ...form.benefits, list: l } });
-                                  }}
-                                  className="col-span-2 border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-bold"
-                                />
+                            )}
+
+                            {/* SUBTAB: WHAT'S INCLUDED */}
+                            {activeSubTab === "what-included" && (
+                              <div className="space-y-12">
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>1. Section Header</h3>
+                                  <div className="space-y-4">
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Eyebrow Tag</label>
+                                      <input
+                                        type="text"
+                                        value={form.whatIncluded?.eyebrow || ""}
+                                        onChange={(e) => setForm({ ...form, whatIncluded: { ...form.whatIncluded, eyebrow: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="03 // CORE CAPABILITIES"
+                                      />
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Title Intro</label>
+                                        <input
+                                          type="text"
+                                          value={form.whatIncluded?.titleIntro || ""}
+                                          onChange={(e) => setForm({ ...form, whatIncluded: { ...form.whatIncluded, titleIntro: e.target.value } })}
+                                          className={UI.input}
+                                          placeholder="What's Included in"
+                                        />
+                                      </div>
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Title Highlight</label>
+                                        <input
+                                          type="text"
+                                          value={form.whatIncluded?.titleHighlight || ""}
+                                          onChange={(e) => setForm({ ...form, whatIncluded: { ...form.whatIncluded, titleHighlight: e.target.value } })}
+                                          className={UI.input + " font-bold border-[#2271b1]"}
+                                          placeholder="Our Delivery"
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>2. Capability Pillars</h3>
+                                  <div className="space-y-4">
+                                    {(form.whatIncluded?.pillars || []).map((pillar: any, idx: number) => (
+                                      <div key={idx} className={UI.card + " space-y-4"}>
+                                        <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
+                                          <span className="text-[10px] font-bold text-[#646970] uppercase">Pillar #{idx + 1}</span>
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              const p = form.whatIncluded.pillars.filter((_: any, i: number) => i !== idx);
+                                              setForm({ ...form, whatIncluded: { ...form.whatIncluded, pillars: p } });
+                                            }}
+                                            className="text-[#d63638]"
+                                          >
+                                            <Trash2 className="w-4 h-4" />
+                                          </button>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                          <label className={UI.label}>Title</label>
+                                          <input
+                                            type="text"
+                                            value={pillar.title || ""}
+                                            onChange={(e) => {
+                                              const p = [...form.whatIncluded.pillars];
+                                              p[idx] = { ...p[idx], title: e.target.value };
+                                              setForm({ ...form, whatIncluded: { ...form.whatIncluded, pillars: p } });
+                                            }}
+                                            className={UI.input}
+                                            placeholder="Strategic Discovery & Architecture"
+                                          />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                          <label className={UI.label}>Description</label>
+                                          <textarea
+                                            rows={2}
+                                            value={pillar.desc || ""}
+                                            onChange={(e) => {
+                                              const p = [...form.whatIncluded.pillars];
+                                              p[idx] = { ...p[idx], desc: e.target.value };
+                                              setForm({ ...form, whatIncluded: { ...form.whatIncluded, pillars: p } });
+                                            }}
+                                            className={UI.input}
+                                          />
+                                        </div>
+                                        <BulletListEditor
+                                          label="Deliverables Checklist"
+                                          items={pillar.features || []}
+                                          onChange={(feats) => {
+                                            const p = [...form.whatIncluded.pillars];
+                                            p[idx] = { ...p[idx], features: feats };
+                                            setForm({ ...form, whatIncluded: { ...form.whatIncluded, pillars: p } });
+                                          }}
+                                          placeholder="e.g. Technical Infrastructure Audit"
+                                        />
+                                      </div>
+                                    ))}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const p = [...(form.whatIncluded?.pillars || [])];
+                                        p.push({ title: "New Capability Pillar", desc: "Description...", features: ["Inclusion 1", "Inclusion 2"] });
+                                        setForm({ ...form, whatIncluded: { ...form.whatIncluded, pillars: p } });
+                                      }}
+                                      className={UI.buttonAdd}
+                                    >
+                                      + Add Capability Pillar
+                                    </button>
+                                  </div>
+                                </div>
                               </div>
-                              <textarea
-                                rows={2}
-                                placeholder="Description"
-                                value={b.desc}
-                                onChange={(e) => {
-                                  const l = [...form.benefits.list];
-                                  l[idx] = { ...l[idx], desc: e.target.value };
-                                  setForm({ ...form, benefits: { ...form.benefits, list: l } });
-                                }}
-                                className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                              />
-                              <input
-                                type="text"
-                                placeholder="Outcome Badge Label (e.g. Guaranteed Outcome)"
-                                value={b.outcomeText || ""}
-                                onChange={(e) => {
-                                  const l = [...form.benefits.list];
-                                  l[idx] = { ...l[idx], outcomeText: e.target.value };
-                                  setForm({ ...form, benefits: { ...form.benefits, list: l } });
-                                }}
-                                className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-semibold text-[#2271b1]"
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                            )}
 
-                  {/* TAB 06: PROCESS */}
-                  {activeTab === "process" && (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Eyebrow</label>
-                          <input
-                            type="text"
-                            value={form.process?.eyebrow || ""}
-                            onChange={(e) => setForm({ ...form, process: { ...form.process, eyebrow: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Title Intro</label>
-                          <input
-                            type="text"
-                            value={form.process?.titleIntro || ""}
-                            onChange={(e) => setForm({ ...form, process: { ...form.process, titleIntro: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Title Highlight</label>
-                          <input
-                            type="text"
-                            value={form.process?.titleHighlight || ""}
-                            onChange={(e) => setForm({ ...form, process: { ...form.process, titleHighlight: e.target.value } })}
-                            className="w-full border border-[#2271b1] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                      </div>
+                            {/* SUBTAB: STRATEGY */}
+                            {activeSubTab === "strategy" && (
+                              <div className="space-y-12">
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>1. Section Header</h3>
+                                  <div className="space-y-4">
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Eyebrow</label>
+                                      <input
+                                        type="text"
+                                        value={form.strategy?.eyebrow || ""}
+                                        onChange={(e) => setForm({ ...form, strategy: { ...form.strategy, eyebrow: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="04 // STRATEGIC APPROACH"
+                                      />
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Title Intro</label>
+                                        <input
+                                          type="text"
+                                          value={form.strategy?.titleIntro || ""}
+                                          onChange={(e) => setForm({ ...form, strategy: { ...form.strategy, titleIntro: e.target.value } })}
+                                          className={UI.input}
+                                          placeholder="Engineered For"
+                                        />
+                                      </div>
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Title Highlight</label>
+                                        <input
+                                          type="text"
+                                          value={form.strategy?.titleHighlight || ""}
+                                          onChange={(e) => setForm({ ...form, strategy: { ...form.strategy, titleHighlight: e.target.value } })}
+                                          className={UI.input + " font-bold border-[#2271b1]"}
+                                          placeholder="Compounding Impact"
+                                        />
+                                      </div>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Description</label>
+                                      <textarea
+                                        rows={2}
+                                        value={form.strategy?.description || ""}
+                                        onChange={(e) => setForm({ ...form, strategy: { ...form.strategy, description: e.target.value } })}
+                                        className={UI.input}
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
 
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold text-[#1d2327]">Process Section Description</label>
-                        <textarea
-                          rows={2}
-                          value={form.process?.description || ""}
-                          onChange={(e) => setForm({ ...form, process: { ...form.process, description: e.target.value } })}
-                          className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                        />
-                      </div>
-
-                      {/* Process Callout Box Details */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 bg-[#f6f7f7] border border-[#c3c4c7] p-3 rounded-[3px]">
-                        <div className="space-y-1">
-                          <label className="text-xs font-bold text-[#1d2327]">Callout Eyebrow / Tag</label>
-                          <input
-                            type="text"
-                            value={form.process?.calloutTag || ""}
-                            onChange={(e) => setForm({ ...form, process: { ...form.process, calloutTag: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                            placeholder="// PROCESS COMPLIANCE"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-xs font-bold text-[#1d2327]">Callout Text</label>
-                          <textarea
-                            rows={2}
-                            value={form.process?.calloutText || ""}
-                            onChange={(e) => setForm({ ...form, process: { ...form.process, calloutText: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                            placeholder="Every milestone is cataloged in the shared workspace..."
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-3 pt-3 border-t border-[#c3c4c7]">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-bold text-[13px] text-[#1d2327]">Roadmap Steps & Deliverables</h4>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const s = [...(form.process?.steps || [])];
-                              s.push({
-                                title: "New Phase",
-                                desc: "Phase description",
-                                phaseTag: `PHASE 0${s.length + 1} // CAMPAIGN`,
-                                deliverables: ["Deliverable 1", "Deliverable 2"],
-                                footerLeft: "Verification Checkpoint",
-                                footerRight: "Verified Node"
-                              });
-                              setForm({ ...form, process: { ...form.process, steps: s } });
-                            }}
-                            className="text-[12px] text-[#2271b1] hover:underline font-bold"
-                          >
-                            + Add Phase
-                          </button>
-                        </div>
-
-                        {(form.process?.steps || []).map((step: any, idx: number) => (
-                          <div key={idx} className="bg-[#f6f7f7] border border-[#c3c4c7] p-3 rounded-[3px] space-y-2">
-                            <div className="flex items-center justify-between">
-                              <span className="font-bold text-xs text-[#1d2327]">Phase 0{idx + 1}</span>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const s = form.process.steps.filter((_: any, i: number) => i !== idx);
-                                  setForm({ ...form, process: { ...form.process, steps: s } });
-                                }}
-                                className="text-[#d63638] text-xs font-bold hover:underline"
-                              >
-                                Delete
-                              </button>
-                            </div>
-                            <div className="grid grid-cols-2 gap-2">
-                              <input
-                                type="text"
-                                placeholder="Phase Title"
-                                value={step.title}
-                                onChange={(e) => {
-                                  const s = [...form.process.steps];
-                                  s[idx] = { ...s[idx], title: e.target.value };
-                                  setForm({ ...form, process: { ...form.process, steps: s } });
-                                }}
-                                className="border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-bold"
-                              />
-                              <input
-                                type="text"
-                                placeholder="Phase Badge Tag (e.g. PHASE 01 // CAMPAIGN)"
-                                value={step.phaseTag || ""}
-                                onChange={(e) => {
-                                  const s = [...form.process.steps];
-                                  s[idx] = { ...s[idx], phaseTag: e.target.value };
-                                  setForm({ ...form, process: { ...form.process, steps: s } });
-                                }}
-                                className="border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-bold text-[#2271b1]"
-                              />
-                            </div>
-                            <textarea
-                              rows={2}
-                              placeholder="Phase Description"
-                              value={step.desc}
-                              onChange={(e) => {
-                                const s = [...form.process.steps];
-                                s[idx] = { ...s[idx], desc: e.target.value };
-                                setForm({ ...form, process: { ...form.process, steps: s } });
-                              }}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                            />
-                            <BulletListEditor
-                              label="Phase Deliverables Checklist"
-                              items={step.deliverables || []}
-                              onChange={(deliverables) => {
-                                const s = [...form.process.steps];
-                                s[idx] = { ...s[idx], deliverables };
-                                setForm({ ...form, process: { ...form.process, steps: s } });
-                              }}
-                              placeholder="e.g. Google Search Console audit, Core Web Vitals check"
-                            />
-                            <div className="grid grid-cols-2 gap-2">
-                              <input
-                                type="text"
-                                placeholder="Footer Left (e.g. Verification Checkpoint)"
-                                value={step.footerLeft || ""}
-                                onChange={(e) => {
-                                  const s = [...form.process.steps];
-                                  s[idx] = { ...s[idx], footerLeft: e.target.value };
-                                  setForm({ ...form, process: { ...form.process, steps: s } });
-                                }}
-                                className="border border-[#8c8f94] px-2 py-1 text-[11px] rounded-[3px] font-mono"
-                              />
-                              <input
-                                type="text"
-                                placeholder="Footer Right (e.g. Verified Node)"
-                                value={step.footerRight || ""}
-                                onChange={(e) => {
-                                  const s = [...form.process.steps];
-                                  s[idx] = { ...s[idx], footerRight: e.target.value };
-                                  setForm({ ...form, process: { ...form.process, steps: s } });
-                                }}
-                                className="border border-[#8c8f94] px-2 py-1 text-[11px] rounded-[3px] font-mono"
-                              />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* TAB 07: RESULTS */}
-                  {activeTab === "results" && (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Eyebrow</label>
-                          <input
-                            type="text"
-                            value={form.results?.eyebrow || ""}
-                            onChange={(e) => setForm({ ...form, results: { ...form.results, eyebrow: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Title Intro</label>
-                          <input
-                            type="text"
-                            value={form.results?.titleIntro || ""}
-                            onChange={(e) => setForm({ ...form, results: { ...form.results, titleIntro: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Title Highlight</label>
-                          <input
-                            type="text"
-                            value={form.results?.titleHighlight || ""}
-                            onChange={(e) => setForm({ ...form, results: { ...form.results, titleHighlight: e.target.value } })}
-                            className="w-full border border-[#2271b1] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Section Description</label>
-                          <input
-                            type="text"
-                            value={form.results?.description || ""}
-                            onChange={(e) => setForm({ ...form, results: { ...form.results, description: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                            placeholder="Verifiable metric indicators driven by precise performance scaling..."
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Featured Case Studies Eyebrow</label>
-                          <input
-                            type="text"
-                            value={form.results?.caseStudiesEyebrow || ""}
-                            onChange={(e) => setForm({ ...form, results: { ...form.results, caseStudiesEyebrow: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                            placeholder="Featured Case Studies"
-                          />
-                        </div>
-                      </div>
-
-                      {/* Case Studies */}
-                      <div className="space-y-3 pt-3 border-t border-[#c3c4c7]">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-bold text-[13px] text-[#1d2327]">Case Studies (Interactive Carousel)</h4>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const cs = [...(form.results?.caseStudies || [])];
-                              cs.push({ title: "New Case Study", challenge: "Challenge overview", strategy: "Strategy used", outcome: "+200% Inquiries", outcomeLabel: "Campaign Outcome" });
-                              setForm({ ...form, results: { ...form.results, caseStudies: cs } });
-                            }}
-                            className="text-[12px] text-[#2271b1] hover:underline font-bold"
-                          >
-                            + Add Case Study
-                          </button>
-                        </div>
-
-                        {(form.results?.caseStudies || []).map((cs: any, idx: number) => (
-                          <div key={idx} className="bg-[#f6f7f7] border border-[#c3c4c7] p-2.5 rounded-[3px] space-y-2">
-                            <div className="flex items-center justify-between">
-                              <span className="font-bold text-xs text-[#1d2327]">Case Study 0{idx + 1}</span>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const c = form.results.caseStudies.filter((_: any, i: number) => i !== idx);
-                                  setForm({ ...form, results: { ...form.results, caseStudies: c } });
-                                }}
-                                className="text-[#d63638] text-xs font-bold hover:underline"
-                              >
-                                Delete
-                              </button>
-                            </div>
-                            <div className="grid grid-cols-3 gap-2">
-                              <input
-                                type="text"
-                                placeholder="Title"
-                                value={cs.title}
-                                onChange={(e) => {
-                                  const c = [...form.results.caseStudies];
-                                  c[idx] = { ...c[idx], title: e.target.value };
-                                  setForm({ ...form, results: { ...form.results, caseStudies: c } });
-                                }}
-                                className="border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-bold"
-                              />
-                              <input
-                                type="text"
-                                placeholder="Outcome Label (Campaign Outcome)"
-                                value={cs.outcomeLabel || ""}
-                                onChange={(e) => {
-                                  const c = [...form.results.caseStudies];
-                                  c[idx] = { ...c[idx], outcomeLabel: e.target.value };
-                                  setForm({ ...form, results: { ...form.results, caseStudies: c } });
-                                }}
-                                className="border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                              />
-                              <input
-                                type="text"
-                                placeholder="Outcome Value (+240% Leads)"
-                                value={cs.outcome}
-                                onChange={(e) => {
-                                  const c = [...form.results.caseStudies];
-                                  c[idx] = { ...c[idx], outcome: e.target.value };
-                                  setForm({ ...form, results: { ...form.results, caseStudies: c } });
-                                }}
-                                className="border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-bold text-[#2271b1]"
-                              />
-                            </div>
-                            <textarea
-                              rows={2}
-                              placeholder="Challenge & Strategy"
-                              value={cs.challenge}
-                              onChange={(e) => {
-                                const c = [...form.results.caseStudies];
-                                c[idx] = { ...c[idx], challenge: e.target.value };
-                                setForm({ ...form, results: { ...form.results, caseStudies: c } });
-                              }}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                            />
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Result Metrics */}
-                      <div className="space-y-3 pt-3 border-t border-[#c3c4c7]">
-                        <h4 className="font-bold text-[13px] text-[#1d2327]">Result Metrics (4 Grid Counters)</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                          {(form.results?.metrics || []).map((m: any, idx: number) => (
-                            <div key={idx} className="bg-[#f6f7f7] border border-[#c3c4c7] p-2 rounded-[3px] space-y-1">
-                              <div className="grid grid-cols-3 gap-2">
-                                <input
-                                  type="text"
-                                  placeholder="Tag (M01)"
-                                  value={m.tag || ""}
-                                  onChange={(e) => {
-                                    const metrics = [...form.results.metrics];
-                                    metrics[idx] = { ...metrics[idx], tag: e.target.value };
-                                    setForm({ ...form, results: { ...form.results, metrics } });
-                                  }}
-                                  className="border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-mono"
-                                />
-                                <input
-                                  type="text"
-                                  placeholder="Value (450%)"
-                                  value={m.value}
-                                  onChange={(e) => {
-                                    const metrics = [...form.results.metrics];
-                                    metrics[idx] = { ...metrics[idx], value: e.target.value };
-                                    setForm({ ...form, results: { ...form.results, metrics } });
-                                  }}
-                                  className="border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-bold text-[#2271b1]"
-                                />
-                                <input
-                                  type="text"
-                                  placeholder="Label"
-                                  value={m.label}
-                                  onChange={(e) => {
-                                    const metrics = [...form.results.metrics];
-                                    metrics[idx] = { ...metrics[idx], label: e.target.value };
-                                    setForm({ ...form, results: { ...form.results, metrics } });
-                                  }}
-                                  className="border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-bold uppercase"
-                                />
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>2. Strategy Steps</h3>
+                                  <div className="space-y-4">
+                                    {(form.strategy?.components || []).map((comp: any, idx: number) => (
+                                      <div key={idx} className={UI.card + " space-y-4"}>
+                                        <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
+                                          <span className="text-[10px] font-bold text-[#646970] uppercase">Step #{idx + 1}</span>
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              const c = form.strategy.components.filter((_: any, i: number) => i !== idx);
+                                              setForm({ ...form, strategy: { ...form.strategy, components: c } });
+                                            }}
+                                            className="text-[#d63638]"
+                                          >
+                                            <Trash2 className="w-4 h-4" />
+                                          </button>
+                                        </div>
+                                        <div className="grid grid-cols-4 gap-4">
+                                          <div className="col-span-1 space-y-1.5">
+                                            <label className={UI.label}>Step #</label>
+                                            <input
+                                              type="text"
+                                              value={comp.num || `0${idx + 1}`}
+                                              onChange={(e) => {
+                                                const c = [...form.strategy.components];
+                                                c[idx] = { ...c[idx], num: e.target.value };
+                                                setForm({ ...form, strategy: { ...form.strategy, components: c } });
+                                              }}
+                                              className={UI.input}
+                                            />
+                                          </div>
+                                          <div className="col-span-3 space-y-1.5">
+                                            <label className={UI.label}>Title</label>
+                                            <input
+                                              type="text"
+                                              value={comp.title || ""}
+                                              onChange={(e) => {
+                                                const c = [...form.strategy.components];
+                                                c[idx] = { ...c[idx], title: e.target.value };
+                                                setForm({ ...form, strategy: { ...form.strategy, components: c } });
+                                              }}
+                                              className={UI.input}
+                                              placeholder="Diagnostic Audit & Benchmark"
+                                            />
+                                          </div>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                          <label className={UI.label}>Description</label>
+                                          <textarea
+                                            rows={2}
+                                            value={comp.desc || ""}
+                                            onChange={(e) => {
+                                              const c = [...form.strategy.components];
+                                              c[idx] = { ...c[idx], desc: e.target.value };
+                                              setForm({ ...form, strategy: { ...form.strategy, components: c } });
+                                            }}
+                                            className={UI.input}
+                                          />
+                                        </div>
+                                      </div>
+                                    ))}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const c = [...(form.strategy?.components || [])];
+                                        c.push({ num: `0${c.length + 1}`, title: "New Strategic Phase", desc: "Description..." });
+                                        setForm({ ...form, strategy: { ...form.strategy, components: c } });
+                                      }}
+                                      className={UI.buttonAdd}
+                                    >
+                                      + Add Strategy Step
+                                    </button>
+                                  </div>
+                                </div>
                               </div>
-                              <input
-                                type="text"
-                                placeholder="Description"
-                                value={m.desc}
-                                onChange={(e) => {
-                                  const metrics = [...form.results.metrics];
-                                  metrics[idx] = { ...metrics[idx], desc: e.target.value };
-                                  setForm({ ...form, results: { ...form.results, metrics } });
-                                }}
-                                className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                            )}
 
-                  {/* TAB 08: INDUSTRIES */}
-                  {activeTab === "industries" && (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Eyebrow</label>
-                          <input
-                            type="text"
-                            value={form.industries?.eyebrow || ""}
-                            onChange={(e) => setForm({ ...form, industries: { ...form.industries, eyebrow: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Title Intro</label>
-                          <input
-                            type="text"
-                            value={form.industries?.titleIntro || ""}
-                            onChange={(e) => setForm({ ...form, industries: { ...form.industries, titleIntro: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Title Highlight</label>
-                          <input
-                            type="text"
-                            value={form.industries?.titleHighlight || ""}
-                            onChange={(e) => setForm({ ...form, industries: { ...form.industries, titleHighlight: e.target.value } })}
-                            className="w-full border border-[#2271b1] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                      </div>
+                            {/* SUBTAB: OUTCOMES / BENEFITS */}
+                            {activeSubTab === "benefits" && (
+                              <div className="space-y-12">
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>1. Section Header</h3>
+                                  <div className="space-y-4">
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Eyebrow</label>
+                                      <input
+                                        type="text"
+                                        value={form.benefits?.eyebrow || ""}
+                                        onChange={(e) => setForm({ ...form, benefits: { ...form.benefits, eyebrow: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="05 // MEASURABLE OUTCOMES"
+                                      />
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Title Intro</label>
+                                        <input
+                                          type="text"
+                                          value={form.benefits?.titleIntro || ""}
+                                          onChange={(e) => setForm({ ...form, benefits: { ...form.benefits, titleIntro: e.target.value } })}
+                                          className={UI.input}
+                                          placeholder="Key Business"
+                                        />
+                                      </div>
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Title Highlight</label>
+                                        <input
+                                          type="text"
+                                          value={form.benefits?.titleHighlight || ""}
+                                          onChange={(e) => setForm({ ...form, benefits: { ...form.benefits, titleHighlight: e.target.value } })}
+                                          className={UI.input + " font-bold border-[#2271b1]"}
+                                          placeholder="Advantages"
+                                        />
+                                      </div>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Description</label>
+                                      <textarea
+                                        rows={2}
+                                        value={form.benefits?.description || ""}
+                                        onChange={(e) => setForm({ ...form, benefits: { ...form.benefits, description: e.target.value } })}
+                                        className={UI.input}
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
 
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Card Footer Left Label</label>
-                          <input
-                            type="text"
-                            value={form.industries?.footerLeft || ""}
-                            onChange={(e) => setForm({ ...form, industries: { ...form.industries, footerLeft: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                            placeholder="Target Sector"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Card Footer Right Label</label>
-                          <input
-                            type="text"
-                            value={form.industries?.footerRight || ""}
-                            onChange={(e) => setForm({ ...form, industries: { ...form.industries, footerRight: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                            placeholder="Verified Optimization"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-3 pt-3 border-t border-[#c3c4c7]">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-bold text-[13px] text-[#1d2327]">Target Sectors</h4>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const ind = [...(form.industries?.list || [])];
-                              ind.push({ title: "New Industry", desc: "Industry description", watermark: "IN" });
-                              setForm({ ...form, industries: { ...form.industries, list: ind } });
-                            }}
-                            className="text-[12px] text-[#2271b1] hover:underline font-bold"
-                          >
-                            + Add Sector
-                          </button>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          {(form.industries?.list || []).map((item: any, idx: number) => (
-                            <div key={idx} className="bg-[#f6f7f7] border border-[#c3c4c7] p-2.5 rounded-[3px] space-y-1.5">
-                              <div className="flex items-center justify-between gap-2">
-                                <input
-                                  type="text"
-                                  placeholder="Industry Title"
-                                  value={item.title}
-                                  onChange={(e) => {
-                                    const ind = [...form.industries.list];
-                                    ind[idx] = { ...ind[idx], title: e.target.value };
-                                    setForm({ ...form, industries: { ...form.industries, list: ind } });
-                                  }}
-                                  className="flex-1 border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-bold"
-                                />
-                                <input
-                                  type="text"
-                                  placeholder="Watermark (HS)"
-                                  value={item.watermark || ""}
-                                  onChange={(e) => {
-                                    const ind = [...form.industries.list];
-                                    ind[idx] = { ...ind[idx], watermark: e.target.value };
-                                    setForm({ ...form, industries: { ...form.industries, list: ind } });
-                                  }}
-                                  className="w-20 border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-mono text-center"
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const ind = form.industries.list.filter((_: any, i: number) => i !== idx);
-                                    setForm({ ...form, industries: { ...form.industries, list: ind } });
-                                  }}
-                                  className="text-[#d63638] p-1"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </button>
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>2. Benefit Cards</h3>
+                                  <div className="space-y-4">
+                                    {(form.benefits?.list || []).map((b: any, idx: number) => (
+                                      <div key={idx} className={UI.card + " space-y-4"}>
+                                        <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
+                                          <span className="text-[10px] font-bold text-[#646970] uppercase">Benefit Card #{idx + 1}</span>
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              const l = form.benefits.list.filter((_: any, i: number) => i !== idx);
+                                              setForm({ ...form, benefits: { ...form.benefits, list: l } });
+                                            }}
+                                            className="text-[#d63638]"
+                                          >
+                                            <Trash2 className="w-4 h-4" />
+                                          </button>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Tag / Badge</label>
+                                            <input
+                                              type="text"
+                                              value={b.tag || ""}
+                                              onChange={(e) => {
+                                                const l = [...form.benefits.list];
+                                                l[idx] = { ...l[idx], tag: e.target.value };
+                                                setForm({ ...form, benefits: { ...form.benefits, list: l } });
+                                              }}
+                                              className={UI.input}
+                                              placeholder="Organic Reach"
+                                            />
+                                          </div>
+                                          <div className="md:col-span-2 space-y-1.5">
+                                            <label className={UI.label}>Title</label>
+                                            <input
+                                              type="text"
+                                              value={b.title || ""}
+                                              onChange={(e) => {
+                                                const l = [...form.benefits.list];
+                                                l[idx] = { ...l[idx], title: e.target.value };
+                                                setForm({ ...form, benefits: { ...form.benefits, list: l } });
+                                              }}
+                                              className={UI.input}
+                                              placeholder="Compounding Traffic & Authority"
+                                            />
+                                          </div>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                          <label className={UI.label}>Description</label>
+                                          <textarea
+                                            rows={2}
+                                            value={b.desc || ""}
+                                            onChange={(e) => {
+                                              const l = [...form.benefits.list];
+                                              l[idx] = { ...l[idx], desc: e.target.value };
+                                              setForm({ ...form, benefits: { ...form.benefits, list: l } });
+                                            }}
+                                            className={UI.input}
+                                          />
+                                        </div>
+                                      </div>
+                                    ))}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const l = [...(form.benefits?.list || [])];
+                                        l.push({ num: `0${l.length + 1}`, title: "New Outcome", desc: "Details...", tag: "Advantage" });
+                                        setForm({ ...form, benefits: { ...form.benefits, list: l } });
+                                      }}
+                                      className={UI.buttonAdd}
+                                    >
+                                      + Add Benefit Card
+                                    </button>
+                                  </div>
+                                </div>
                               </div>
-                              <textarea
-                                rows={2}
-                                placeholder="Description"
-                                value={item.desc || ""}
-                                onChange={(e) => {
-                                  const ind = [...form.industries.list];
-                                  ind[idx] = { ...ind[idx], desc: e.target.value };
-                                  setForm({ ...form, industries: { ...form.industries, list: ind } });
-                                }}
-                                className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                              />
-                              <div className="grid grid-cols-2 gap-2">
-                                <input
-                                  type="text"
-                                  placeholder="Footer Left (e.g. TARGET SECTOR)"
-                                  value={item.footerLeft || ""}
-                                  onChange={(e) => {
-                                    const ind = [...form.industries.list];
-                                    ind[idx] = { ...ind[idx], footerLeft: e.target.value };
-                                    setForm({ ...form, industries: { ...form.industries, list: ind } });
-                                  }}
-                                  className="border border-[#8c8f94] px-2 py-1 text-[11px] rounded-[3px] font-mono"
-                                />
-                                <input
-                                  type="text"
-                                  placeholder="Footer Right (e.g. VERIFIED OPTIMIZATION)"
-                                  value={item.footerRight || ""}
-                                  onChange={(e) => {
-                                    const ind = [...form.industries.list];
-                                    ind[idx] = { ...ind[idx], footerRight: e.target.value };
-                                    setForm({ ...form, industries: { ...form.industries, list: ind } });
-                                  }}
-                                  className="border border-[#8c8f94] px-2 py-1 text-[11px] rounded-[3px] font-mono"
-                                />
+                            )}
+
+                            {/* SUBTAB: PROCESS */}
+                            {activeSubTab === "process" && (
+                              <div className="space-y-12">
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>1. Section Header</h3>
+                                  <div className="space-y-4">
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Eyebrow</label>
+                                      <input
+                                        type="text"
+                                        value={form.process?.eyebrow || ""}
+                                        onChange={(e) => setForm({ ...form, process: { ...form.process, eyebrow: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="06 // EXECUTION PROCESS"
+                                      />
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Title Intro</label>
+                                        <input
+                                          type="text"
+                                          value={form.process?.titleIntro || ""}
+                                          onChange={(e) => setForm({ ...form, process: { ...form.process, titleIntro: e.target.value } })}
+                                          className={UI.input}
+                                          placeholder="A Systematic Path To"
+                                        />
+                                      </div>
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Title Highlight</label>
+                                        <input
+                                          type="text"
+                                          value={form.process?.titleHighlight || ""}
+                                          onChange={(e) => setForm({ ...form, process: { ...form.process, titleHighlight: e.target.value } })}
+                                          className={UI.input + " font-bold border-[#2271b1]"}
+                                          placeholder="Market Leadership"
+                                        />
+                                      </div>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Description</label>
+                                      <textarea
+                                        rows={2}
+                                        value={form.process?.description || ""}
+                                        onChange={(e) => setForm({ ...form, process: { ...form.process, description: e.target.value } })}
+                                        className={UI.input}
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>2. Process Roadmap Steps</h3>
+                                  <div className="space-y-4">
+                                    {(form.process?.steps || []).map((step: any, idx: number) => (
+                                      <div key={idx} className={UI.card + " space-y-4"}>
+                                        <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
+                                          <span className="text-[10px] font-bold text-[#646970] uppercase">Step #{idx + 1}</span>
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              const s = form.process.steps.filter((_: any, i: number) => i !== idx);
+                                              setForm({ ...form, process: { ...form.process, steps: s } });
+                                            }}
+                                            className="text-[#d63638]"
+                                          >
+                                            <Trash2 className="w-4 h-4" />
+                                          </button>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Phase Badge</label>
+                                            <input
+                                              type="text"
+                                              value={step.badge || `PHASE 0${idx + 1}`}
+                                              onChange={(e) => {
+                                                const s = [...form.process.steps];
+                                                s[idx] = { ...s[idx], badge: e.target.value };
+                                                setForm({ ...form, process: { ...form.process, steps: s } });
+                                              }}
+                                              className={UI.input}
+                                              placeholder="PHASE 01"
+                                            />
+                                          </div>
+                                          <div className="md:col-span-2 space-y-1.5">
+                                            <label className={UI.label}>Step Title</label>
+                                            <input
+                                              type="text"
+                                              value={step.title || ""}
+                                              onChange={(e) => {
+                                                const s = [...form.process.steps];
+                                                s[idx] = { ...s[idx], title: e.target.value };
+                                                setForm({ ...form, process: { ...form.process, steps: s } });
+                                              }}
+                                              className={UI.input}
+                                              placeholder="Discovery & Architecture"
+                                            />
+                                          </div>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                          <label className={UI.label}>Step Description</label>
+                                          <textarea
+                                            rows={2}
+                                            value={step.desc || ""}
+                                            onChange={(e) => {
+                                              const s = [...form.process.steps];
+                                              s[idx] = { ...s[idx], desc: e.target.value };
+                                              setForm({ ...form, process: { ...form.process, steps: s } });
+                                            }}
+                                            className={UI.input}
+                                          />
+                                        </div>
+                                      </div>
+                                    ))}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const s = [...(form.process?.steps || [])];
+                                        s.push({ step: `0${s.length + 1}`, title: "New Roadmap Step", desc: "Step details...", badge: `PHASE 0${s.length + 1}` });
+                                        setForm({ ...form, process: { ...form.process, steps: s } });
+                                      }}
+                                      className={UI.buttonAdd}
+                                    >
+                                      + Add Process Step
+                                    </button>
+                                  </div>
+                                </div>
                               </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                            )}
 
-                  {/* TAB 09: TOOLS */}
-                  {activeTab === "tools" && (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Eyebrow</label>
-                          <input
-                            type="text"
-                            value={form.tools?.eyebrow || ""}
-                            onChange={(e) => setForm({ ...form, tools: { ...form.tools, eyebrow: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Title Intro</label>
-                          <input
-                            type="text"
-                            value={form.tools?.titleIntro || ""}
-                            onChange={(e) => setForm({ ...form, tools: { ...form.tools, titleIntro: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Title Highlight</label>
-                          <input
-                            type="text"
-                            value={form.tools?.titleHighlight || ""}
-                            onChange={(e) => setForm({ ...form, tools: { ...form.tools, titleHighlight: e.target.value } })}
-                            className="w-full border border-[#2271b1] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold text-[#1d2327]">Section Description</label>
-                        <textarea
-                          rows={2}
-                          value={form.tools?.description || ""}
-                          onChange={(e) => setForm({ ...form, tools: { ...form.tools, description: e.target.value } })}
-                          className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          placeholder="High-performance frameworks and analytics systems driving client ROI metrics."
-                        />
-                      </div>
-
-                      <div className="space-y-3 pt-3 border-t border-[#c3c4c7]">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-bold text-[13px] text-[#1d2327]">Tools & Frameworks</h4>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const t = [...(form.tools?.list || [])];
-                              t.push({ name: "Tool Name", iconName: "Monitor", tag: "CAMPAIGN", desc: "Tool configuration description" });
-                              setForm({ ...form, tools: { ...form.tools, list: t } });
-                            }}
-                            className="text-[12px] text-[#2271b1] hover:underline font-bold"
-                          >
-                            + Add Tool
-                          </button>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                          {(form.tools?.list || []).map((tool: any, idx: number) => (
-                            <div key={idx} className="bg-[#f6f7f7] border border-[#c3c4c7] p-2.5 rounded-[3px] space-y-2">
-                              <div className="flex items-center justify-between">
-                                <span className="font-bold text-xs text-[#1d2327]">Tool 0{idx + 1}</span>
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const t = form.tools.list.filter((_: any, i: number) => i !== idx);
-                                    setForm({ ...form, tools: { ...form.tools, list: t } });
-                                  }}
-                                  className="text-[#d63638] text-xs font-bold hover:underline"
-                                >
-                                  Delete
-                                </button>
-                              </div>
-                              <div className="grid grid-cols-2 gap-1.5">
-                                <input
-                                  type="text"
-                                  placeholder="Name"
-                                  value={tool.name}
-                                  onChange={(e) => {
-                                    const t = [...form.tools.list];
-                                    t[idx] = { ...t[idx], name: e.target.value };
-                                    setForm({ ...form, tools: { ...form.tools, list: t } });
-                                  }}
-                                  className="border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-bold"
-                                />
-                                <input
-                                  type="text"
-                                  placeholder="Tag (CORE DEV)"
-                                  value={tool.tag || ""}
-                                  onChange={(e) => {
-                                    const t = [...form.tools.list];
-                                    t[idx] = { ...t[idx], tag: e.target.value };
-                                    setForm({ ...form, tools: { ...form.tools, list: t } });
-                                  }}
-                                  className="border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-mono uppercase"
-                                />
-                              </div>
-                              <div>
-                                <IconSelector
-                                  value={tool.iconName || "Monitor"}
-                                  onChange={(v) => {
-                                    const t = [...form.tools.list];
-                                    t[idx] = { ...t[idx], iconName: v };
-                                    setForm({ ...form, tools: { ...form.tools, list: t } });
-                                  }}
-                                />
-                              </div>
-                              <textarea
-                                rows={2}
-                                placeholder="Description"
-                                value={tool.desc || tool.description || ""}
-                                onChange={(e) => {
-                                  const t = [...form.tools.list];
-                                  t[idx] = { ...t[idx], desc: e.target.value, description: e.target.value };
-                                  setForm({ ...form, tools: { ...form.tools, list: t } });
-                                }}
-                                className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* TAB 10: WHY CHOOSE US */}
-                  {activeTab === "why-us" && (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Eyebrow</label>
-                          <input
-                            type="text"
-                            value={form.whyChooseUs?.eyebrow || ""}
-                            onChange={(e) => setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, eyebrow: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Title Intro</label>
-                          <input
-                            type="text"
-                            value={form.whyChooseUs?.titleIntro || ""}
-                            onChange={(e) => setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, titleIntro: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Title Highlight</label>
-                          <input
-                            type="text"
-                            value={form.whyChooseUs?.titleHighlight || ""}
-                            onChange={(e) => setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, titleHighlight: e.target.value } })}
-                            className="w-full border border-[#2271b1] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold text-[#1d2327]">Section Description</label>
-                        <textarea
-                          rows={2}
-                          value={form.whyChooseUs?.description || ""}
-                          onChange={(e) => setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, description: e.target.value } })}
-                          className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          placeholder="We design fully custom solutions engineered around revenue metrics..."
-                        />
-                      </div>
-
-                      {/* 3 Circular Stat Rings */}
-                      <div className="space-y-3 pt-3 border-t border-[#c3c4c7]">
-                        <h4 className="font-bold text-[13px] text-[#1d2327]">3 Circular Stat Rings</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                          {(() => {
-                            const defaultStats = [
-                              { value: "100%", label: "PERFORMANCE", sublabel: "Next.js Headless\nSpeed Optimization", percentage: 1.0 },
-                              { value: "4.5x", label: "AVERAGE ROI", sublabel: "Attributed Leads\nGrowth Scaling", percentage: 0.9 },
-                              { value: "24/7", label: "DATA SYNC", sublabel: "Live Tracking\nReal-time Reports", percentage: 0.85 }
-                            ];
-                            const existingStats = form.whyChooseUs?.stats || [];
-                            // Always show 3 rings; use saved value or fall back to default for missing slots
-                            return [0, 1, 2].map(i => existingStats[i] || defaultStats[i]);
-                          })().map((stat: any, idx: number) => (
-                            <div key={idx} className="bg-[#f6f7f7] border border-[#c3c4c7] p-2.5 rounded-[3px] space-y-1.5">
-                              <span className="font-bold text-xs text-[#2271b1]">Ring 0{idx + 1}</span>
-                              <div className="grid grid-cols-2 gap-1.5">
-                                <input
-                                  type="text"
-                                  placeholder="Value (100%)"
-                                  value={stat.value || ""}
-                                  onChange={(e) => {
-                                    const stats = [...(form.whyChooseUs?.stats || [])];
-                                    stats[idx] = { ...stats[idx], value: e.target.value };
-                                    setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, stats } });
-                                  }}
-                                  className="border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-bold text-[#2271b1]"
-                                />
-                                <input
-                                  type="text"
-                                  placeholder="Label (PERFORMANCE)"
-                                  value={stat.label || ""}
-                                  onChange={(e) => {
-                                    const stats = [...(form.whyChooseUs?.stats || [])];
-                                    stats[idx] = { ...stats[idx], label: e.target.value };
-                                    setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, stats } });
-                                  }}
-                                  className="border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-bold uppercase"
-                                />
-                              </div>
-                              <input
-                                type="text"
-                                placeholder="Sublabel (use \n for line break)"
-                                value={stat.sublabel || ""}
-                                onChange={(e) => {
-                                  const stats = [...(form.whyChooseUs?.stats || [])];
-                                  stats[idx] = { ...stats[idx], sublabel: e.target.value };
-                                  setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, stats } });
-                                }}
-                                className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="space-y-3 pt-3 border-t border-[#c3c4c7]">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-bold text-[13px] text-[#1d2327]">Differentiators</h4>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const list = [...(form.whyChooseUs?.list || [])];
-                              list.push({ title: "New Differentiator", desc: "Detailed explanation", tag: `Differentiator 0${list.length + 1}` });
-                              setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, list } });
-                            }}
-                            className="text-[12px] text-[#2271b1] hover:underline font-bold"
-                          >
-                            + Add Differentiator
-                          </button>
-                        </div>
-
-                        {(form.whyChooseUs?.list || []).map((item: any, idx: number) => (
-                          <div key={idx} className="bg-[#f6f7f7] border border-[#c3c4c7] p-2.5 rounded-[3px] space-y-2">
-                            <div className="flex items-center justify-between">
-                              <span className="font-bold text-xs text-[#1d2327]">Differentiator 0{idx + 1}</span>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const list = form.whyChooseUs.list.filter((_: any, i: number) => i !== idx);
-                                  setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, list } });
-                                }}
-                                className="text-[#d63638] text-xs font-bold hover:underline"
-                              >
-                                Delete
-                              </button>
-                            </div>
-                            <div className="grid grid-cols-3 gap-2">
-                              <input
-                                type="text"
-                                placeholder="Tag (Differentiator 01)"
-                                value={item.tag || ""}
-                                onChange={(e) => {
-                                  const list = [...form.whyChooseUs.list];
-                                  list[idx] = { ...list[idx], tag: e.target.value };
-                                  setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, list } });
-                                }}
-                                className="border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-mono text-[#2271b1]"
-                              />
-                              <input
-                                type="text"
-                                placeholder="Title"
-                                value={item.title || ""}
-                                onChange={(e) => {
-                                  const list = [...form.whyChooseUs.list];
-                                  list[idx] = { ...list[idx], title: e.target.value };
-                                  setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, list } });
-                                }}
-                                className="col-span-2 border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-bold"
-                              />
-                            </div>
-                            <textarea
-                              rows={2}
-                              placeholder="Description"
-                              value={item.desc || ""}
-                              onChange={(e) => {
-                                const list = [...form.whyChooseUs.list];
-                                list[idx] = { ...list[idx], desc: e.target.value };
-                                setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, list } });
-                              }}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                            />
-                            {/* Illustration Image Upload */}
-                            <div className="space-y-1">
-                              <label className="text-[11px] font-bold text-[#50575e]">Illustration Image (replaces SVG)</label>
-                              <ImageField
-                                label="Illustration Image"
-                                value={item.image || ""}
-                                onChange={(url: string) => {
-                                  const list = [...form.whyChooseUs.list];
-                                  list[idx] = { ...list[idx], image: url };
-                                  setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, list } });
-                                }}
-                              />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* TAB 11: PRICING */}
-                  {activeTab === "pricing" && (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Eyebrow</label>
-                          <input
-                            type="text"
-                            value={form.pricing?.eyebrow || ""}
-                            onChange={(e) => setForm({ ...form, pricing: { ...form.pricing, eyebrow: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Title Intro</label>
-                          <input
-                            type="text"
-                            value={form.pricing?.titleIntro || ""}
-                            onChange={(e) => setForm({ ...form, pricing: { ...form.pricing, titleIntro: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Title Highlight</label>
-                          <input
-                            type="text"
-                            value={form.pricing?.titleHighlight || ""}
-                            onChange={(e) => setForm({ ...form, pricing: { ...form.pricing, titleHighlight: e.target.value } })}
-                            className="w-full border border-[#2271b1] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-3 pt-3 border-t border-[#c3c4c7]">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-bold text-[13px] text-[#1d2327]">Pricing Tiers</h4>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const plans = [...(form.pricing?.plans || [])];
-                              plans.push({
-                                name: "Custom Tier",
-                                desc: "Plan description",
-                                price: "$3,500",
-                                period: "project",
-                                isPopular: false,
-                                isCustom: false,
-                                badgeText: "",
-                                tag: `PLAN 0${plans.length + 1}`,
-                                ctaText: "Select Plan",
-                                features: ["Feature 1", "Feature 2", "Feature 3"]
-                              });
-                              setForm({ ...form, pricing: { ...form.pricing, plans } });
-                            }}
-                            className="text-[12px] text-[#2271b1] hover:underline font-bold"
-                          >
-                            + Add Plan
-                          </button>
-                        </div>
-
-                        {(form.pricing?.plans || []).map((plan: any, idx: number) => (
-                          <div key={idx} className="bg-[#f6f7f7] border border-[#c3c4c7] p-3 rounded-[3px] space-y-2">
-                            <div className="flex items-center justify-between border-b border-[#c3c4c7] pb-1.5">
-                              <span className="font-bold text-xs text-[#2271b1]">Tier 0{idx + 1}: {plan.name}</span>
-                              <div className="flex items-center gap-3">
-                                <label className="text-xs flex items-center gap-1 font-semibold cursor-pointer">
-                                  <input
-                                    type="checkbox"
-                                    checked={plan.isPopular || false}
-                                    onChange={(e) => {
-                                      const plans = [...form.pricing.plans];
-                                      plans[idx] = { ...plans[idx], isPopular: e.target.checked };
-                                      setForm({ ...form, pricing: { ...form.pricing, plans } });
+                            {/* SUBTAB: RESULTS */}
+                            {activeSubTab === "results" && (
+                              <div className="space-y-12">
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>1. Performance Metrics</h3>
+                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    {(form.results?.metrics || []).map((m: any, idx: number) => (
+                                      <div key={idx} className={UI.card + " space-y-3"}>
+                                        <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
+                                          <span className="text-[10px] font-bold text-[#646970] uppercase">Metric #{idx + 1}</span>
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              const metrics = form.results.metrics.filter((_: any, i: number) => i !== idx);
+                                              setForm({ ...form, results: { ...form.results, metrics } });
+                                            }}
+                                            className="text-[#d63638]"
+                                          >
+                                            <Trash2 className="w-4 h-4" />
+                                          </button>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                          <label className={UI.label}>Value</label>
+                                          <input
+                                            type="text"
+                                            value={m.value || ""}
+                                            onChange={(e) => {
+                                              const metrics = [...form.results.metrics];
+                                              metrics[idx] = { ...metrics[idx], value: e.target.value };
+                                              setForm({ ...form, results: { ...form.results, metrics } });
+                                            }}
+                                            className={UI.input + " font-bold border-[#2271b1]"}
+                                            placeholder="+340%"
+                                          />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                          <label className={UI.label}>Label</label>
+                                          <input
+                                            type="text"
+                                            value={m.label || ""}
+                                            onChange={(e) => {
+                                              const metrics = [...form.results.metrics];
+                                              metrics[idx] = { ...metrics[idx], label: e.target.value };
+                                              setForm({ ...form, results: { ...form.results, metrics } });
+                                            }}
+                                            className={UI.input}
+                                            placeholder="Organic Lift"
+                                          />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                          <label className={UI.label}>Subtext</label>
+                                          <input
+                                            type="text"
+                                            value={m.subtext || ""}
+                                            onChange={(e) => {
+                                              const metrics = [...form.results.metrics];
+                                              metrics[idx] = { ...metrics[idx], subtext: e.target.value };
+                                              setForm({ ...form, results: { ...form.results, metrics } });
+                                            }}
+                                            className={UI.input}
+                                            placeholder="Within 90 days"
+                                          />
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const metrics = [...(form.results?.metrics || [])];
+                                      metrics.push({ value: "99.9%", label: "Uptime SLA", subtext: "Enterprise availability" });
+                                      setForm({ ...form, results: { ...form.results, metrics } });
                                     }}
-                                  />
-                                  Popular
-                                </label>
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const plans = form.pricing.plans.filter((_: any, i: number) => i !== idx);
-                                    setForm({ ...form, pricing: { ...form.pricing, plans } });
-                                  }}
-                                  className="text-[#d63638] text-xs font-bold hover:underline"
-                                >
-                                  Delete
-                                </button>
+                                    className={UI.buttonAdd}
+                                  >
+                                    + Add Metric
+                                  </button>
+                                </div>
+
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>2. Spotlight Case Study Card</h3>
+                                  <div className="space-y-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Title</label>
+                                        <input
+                                          type="text"
+                                          value={form.results?.caseStudy?.title || ""}
+                                          onChange={(e) => setForm({ ...form, results: { ...form.results, caseStudy: { ...form.results?.caseStudy, title: e.target.value } } })}
+                                          className={UI.input}
+                                          placeholder="Global Logistics Redesign"
+                                        />
+                                      </div>
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Metric Highlight</label>
+                                        <input
+                                          type="text"
+                                          value={form.results?.caseStudy?.metric || ""}
+                                          onChange={(e) => setForm({ ...form, results: { ...form.results, caseStudy: { ...form.results?.caseStudy, metric: e.target.value } } })}
+                                          className={UI.input + " font-bold border-[#2271b1]"}
+                                          placeholder="+420% Inbound Pipeline"
+                                        />
+                                      </div>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Description</label>
+                                      <textarea
+                                        rows={2}
+                                        value={form.results?.caseStudy?.desc || ""}
+                                        onChange={(e) => setForm({ ...form, results: { ...form.results, caseStudy: { ...form.results?.caseStudy, desc: e.target.value } } })}
+                                        className={UI.input}
+                                      />
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Case Link</label>
+                                        <input
+                                          type="text"
+                                          value={form.results?.caseStudy?.link || ""}
+                                          onChange={(e) => setForm({ ...form, results: { ...form.results, caseStudy: { ...form.results?.caseStudy, link: e.target.value } } })}
+                                          className={UI.input}
+                                          placeholder="/portfolio"
+                                        />
+                                      </div>
+                                      <div className="space-y-1.5">
+                                        <ImageField
+                                          label="Cover Image"
+                                          value={form.results?.caseStudy?.image || ""}
+                                          onChange={(url) => setForm({ ...form, results: { ...form.results, caseStudy: { ...form.results?.caseStudy, image: url } } })}
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
-                            </div>
+                            )}
 
-                            <div className="grid grid-cols-5 gap-2">
-                              <input
-                                type="text"
-                                placeholder="Tag (PLAN 01)"
-                                value={plan.tag || ""}
-                                onChange={(e) => {
-                                  const plans = [...form.pricing.plans];
-                                  plans[idx] = { ...plans[idx], tag: e.target.value };
-                                  setForm({ ...form, pricing: { ...form.pricing, plans } });
-                                }}
-                                className="border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-mono"
-                              />
-                              <input
-                                type="text"
-                                placeholder="Plan Name"
-                                value={plan.name}
-                                onChange={(e) => {
-                                  const plans = [...form.pricing.plans];
-                                  plans[idx] = { ...plans[idx], name: e.target.value };
-                                  setForm({ ...form, pricing: { ...form.pricing, plans } });
-                                }}
-                                className="border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-bold"
-                              />
-                              <input
-                                type="text"
-                                placeholder="Price ($4,850)"
-                                value={plan.price}
-                                onChange={(e) => {
-                                  const plans = [...form.pricing.plans];
-                                  plans[idx] = { ...plans[idx], price: e.target.value };
-                                  setForm({ ...form, pricing: { ...form.pricing, plans } });
-                                }}
-                                className="border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                              />
-                              <input
-                                type="text"
-                                placeholder="Period (project)"
-                                value={plan.period}
-                                onChange={(e) => {
-                                  const plans = [...form.pricing.plans];
-                                  plans[idx] = { ...plans[idx], period: e.target.value };
-                                  setForm({ ...form, pricing: { ...form.pricing, plans } });
-                                }}
-                                className="border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                              />
-                              <input
-                                type="text"
-                                placeholder="Badge (Most Popular)"
-                                value={plan.badgeText || ""}
-                                onChange={(e) => {
-                                  const plans = [...form.pricing.plans];
-                                  plans[idx] = { ...plans[idx], badgeText: e.target.value };
-                                  setForm({ ...form, pricing: { ...form.pricing, plans } });
-                                }}
-                                className="border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-semibold text-[#2271b1]"
-                              />
-                            </div>
+                            {/* SUBTAB: INDUSTRIES */}
+                            {activeSubTab === "industries" && (
+                              <div className="space-y-12">
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>1. Section Header</h3>
+                                  <div className="space-y-4">
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Eyebrow</label>
+                                      <input
+                                        type="text"
+                                        value={form.industries?.eyebrow || ""}
+                                        onChange={(e) => setForm({ ...form, industries: { ...form.industries, eyebrow: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="08 // DOMAIN EXPERTISE"
+                                      />
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Title Intro</label>
+                                        <input
+                                          type="text"
+                                          value={form.industries?.titleIntro || ""}
+                                          onChange={(e) => setForm({ ...form, industries: { ...form.industries, titleIntro: e.target.value } })}
+                                          className={UI.input}
+                                          placeholder="Tailored For High-Growth"
+                                        />
+                                      </div>
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Title Highlight</label>
+                                        <input
+                                          type="text"
+                                          value={form.industries?.titleHighlight || ""}
+                                          onChange={(e) => setForm({ ...form, industries: { ...form.industries, titleHighlight: e.target.value } })}
+                                          className={UI.input + " font-bold border-[#2271b1]"}
+                                          placeholder="Industry Verticals"
+                                        />
+                                      </div>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Description</label>
+                                      <textarea
+                                        rows={2}
+                                        value={form.industries?.description || ""}
+                                        onChange={(e) => setForm({ ...form, industries: { ...form.industries, description: e.target.value } })}
+                                        className={UI.input}
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
 
-                            <div className="grid grid-cols-3 gap-2">
-                              <input
-                                type="text"
-                                placeholder="Description"
-                                value={plan.desc}
-                                onChange={(e) => {
-                                  const plans = [...form.pricing.plans];
-                                  plans[idx] = { ...plans[idx], desc: e.target.value };
-                                  setForm({ ...form, pricing: { ...form.pricing, plans } });
-                                }}
-                                className="col-span-2 border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                              />
-                              <input
-                                type="text"
-                                placeholder="CTA Text"
-                                value={plan.ctaText}
-                                onChange={(e) => {
-                                  const plans = [...form.pricing.plans];
-                                  plans[idx] = { ...plans[idx], ctaText: e.target.value };
-                                  setForm({ ...form, pricing: { ...form.pricing, plans } });
-                                }}
-                                className="border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                              />
-                            </div>
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>2. Industry Sectors</h3>
+                                  <div className="space-y-4">
+                                    {(form.industries?.items || []).map((item: any, idx: number) => (
+                                      <div key={idx} className={UI.card + " space-y-4"}>
+                                        <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
+                                          <span className="text-[10px] font-bold text-[#646970] uppercase">Sector #{idx + 1}</span>
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              const items = form.industries.items.filter((_: any, i: number) => i !== idx);
+                                              setForm({ ...form, industries: { ...form.industries, items } });
+                                            }}
+                                            className="text-[#d63638]"
+                                          >
+                                            <Trash2 className="w-4 h-4" />
+                                          </button>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Name</label>
+                                            <input
+                                              type="text"
+                                              value={item.name || ""}
+                                              onChange={(e) => {
+                                                const items = [...form.industries.items];
+                                                items[idx] = { ...items[idx], name: e.target.value };
+                                                setForm({ ...form, industries: { ...form.industries, items } });
+                                              }}
+                                              className={UI.input}
+                                              placeholder="SaaS & Enterprise Tech"
+                                            />
+                                          </div>
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Icon</label>
+                                            <IconSelector
+                                              value={item.icon || "Cpu"}
+                                              onChange={(v) => {
+                                                const items = [...form.industries.items];
+                                                items[idx] = { ...items[idx], icon: v };
+                                                setForm({ ...form, industries: { ...form.industries, items } });
+                                              }}
+                                            />
+                                          </div>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                          <label className={UI.label}>Description</label>
+                                          <textarea
+                                            rows={2}
+                                            value={item.desc || ""}
+                                            onChange={(e) => {
+                                              const items = [...form.industries.items];
+                                              items[idx] = { ...items[idx], desc: e.target.value };
+                                              setForm({ ...form, industries: { ...form.industries, items } });
+                                            }}
+                                            className={UI.input}
+                                          />
+                                        </div>
+                                      </div>
+                                    ))}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const items = [...(form.industries?.items || [])];
+                                        items.push({ name: "New Industry Sector", desc: "Description...", icon: "Cpu" });
+                                        setForm({ ...form, industries: { ...form.industries, items } });
+                                      }}
+                                      className={UI.buttonAdd}
+                                    >
+                                      + Add Industry Sector
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
 
-                            <BulletListEditor
-                              label="Plan Features & Inclusions"
-                              items={plan.features || []}
-                              onChange={(features) => {
-                                const plans = [...form.pricing.plans];
-                                plans[idx] = { ...plans[idx], features };
-                                setForm({ ...form, pricing: { ...form.pricing, plans } });
-                              }}
-                              placeholder="e.g. Dedicated technical architect & 24/7 SLA"
-                            />
-                          </div>
-                        ))}
+                            {/* SUBTAB: TECH STACK */}
+                            {activeSubTab === "tools" && (
+                              <div className="space-y-12">
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>1. Section Header</h3>
+                                  <div className="space-y-4">
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Eyebrow</label>
+                                      <input
+                                        type="text"
+                                        value={form.tools?.eyebrow || ""}
+                                        onChange={(e) => setForm({ ...form, tools: { ...form.tools, eyebrow: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="09 // TECHNICAL STACK"
+                                      />
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Title Intro</label>
+                                        <input
+                                          type="text"
+                                          value={form.tools?.titleIntro || ""}
+                                          onChange={(e) => setForm({ ...form, tools: { ...form.tools, titleIntro: e.target.value } })}
+                                          className={UI.input}
+                                          placeholder="Modern Technologies We"
+                                        />
+                                      </div>
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Title Highlight</label>
+                                        <input
+                                          type="text"
+                                          value={form.tools?.titleHighlight || ""}
+                                          onChange={(e) => setForm({ ...form, tools: { ...form.tools, titleHighlight: e.target.value } })}
+                                          className={UI.input + " font-bold border-[#2271b1]"}
+                                          placeholder="Master & Deploy"
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>2. Tech Stack Category Groups</h3>
+                                  <div className="space-y-4">
+                                    {(form.tools?.categories || []).map((cat: any, idx: number) => (
+                                      <div key={idx} className={UI.card + " space-y-4"}>
+                                        <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
+                                          <span className="text-[10px] font-bold text-[#646970] uppercase">Category #{idx + 1}</span>
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              const categories = form.tools.categories.filter((_: any, i: number) => i !== idx);
+                                              setForm({ ...form, tools: { ...form.tools, categories } });
+                                            }}
+                                            className="text-[#d63638]"
+                                          >
+                                            <Trash2 className="w-4 h-4" />
+                                          </button>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                          <label className={UI.label}>Category Name</label>
+                                          <input
+                                            type="text"
+                                            value={cat.category || ""}
+                                            onChange={(e) => {
+                                              const categories = [...form.tools.categories];
+                                              categories[idx] = { ...categories[idx], category: e.target.value };
+                                              setForm({ ...form, tools: { ...form.tools, categories } });
+                                            }}
+                                            className={UI.input}
+                                            placeholder="Frontend & Frameworks"
+                                          />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                          <label className={UI.label}>Tool Items (Comma-separated)</label>
+                                          <CommaSeparatedInput
+                                            value={cat.items || []}
+                                            onChange={(newItems) => {
+                                              const categories = [...form.tools.categories];
+                                              categories[idx] = { ...categories[idx], items: newItems };
+                                              setForm({ ...form, tools: { ...form.tools, categories } });
+                                            }}
+                                            className={UI.input}
+                                            placeholder="Next.js 16, React 19, TypeScript, Tailwind CSS"
+                                          />
+                                        </div>
+                                      </div>
+                                    ))}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const categories = [...(form.tools?.categories || [])];
+                                        categories.push({ category: "New Tech Category", items: ["Tool 1", "Tool 2", "Tool 3"] });
+                                        setForm({ ...form, tools: { ...form.tools, categories } });
+                                      }}
+                                      className={UI.buttonAdd}
+                                    >
+                                      + Add Tech Category Group
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* SUBTAB: WHY PARTNER */}
+                            {activeSubTab === "why-us" && (
+                              <div className="space-y-12">
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>1. Section Header</h3>
+                                  <div className="space-y-4">
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Eyebrow</label>
+                                      <input
+                                        type="text"
+                                        value={form.whyChooseUs?.eyebrow || ""}
+                                        onChange={(e) => setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, eyebrow: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="10 // WHY CHOOSE US"
+                                      />
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Title Intro</label>
+                                        <input
+                                          type="text"
+                                          value={form.whyChooseUs?.titleIntro || ""}
+                                          onChange={(e) => setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, titleIntro: e.target.value } })}
+                                          className={UI.input}
+                                          placeholder="Why Industry Leaders"
+                                        />
+                                      </div>
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Title Highlight</label>
+                                        <input
+                                          type="text"
+                                          value={form.whyChooseUs?.titleHighlight || ""}
+                                          onChange={(e) => setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, titleHighlight: e.target.value } })}
+                                          className={UI.input + " font-bold border-[#2271b1]"}
+                                          placeholder="Partner With Us"
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>2. Value Proposition Points</h3>
+                                  <div className="space-y-4">
+                                    {(form.whyChooseUs?.points || []).map((pt: any, idx: number) => (
+                                      <div key={idx} className={UI.card + " space-y-4"}>
+                                        <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
+                                          <span className="text-[10px] font-bold text-[#646970] uppercase">Point #{idx + 1}</span>
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              const points = form.whyChooseUs.points.filter((_: any, i: number) => i !== idx);
+                                              setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, points } });
+                                            }}
+                                            className="text-[#d63638]"
+                                          >
+                                            <Trash2 className="w-4 h-4" />
+                                          </button>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Title</label>
+                                            <input
+                                              type="text"
+                                              value={pt.title || ""}
+                                              onChange={(e) => {
+                                                const points = [...form.whyChooseUs.points];
+                                                points[idx] = { ...points[idx], title: e.target.value };
+                                                setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, points } });
+                                              }}
+                                              className={UI.input}
+                                              placeholder="Zero Technical Debt"
+                                            />
+                                          </div>
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Icon</label>
+                                            <IconSelector
+                                              value={pt.icon || "CheckCircle2"}
+                                              onChange={(v) => {
+                                                const points = [...form.whyChooseUs.points];
+                                                points[idx] = { ...points[idx], icon: v };
+                                                setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, points } });
+                                              }}
+                                            />
+                                          </div>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                          <label className={UI.label}>Description</label>
+                                          <textarea
+                                            rows={2}
+                                            value={pt.desc || ""}
+                                            onChange={(e) => {
+                                              const points = [...form.whyChooseUs.points];
+                                              points[idx] = { ...points[idx], desc: e.target.value };
+                                              setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, points } });
+                                            }}
+                                            className={UI.input}
+                                          />
+                                        </div>
+                                      </div>
+                                    ))}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const points = [...(form.whyChooseUs?.points || [])];
+                                        points.push({ title: "New Value Point", desc: "Description...", icon: "CheckCircle2" });
+                                        setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, points } });
+                                      }}
+                                      className={UI.buttonAdd}
+                                    >
+                                      + Add Value Point
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* SUBTAB: PRICING */}
+                            {activeSubTab === "pricing" && (
+                              <div className="space-y-12">
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>1. Section Header</h3>
+                                  <div className="space-y-4">
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Eyebrow</label>
+                                      <input
+                                        type="text"
+                                        value={form.pricing?.eyebrow || ""}
+                                        onChange={(e) => setForm({ ...form, pricing: { ...form.pricing, eyebrow: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="11 // ENGAGEMENT MODELS"
+                                      />
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Title Intro</label>
+                                        <input
+                                          type="text"
+                                          value={form.pricing?.titleIntro || ""}
+                                          onChange={(e) => setForm({ ...form, pricing: { ...form.pricing, titleIntro: e.target.value } })}
+                                          className={UI.input}
+                                          placeholder="Transparent Pricing For"
+                                        />
+                                      </div>
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Title Highlight</label>
+                                        <input
+                                          type="text"
+                                          value={form.pricing?.titleHighlight || ""}
+                                          onChange={(e) => setForm({ ...form, pricing: { ...form.pricing, titleHighlight: e.target.value } })}
+                                          className={UI.input + " font-bold border-[#2271b1]"}
+                                          placeholder="Every Scale"
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>2. Pricing Tier Packages</h3>
+                                  <div className="space-y-4">
+                                    {(form.pricing?.plans || []).map((plan: any, idx: number) => (
+                                      <div key={idx} className={UI.card + " space-y-4"}>
+                                        <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
+                                          <div className="flex items-center gap-2">
+                                            <span className="text-[10px] font-bold text-[#646970] uppercase">Plan #{idx + 1}: {plan.name || "Untitled"}</span>
+                                            {plan.popular && (
+                                              <span className="bg-[#E9BD36] text-[#080710] text-[9px] font-bold px-1.5 py-0.5 rounded uppercase">
+                                                Popular
+                                              </span>
+                                            )}
+                                          </div>
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              const plans = form.pricing.plans.filter((_: any, i: number) => i !== idx);
+                                              setForm({ ...form, pricing: { ...form.pricing, plans } });
+                                            }}
+                                            className="text-[#d63638]"
+                                          >
+                                            <Trash2 className="w-4 h-4" />
+                                          </button>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Plan Name</label>
+                                            <input
+                                              type="text"
+                                              value={plan.name || ""}
+                                              onChange={(e) => {
+                                                const plans = [...form.pricing.plans];
+                                                plans[idx] = { ...plans[idx], name: e.target.value };
+                                                setForm({ ...form, pricing: { ...form.pricing, plans } });
+                                              }}
+                                              className={UI.input}
+                                              placeholder="Growth Sprint"
+                                            />
+                                          </div>
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Price</label>
+                                            <input
+                                              type="text"
+                                              value={plan.price || ""}
+                                              onChange={(e) => {
+                                                const plans = [...form.pricing.plans];
+                                                plans[idx] = { ...plans[idx], price: e.target.value };
+                                                setForm({ ...form, pricing: { ...form.pricing, plans } });
+                                              }}
+                                              className={UI.input + " font-bold border-[#2271b1]"}
+                                              placeholder="$4,500"
+                                            />
+                                          </div>
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Period</label>
+                                            <input
+                                              type="text"
+                                              value={plan.period || ""}
+                                              onChange={(e) => {
+                                                const plans = [...form.pricing.plans];
+                                                plans[idx] = { ...plans[idx], period: e.target.value };
+                                                setForm({ ...form, pricing: { ...form.pricing, plans } });
+                                              }}
+                                              className={UI.input}
+                                              placeholder="/ project"
+                                            />
+                                          </div>
+                                        </div>
+
+                                        <div className="space-y-1.5">
+                                          <label className={UI.label}>Description</label>
+                                          <textarea
+                                            rows={2}
+                                            value={plan.description || ""}
+                                            onChange={(e) => {
+                                              const plans = [...form.pricing.plans];
+                                              plans[idx] = { ...plans[idx], description: e.target.value };
+                                              setForm({ ...form, pricing: { ...form.pricing, plans } });
+                                            }}
+                                            className={UI.input}
+                                          />
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Button Text</label>
+                                            <input
+                                              type="text"
+                                              value={plan.ctaText || ""}
+                                              onChange={(e) => {
+                                                const plans = [...form.pricing.plans];
+                                                plans[idx] = { ...plans[idx], ctaText: e.target.value };
+                                                setForm({ ...form, pricing: { ...form.pricing, plans } });
+                                              }}
+                                              className={UI.input}
+                                              placeholder="Start Growth Sprint"
+                                            />
+                                          </div>
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Button Link</label>
+                                            <input
+                                              type="text"
+                                              value={plan.ctaLink || ""}
+                                              onChange={(e) => {
+                                                const plans = [...form.pricing.plans];
+                                                plans[idx] = { ...plans[idx], ctaLink: e.target.value };
+                                                setForm({ ...form, pricing: { ...form.pricing, plans } });
+                                              }}
+                                              className={UI.input}
+                                              placeholder="/contact"
+                                            />
+                                          </div>
+                                        </div>
+
+                                        <label className="flex items-center gap-2 cursor-pointer text-[12px] font-bold text-[#1d2327]">
+                                          <input
+                                            type="checkbox"
+                                            checked={!!plan.popular}
+                                            onChange={(e) => {
+                                              const plans = [...form.pricing.plans];
+                                              plans[idx] = { ...plans[idx], popular: e.target.checked };
+                                              setForm({ ...form, pricing: { ...form.pricing, plans } });
+                                            }}
+                                          />
+                                          Mark as Most Popular
+                                        </label>
+
+                                        <BulletListEditor
+                                          label="Included Scope & Features"
+                                          items={plan.features || []}
+                                          onChange={(feats) => {
+                                            const plans = [...form.pricing.plans];
+                                            plans[idx] = { ...plans[idx], features: feats };
+                                            setForm({ ...form, pricing: { ...form.pricing, plans } });
+                                          }}
+                                          placeholder="e.g. Complete Technical & UX Audit"
+                                        />
+                                      </div>
+                                    ))}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const plans = [...(form.pricing?.plans || [])];
+                                        plans.push({
+                                          name: "Custom Enterprise Scope",
+                                          price: "Custom",
+                                          period: "/ quote",
+                                          description: "Tailored architecture...",
+                                          popular: false,
+                                          features: ["Dedicated Lead Architect", "Custom Scope"],
+                                          ctaText: "Request Quote",
+                                          ctaLink: "/contact"
+                                        });
+                                        setForm({ ...form, pricing: { ...form.pricing, plans } });
+                                      }}
+                                      className={UI.buttonAdd}
+                                    >
+                                      + Add Pricing Tier
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* SUBTAB: CTA BANNER */}
+                            {activeSubTab === "final-cta" && (
+                              <div className="space-y-12">
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>1. Banner Content</h3>
+                                  <div className="space-y-4">
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Eyebrow</label>
+                                      <input
+                                        type="text"
+                                        value={form.finalCta?.eyebrow || ""}
+                                        onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, eyebrow: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="12 // START BUILDING"
+                                      />
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Title Intro</label>
+                                        <input
+                                          type="text"
+                                          value={form.finalCta?.titleIntro || ""}
+                                          onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, titleIntro: e.target.value } })}
+                                          className={UI.input}
+                                          placeholder="Ready to Transform Your"
+                                        />
+                                      </div>
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Title Highlight</label>
+                                        <input
+                                          type="text"
+                                          value={form.finalCta?.titleHighlight || ""}
+                                          onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, titleHighlight: e.target.value } })}
+                                          className={UI.input + " font-bold border-[#2271b1]"}
+                                          placeholder="Digital Presence?"
+                                        />
+                                      </div>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Description</label>
+                                      <textarea
+                                        rows={2}
+                                        value={form.finalCta?.description || ""}
+                                        onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, description: e.target.value } })}
+                                        className={UI.input}
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>2. Buttons</h3>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className={UI.card + " space-y-3"}>
+                                      <span className="text-xs font-bold text-[#1d2327] uppercase">Primary Button</span>
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Text</label>
+                                        <input
+                                          type="text"
+                                          value={form.finalCta?.primaryCta?.text || ""}
+                                          onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, primaryCta: { ...form.finalCta?.primaryCta, text: e.target.value } } })}
+                                          className={UI.input}
+                                          placeholder="Schedule Strategy Call"
+                                        />
+                                      </div>
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Link</label>
+                                        <input
+                                          type="text"
+                                          value={form.finalCta?.primaryCta?.link || ""}
+                                          onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, primaryCta: { ...form.finalCta?.primaryCta, link: e.target.value } } })}
+                                          className={UI.input}
+                                          placeholder="/contact"
+                                        />
+                                      </div>
+                                    </div>
+
+                                    <div className={UI.card + " space-y-3"}>
+                                      <span className="text-xs font-bold text-[#1d2327] uppercase">Secondary Button</span>
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Text</label>
+                                        <input
+                                          type="text"
+                                          value={form.finalCta?.secondaryCta?.text || ""}
+                                          onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, secondaryCta: { ...form.finalCta?.secondaryCta, text: e.target.value } } })}
+                                          className={UI.input}
+                                          placeholder="View Portfolio"
+                                        />
+                                      </div>
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Link</label>
+                                        <input
+                                          type="text"
+                                          value={form.finalCta?.secondaryCta?.link || ""}
+                                          onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, secondaryCta: { ...form.finalCta?.secondaryCta, link: e.target.value } } })}
+                                          className={UI.input}
+                                          placeholder="/portfolio"
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>3. Media</h3>
+                                  <ImageField
+                                    label="CTA Background Graphic"
+                                    value={form.finalCta?.backgroundImage || ""}
+                                    onChange={(url) => setForm({ ...form, finalCta: { ...form.finalCta, backgroundImage: url } })}
+                                  />
+                                </div>
+                              </div>
+                            )}
+                          </motion.div>
+                        </AnimatePresence>
                       </div>
                     </div>
                   )}
 
-                  {/* TAB 12: FINAL CTA */}
-                  {activeTab === "final-cta" && (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Eyebrow</label>
-                          <input
-                            type="text"
-                            value={form.finalCta?.eyebrow || ""}
-                            onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, eyebrow: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Title Intro</label>
-                          <input
-                            type="text"
-                            value={form.finalCta?.titleIntro || ""}
-                            onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, titleIntro: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Title Highlight</label>
-                          <input
-                            type="text"
-                            value={form.finalCta?.titleHighlight || ""}
-                            onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, titleHighlight: e.target.value } })}
-                            className="w-full border border-[#2271b1] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[13px] font-bold text-[#1d2327]">Title Line 2</label>
-                          <input
-                            type="text"
-                            value={form.finalCta?.titleLine2 || ""}
-                            onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, titleLine2: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold text-[#1d2327]">Description</label>
-                        <textarea
-                          rows={3}
-                          value={form.finalCta?.description || ""}
-                          onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, description: e.target.value } })}
-                          className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]"
-                        />
-                      </div>
-
-                      {/* CTA Buttons */}
-                      <div className="bg-[#f0f6fc] border border-[#72aee6] p-3 rounded-[3px] space-y-3">
-                        <h4 className="font-bold text-[13px] text-[#2271b1]">CTA Buttons</h4>
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="space-y-1">
-                            <label className="text-[11px] font-bold text-[#50575e]">Primary Button Text</label>
-                            <input type="text" placeholder="Schedule Discovery Session"
-                              value={form.finalCta?.primaryCtaText || ""}
-                              onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, primaryCtaText: e.target.value } })}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[11px] font-bold text-[#50575e]">Primary Button Link</label>
-                            <input type="text" placeholder="#contact-form"
-                              value={form.finalCta?.primaryCtaLink || ""}
-                              onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, primaryCtaLink: e.target.value } })}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[11px] font-bold text-[#50575e]">Secondary Button Text</label>
-                            <input type="text" placeholder="Contact Office"
-                              value={form.finalCta?.secondaryCtaText || ""}
-                              onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, secondaryCtaText: e.target.value } })}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[11px] font-bold text-[#50575e]">Secondary Button Link</label>
-                            <input type="text" placeholder="/contact"
-                              value={form.finalCta?.secondaryCtaLink || ""}
-                              onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, secondaryCtaLink: e.target.value } })}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Founder Image */}
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold text-[#1d2327]">Founder / CTA Image</label>
-                        <p className="text-[11px] text-[#50575e]">Shown on the right side of the CTA banner (desktop only)</p>
-                        <ImageField
-                          label="Founder / CTA Image"
-                          value={form.finalCta?.founderImage || ""}
-                          onChange={(url: string) => setForm({ ...form, finalCta: { ...form.finalCta, founderImage: url } })}
-                        />
-                      </div>
-                    </div>
+                  {/* TAB 2: SEO SETTINGS */}
+                  {mainTab === 'seo' && (
+                    <SeoEditor
+                      data={seo}
+                      setData={setSeo}
+                      pageSlug={form.slug || ""}
+                      pageTitle={form.title || ""}
+                      pageContent={form}
+                    />
                   )}
 
-                  {/* TAB 13: FAQS */}
-                  {activeTab === "faq" && (
-                    <div className="space-y-4">
-                      {/* FAQ Section Header */}
-                      <div className="bg-[#f0f6fc] border border-[#72aee6] p-3 rounded-[3px] space-y-3">
-                        <h4 className="font-bold text-[13px] text-[#2271b1]">FAQ Section Header</h4>
-                        <div className="grid grid-cols-3 gap-3">
-                          <div className="space-y-1">
-                            <label className="text-[11px] font-bold text-[#50575e]">Section Tag</label>
-                            <input type="text" placeholder="14 // FREQUENTLY ASKED"
-                              value={form.faqSection?.sectionTag || ""}
-                              onChange={(e) => setForm({ ...form, faqSection: { ...form.faqSection, sectionTag: e.target.value } })}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-mono"
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[11px] font-bold text-[#50575e]">Title Intro</label>
-                            <input type="text" placeholder="Service"
-                              value={form.faqSection?.titleIntro || ""}
-                              onChange={(e) => setForm({ ...form, faqSection: { ...form.faqSection, titleIntro: e.target.value } })}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[11px] font-bold text-[#50575e]">Title Highlight</label>
-                            <input type="text" placeholder="FAQ"
-                              value={form.faqSection?.titleHighlight || ""}
-                              onChange={(e) => setForm({ ...form, faqSection: { ...form.faqSection, titleHighlight: e.target.value } })}
-                              className="w-full border border-[#2271b1] px-2 py-1 text-xs rounded-[3px] font-bold"
-                            />
-                          </div>
+                  {/* TAB 3: SERVICE FAQS */}
+                  {mainTab === 'faqs' && (
+                    <div className="p-5 sm:p-6 space-y-8">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#f0f0f1] pb-4">
+                        <div>
+                          <h3 className="text-base font-bold text-[#1d2327]">Service-Specific FAQs & Accordions</h3>
+                          <p className="text-[12px] text-[#646970] mt-0.5">These FAQs and schema blocks will appear on this service detail page.</p>
                         </div>
-                        <div className="space-y-1">
-                          <label className="text-[11px] font-bold text-[#50575e]">Description</label>
-                          <textarea rows={2} placeholder="Answers to common questions about our services..."
-                            value={form.faqSection?.description || ""}
-                            onChange={(e) => setForm({ ...form, faqSection: { ...form.faqSection, description: e.target.value } })}
-                            className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                          />
-                        </div>
-                      </div>
-
-                      {/* FAQ Strategy Audit CTA Box */}
-                      <div className="bg-[#f0f6fc] border border-[#72aee6] p-3 rounded-[3px] space-y-3">
-                        <h4 className="font-bold text-[13px] text-[#2271b1]">Sidebar CTA Box</h4>
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="space-y-1">
-                            <label className="text-[11px] font-bold text-[#50575e]">Badge Text</label>
-                            <input type="text" placeholder="FREE ARCHITECTURE AUDIT"
-                              value={form.faqSection?.ctaBadge || ""}
-                              onChange={(e) => setForm({ ...form, faqSection: { ...form.faqSection, ctaBadge: e.target.value } })}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-mono"
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[11px] font-bold text-[#50575e]">Button Text</label>
-                            <input type="text" placeholder="Book Architecture Call"
-                              value={form.faqSection?.ctaBtnText || ""}
-                              onChange={(e) => setForm({ ...form, faqSection: { ...form.faqSection, ctaBtnText: e.target.value } })}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                            />
-                          </div>
-                          <div className="col-span-2 space-y-1">
-                            <label className="text-[11px] font-bold text-[#50575e]">CTA Title</label>
-                            <input type="text" placeholder="Have a complex custom build in mind?"
-                              value={form.faqSection?.ctaTitle || ""}
-                              onChange={(e) => setForm({ ...form, faqSection: { ...form.faqSection, ctaTitle: e.target.value } })}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-bold"
-                            />
-                          </div>
-                          <div className="col-span-2 space-y-1">
-                            <label className="text-[11px] font-bold text-[#50575e]">CTA Description</label>
-                            <textarea rows={2} placeholder="Book a 30-minute strategy session..."
-                              value={form.faqSection?.ctaDesc || ""}
-                              onChange={(e) => setForm({ ...form, faqSection: { ...form.faqSection, ctaDesc: e.target.value } })}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                            />
-                          </div>
-                          <div className="col-span-2 space-y-1">
-                            <label className="text-[11px] font-bold text-[#50575e]">Button Link / URL</label>
-                            <input type="text" placeholder="#contact"
-                              value={form.faqSection?.ctaBtnLink || ""}
-                              onChange={(e) => setForm({ ...form, faqSection: { ...form.faqSection, ctaBtnLink: e.target.value } })}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* FAQ Items */}
-                      <div className="flex items-center justify-between">
-                        <label className="text-[13px] font-bold text-[#1d2327]">Service Specific FAQs</label>
                         <button
                           type="button"
                           onClick={() => {
-                            const faqs = [...(form.faqs || [])];
-                            faqs.push({ q: "Question here?", a: "Answer details here." });
-                            setForm({ ...form, faqs });
+                            const currentFaqs = Array.isArray(form.faqs) ? form.faqs : [];
+                            const nf = [...currentFaqs];
+                            nf.push({ question: "", answer: "", category: "GENERAL" });
+                            setForm({ ...form, faqs: nf });
                           }}
-                          className="text-[12px] text-[#2271b1] hover:underline font-bold"
+                          className="bg-white border border-[#2271b1] text-[#2271b1] px-3.5 py-1.5 text-[12px] font-bold rounded-[3px] hover:bg-[#f0f6fb] transition-colors self-start"
                         >
-                          + Add FAQ
+                          + Add FAQ Question
                         </button>
                       </div>
 
-                      {(form.faqs || []).map((faq: any, idx: number) => (
-                        <div key={idx} className="bg-[#f6f7f7] border border-[#c3c4c7] p-2.5 rounded-[3px] space-y-2">
-                          <div className="flex items-center justify-between">
+                      {/* 1. Header Narrative */}
+                      <div className="space-y-4">
+                        <h4 className="text-[12px] font-bold uppercase tracking-wider text-[#1d2327]">1. Section Header Narrative</h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                          <div className="space-y-1.5">
+                            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Badge / Tag</label>
                             <input
                               type="text"
-                              placeholder="Question"
-                              value={faq.q || faq.question || ""}
-                              onChange={(e) => {
-                                const faqs = [...form.faqs];
-                                faqs[idx] = { ...faqs[idx], q: e.target.value, question: e.target.value };
-                                setForm({ ...form, faqs });
-                              }}
-                              className="flex-1 border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-bold mr-2"
+                              value={form.faqBadge || ""}
+                              onChange={e => setForm({ ...form, faqBadge: e.target.value })}
+                              placeholder="e.g. FREQUENTLY ASKED QUESTIONS"
+                              className={UI.input}
                             />
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const faqs = form.faqs.filter((_: any, i: number) => i !== idx);
-                                setForm({ ...form, faqs });
-                              }}
-                              className="text-[#d63638] p-1"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
                           </div>
+                          <div className="space-y-1.5">
+                            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Headline Intro</label>
+                            <input
+                              type="text"
+                              value={form.faqTitleIntro || ""}
+                              onChange={e => setForm({ ...form, faqTitleIntro: e.target.value })}
+                              placeholder="e.g. Got Questions?"
+                              className={UI.input}
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Headline Highlight</label>
+                            <input
+                              type="text"
+                              value={form.faqTitleHighlight || ""}
+                              onChange={e => setForm({ ...form, faqTitleHighlight: e.target.value })}
+                              placeholder="e.g. Clear Answers"
+                              className={UI.input + " font-bold border-[#2271b1] text-[#2271b1]"}
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Description Subtext</label>
                           <textarea
                             rows={2}
-                            placeholder="Answer"
-                            value={faq.a || faq.answer || ""}
-                            onChange={(e) => {
-                              const faqs = [...form.faqs];
-                              faqs[idx] = { ...faqs[idx], a: e.target.value, answer: e.target.value };
-                              setForm({ ...form, faqs });
-                            }}
-                            className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
+                            value={form.faqDescription || ""}
+                            onChange={e => setForm({ ...form, faqDescription: e.target.value })}
+                            placeholder="Explore answers to common questions..."
+                            className={UI.input}
                           />
                         </div>
-                      ))}
+                      </div>
+
+                      {/* 2. Questions List */}
+                      <div className="space-y-4">
+                        <h4 className="text-[12px] font-bold uppercase tracking-wider text-[#1d2327]">2. FAQ Accordion Items</h4>
+                        {(form.faqs || []).map((faq: any, idx: number) => (
+                          <div key={idx} className={UI.card + " space-y-3"}>
+                            <div className="flex items-center justify-between border-b border-[#f0f0f1] pb-2">
+                              <span className="text-xs font-bold text-[#1d2327]">Question #{idx + 1}</span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const nf = form.faqs.filter((_: any, i: number) => i !== idx);
+                                  setForm({ ...form, faqs: nf });
+                                }}
+                                className="text-[#d63638] text-xs font-bold hover:underline"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                              <div className="sm:col-span-3 space-y-1.5">
+                                <label className={UI.label}>Question</label>
+                                <input
+                                  type="text"
+                                  value={faq.question || ""}
+                                  onChange={e => {
+                                    const nf = [...form.faqs];
+                                    nf[idx].question = e.target.value;
+                                    setForm({ ...form, faqs: nf });
+                                  }}
+                                  placeholder="What is your typical turnaround time?"
+                                  className={UI.input}
+                                />
+                              </div>
+                              <div className="space-y-1.5">
+                                <label className={UI.label}>Category</label>
+                                <input
+                                  type="text"
+                                  value={faq.category || ""}
+                                  onChange={e => {
+                                    const nf = [...form.faqs];
+                                    nf[idx].category = e.target.value;
+                                    setForm({ ...form, faqs: nf });
+                                  }}
+                                  placeholder="TIMELINE"
+                                  className={UI.input}
+                                />
+                              </div>
+                            </div>
+                            <div className="space-y-1.5">
+                              <label className={UI.label}>Answer</label>
+                              <textarea
+                                rows={3}
+                                value={faq.answer || ""}
+                                onChange={e => {
+                                  const nf = [...form.faqs];
+                                  nf[idx].answer = e.target.value;
+                                  setForm({ ...form, faqs: nf });
+                                }}
+                                placeholder="Write clear, detailed answer here..."
+                                className={UI.input}
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* 3. Schema Markup */}
+                      <div className="pt-5 border-t border-[#c3c4c7] space-y-2">
+                        <label className="text-[13px] font-bold text-[#1d2327]">FAQ Schema Markup (Bulk JSON-LD)</label>
+                        <p className="text-[12px] text-[#646970] mt-0.5">Paste a single JSON-LD schema block covering all FAQs for this service page.</p>
+                        <textarea
+                          value={form.faqSchemaMarkup || ""}
+                          onChange={e => setForm({ ...form, faqSchemaMarkup: e.target.value })}
+                          className="w-full border border-[#c3c4c7] px-3 py-2 text-[13px] font-mono rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
+                          rows={6}
+                          placeholder='e.g. {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [...]}'
+                        />
+                      </div>
                     </div>
                   )}
-
-                  {/* TAB 14: SEO */}
-                  {activeTab === "seo" && (
-                    <div className="space-y-4">
-                      <SeoEditor
-                        data={seo}
-                        setData={setSeo}
-                        pageSlug={`services/${form.slug}`}
-                        pageTitle={form.title}
-                        pageContent={form.hero?.description}
-                      />
-                    </div>
-                  )}
-
                 </div>
               </div>
             </div>
 
-            {/* Right Sidebar (#postbox-container-1) */}
-            <div className="space-y-4">
-
-              {/* Publish Metabox */}
-              <div className="postbox bg-white border border-[#c3c4c7] shadow-sm rounded-[3px]">
-                <h3 className="hndle font-bold px-3 py-2 border-b border-[#c3c4c7] bg-[#f6f7f7] text-[13px] text-[#1d2327]">
-                  Publish
-                </h3>
-                <div className="p-3 space-y-3 text-[13px]">
-                  <div className="flex items-center justify-between text-[#646970]">
-                    <span>Status:</span>
+            {/* Sidebar (Right Column - Exact WP Style matching /admin/pages/[id]) */}
+            <div className="w-full lg:w-[260px] flex-shrink-0 space-y-4">
+              {/* Publish Box */}
+              <div className="bg-white border border-[#c3c4c7] shadow-sm rounded-sm overflow-hidden">
+                <div className="px-3 py-1.5 border-b border-[#c3c4c7] bg-[#f6f7f7]">
+                  <h2 className="text-[13px] font-semibold text-[#1d2327]">Publish</h2>
+                </div>
+                <div className="p-3 space-y-2 text-[12px] text-[#2c3338]">
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-1.5"><Eye className="w-3.5 h-3.5 text-[#82878c]" /> Status:</span>
                     <select
                       value={form.status || "published"}
                       onChange={(e) => setForm({ ...form, status: e.target.value })}
-                      className="border border-[#8c8f94] px-2 py-0.5 rounded-[3px] text-xs font-semibold"
+                      className="bg-white border border-[#8c8f94] text-[12px] px-1 py-0.5 rounded-[3px] outline-none focus:border-[#2271b1]"
                     >
                       <option value="published">Published</option>
                       <option value="draft">Draft</option>
                     </select>
                   </div>
-                  <div className="flex items-center justify-between text-[#646970]">
-                    <span>Visibility:</span>
-                    <strong className="text-[#1d2327] font-semibold text-xs">Public</strong>
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-[#82878c]" /> Date:</span>
+                    <strong>{new Date().toLocaleDateString()}</strong>
                   </div>
-                  <div className="pt-2 border-t border-[#c3c4c7] flex items-center justify-between">
-                    <button
-                      type="button"
-                      onClick={() => setIsEditing(null)}
-                      className="text-[#d63638] text-[13px] hover:underline"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      disabled={saving}
-                      onClick={handleSaveService}
-                      className="bg-[#2271b1] hover:bg-[#135e96] text-white px-3.5 py-1 rounded-[3px] text-[13px] font-bold shadow-sm transition-all disabled:opacity-50 flex items-center gap-1"
-                    >
-                      {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                      {form.status === 'draft' ? 'Save Draft' : 'Update'}
-                    </button>
-                  </div>
+                  {form.slug && (
+                    <div className="pt-2 border-t border-[#f0f0f1] mt-2">
+                      <Link
+                        href={`/services/${form.slug}`}
+                        target="_blank"
+                        className="text-[#2271b1] hover:underline flex items-center gap-1"
+                      >
+                        View Service <ExternalLink className="w-3 h-3" />
+                      </Link>
+                    </div>
+                  )}
+                </div>
+                <div className="bg-[#f6f7f7] border-t border-[#c3c4c7] px-3 py-2 flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={() => handleMoveToTrash(form)}
+                    className="text-[#d63638] underline text-[12px] hover:text-[#b32d2e]"
+                  >
+                    Trash
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSaveService}
+                    disabled={saving}
+                    className="bg-[#2271b1] text-white text-[12px] font-semibold px-3 py-1 rounded-[3px] border border-[#135e96] shadow-[0_1px_0_#135e96] hover:bg-[#135e96] disabled:opacity-50"
+                  >
+                    {saving ? "..." : "Update"}
+                  </button>
                 </div>
               </div>
 
-              {/* Service Attributes Metabox */}
-              <div className="postbox bg-white border border-[#c3c4c7] shadow-sm rounded-[3px]">
-                <h3 className="hndle font-bold px-3 py-2 border-b border-[#c3c4c7] bg-[#f6f7f7] text-[13px] text-[#1d2327]">
-                  Service Attributes
-                </h3>
-                <div className="p-3 space-y-3 text-[13px]">
+              {/* Service Attributes Box */}
+              <div className="bg-white border border-[#c3c4c7] shadow-sm rounded-sm overflow-hidden">
+                <div className="px-3 py-1.5 border-b border-[#c3c4c7] bg-[#f6f7f7]">
+                  <h2 className="text-[13px] font-semibold text-[#1d2327]">Service Attributes</h2>
+                </div>
+                <div className="p-3 space-y-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-[#646970]">Menu Icon</label>
-                    <div><IconSelector value={form.icon || "Search"} onChange={(v) => setForm({ ...form, icon: v })} /></div>
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-[#646970]">Category Tag</label>
+                    <label className="text-[11px] font-semibold text-[#1d2327]">Category Tag</label>
                     <input
                       type="text"
                       value={form.tag || ""}
                       onChange={(e) => setForm({ ...form, tag: e.target.value })}
-                      className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
+                      className="w-full border border-[#8c8f94] bg-white px-2 py-1 text-[12px] rounded-[3px] outline-none focus:border-[#2271b1]"
+                      placeholder="e.g. Premium Solution"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-semibold text-[#1d2327]">Menu Icon</label>
+                    <IconSelector value={form.icon || "Search"} onChange={(v) => setForm({ ...form, icon: v })} />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-semibold text-[#1d2327]">Order / Position</label>
+                    <input
+                      type="text"
+                      value={form.number || "01"}
+                      onChange={(e) => setForm({ ...form, number: e.target.value })}
+                      className="w-full border border-[#8c8f94] bg-white px-2 py-1 text-[12px] rounded-[3px] outline-none focus:border-[#2271b1]"
                     />
                   </div>
                 </div>
               </div>
 
+              {/* Featured Image Box */}
+              <div className="bg-white border border-[#c3c4c7] shadow-sm rounded-sm overflow-hidden">
+                <div className="px-3 py-1.5 border-b border-[#c3c4c7] bg-[#f6f7f7]">
+                  <h2 className="text-[13px] font-semibold text-[#1d2327]">Featured Image</h2>
+                </div>
+                <div className="p-3">
+                  {(seo?.featuredImage || form.hero?.backgroundImage) ? (
+                    <div className="space-y-2">
+                      <div className="relative aspect-video bg-slate-50 border border-[#c3c4c7] rounded-sm overflow-hidden group">
+                        <img
+                          src={seo.featuredImage || form.hero?.backgroundImage}
+                          alt="Featured"
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          onClick={() => {
+                            setSeo({ ...seo, featuredImage: '' });
+                            setForm({ ...form, hero: { ...form.hero, backgroundImage: '', bgImage: '' } });
+                          }}
+                          className="absolute top-1 right-1 p-1 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                      <button
+                        onClick={() => setShowMediaSelector(true)}
+                        className="text-[#2271b1] underline text-[12px] hover:text-[#135e96]"
+                      >
+                        Set featured image
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setShowMediaSelector(true)}
+                      className="text-[#2271b1] underline text-[12px] hover:text-[#135e96]"
+                    >
+                      Set featured image
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
-
           </div>
         </div>
       ) : (
-        /* WordPress Classic Table List View */
+        /* ──────────────────────────────────────────────────────────────────────────
+           ALL SERVICES DIRECTORY TABLE VIEW (EXACT MATCH OF /admin/pages UI)
+        ────────────────────────────────────────────────────────────────────────── */
         <div className="space-y-4">
+          {/* WP Header Area */}
+          <div className="flex items-center gap-4 mb-2">
+            <h1 className="text-[23px] font-normal text-[#1d2327] font-serif m-0">Services</h1>
+            <button
+              onClick={handleAddNew}
+              className="bg-white border border-[#2271b1] text-[#2271b1] hover:bg-[#f6f7f7] hover:text-[#135e96] hover:border-[#135e96] px-2 py-1 text-[13px] rounded-[3px] transition-colors"
+            >
+              Add New Service
+            </button>
+          </div>
 
           {/* Filter Links */}
           <div className="flex items-center gap-2 text-[13px]">
             <button onClick={() => setFilter("all")} className={`${filter === 'all' ? 'text-black font-bold' : 'text-[#2271b1] hover:text-[#135e96] underline decoration-transparent hover:decoration-current'}`}>
-              All <span className="text-[#646970] font-normal">({services.length})</span>
+              All <span className="text-[#646970] font-normal">({services.filter(s => !s.isTrashed).length})</span>
             </button>
             <span className="text-[#c3c4c7]">|</span>
             <button onClick={() => setFilter("published")} className={`${filter === 'published' ? 'text-black font-bold' : 'text-[#2271b1] hover:text-[#135e96] underline decoration-transparent hover:decoration-current'}`}>
@@ -2728,10 +2725,14 @@ export default function ServicesAdminPage() {
             <button onClick={() => setFilter("draft")} className={`${filter === 'draft' ? 'text-black font-bold' : 'text-[#2271b1] hover:text-[#135e96] underline decoration-transparent hover:decoration-current'}`}>
               Drafts <span className="text-[#646970] font-normal">({draftCount})</span>
             </button>
+            <span className="text-[#c3c4c7]">|</span>
+            <button onClick={() => setFilter("trash")} className={`${filter === 'trash' ? 'text-black font-bold' : 'text-[#d63638] underline decoration-transparent hover:decoration-current'}`}>
+              Trash <span className="text-[#646970] font-normal">({trashCount})</span>
+            </button>
           </div>
 
           {/* Top Bar: Bulk Actions & Search */}
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-2">
               <select
                 className="border border-[#8c8f94] bg-white text-[#2c3338] px-2 py-1 text-[13px] rounded-[3px] outline-none focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1]"
@@ -2739,26 +2740,21 @@ export default function ServicesAdminPage() {
                 onChange={(e) => setBulkAction(e.target.value)}
               >
                 <option value="">Bulk actions</option>
-                <option value="publish">Mark as Published</option>
-                <option value="draft">Mark as Draft</option>
-                <option value="delete">Delete Permanently</option>
+                {filter === 'trash' ? (
+                  <>
+                    <option value="restore">Restore</option>
+                    <option value="delete">Delete Permanently</option>
+                  </>
+                ) : (
+                  <>
+                    <option value="publish">Mark as Published</option>
+                    <option value="draft">Mark as Draft</option>
+                    <option value="trash">Move to Trash</option>
+                  </>
+                )}
               </select>
               <button
-                type="button"
-                onClick={() => {
-                  if (!bulkAction || selectedIds.length === 0) return;
-                  if (bulkAction === 'delete') {
-                    if (!confirm(`Permanently delete ${selectedIds.length} services?`)) return;
-                    const newServices = services.filter((s: any) => !selectedIds.includes(s.id || s.slug));
-                    saveToDb(newServices);
-                    setSelectedIds([]);
-                  } else {
-                    const newStatus = bulkAction === 'publish' ? 'published' : 'draft';
-                    const newServices = services.map((s: any) => selectedIds.includes(s.id || s.slug) ? { ...s, status: newStatus } : s);
-                    saveToDb(newServices);
-                    setSelectedIds([]);
-                  }
-                }}
+                onClick={() => { handleBulkAction(bulkAction); setBulkAction(""); }}
                 className="bg-white border border-[#8c8f94] text-[#2c3338] px-3 py-1 text-[13px] rounded-[3px] hover:bg-[#f6f7f7] transition-colors"
               >
                 Apply
@@ -2793,172 +2789,274 @@ export default function ServicesAdminPage() {
                     <input
                       type="checkbox"
                       checked={filteredServices.length > 0 && selectedIds.length === filteredServices.length}
-                      onChange={(e) => {
-                        if (e.target.checked) setSelectedIds(filteredServices.map((s: any) => s.id || s.slug));
-                        else setSelectedIds([]);
-                      }}
+                      onChange={toggleSelectAll}
                       className="w-4 h-4 border-[#8c8f94] rounded-[3px] text-[#2271b1] focus:ring-[#2271b1]"
                     />
                   </th>
                   <th className="py-2 px-3 text-[14px] font-semibold">Title</th>
-                  <th className="py-2 px-3 text-[14px] font-semibold w-40">Template</th>
+                  <th className="py-2 px-3 text-[14px] font-semibold w-48">Category Tag</th>
                   <th className="py-2 px-3 text-[14px] font-semibold w-40">Status</th>
                   <th className="py-2 px-3 text-[14px] font-semibold w-32">Date</th>
                 </tr>
               </thead>
               <tbody className="text-[13px] text-[#2c3338]">
                 {filteredServices.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="py-6 px-4 text-[#50575e]">No services found.</td>
-                  </tr>
+                  <tr><td colSpan={5} className="py-6 px-4 text-[#50575e]">No services found.</td></tr>
                 ) : (
-                  filteredServices.map((service: any, index: number) => {
-                    const serviceIdentifier = service.id || service.slug;
-                    const isChecked = selectedIds.includes(serviceIdentifier);
-                    const isQuickEditing = quickEditing && (quickEditing.id === service.id || quickEditing.originalSlug === service.slug);
-
-                    if (isQuickEditing) {
-                      return (
-                        <tr key={index} className="bg-[#f0f6fc] border-y-2 border-[#2271b1]">
-                          <td colSpan={5} className="p-4">
-                            <form onSubmit={handleQuickEditSave} className="space-y-3">
-                              <h4 className="font-bold text-[13px] text-[#1d2327] uppercase tracking-wide">Quick Edit</h4>
-                              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                                <div className="space-y-1">
-                                  <label className="text-[11px] font-bold text-[#50575e]">Title</label>
-                                  <input
-                                    type="text"
-                                    value={quickEditing.title}
-                                    onChange={(e) => setQuickEditing({ ...quickEditing, title: e.target.value })}
-                                    className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] bg-white"
-                                  />
-                                </div>
-                                <div className="space-y-1">
-                                  <label className="text-[11px] font-bold text-[#50575e]">Slug</label>
-                                  <input
-                                    type="text"
-                                    value={quickEditing.slug}
-                                    onChange={(e) => setQuickEditing({ ...quickEditing, slug: e.target.value })}
-                                    className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] bg-white font-mono"
-                                  />
-                                </div>
-                                <div className="space-y-1">
-                                  <label className="text-[11px] font-bold text-[#50575e]">Category Tag</label>
-                                  <input
-                                    type="text"
-                                    value={quickEditing.tag || ""}
-                                    onChange={(e) => setQuickEditing({ ...quickEditing, tag: e.target.value })}
-                                    className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] bg-white"
-                                  />
-                                </div>
-                                <div className="space-y-1">
-                                  <label className="text-[11px] font-bold text-[#50575e]">Status</label>
-                                  <select
-                                    value={quickEditing.status || "published"}
-                                    onChange={(e) => setQuickEditing({ ...quickEditing, status: e.target.value })}
-                                    className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] bg-white"
-                                  >
-                                    <option value="published">Published</option>
-                                    <option value="draft">Draft</option>
-                                  </select>
-                                </div>
-                              </div>
-                              <div className="flex items-center justify-end gap-2 pt-2">
-                                <button
-                                  type="button"
-                                  onClick={() => setQuickEditing(null)}
-                                  className="bg-white border border-[#8c8f94] text-[#2c3338] px-3 py-1 text-xs rounded-[3px] hover:bg-[#f6f7f7]"
-                                >
-                                  Cancel
-                                </button>
-                                <button
-                                  type="submit"
-                                  className="bg-[#2271b1] text-white px-3 py-1 text-xs font-semibold rounded-[3px] hover:bg-[#135e96]"
-                                >
-                                  Update Service
-                                </button>
-                              </div>
-                            </form>
-                          </td>
-                        </tr>
-                      );
-                    }
-
-                    return (
-                      <tr
-                        key={service.id || index}
-                        className={`border-b border-[#f0f0f1] group ${index % 2 === 0 ? "bg-[#f9f9f9]" : "bg-white"} hover:bg-[#f0f0f1] transition-colors`}
-                      >
-                        <td className="py-3 px-3 align-top">
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={(e) => {
-                              if (e.target.checked) setSelectedIds([...selectedIds, serviceIdentifier]);
-                              else setSelectedIds(selectedIds.filter(id => id !== serviceIdentifier));
-                            }}
-                            className="w-4 h-4 border-[#8c8f94] rounded-[3px] text-[#2271b1] focus:ring-[#2271b1]"
-                          />
-                        </td>
-                        <td className="py-3 px-3 align-top">
-                          <strong className="text-[#2271b1] block text-[14px]">
-                            {service.title} — {service.status === 'draft' ? (
-                              <span className="text-[#646970] font-normal italic">Draft</span>
-                            ) : (
-                              <span className="text-[#00a32a] font-normal italic">Published</span>
-                            )}
-                          </strong>
-                          <div className="flex items-center gap-2 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onClick={() => handleEdit(service)} className="text-[#2271b1] hover:underline text-[12px]">
-                              Edit
-                            </button>
-                            <span className="text-[#a7aaad]">|</span>
-                            <button
-                              onClick={() => setQuickEditing({ ...service, originalSlug: service.slug })}
-                              className="text-[#2271b1] hover:underline text-[12px]"
-                            >
-                              Quick Edit
-                            </button>
-                            <span className="text-[#a7aaad]">|</span>
-                            <button onClick={() => handleDuplicate(service)} className="text-[#2271b1] hover:underline text-[12px]">
-                              Duplicate
-                            </button>
-                            <span className="text-[#a7aaad]">|</span>
-                            <button onClick={() => toggleStatus(service)} className="text-[#2271b1] hover:underline text-[12px]">
-                              {service.status === 'published' ? 'Keep as Draft' : 'Publish Now'}
-                            </button>
-                            <span className="text-[#a7aaad]">|</span>
-                            <Link href={`/services/${service.slug}`} target="_blank" className="text-[#2271b1] hover:underline text-[12px]">
-                              View
-                            </Link>
-                            <span className="text-[#a7aaad]">|</span>
-                            <button onClick={() => handleDelete(index)} className="text-[#d63638] hover:underline text-[12px]">
-                              Trash
-                            </button>
-                          </div>
-                        </td>
-                        <td className="py-3 px-3 align-top capitalize text-[#50575e]">
-                          {service.tag || "Service Detail"}
-                        </td>
-                        <td className="py-3 px-3 align-top">
-                          <span className={`font-semibold ${service.status === 'published' ? 'text-[#00a32a]' : 'text-[#d63638]'}`}>
-                            {service.status === 'published' ? 'Active' : 'Draft'}
-                          </span>
-                        </td>
-                        <td className="py-3 px-3 align-top text-[#50575e]">
-                          {new Date(service.createdAt || Date.now()).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' })}
-                        </td>
-                      </tr>
-                    );
-                  })
+                  filteredServices.map((service, idx) => (
+                    <tr
+                      key={service.id || service.slug || idx}
+                      className={`border-b border-[#f0f0f1] group ${idx % 2 === 0 ? "bg-[#f9f9f9]" : "bg-white"} hover:bg-[#f0f0f1] transition-colors`}
+                    >
+                      <td className="py-3 px-3 align-top">
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.includes(service.id || service.slug)}
+                          onChange={() => toggleSelect(service.id || service.slug)}
+                          className="w-4 h-4 border-[#8c8f94] rounded-[3px] text-[#2271b1] focus:ring-[#2271b1]"
+                        />
+                      </td>
+                      <td className="py-3 px-3 align-top">
+                        <strong className="text-[#2271b1] block text-[14px]">
+                          {service.title || "Untitled Service"} — {service.status === 'draft' ? <span className="text-[#646970] font-normal italic">Draft</span> : <span className="text-[#00a32a] font-normal italic">Published</span>}
+                        </strong>
+                        <div className="flex items-center gap-2 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button onClick={() => handleEdit(service)} className="text-[#2271b1] hover:underline text-[12px]">Edit</button>
+                          <span className="text-[#a7aaad]">|</span>
+                          <button onClick={() => setEditingService(service)} className="text-[#2271b1] hover:underline text-[12px]">Quick Edit</button>
+                          <span className="text-[#a7aaad]">|</span>
+                          <button onClick={() => handleDuplicate(service)} className="text-[#2271b1] hover:underline text-[12px]">Duplicate</button>
+                          <span className="text-[#a7aaad]">|</span>
+                          <button onClick={() => toggleStatus(service)} className="text-[#2271b1] hover:underline text-[12px]">
+                            {service.status === 'published' ? 'Keep as Draft' : 'Publish Now'}
+                          </button>
+                          <span className="text-[#a7aaad]">|</span>
+                          {service.slug && (
+                            <>
+                              <Link href={`/services/${service.slug}`} target="_blank" className="text-[#2271b1] hover:underline text-[12px]">View</Link>
+                              <span className="text-[#a7aaad]">|</span>
+                            </>
+                          )}
+                          {service.isTrashed ? (
+                            <>
+                              <button onClick={() => handleRestore(service)} className="text-[#2271b1] hover:underline text-[12px]">Restore</button>
+                              <span className="text-[#a7aaad]">|</span>
+                              <button onClick={() => handleDeletePermanently(service)} className="text-[#d63638] hover:underline text-[12px]">Delete Permanently</button>
+                            </>
+                          ) : (
+                            <button onClick={() => handleMoveToTrash(service)} className="text-[#d63638] hover:underline text-[12px]">Trash</button>
+                          )}
+                        </div>
+                      </td>
+                      <td className="py-3 px-3 align-top capitalize text-[#50575e]">
+                        {service.tag || "General"}
+                      </td>
+                      <td className="py-3 px-3 align-top">
+                        <span className={`font-semibold ${service.status === 'published' ? 'text-[#00a32a]' : 'text-[#d63638]'}`}>
+                          {service.status === 'published' ? 'Active' : 'Draft'}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 align-top text-[#50575e]">
+                        {new Date(service.createdAt || Date.now()).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' })}
+                      </td>
+                    </tr>
+                  ))
                 )}
               </tbody>
             </table>
           </div>
-
         </div>
       )}
 
+      {/* WP-Style Modal for Add New Service */}
+      <AnimatePresence>
+        {showAddModal && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowAddModal(false)} className="absolute inset-0 bg-[#00000066]" />
+            <motion.div
+              initial={{ y: -10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -10, opacity: 0 }}
+              className="relative w-full max-w-xl bg-[#f1f1f1] border border-[#c3c4c7] shadow-lg rounded-[3px] overflow-hidden flex flex-col"
+            >
+              <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-[#c3c4c7]">
+                <h2 className="text-[#1d2327] text-lg font-normal font-serif">Add New Service</h2>
+                <button onClick={() => setShowAddModal(false)} className="text-[#787c82] hover:text-[#d63638]"><X className="w-5 h-5" /></button>
+              </div>
+              <div className="p-4 space-y-4 bg-[#f0f0f1]">
+                <div>
+                  <label className="block text-[#1d2327] text-sm font-semibold mb-1">Title</label>
+                  <input
+                    type="text"
+                    value={newService.title}
+                    onChange={(e) => {
+                      const slug = e.target.value.toLowerCase().replace(/[^a-z0-9 ]/g, "").replace(/\s+/g, "-");
+                      setNewService({ ...newService, title: e.target.value, slug });
+                    }}
+                    placeholder="Enter service title here"
+                    className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[14px] rounded-[3px] shadow-[inset_0_1px_2px_rgba(0,0,0,0.07)] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[#1d2327] text-sm font-semibold mb-1">Slug</label>
+                  <input
+                    type="text"
+                    value={newService.slug}
+                    onChange={(e) => setNewService({ ...newService, slug: e.target.value })}
+                    className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[14px] rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[#1d2327] text-sm font-semibold mb-1">Category Tag</label>
+                  <input
+                    type="text"
+                    value={newService.tag}
+                    onChange={(e) => setNewService({ ...newService, tag: e.target.value })}
+                    placeholder="e.g. Premium Solution"
+                    className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[14px] rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[#1d2327] text-sm font-semibold mb-1">Status</label>
+                  <select
+                    value={newService.status}
+                    onChange={(e) => setNewService({ ...newService, status: e.target.value })}
+                    className="w-full border border-[#8c8f94] bg-white px-2 py-1.5 text-[14px] rounded-[3px] outline-none"
+                  >
+                    <option value="published">Published</option>
+                    <option value="draft">Draft</option>
+                  </select>
+                </div>
+              </div>
+              <div className="flex items-center justify-end px-4 py-3 bg-[#f6f7f7] border-t border-[#c3c4c7]">
+                <button
+                  type="button"
+                  onClick={handleCreateNewService}
+                  className="bg-[#2271b1] text-white text-[13px] px-4 py-1.5 rounded-[3px] border border-[#2271b1] hover:bg-[#135e96] hover:border-[#135e96] transition-colors"
+                >
+                  Publish & Edit
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* WP-Style Quick Edit Modal */}
+      <AnimatePresence>
+        {editingService && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setEditingService(null)} className="absolute inset-0 bg-[#00000066]" />
+            <motion.div
+              initial={{ y: -10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -10, opacity: 0 }}
+              className="relative w-full max-w-2xl bg-[#f1f1f1] border border-[#c3c4c7] shadow-lg rounded-[3px] overflow-hidden flex flex-col"
+            >
+              <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-[#c3c4c7]">
+                <h2 className="text-[#1d2327] text-lg font-normal font-serif">Quick Edit</h2>
+                <button onClick={() => setEditingService(null)} className="text-[#787c82] hover:text-[#d63638]"><X className="w-5 h-5" /></button>
+              </div>
+              <form onSubmit={handleQuickEditSave}>
+                <div className="p-6 bg-[#f0f0f1] grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-[#1d2327] text-[12px] font-bold mb-1">Title</label>
+                      <input
+                        type="text"
+                        value={editingService.title || ""}
+                        onChange={(e) => setEditingService({ ...editingService, title: e.target.value })}
+                        className="w-full border border-[#8c8f94] bg-white px-3 py-1 text-[13px] rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[#1d2327] text-[12px] font-bold mb-1">Slug</label>
+                      <input
+                        type="text"
+                        value={editingService.slug || ""}
+                        onChange={(e) => setEditingService({ ...editingService, slug: e.target.value })}
+                        className="w-full border border-[#8c8f94] bg-white px-3 py-1 text-[13px] rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-[#1d2327] text-[12px] font-bold mb-1">Category Tag</label>
+                      <input
+                        type="text"
+                        value={editingService.tag || ""}
+                        onChange={(e) => setEditingService({ ...editingService, tag: e.target.value })}
+                        className="w-full border border-[#8c8f94] bg-white px-3 py-1 text-[13px] rounded-[3px] outline-none focus:border-[#2271b1]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[#1d2327] text-[12px] font-bold mb-1">Status</label>
+                      <select
+                        value={editingService.status || "published"}
+                        onChange={(e) => setEditingService({ ...editingService, status: e.target.value })}
+                        className="w-full border border-[#8c8f94] bg-white px-2 py-1 text-[13px] rounded-[3px] outline-none"
+                      >
+                        <option value="published">Published</option>
+                        <option value="draft">Draft</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-end gap-3 px-4 py-3 bg-[#f6f7f7] border-t border-[#c3c4c7]">
+                  <button type="button" onClick={() => setEditingService(null)} className="text-[#2271b1] text-[13px] hover:text-[#135e96]">Cancel</button>
+                  <button
+                    type="submit"
+                    className="bg-[#2271b1] text-white text-[13px] font-bold px-4 py-1.5 rounded-[3px] border border-[#135e96] hover:bg-[#135e96]"
+                  >
+                    Update
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Media Selector Modal */}
+      <AnimatePresence>
+        {showMediaSelector && (
+          <MediaSelector
+            onSelect={(item: any) => {
+              const url = item.url;
+              const altText = item.alt || '';
+              setSeo((prev: any) => ({
+                ...prev,
+                featuredImage: url,
+                featuredImageAlt: altText,
+                ogImage: prev.ogImage || url,
+                twitterImage: prev.twitterImage || url,
+              }));
+              setForm((prev: any) => ({
+                ...prev,
+                hero: {
+                  ...prev.hero,
+                  backgroundImage: url,
+                  bgImage: url
+                }
+              }));
+              setShowMediaSelector(false);
+            }}
+            onClose={() => setShowMediaSelector(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Floating Toast Alert */}
+      <AnimatePresence>
+        {message && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className={`fixed bottom-10 right-10 z-[100] px-4 py-2 bg-white border-l-4 text-[12px] shadow-lg ${
+              message.includes("Error") ? "border-[#d63638]" : "border-[#00a32a]"
+            }`}
+          >
+            <p className="text-[#1d2327] m-0">{message}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
