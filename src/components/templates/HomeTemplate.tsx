@@ -15,7 +15,7 @@ const BlogSection = dynamic(() => import("@/components/sections/BlogSection"), {
 const ContactForm = dynamic(() => import("@/components/ContactForm"));
 
 export default function HomeTemplate({ pageData, params }: { pageData?: any; params?: any }) {
-  const { allBlogs } = useContent();
+  const { allBlogs, blogSection, faq } = useContent();
   return (
     <div className="relative">
       <Hero />
