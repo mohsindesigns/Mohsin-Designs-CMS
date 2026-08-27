@@ -2,10 +2,12 @@ import connectToDatabase from "@/lib/mongodb";
 import SiteContent from "@/models/Content";
 import { BASE_URL } from "@/lib/constants";
 import { Metadata } from "next";
+import { resolveRobotsMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
   const content = await SiteContent.findOne({ key: "complete_data" }).lean() as any;
+  const isGlobalNoIndex = !!content?.data?.settings?.globalNoIndex;
   const galleryData = content?.data?.galleryPage || content?.data?.gallery || {};
   const seo = galleryData.seo || {};
   const pageUrl = `${BASE_URL}/gallery`;
@@ -16,6 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
     alternates: {
       canonical: seo.canonicalUrl || pageUrl,
     },
+    robots: resolveRobotsMetadata(seo, isGlobalNoIndex),
     openGraph: {
       title: seo.ogTitle || seo.metaTitle || "Project Gallery",
       description: seo.ogDescription || seo.metaDescription,

@@ -136,11 +136,28 @@ export default function SettingsEditor({ pageId, data, setData }: { pageId: stri
                               </optgroup>
                            </select>
                        </div>
-                       <div className="space-y-1.5">
-                          <label className={UI.label}>Metadata Template (e.g. %s | Brand)</label>
-                          <input type="text" value={data.settings?.siteTemplate || ""} onChange={(e) => updateNested(["settings", "siteTemplate"], e.target.value)} className={UI.input + " font-mono text-[11px]"} />
-                       </div>
-                    </div>
+                        <div className="space-y-1.5">
+                           <label className={UI.label}>Metadata Template (e.g. %s | Brand)</label>
+                           <input type="text" value={data.settings?.siteTemplate || ""} onChange={(e) => updateNested(["settings", "siteTemplate"], e.target.value)} className={UI.input + " font-mono text-[11px]"} />
+                        </div>
+                        <div className="space-y-2 pt-4 border-t border-[#f0f0f1]">
+                           <label className={UI.label}>Search Engine Visibility</label>
+                           <label className="flex items-center gap-2 cursor-pointer select-none text-[13px] text-[#1d2327]">
+                              <input 
+                                 type="checkbox" 
+                                 checked={!!data.settings?.globalNoIndex} 
+                                 onChange={(e) => updateNested(["settings", "globalNoIndex"], e.target.checked)} 
+                                 className="w-4 h-4 text-[#2271b1] border-[#8c8f94] rounded focus:ring-[#2271b1]" 
+                              />
+                              <span>Discourage search engines (Global NoIndex, NoFollow)</span>
+                           </label>
+                           {data.settings?.globalNoIndex && (
+                              <p className="text-[11px] text-[#d63638] font-medium bg-[#fcf0f1] p-2 rounded-sm border-l-2 border-[#d63638]">
+                                 ⚠️ All pages are currently marked as noindex, nofollow.
+                              </p>
+                           )}
+                        </div>
+                     </div>
                  </div>
                  <div className="space-y-6">
                      <ImageField label="Global Favicon / Icon" value={data.settings?.favicon || ""} onChange={(url: string) => updateNested(["settings", "favicon"], url)} />

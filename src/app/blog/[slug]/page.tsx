@@ -20,11 +20,13 @@ import {
 import connectToDatabase from "@/lib/mongodb";
 import Post from "@/models/Post";
 import Page from "@/models/Page";
+import SiteContent from "@/models/Content";
 import ReadingProgress from "@/components/blog/ReadingProgress";
 import ShareButton from "@/components/blog/ShareButton";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 import { BASE_URL } from "@/lib/constants";
 import { makeLinksDoFollow } from "@/lib/utils";
+import { resolveRobotsMetadata } from "@/lib/seo";
 
 export const revalidate = 60; // Revalidate every 60s
 
@@ -36,13 +38,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   await connectToDatabase();
 
-  const post = await Post.findOne({
-    $or: [{ slug }, { _id: slug.match(/^[0-9a-fA-F]{24}$/) ? slug : null }],
-    status: "published"
-  }).populate("categories author");
+  const [post, contentDoc] = await Promise.all([
+    Post.findOne({
+      $or: [{ slug }, { _id: slug.match(/^[0-9a-fA-F]{24}$/) ? slug : null }],
+      status: "published"
+    }).populate("categories author"),
+    SiteContent.findOne({ key: 'complete_data' }).lean() as any
+  ]);
 
   if (!post) return { title: "Article Not Found | Mohsin Designs" };
 
+  const isGlobalNoIndex = !!contentDoc?.data?.settings?.globalNoIndex;
   const pageTitle = post.seo?.metaTitle || `${post.title} | Mohsin Designs`;
   const pageDesc = post.seo?.metaDescription || post.excerpt || `${post.title} - Strategic insights and architectural blueprints from Mohsin Designs.`;
   const pageImage = post.seo?.ogImage || post.featuredImage || "/portfolio_hero_bg.png";
@@ -56,6 +62,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: {
       canonical: canonicalUrl
     },
+    robots: resolveRobotsMetadata(post.seo, isGlobalNoIndex),
     openGraph: {
       title: post.seo?.ogTitle || pageTitle,
       description: post.seo?.ogDescription || pageDesc,

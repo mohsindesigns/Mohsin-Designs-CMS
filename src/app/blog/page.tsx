@@ -6,6 +6,7 @@ import SiteContent from '@/models/Content';
 import { Metadata } from 'next';
 import { BASE_URL } from '@/lib/constants';
 import { TemplateWrapper } from '@/components/templates/TemplateRegistry';
+import { resolveRobotsMetadata } from '@/lib/seo';
 
 export const revalidate = 60; // Cache for 1 minute
 
@@ -16,6 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
     SiteContent.findOne({ key: 'complete_data' }).lean() as any
   ]);
 
+  const isGlobalNoIndex = !!contentDoc?.data?.settings?.globalNoIndex;
   const pageContent = pageDoc?.content?.blogPage || pageDoc?.content || {};
   const globalBlogData = contentDoc?.data?.blogPage || {};
   const seo = pageDoc?.seo || pageContent?.seo || globalBlogData?.seo || {};
@@ -43,10 +45,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: seo.twitterDescription || seo.ogDescription || metaDescription,
       images: [seo.featuredImage || seo.twitterImage || seo.ogImage].filter(Boolean) as string[],
     },
-    robots: {
-      index: seo.metaRobotsIndex !== 'noindex',
-      follow: seo.metaRobotsFollow !== 'nofollow',
-    }
+    robots: resolveRobotsMetadata(seo, isGlobalNoIndex)
   };
 }
 

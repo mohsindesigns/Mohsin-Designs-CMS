@@ -7,6 +7,7 @@ import connectToDatabase from "@/lib/mongodb";
 import SiteContent from "@/models/Content";
 import { BASE_URL } from "@/lib/constants";
 import InteractiveBackground from "@/components/InteractiveBackground";
+import { resolveRobotsMetadata } from "@/lib/seo";
 
 const lora = Lora({
   variable: "--font-heading",
@@ -60,13 +61,7 @@ export async function generateMetadata(): Promise<Metadata> {
     publisher: "Mohsin Designs",
 
     // ── Robots & Canonical ──
-    robots: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
+    robots: resolveRobotsMetadata(null, !!settings?.globalNoIndex),
     alternates: {
       canonical: BASE_URL,
     },

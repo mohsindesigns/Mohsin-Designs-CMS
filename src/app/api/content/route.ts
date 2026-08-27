@@ -63,11 +63,17 @@ export async function PUT(req: NextRequest) {
     });
 
     const { revalidatePath } = await import('next/cache');
+    revalidatePath('/', 'layout');
     revalidatePath('/');
     revalidatePath('/services');
     revalidatePath('/blog');
+    revalidatePath('/locations');
+    revalidatePath('/gallery');
+    revalidatePath('/privacy');
+    revalidatePath('/terms');
     revalidatePath('/services/[slug]', 'page');
     revalidatePath('/blog/[slug]', 'page');
+    revalidatePath('/[...slug]', 'page');
 
     return NextResponse.json({ success: true, result });
   } catch (error: any) {

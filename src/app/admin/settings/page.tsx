@@ -223,7 +223,7 @@ export default function SettingsEditor() {
   useEffect(() => {
     fetch("/api/content").then((res) => res.json()).then((json) => {
         const d = { ...json };
-        if (!d.settings) d.settings = { siteTitle: "Mohsin Designs", siteTemplate: "%s | Mohsin Designs", favicon: "/portfolio_hero_bg.png" };
+        if (!d.settings) d.settings = { siteTitle: "Mohsin Designs", siteTemplate: "%s | Mohsin Designs", favicon: "/portfolio_hero_bg.png", globalNoIndex: false };
         if (!d.navbar) d.navbar = { companyLinks: [], ctaText: "Book Now", ctaLink: "/contact-us", logo: "/portfolio_hero_bg.png" };
         setData(d);
       });
@@ -338,6 +338,27 @@ export default function SettingsEditor() {
                </SettingsRow>
                <SettingsRow label="Site Favicon" description="Upload the small icon that appears in the browser tab.">
                   <ImageField value={data.settings?.favicon || ""} onChange={(val) => updateData("settings", "favicon", val)} label="Favicon" />
+               </SettingsRow>
+               <SettingsRow label="Search Engine Visibility" description="Discourage search engines from indexing this entire site. When enabled, all pages output 'noindex, nofollow'. When disabled, pages use their individual SEO settings.">
+                  <div className="space-y-3">
+                    <label className="flex items-center gap-3 cursor-pointer select-none">
+                      <input 
+                        type="checkbox" 
+                        checked={!!data.settings?.globalNoIndex} 
+                        onChange={(e) => updateData("settings", "globalNoIndex", e.target.checked)} 
+                        className="w-4 h-4 text-[#2271b1] border-[#8c8f94] rounded focus:ring-[#2271b1]" 
+                      />
+                      <span className="text-[14px] text-[#1d2327]">
+                        Discourage search engines from indexing this site (Global NoIndex, NoFollow)
+                      </span>
+                    </label>
+                    {data.settings?.globalNoIndex && (
+                      <div className="p-3 bg-[#fcf0f1] border-l-4 border-[#d63638] text-[13px] text-[#d63638] font-medium rounded-r-sm space-y-1">
+                        <p className="font-semibold m-0">⚠️ Global NoIndex is currently ACTIVE</p>
+                        <p className="text-[12px] text-[#646970] m-0">All pages across the site are currently serving <code>noindex, nofollow</code> robots meta tags, overriding individual page SEO configurations.</p>
+                      </div>
+                    )}
+                  </div>
                </SettingsRow>
             </motion.div>
           )}

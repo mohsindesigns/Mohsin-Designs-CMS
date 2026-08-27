@@ -10,12 +10,14 @@ import { generateSchema } from "@/lib/schema-generator";
 import { TemplateWrapper } from "@/components/templates/TemplateRegistry";
 import ServiceDetailTemplate from "@/components/templates/ServiceDetailTemplate";
 import { BASE_URL } from "@/lib/constants";
+import { resolveRobotsMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
   const content = await SiteContent.findOne({ key: "complete_data" }).lean() as any;
   const settings = content?.data?.settings;
   const homepageId = settings?.homepageId;
+  const isGlobalNoIndex = !!settings?.globalNoIndex;
 
   const pageUrl = BASE_URL;
 
@@ -57,15 +59,7 @@ export async function generateMetadata(): Promise<Metadata> {
           description: seo.twitterDescription || seo.ogDescription || seo.metaDescription,
           images: [seo.featuredImage || seo.twitterImage || seo.ogImage].filter(Boolean) as string[],
         },
-        robots: {
-          index: seo.metaRobotsIndex !== 'noindex',
-          follow: seo.metaRobotsFollow !== 'nofollow',
-          ...(seo.metaRobotsIndex !== 'noindex' && {
-            'max-video-preview': -1,
-            'max-image-preview': 'large',
-            'max-snippet': -1,
-          })
-        }
+        robots: resolveRobotsMetadata(seo, isGlobalNoIndex)
       };
     }
     // Check if it's a service
@@ -88,15 +82,7 @@ export async function generateMetadata(): Promise<Metadata> {
           description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || service.description,
           images: [seo.featuredImage || seo.twitterImage || seo.ogImage].filter(Boolean) as string[],
         },
-        robots: {
-          index: seo.metaRobotsIndex !== 'noindex',
-          follow: seo.metaRobotsFollow !== 'nofollow',
-          ...(seo.metaRobotsIndex !== 'noindex' && {
-            'max-video-preview': -1,
-            'max-image-preview': 'large',
-            'max-snippet': -1,
-          })
-        }
+        robots: resolveRobotsMetadata(seo, isGlobalNoIndex)
       };
     }
   }
@@ -116,15 +102,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: seo.ogDescription || seo.metaDescription || homeData?.hero?.subheadline,
       images: [seo.featuredImage || `${BASE_URL}/portfolio_hero_bg.png`].filter(Boolean) as string[],
     },
-    robots: {
-      index: seo.metaRobotsIndex !== 'noindex',
-      follow: seo.metaRobotsFollow !== 'nofollow',
-      ...(seo.metaRobotsIndex !== 'noindex' && {
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      })
-    }
+    robots: resolveRobotsMetadata(seo, isGlobalNoIndex)
   };
 }
 

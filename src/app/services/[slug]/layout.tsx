@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import connectToDatabase from "@/lib/mongodb";
 import SiteContent from "@/models/Content";
 import { BASE_URL } from "@/lib/constants";
+import { resolveRobotsMetadata } from "@/lib/seo";
 
 // ─────────────────────────────────────────────
 // Per-page SEO map — title, description, keywords, JSON-LD
@@ -672,6 +673,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
+  const isGlobalNoIndex = !!content?.data?.settings?.globalNoIndex;
   const seo = service.seo || {};
 
   const title = seo.metaTitle || seo.title || service.title;
@@ -680,15 +682,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description,
-    robots: {
-      index: seo.metaRobotsIndex !== 'noindex',
-      follow: seo.metaRobotsFollow !== 'nofollow',
-      ...(seo.metaRobotsIndex !== 'noindex' && {
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      })
-    },
+    robots: resolveRobotsMetadata(seo, isGlobalNoIndex),
     alternates: {
       canonical: `${BASE_URL}/services/${slug}`,
     },

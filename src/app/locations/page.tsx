@@ -6,6 +6,7 @@ import SiteContent from "@/models/Content";
 import Script from "next/script";
 import { generateSchema } from "@/lib/schema-generator";
 import { BASE_URL } from "@/lib/constants";
+import { resolveRobotsMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
@@ -19,6 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   const content = await SiteContent.findOne({ key: "complete_data" }).lean() as any;
   const globalData = content?.data || {};
+  const isGlobalNoIndex = !!globalData?.settings?.globalNoIndex;
 
   const page = pageDoc ? JSON.parse(JSON.stringify(pageDoc)) : null;
   const pageContent = page?.content || {};
@@ -56,15 +58,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: seo.twitterDescription || seo.ogDescription || metaDescription,
       images: [seo.featuredImage || seo.twitterImage || seo.ogImage].filter(Boolean) as string[],
     },
-    robots: {
-      index: seo.metaRobotsIndex !== 'noindex',
-      follow: seo.metaRobotsFollow !== 'nofollow',
-      ...(seo.metaRobotsIndex !== 'noindex' && {
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      })
-    }
+    robots: resolveRobotsMetadata(seo, isGlobalNoIndex)
   };
 }
 

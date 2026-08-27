@@ -7,6 +7,7 @@ import SiteContent from "@/models/Content";
 import { generateSchema } from "@/lib/schema-generator";
 import ServiceDetailTemplate from "@/components/templates/ServiceDetailTemplate";
 import { BASE_URL } from "@/lib/constants";
+import { resolveRobotsMetadata } from "@/lib/seo";
 
 function getAbsoluteUrl(path: string | undefined) {
   if (!path) return undefined;
@@ -18,6 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   await connectToDatabase();
   const content = await SiteContent.findOne({ key: "complete_data" }).lean() as any;
+  const isGlobalNoIndex = !!content?.data?.settings?.globalNoIndex;
   const services = content?.data?.services?.services || [];
   const service = services.find((s: any) => s.slug === slug);
 
@@ -33,15 +35,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     alternates: {
       canonical: seo.canonicalUrl || `${BASE_URL}/services/${slug}`,
     },
-    robots: {
-      index: seo.metaRobotsIndex !== 'noindex',
-      follow: seo.metaRobotsFollow !== 'nofollow',
-      ...(seo.metaRobotsIndex !== 'noindex' && {
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      })
-    }
+    robots: resolveRobotsMetadata(seo, isGlobalNoIndex)
   };
 }
 
