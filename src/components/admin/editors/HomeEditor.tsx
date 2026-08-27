@@ -260,19 +260,21 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                         </div>
                      </div>
                      <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>6. Media</h3>
+                        <h3 className={UI.sectionHeader}>6. Showcase / Hero Image</h3>
                         <ImageField
-                           label="Background Image"
-                           value={data.hero?.images?.[0]}
+                           label="Hero Showcase Image"
+                           value={data.hero?.image || data.hero?.imageSrc || data.hero?.images?.[0] || data.hero?.bgImage || ""}
                            onChange={(url) => {
-                              updateSection("hero", "images", (prev: any[]) => {
-                                 const next = [...(prev || [])];
-                                 next[0] = url;
-                                 return next;
-                              });
+                              updateSection("hero", "image", url);
+                              updateSection("hero", "imageSrc", url);
+                              updateSection("hero", "bgImage", url);
+                              updateSection("hero", "images", [url]);
                            }}
-                           altValue={data.hero?.bgImageAlt || ""}
-                           onAltChange={(alt) => updateSection("hero", "bgImageAlt", alt)}
+                           altValue={data.hero?.imageAlt || data.hero?.bgImageAlt || ""}
+                           onAltChange={(alt) => {
+                              updateSection("hero", "imageAlt", alt);
+                              updateSection("hero", "bgImageAlt", alt);
+                           }}
                         />
                      </div>
                      <div className="space-y-6">

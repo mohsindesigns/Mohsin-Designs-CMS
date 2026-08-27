@@ -62,6 +62,10 @@ export const TemplateWrapper = ({ templateName, pageData, globalData, params }: 
     : {
       ...(globalData || {}),
       ...(pageData?.content || {}),
+      hero: {
+        ...(globalData?.hero || {}),
+        ...(pageData?.content?.hero || {}),
+      },
     };
 
   return (

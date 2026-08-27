@@ -32,8 +32,6 @@ export default function ProjectsAdminPage() {
     number: "",
     location: "",
     architect: "",
-    accent: "from-primary to-primary/80",
-    glowClass: "",
     featured: false,
     stats: [
       { value: "", label: "", iconName: "Award" },
@@ -141,8 +139,6 @@ export default function ProjectsAdminPage() {
       number: p.number || "",
       location: p.location || "",
       architect: p.architect || "",
-      accent: p.accent || "from-primary to-primary/80",
-      glowClass: p.glowClass || "",
       featured: p.featured || false,
       stats: p.stats || [
         { value: "", label: "", iconName: "Award" },
@@ -176,8 +172,6 @@ export default function ProjectsAdminPage() {
                 number: "",
                 location: "",
                 architect: "",
-                accent: "from-primary to-primary/80",
-                glowClass: "",
                 featured: false,
                 stats: [
                   { value: "", label: "", iconName: "Award" },
@@ -255,22 +249,17 @@ export default function ProjectsAdminPage() {
                                 })()}
                              </div>
                          </div>
-                         <div className="space-y-1">
-                            <label className="text-[13px] font-bold">Location</label>
-                            <input type="text" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Dallas, TX" />
+                         <div className="space-y-4">
+                            <div className="space-y-1">
+                               <label className="text-[13px] font-bold">Location</label>
+                               <input type="text" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Dallas, TX" />
+                            </div>
+                            <div className="space-y-1">
+                               <label className="text-[13px] font-bold">Year</label>
+                               <input type="text" value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. 2024" />
+                            </div>
                          </div>
                       </div>
-
-                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                           <label className="text-[13px] font-bold">Year</label>
-                           <input type="text" value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. 2024" />
-                        </div>
-                        <div className="space-y-1">
-                           <label className="text-[13px] font-bold">Backlight Glow CSS Class</label>
-                           <input type="text" value={form.glowClass || ""} onChange={(e) => setForm({ ...form, glowClass: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. from-orange-500/20 via-red-500/10 to-transparent" />
-                        </div>
-                     </div>
 
                      <div className="space-y-1">
                         <label className="text-[13px] font-bold">The Challenge</label>

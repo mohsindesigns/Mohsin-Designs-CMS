@@ -51,13 +51,9 @@ export default function Hero() {
   
   const circleText = hero?.circleText || "VETERAN OWNED • VETERAN OPERATED •";
   const circleLetter = hero?.circleLetter || "M";
-  const imageSrc = hero?.imageSrc || hero?.images?.[0] || "";
+  const imageSrc = hero?.image || hero?.imageSrc || (Array.isArray(hero?.images) ? hero.images[0] : hero?.images) || hero?.bgImage || hero?.backgroundImage || hero?.heroImage || "";
   const imageAlt = hero?.imageAlt || hero?.bgImageAlt || "Mohsin Designs Showcase";
   const marqueeItems = (hero?.marqueeItems || ["Roofing", "Siding", "Windows", "Decks"]) as string[];
-  const stats = hero?.stats || [
-    { value: "80%", label: "Increase in Conversions", description: "2x website traffic increase" },
-    { value: "3.2x", label: "Return on Investment" }
-  ];
 
   const { scrollY } = useScroll();
   const yText = useTransform(scrollY, [0, 1000], [0, 95]);
@@ -281,55 +277,56 @@ export default function Hero() {
           </motion.div>
 
           {/* Right Column: Creative Graphic Showcase */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: false, amount: 0.15 }}
-            style={{ y: yGraphic }}
-            transition={{
-              duration: 0.6,
-              ease: "easeOut"
-            }}
-            className="lg:col-span-5 relative hidden lg:flex justify-center items-end mt-6 lg:mt-0 z-10 cursor-pointer pointer-events-auto w-full will-change-transform"
-          >
-            {/* Rotating Circle Badge */}
+          {imageSrc ? (
             <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ ease: "linear", duration: 20, repeat: Infinity }}
-              className="absolute -top-4 -right-4 h-24 w-24 z-20 hidden sm:block select-none pointer-events-none"
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: false, amount: 0.15 }}
+              style={{ y: yGraphic }}
+              transition={{
+                duration: 0.6,
+                ease: "easeOut"
+              }}
+              className="lg:col-span-5 relative flex justify-center items-end mt-8 lg:mt-0 z-10 cursor-pointer pointer-events-auto w-full will-change-transform"
             >
-              <svg viewBox="0 0 100 100" className="h-full w-full">
-                <defs>
-                  <path id="circlePath" d="M 50, 50 m -35, 0 a 35,35 0 1,1 70,0 a 35,35 0 1,1 -70,0" />
-                </defs>
-                <text className="text-[8.5px] font-black uppercase tracking-widest fill-brand-dark dark:fill-white font-sans">
-                  <textPath href="#circlePath" startOffset="0%">
-                    {circleText}
-                  </textPath>
-                </text>
-              </svg>
-              {/* Inner letter 'M' logo in the center of the rotating circle */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="h-7 w-7 rounded-full bg-brand-blue flex items-center justify-center shadow-md">
-                  <span className="text-[10px] font-black text-white font-sans uppercase">{circleLetter}</span>
+              {/* Rotating Circle Badge */}
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ ease: "linear", duration: 20, repeat: Infinity }}
+                className="absolute -top-4 -right-4 h-24 w-24 z-20 hidden sm:block select-none pointer-events-none"
+              >
+                <svg viewBox="0 0 100 100" className="h-full w-full">
+                  <defs>
+                    <path id="circlePath" d="M 50, 50 m -35, 0 a 35,35 0 1,1 70,0 a 35,35 0 1,1 -70,0" />
+                  </defs>
+                  <text className="text-[8.5px] font-black uppercase tracking-widest fill-brand-dark dark:fill-white font-sans">
+                    <textPath href="#circlePath" startOffset="0%">
+                      {circleText}
+                    </textPath>
+                  </text>
+                </svg>
+                {/* Inner letter 'M' logo in the center of the rotating circle */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="h-7 w-7 rounded-full bg-brand-blue flex items-center justify-center shadow-md">
+                    <span className="text-[10px] font-black text-white font-sans uppercase">{circleLetter}</span>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
 
-            {/* Graphic Encased in borderless transparent container matching text height */}
-            <div className="relative w-full h-[320px] sm:h-[400px] lg:h-[460px] flex items-end justify-center">
-              {imageSrc ? (
+              {/* Graphic Encased in borderless transparent container matching text height */}
+              <div className="relative w-full h-[320px] sm:h-[400px] lg:h-[460px] flex items-end justify-center">
                 <Image
                   src={imageSrc}
                   alt={imageAlt}
                   fill
                   priority
+                  unoptimized={imageSrc.startsWith('http') || imageSrc.startsWith('/uploads') || imageSrc.startsWith('/cdn-images')}
                   className="object-contain object-bottom"
                   sizes="(max-width: 768px) 100vw, 600px"
                 />
-              ) : null}
-            </div>
-          </motion.div>
+              </div>
+            </motion.div>
+          ) : null}
 
         </div>
       </div>
