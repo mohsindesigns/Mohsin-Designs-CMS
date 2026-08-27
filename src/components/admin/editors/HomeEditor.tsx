@@ -779,33 +779,33 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                      <div className="space-y-6 pt-8 border-t border-[#f0f0f1]">
                         <div className="flex justify-between items-center">
                            <div>
-                              <h3 className={UI.sectionHeader}>3. Active Global Operating Countries</h3>
-                              <p className="text-xs text-[#646970]">Simply choose or type a country. Real GPS coordinates are automatically mapped to the interactive live globe.</p>
+                              <h3 className={UI.sectionHeader}>3. Active Global Operating Locations (Countries & States)</h3>
+                              <p className="text-xs text-[#646970]">Choose or type any country or US/global state. Real GPS coordinates are automatically mapped to the interactive live globe. Add custom specialties, timezones, and page navigation links.</p>
                            </div>
                            <button
                               onClick={() => {
                                  const currentHubs = (data.serviceArea?.hubs && data.serviceArea.hubs.length > 0)
                                     ? data.serviceArea.hubs
                                     : [
-                                       { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST" },
-                                       { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST" },
-                                       { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT" },
-                                       { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET" },
-                                       { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET" },
-                                       { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET" },
-                                       { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET" },
-                                       { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET" },
-                                       { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET" },
-                                       { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT" },
-                                       { id: "bh", name: "Bahrain", focus: "MENA Regional Hub", timezone: "AST" },
-                                       { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST" }
+                                       { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", link: "/locations" },
+                                       { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", link: "/locations" },
+                                       { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", link: "/locations" },
+                                       { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", link: "/locations" },
+                                       { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET", link: "/locations" },
+                                       { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET", link: "/locations" },
+                                       { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET", link: "/locations" },
+                                       { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET", link: "/locations" },
+                                       { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET", link: "/locations" },
+                                       { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT", link: "/locations" },
+                                       { id: "bh", name: "Bahrain", focus: "MENA Regional Hub", timezone: "AST", link: "/locations" },
+                                       { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST", link: "/locations" }
                                     ];
-                                 const newHub = { id: `hub-${Date.now()}`, name: "United Arab Emirates", focus: "Regional Hub", timezone: "GST" };
+                                 const newHub = { id: `hub-${Date.now()}`, name: "California, USA", focus: "Innovation Hub", timezone: "PST", link: "/locations" };
                                  updateSection("serviceArea", "hubs", [...currentHubs, newHub]);
                               }}
                               className={UI.buttonAdd}
                            >
-                              + Add Operating Country
+                              + Add Operating Location
                            </button>
                         </div>
 
@@ -813,35 +813,35 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                            {((data.serviceArea?.hubs && data.serviceArea.hubs.length > 0)
                               ? data.serviceArea.hubs
                               : [
-                                 { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST" },
-                                 { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST" },
-                                 { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT" },
-                                 { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET" },
-                                 { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET" },
-                                 { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET" },
-                                 { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET" },
-                                 { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET" },
-                                 { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET" },
-                                 { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT" },
-                                 { id: "bh", name: "Bahrain", focus: "MENA Regional Hub", timezone: "AST" },
-                                 { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST" }
+                                 { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", link: "/locations" },
+                                 { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", link: "/locations" },
+                                 { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", link: "/locations" },
+                                 { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", link: "/locations" },
+                                 { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET", link: "/locations" },
+                                 { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET", link: "/locations" },
+                                 { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET", link: "/locations" },
+                                 { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET", link: "/locations" },
+                                 { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET", link: "/locations" },
+                                 { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT", link: "/locations" },
+                                 { id: "bh", name: "Bahrain", focus: "MENA Regional Hub", timezone: "AST", link: "/locations" },
+                                 { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST", link: "/locations" }
                               ]
                            ).map((hub: any, hIdx: number) => {
                               const currentHubs = (data.serviceArea?.hubs && data.serviceArea.hubs.length > 0)
                                  ? data.serviceArea.hubs
                                  : [
-                                    { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST" },
-                                    { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST" },
-                                    { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT" },
-                                    { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET" },
-                                    { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET" },
-                                    { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET" },
-                                    { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET" },
-                                    { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET" },
-                                    { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET" },
-                                    { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT" },
-                                    { id: "bh", name: "Bahrain", focus: "MENA Regional Hub", timezone: "AST" },
-                                    { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST" }
+                                    { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", link: "/locations" },
+                                    { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", link: "/locations" },
+                                    { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", link: "/locations" },
+                                    { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", link: "/locations" },
+                                    { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET", link: "/locations" },
+                                    { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET", link: "/locations" },
+                                    { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET", link: "/locations" },
+                                    { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET", link: "/locations" },
+                                    { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET", link: "/locations" },
+                                    { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT", link: "/locations" },
+                                    { id: "bh", name: "Bahrain", focus: "MENA Regional Hub", timezone: "AST", link: "/locations" },
+                                    { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST", link: "/locations" }
                                  ];
                               const geo = resolveCountryLocation(hub.name);
 
@@ -850,10 +850,15 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                                     <div className="flex justify-between items-center pb-2 border-b border-[#e2e4e7]">
                                        <div className="flex items-center gap-2">
                                           <MapPin className="w-4 h-4 text-[#2271b1]" />
-                                          <span className="text-[13px] font-bold text-[#1d2327]">{hub.name || `Country #${hIdx + 1}`}</span>
+                                          <span className="text-[13px] font-bold text-[#1d2327]">{hub.name || `Location #${hIdx + 1}`}</span>
                                           <span className="text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full flex items-center gap-1">
                                              📍 Auto-Geolocated ({geo.region})
                                           </span>
+                                          {hub.link && (
+                                             <span className="text-[10px] bg-blue-50 text-[#2271b1] border border-blue-200 px-2 py-0.5 rounded font-mono truncate max-w-[200px]">
+                                                🔗 {hub.link}
+                                             </span>
+                                          )}
                                        </div>
                                        <button
                                           onClick={() => {
@@ -867,9 +872,9 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                                        </button>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
                                        <div className="space-y-1">
-                                          <label className="text-[10px] font-bold uppercase text-[#50575e]">Country Name</label>
+                                          <label className="text-[10px] font-bold uppercase text-[#50575e]">Country / State Name</label>
                                           <input
                                              list={`countries-list-${hIdx}`}
                                              type="text"
@@ -886,7 +891,7 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                                                 updateSection("serviceArea", "hubs", newHubs);
                                              }}
                                              className={UI.input + " font-bold"}
-                                             placeholder="Type or select a country..."
+                                             placeholder="e.g. California, USA or Germany"
                                           />
                                           <datalist id={`countries-list-${hIdx}`}>
                                              {AVAILABLE_COUNTRIES.map((c) => (
@@ -906,7 +911,7 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                                                 updateSection("serviceArea", "hubs", newHubs);
                                              }}
                                              className={UI.input}
-                                             placeholder="e.g. Full-Stack & UI/UX"
+                                             placeholder="e.g. Architecture & Design"
                                           />
                                        </div>
 
@@ -921,7 +926,22 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                                                 updateSection("serviceArea", "hubs", newHubs);
                                              }}
                                              className={UI.input + " font-mono"}
-                                             placeholder="e.g. EST / PST"
+                                             placeholder="e.g. PST, EST, GMT, CET"
+                                          />
+                                       </div>
+
+                                       <div className="space-y-1">
+                                          <label className="text-[10px] font-bold uppercase text-[#50575e]">Navigation Link (URL)</label>
+                                          <input
+                                             type="text"
+                                             value={hub.link || ""}
+                                             onChange={(e) => {
+                                                const newHubs = [...currentHubs];
+                                                newHubs[hIdx] = { ...newHubs[hIdx], link: e.target.value };
+                                                updateSection("serviceArea", "hubs", newHubs);
+                                             }}
+                                             className={UI.input}
+                                             placeholder="e.g. /locations/california or #contact"
                                           />
                                        </div>
                                     </div>

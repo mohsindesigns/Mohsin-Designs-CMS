@@ -9,6 +9,7 @@ interface HubItem {
   name: string;
   focus?: string;
   timezone?: string;
+  link?: string;
   lat?: number;
   lng?: number;
 }
@@ -158,7 +159,8 @@ export default function RealWorldMap({
             <div class="absolute bottom-full mb-2 hidden group-hover:flex flex-col items-center pointer-events-none z-50 whitespace-nowrap">
               <div class="${tooltipBg} text-[11px] font-bold px-2.5 py-1 rounded-lg shadow-lg flex items-center gap-1.5">
                 <span class="w-1.5 h-1.5 rounded-full bg-[#E9BD36]"></span>
-                ${hub.name}
+                <span>${hub.name}</span>
+                ${hub.link ? '<span class="text-[9px] text-[#0306AC] dark:text-[#E9BD36] font-normal">🔗 Explore</span>' : ''}
               </div>
               <div class="w-2 h-2 ${isDarkMode ? 'bg-[#0c0c16] border-r border-b border-white/10' : 'bg-white border-r border-b border-slate-200'} rotate-45 -mt-1"></div>
             </div>
@@ -171,8 +173,12 @@ export default function RealWorldMap({
       const marker = L.marker([lat, lng], { icon: customIcon }).addTo(map);
 
       marker.on("click", () => {
-        onSelectHub(hub.id);
-        map.flyTo([lat, lng], Math.max(map.getZoom(), 4), { duration: 1.2 });
+        if (activeHubId === hub.id && hub.link) {
+          window.location.href = hub.link;
+        } else {
+          onSelectHub(hub.id);
+          map.flyTo([lat, lng], Math.max(map.getZoom(), 4), { duration: 1.2 });
+        }
       });
 
       marker.on("mouseover", () => {

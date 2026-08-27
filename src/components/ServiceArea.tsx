@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, MapPin, Globe } from "lucide-react";
+import { ArrowRight, ArrowUpRight, MapPin, Globe } from "lucide-react";
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import { useContent } from "@/hooks/useContent";
@@ -32,18 +32,18 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
 
   // Auto-enrich hubs with geocoded coordinates & timezone if missing
   const rawHubs: any[] = Array.isArray(serviceArea.hubs) && serviceArea.hubs.length > 0 ? serviceArea.hubs : [
-    { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST" },
-    { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST" },
-    { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT" },
-    { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET" },
-    { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET" },
-    { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET" },
-    { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET" },
-    { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET" },
-    { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET" },
-    { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT" },
-    { id: "bh", name: "Bahrain", focus: "MENA Regional Hub", timezone: "AST" },
-    { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST" }
+    { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", link: "/locations" },
+    { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", link: "/locations" },
+    { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", link: "/locations" },
+    { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", link: "/locations" },
+    { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET", link: "/locations" },
+    { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET", link: "/locations" },
+    { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET", link: "/locations" },
+    { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET", link: "/locations" },
+    { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET", link: "/locations" },
+    { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT", link: "/locations" },
+    { id: "bh", name: "Bahrain", focus: "MENA Regional Hub", timezone: "AST", link: "/locations" },
+    { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST", link: "/locations" }
   ];
 
   const hubs = rawHubs.map((hub: any, idx: number) => {
@@ -54,8 +54,9 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
       name: hub.name,
       focus: hub.focus || "Global Partner Delivery",
       timezone: hub.timezone || resolved.timezone || "UTC",
-      lat: hub.lat || dbData?.lat || 20,
-      lng: hub.lng || dbData?.lng || 0,
+      link: hub.link || hub.href || hub.url || "",
+      lat: hub.lat || dbData?.lat || resolved.lat || 20,
+      lng: hub.lng || dbData?.lng || resolved.lng || 0,
     };
   });
 
@@ -91,7 +92,7 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
               {description}
             </p>
 
-            {/* ── Country chip grid ── */}
+            {/* ── Country / State chip grid ── */}
             <div className="w-full flex flex-wrap justify-center lg:justify-start gap-2">
               {hubs.map((hub) => {
                 const isActive = activeHub === hub.id;
@@ -99,7 +100,13 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
                 return (
                   <motion.button
                     key={hub.id}
-                    onClick={() => setActiveHub(isActive ? null : hub.id)}
+                    onClick={() => {
+                      if (isActive && hub.link) {
+                        window.location.href = hub.link;
+                      } else {
+                        setActiveHub(isActive ? null : hub.id);
+                      }
+                    }}
                     onMouseEnter={() => setActiveHub(hub.id)}
                     whileTap={{ scale: 0.96 }}
                     className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-bold tracking-wide transition-all duration-200 cursor-pointer select-none focus:outline-none ${
@@ -117,14 +124,17 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
                       }`}
                       strokeWidth={3}
                     />
-                    {hub.name}
+                    <span>{hub.name}</span>
+                    {hub.link && (
+                      <ArrowUpRight className={`h-2.5 w-2.5 opacity-60 ${isActive ? 'opacity-100 text-primary dark:text-[#E9BD36]' : ''}`} />
+                    )}
                   </motion.button>
                 );
               })}
             </div>
 
-            {/* Fixed-height active hub info panel with flawless Light & Dark UI */}
-            <div className="relative w-full h-16 overflow-hidden">
+            {/* Fixed-height active hub info panel with Link navigation */}
+            <div className="relative w-full min-h-[64px] overflow-hidden">
               <AnimatePresence mode="wait">
                 {selectedHubObj ? (
                   <motion.div
@@ -133,7 +143,7 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -6 }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
-                    className="absolute inset-0 flex items-center gap-3.5 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#161622] px-4 py-2 shadow-lg shadow-slate-900/5 dark:shadow-black/40 transition-colors"
+                    className="w-full flex items-center gap-3.5 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#161622] px-4 py-2.5 shadow-lg shadow-slate-900/5 dark:shadow-black/40 transition-colors"
                   >
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-white dark:bg-[#E9BD36] dark:text-[#080710] shadow-sm transition-colors">
                       <MapPin className="h-4 w-4" strokeWidth={2.5} />
@@ -146,18 +156,29 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
                         {selectedHubObj.focus}
                       </p>
                     </div>
-                    <span className="ml-auto shrink-0 text-[10px] font-mono font-bold tracking-wider text-[#0306AC] dark:text-[#E9BD36] uppercase whitespace-nowrap bg-[#EFF6FF] dark:bg-white/10 border border-[#0306AC]/20 dark:border-[#E9BD36]/20 px-2.5 py-1 rounded-lg">
-                      {selectedHubObj.timezone}
-                    </span>
+                    <div className="flex items-center gap-2 ml-auto shrink-0">
+                      <span className="text-[10px] font-mono font-bold tracking-wider text-[#0306AC] dark:text-[#E9BD36] uppercase whitespace-nowrap bg-[#EFF6FF] dark:bg-white/10 border border-[#0306AC]/20 dark:border-[#E9BD36]/20 px-2.5 py-1 rounded-lg">
+                        {selectedHubObj.timezone}
+                      </span>
+                      {selectedHubObj.link && (
+                        <a
+                          href={selectedHubObj.link}
+                          className="inline-flex items-center gap-1 text-[11px] font-bold text-white bg-primary hover:bg-primary/90 dark:bg-[#E9BD36] dark:text-black dark:hover:bg-[#E9BD36]/90 px-3 py-1 rounded-lg transition-all shadow-sm group/link cursor-pointer"
+                        >
+                          <span>Explore</span>
+                          <ArrowRight className="h-3 w-3 group-hover/link:translate-x-0.5 transition-transform" />
+                        </a>
+                      )}
+                    </div>
                   </motion.div>
                 ) : (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="absolute inset-0 flex items-center justify-center text-xs text-slate-400 dark:text-zinc-500 border border-dashed border-slate-200 dark:border-white/10 rounded-2xl px-4"
+                    className="w-full h-16 flex items-center justify-center text-xs text-slate-400 dark:text-zinc-500 border border-dashed border-slate-200 dark:border-white/10 rounded-2xl px-4"
                   >
-                    Hover or click any country or map pin to inspect regional operations
+                    Hover or click any location or map pin to inspect regional operations
                   </motion.div>
                 )}
               </AnimatePresence>
