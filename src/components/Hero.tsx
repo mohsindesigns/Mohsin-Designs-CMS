@@ -287,7 +287,7 @@ export default function Hero() {
                 duration: 0.6,
                 ease: "easeOut"
               }}
-              className="lg:col-span-5 relative flex justify-center items-end mt-8 lg:mt-0 z-10 cursor-pointer pointer-events-auto w-full will-change-transform"
+              className="lg:col-span-5 relative hidden lg:flex justify-center items-end mt-6 lg:mt-0 z-10 cursor-pointer pointer-events-auto w-full will-change-transform"
             >
               {/* Rotating Circle Badge */}
               <motion.div
