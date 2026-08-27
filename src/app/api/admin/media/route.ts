@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(newMedia);
   } catch (error: any) {
     console.error('Media upload error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ error: error?.message || 'Failed to upload media' }, { status: 500 });
   }
 }
 

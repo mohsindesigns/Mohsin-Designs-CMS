@@ -47,9 +47,13 @@ export default function MediaDashboard() {
         if (res.ok) {
           const newItem = await res.json();
           setMedia(prev => [newItem, ...prev]);
+        } else {
+          const errData = await res.json().catch(() => ({}));
+          alert(errData.error || "Upload failed");
         }
-      } catch (err) {
-        console.error("Upload failed");
+      } catch (err: any) {
+        console.error("Upload failed", err);
+        alert(err?.message || "Upload failed");
       }
     }
     setUploading(false);

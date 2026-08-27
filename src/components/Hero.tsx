@@ -25,11 +25,11 @@ export default function Hero() {
   const { hero } = content;
 
   // Extract variables with proper default fallbacks for CMS dynamicity
-  const badgeText = hero?.badge || hero?.badgeText || "Premium Exterior Solutions";
-  const titleLine1 = hero?.titleLine1 || "Exterior Remodeling";
-  const titleConnector = hero?.titleConnector || "with";
-  const titleLine2 = hero?.titleLine2 || "Honor & Precision";
-  const description = hero?.description || "Veteran-owned roofing & home improvement in St. Louis, MO.";
+  const badgeText = hero?.badge ?? hero?.badgeText ?? "Premium Exterior Solutions";
+  const titleLine1 = hero?.titleLine1 !== undefined ? hero.titleLine1 : (hero?.headline || "Exterior Remodeling");
+  const titleConnector = hero?.titleConnector !== undefined ? hero.titleConnector : "";
+  const titleLine2 = hero?.titleLine2 !== undefined ? hero.titleLine2 : (hero?.headlineHighlight || "Honor & Precision");
+  const description = hero?.description !== undefined ? hero.description : "Veteran-owned roofing & home improvement in St. Louis, MO.";
   
   // Resolve buttons dynamically from CMS array or fallback to defaults
   const buttonsList = (Array.isArray(hero?.buttons) && hero.buttons.length > 0)
@@ -177,7 +177,9 @@ export default function Hero() {
               variants={itemVariants}
               className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold leading-[1.1] tracking-tight text-brand-dark dark:text-white select-none"
             >
-              {titleLine1}{titleConnector ? ` ${titleConnector}` : ""}<br />
+              {titleLine1}
+              {titleConnector && titleConnector.trim() ? ` ${titleConnector.trim()}` : ""}
+              <br />
               <motion.span
                 whileHover="hover"
                 className="text-brand-blue dark:text-brand-yellow relative inline-block pointer-events-auto cursor-pointer"

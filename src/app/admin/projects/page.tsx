@@ -80,26 +80,45 @@ export default function ProjectsAdminPage() {
 
   const saveToDb = async (newProjects: any[]) => {
     setSaving(true);
-    const updatedData = { ...data, portfolio: { ...data.portfolio, projects: newProjects } };
+    const updatedData = { 
+      ...(data || {}), 
+      portfolio: { 
+        ...(data?.portfolio || {}), 
+        projects: newProjects 
+      } 
+    };
     try {
-      const res = await fetch("/api/content", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(updatedData) });
+      const res = await fetch("/api/content", { 
+        method: "PUT", 
+        headers: { "Content-Type": "application/json" }, 
+        body: JSON.stringify(updatedData) 
+      });
       if (res.ok) {
         setData(updatedData);
         setProjects(newProjects);
-        setToast({ type: "ok", msg: "Projects updated." });
+        setToast({ type: "ok", msg: "Projects saved successfully." });
         setTimeout(() => setToast(null), 3000);
         setIsEditing(null);
+      } else {
+        const errJson = await res.json().catch(() => ({}));
+        setToast({ type: "err", msg: errJson.error || errJson.details || "Error saving projects." });
       }
-    } catch {
-      setToast({ type: "err", msg: "Error saving." });
-    } finally { setSaving(false); }
+    } catch (err: any) {
+      setToast({ type: "err", msg: err?.message || "Error saving projects." });
+    } finally { 
+      setSaving(false); 
+    }
   };
 
   const handleSaveProject = () => {
-    if (!form.title || !form.image) return alert("Project title and image are required!");
+    if (!form.title.trim()) {
+      alert("Project title is required!");
+      return;
+    }
     const newProjects = [...projects];
-    if (isEditing !== null && isEditing < projects.length) newProjects[isEditing] = { ...form };
-    else {
+    if (isEditing !== null && isEditing < projects.length) {
+      newProjects[isEditing] = { ...form };
+    } else {
       const number = String(newProjects.length + 1).padStart(2, '0');
       newProjects.push({ ...form, number });
     }

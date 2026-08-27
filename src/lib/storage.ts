@@ -14,12 +14,20 @@ export async function uploadFile(file: File, buffer: Buffer): Promise<{ url: str
   // Parse CLOUDINARY_URL if provided
   if (cloudinaryUrl && !cloudName) {
     try {
-      const url = new URL(cloudinaryUrl);
-      cloudName = url.hostname;
-      apiKey = url.username;
-      apiSecret = url.password;
+      const trimmed = cloudinaryUrl.trim().replace(/^["']|["']$/g, '');
+      const match = trimmed.match(/^cloudinary:\/\/([^:]+):([^@]+)@([^\/\s]+)/);
+      if (match) {
+        apiKey = match[1];
+        apiSecret = match[2];
+        cloudName = match[3];
+      } else {
+        const url = new URL(trimmed);
+        cloudName = url.hostname;
+        apiKey = url.username;
+        apiSecret = url.password;
+      }
     } catch (err) {
-      console.error('Failed to parse CLOUDINARY_URL');
+      console.error('Failed to parse CLOUDINARY_URL:', err);
     }
   }
 
@@ -75,17 +83,23 @@ export async function uploadFile(file: File, buffer: Buffer): Promise<{ url: str
     }
   }
 
-  // Fallback to local storage (Supported on Hostinger VPS)
+  // Fallback to local storage (Supported in local development or VPS with writable disk)
+  try {
+    const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+    
+    await mkdir(uploadDir, { recursive: true });
+    const filePath = path.join(uploadDir, filename);
+    await writeFile(filePath, buffer);
 
-  const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-  const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-  
-  await mkdir(uploadDir, { recursive: true });
-  const filePath = path.join(uploadDir, filename);
-  await writeFile(filePath, buffer);
-
-  return {
-    url: `/uploads/${filename}`,
-    publicId: filename
-  };
+    return {
+      url: `/uploads/${filename}`,
+      publicId: filename
+    };
+  } catch (fsError: any) {
+    console.error('Local filesystem write failed:', fsError.message);
+    throw new Error(
+      'Image upload failed: The server filesystem is read-only or inaccessible. In production environments (like Vercel/Netlify/Serverless), you must configure Cloudinary environment variables (CLOUDINARY_URL or CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET) in your hosting dashboard.'
+    );
+  }
 }

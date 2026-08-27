@@ -58,9 +58,12 @@ export default function MediaSelector({ onSelect, onClose, title = "Select Asset
         // Switch to library tab and select the new item
         setActiveTab('library');
         setSelectedItem(newItem);
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        alert(errData.error || "Upload failed");
       }
-    } catch (err) {
-      alert("Upload failed");
+    } catch (err: any) {
+      alert(err?.message || "Upload failed");
     } finally {
       setUploading(false);
     }

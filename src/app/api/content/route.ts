@@ -27,7 +27,10 @@ export async function GET() {
 
 export async function PUT(req: NextRequest) {
   const session = await getSessionUser(req);
-  if (!(await hasPermission(req, 'settings', 'update'))) {
+  const canUpdateSettings = await hasPermission(req, 'settings', 'update');
+  const canUpdatePages = await hasPermission(req, 'pages', 'update');
+
+  if (!canUpdateSettings && !canUpdatePages) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
   }
 
@@ -49,11 +52,37 @@ export async function PUT(req: NextRequest) {
       { upsert: true }
     );
 
+    // Sync portfolio to Home Page document in MongoDB so it never gets overridden by stale page data
+    if (sanitizedBody?.portfolio) {
+      try {
+        const Page = (await import('@/models/Page')).default;
+        await Page.updateMany(
+          { $or: [{ slug: 'home' }, { template: 'home' }, { slug: '/' }] },
+          { $set: { "content.portfolio": sanitizedBody.portfolio } }
+        );
+      } catch (syncErr) {
+        console.warn('Could not sync portfolio to Home Page doc:', syncErr);
+      }
+    }
+
+    // Sync galleryPage to Gallery Page document in MongoDB
+    if (sanitizedBody?.galleryPage) {
+      try {
+        const Page = (await import('@/models/Page')).default;
+        await Page.updateMany(
+          { $or: [{ slug: 'gallery' }, { template: 'gallery' }] },
+          { $set: { "content.galleryPage": sanitizedBody.galleryPage } }
+        );
+      } catch (syncErr) {
+        console.warn('Could not sync galleryPage to Gallery Page doc:', syncErr);
+      }
+    }
+
     await recordActivity({
-      user: (session as any).userId,
-      userName: (session as any).username,
-      action: 'UPDATE_SETTINGS',
-      entity: 'Settings',
+      user: (session as any)?.userId || 'admin',
+      userName: (session as any)?.username || 'Admin',
+      action: 'UPDATE_CONTENT',
+      entity: 'Content',
       details: {
         before: { siteTitle: oldContent?.data?.settings?.siteTitle },
         after: { siteTitle: body?.settings?.siteTitle },
