@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     Post.findOne({
       $or: [{ slug }, { _id: slug.match(/^[0-9a-fA-F]{24}$/) ? slug : null }],
       status: "published"
-    }).populate("categories author"),
+    }).populate("categories"),
     SiteContent.findOne({ key: 'complete_data' }).lean() as any
   ]);
 
@@ -97,7 +97,7 @@ export default async function BlogPostPage({ params }: Props) {
     $or: [{ slug }, { _id: slug.match(/^[0-9a-fA-F]{24}$/) ? slug : null }],
     status: "published"
   })
-    .populate("categories tags author")
+    .populate("categories tags")
     .lean();
 
   if (!post) notFound();
@@ -149,7 +149,7 @@ export default async function BlogPostPage({ params }: Props) {
     _id: { $ne: post._id },
     status: "published"
   })
-    .populate("categories author")
+    .populate("categories")
     .sort({ publishedAt: -1, createdAt: -1 })
     .limit(3)
     .lean();

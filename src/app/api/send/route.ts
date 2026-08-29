@@ -8,7 +8,7 @@ import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   try {
@@ -219,6 +219,7 @@ Source: Website
     `;
 
     // Send email using Resend
+    const resend = new Resend(process.env.RESEND_API_KEY || 're_placeholder');
     const { data: resendData, error: resendError } = await resend.emails.send({
       from: 'Mohsin Designs <onboarding@resend.dev>',
       to: [receiverEmail],

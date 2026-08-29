@@ -56,7 +56,7 @@ export default async function BlogIndexPage() {
     Page.findOne({ slug: { $in: ['blog', '/blog'] } }).lean() as any,
     SiteContent.findOne({ key: 'complete_data' }).lean() as any,
     Post.find({ status: 'published' })
-      .populate('categories author')
+      .populate('categories')
       .sort({ publishedAt: -1 })
       .lean(),
     Category.find({}).lean()

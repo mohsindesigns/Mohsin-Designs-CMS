@@ -9,7 +9,7 @@ const PostSchema = new Schema({
   content: { type: String, required: true }, // HTML from Tiptap
   excerpt: { type: String },
   featuredImage: { type: String },
-  author: { type: Schema.Types.ObjectId, ref: 'User' },
+  author: { type: Schema.Types.Mixed, ref: 'User' },
   categories: [{ type: Schema.Types.ObjectId, ref: 'Category' }],
   tags: [{ type: Schema.Types.ObjectId, ref: 'Tag' }],
   location: { type: String, default: '' },

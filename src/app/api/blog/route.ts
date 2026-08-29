@@ -11,7 +11,6 @@ export async function GET() {
     // Fetch only published posts
     const posts = await Post.find({ status: 'published' })
       .populate('categories', 'name')
-      .populate('author', 'name')
       .sort({ publishedAt: -1 })
       .lean();
     
