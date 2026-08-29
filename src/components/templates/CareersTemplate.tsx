@@ -114,8 +114,20 @@ ${message}
               <div className="w-8 h-[2px] bg-gradient-to-r from-blue-500 to-blue-300" />
             </motion.div>
             <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-4xl md:text-7xl font-light text-slate-900 mb-6 leading-tight">
-              {careersData?.section?.headline?.split('with')[0]} <br />
-              <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-900">{careersData?.section?.headline?.split('with')[1]}</span>
+              {(() => {
+                const rawHeadline = careersData?.section?.headline || "Build the Future with Us";
+                const parts = rawHeadline.includes('with') ? rawHeadline.split('with') : [rawHeadline, ""];
+                return (
+                  <>
+                    {parts[0]} {parts[1] ? <br /> : null}
+                    {parts[1] && (
+                      <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-900">
+                        {parts[1]}
+                      </span>
+                    )}
+                  </>
+                );
+              })()}
             </motion.h1>
             <div className="text-slate-600 text-lg md:text-xl font-light max-w-2xl mx-auto px-4">
               <RichTextRenderer content={careersData?.section?.description} />

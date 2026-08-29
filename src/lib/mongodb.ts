@@ -27,10 +27,10 @@ async function connectToDatabase() {
 
   if (!cached.promise) {
     const opts = {
-      bufferCommands: false,
+      bufferCommands: true,
       dbName: process.env.MONGODB_DB || MONGODB_DB,
-      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of hanging build
-      connectTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 15000,
+      connectTimeoutMS: 15000,
     };
 
     cached.promise = mongoose.connect(uri, opts).then((mongooseInstance) => {
@@ -38,7 +38,7 @@ async function connectToDatabase() {
     }).catch((err) => {
       cached.promise = null;
       console.error('Failed to connect to MongoDB:', err?.message || err);
-      return null;
+      throw err;
     });
   }
 

@@ -115,7 +115,8 @@ const TeamPortrait = ({ image, title, badge1, badge2, alignRight = false }: any)
 export default function TeamTemplate({ pageData, params }: { pageData?: any, params?: any }) {
   const sectionRef = useRef<any>(null);
   const [isClient, setIsClient] = useState(false);
-  const { team: teamData } = useContent();
+  const { team: globalTeamData } = useContent();
+  const teamData = pageData?.content?.team || globalTeamData;
 
   useEffect(() => {
     setIsClient(true);
@@ -129,7 +130,8 @@ export default function TeamTemplate({ pageData, params }: { pageData?: any, par
     return () => ctx.revert();
   }, [isClient]);
 
-  if (!isClient) return null;
+  const rawHeadline = teamData?.section?.headline || "Leadership & Engineering Team";
+  const headlineParts = rawHeadline.includes('with') ? rawHeadline.split('with') : [rawHeadline, ""];
 
   return (
     <main className="bg-white">
@@ -158,10 +160,12 @@ export default function TeamTemplate({ pageData, params }: { pageData?: any, par
                 </>
               ) : (
                 <>
-                  {teamData?.section?.headline?.split('with')[0]} <br />
-                  <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-950">
-                    {teamData?.section?.headline?.split('with')[1]}
-                  </span>
+                  {headlineParts[0]} {headlineParts[1] ? <br /> : null}
+                  {headlineParts[1] && (
+                    <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-950">
+                      {headlineParts[1]}
+                    </span>
+                  )}
                 </>
               )}
             </h1>

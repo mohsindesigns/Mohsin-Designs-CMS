@@ -15,6 +15,7 @@ import LocationTemplate from './LocationTemplate';
 import BlogTemplate from './BlogTemplate';
 import CountryTemplate from './CountryTemplate';
 import StateTemplate from './StateTemplate';
+import IndustryTemplate from './IndustryTemplate';
 import PageInlineFaqs from '../PageInlineFaqs';
 
 import { ContentProvider } from "@/context/ContentContext";
@@ -37,6 +38,8 @@ export const TEMPLATE_MAP: Record<string, React.ComponentType<any>> = {
   'blog': BlogTemplate,
   'country': CountryTemplate,
   'state': StateTemplate,
+  'industry': IndustryTemplate,
+  'industries': IndustryTemplate,
 };
 
 export const getTemplate = (name: string) => {
@@ -46,7 +49,7 @@ export const getTemplate = (name: string) => {
 export const TemplateWrapper = ({ templateName, pageData, globalData, params }: any) => {
   const Template = getTemplate(templateName);
 
-  const hasInlineFaqs = !['home', 'faq', 'service-detail', 'about', 'service-area', 'location', 'locations', 'services', 'contact', 'blog', 'country', 'state'].includes(templateName) &&
+  const hasInlineFaqs = !['home', 'faq', 'service-detail', 'about', 'service-area', 'location', 'locations', 'services', 'contact', 'blog', 'country', 'state', 'industry', 'industries'].includes(templateName) &&
     ((pageData?.content?.faqs && Array.isArray(pageData.content.faqs) && pageData.content.faqs.length > 0) ||
       (pageData?.content?.faqSchemaMarkup && typeof pageData.content.faqSchemaMarkup === 'string' && pageData.content.faqSchemaMarkup.trim()));
 

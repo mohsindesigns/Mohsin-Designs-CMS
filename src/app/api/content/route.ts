@@ -4,6 +4,7 @@ import SiteContent from '@/models/Content';
 import { hasPermission, getSessionUser } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
 import { sanitizeEncoding } from '@/lib/utils';
+import contentDefaults from '@/data/content.json';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
@@ -11,17 +12,17 @@ export async function GET() {
     await connectToDatabase();
     
     // Target the specific key we seeded
-    const content = await SiteContent.findOne({ key: 'complete_data' });
+    const content = await SiteContent.findOne({ key: 'complete_data' }).lean();
     
-    if (!content) {
-      console.warn('Content not found in MongoDB, key: complete_data');
-      return NextResponse.json({ error: 'Content not found' }, { status: 404 });
+    if (!content || !content.data) {
+      console.warn('Content not found in MongoDB, returning fallback defaults from content.json');
+      return NextResponse.json(contentDefaults);
     }
     
     return NextResponse.json(content.data);
   } catch (error: any) {
-    console.error('Content fetch error:', error);
-    return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500 });
+    console.error('Content fetch error (falling back to contentDefaults):', error);
+    return NextResponse.json(contentDefaults);
   }
 }
 

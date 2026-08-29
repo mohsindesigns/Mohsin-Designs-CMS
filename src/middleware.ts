@@ -10,15 +10,15 @@ const PUBLIC_PATHS = [
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  console.log("=== MIDDLEWARE PATHNAME ===", pathname);
 
-  // 1. Check for global redirects (only for public pages, not API, admin, next assets, uploads)
+  // 1. Check for global redirects (only for public HTML pages, not API, admin, assets, dev tools)
   if (
     !pathname.startsWith('/admin') &&
     !pathname.startsWith('/api') &&
     !pathname.startsWith('/_next') &&
     !pathname.startsWith('/uploads') &&
     !pathname.startsWith('/assets') &&
+    !pathname.startsWith('/json') &&
     pathname !== '/favicon.ico' &&
     pathname !== '/sitemap.xml' &&
     pathname !== '/robots.txt' &&
@@ -26,17 +26,20 @@ export async function middleware(req: NextRequest) {
     pathname !== '/llms.tsxt'
   ) {
     try {
-      // Use INTERNAL_API_URL to avoid external round-trip through Cloudflare in production.
-      // In local dev this falls back to the request origin (e.g. http://localhost:3000).
       const internalBase = process.env.INTERNAL_API_URL || new URL('/', req.url).origin;
       const matchUrl = new URL('/api/redirects/match', internalBase);
       matchUrl.searchParams.set('url', pathname + req.nextUrl.search);
       
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 800);
+
       const res = await fetch(matchUrl.toString(), {
         headers: {
           'x-internal-request': 'true'
-        }
+        },
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
       
       if (res.ok) {
         const redirectData = await res.json();
@@ -48,8 +51,8 @@ export async function middleware(req: NextRequest) {
           return NextResponse.redirect(target, redirectData.statusCode || 301);
         }
       }
-    } catch (err) {
-      console.error('Middleware redirect check error:', err);
+    } catch {
+      // Graceful bypass if internal API is busy or unreached
     }
   }
 

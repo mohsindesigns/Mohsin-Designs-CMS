@@ -418,6 +418,7 @@ export default function PagesDashboard() {
                     className="w-full border border-[#8c8f94] bg-white px-2 py-1.5 text-[14px] rounded-[3px] outline-none"
                   >
                     <option value="home">Home Template</option>
+                    <option value="industry">Industry Template</option>
                     <option value="new-about">New About Template</option>
                     <option value="services">Services Template</option>
                     <option value="team">Team Template</option>
@@ -491,6 +492,7 @@ export default function PagesDashboard() {
                         className="w-full border border-[#8c8f94] bg-white px-2 py-1 text-[13px] rounded-[3px] outline-none"
                       >
                         <option value="home">Home Template</option>
+                        <option value="industry">Industry Template</option>
                         <option value="new-about">New About Template</option>
                         <option value="services">Services Template</option>
                         <option value="team">Team Template</option>

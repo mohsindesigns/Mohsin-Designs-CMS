@@ -19,4 +19,6 @@ export const TemplateEditors: Record<string, any> = {
   locations: dynamic(() => import('./LocationEditor')),
   country: dynamic(() => import('./CountryEditor')),
   state: dynamic(() => import('./StateEditor')),
+  industry: dynamic(() => import('./IndustryEditor')),
+  industries: dynamic(() => import('./IndustryEditor')),
 };
