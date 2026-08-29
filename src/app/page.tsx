@@ -119,6 +119,11 @@ export default async function Index() {
     (item.visibility === 'specific' && item.targetPages?.includes('home'))
   );
 
+  // Find published blog posts to provide to ContentProvider
+  const Post = (await import("@/models/Post")).default;
+  const postsDoc = await Post.find({ status: 'published' }).sort({ publishedAt: -1 }).limit(10).lean();
+  const initialBlogs = postsDoc ? JSON.parse(JSON.stringify(postsDoc)) : [];
+
   if (homepageId) {
     // Check if it's a page
     // Check if it's a page and ensure it's published and not trashed
@@ -150,6 +155,7 @@ export default async function Index() {
               }
             }} 
             globalData={content?.data || {}}
+            initialBlogs={initialBlogs}
             params={Promise.resolve({ slug: ['/'] })} 
           />
         </>
@@ -188,11 +194,6 @@ export default async function Index() {
   }).lean();
 
   const homePage = defaultHomePageDoc ? JSON.parse(JSON.stringify(defaultHomePageDoc)) : null;
-
-  // Find published blog posts to provide to ContentProvider
-  const Post = (await import("@/models/Post")).default;
-  const postsDoc = await Post.find({ status: 'published' }).sort({ publishedAt: -1 }).limit(10).lean();
-  const initialBlogs = postsDoc ? JSON.parse(JSON.stringify(postsDoc)) : [];
 
   const schema = generateSchema({
     title: homePage?.seo?.metaTitle || homePage?.title || settings?.siteTitle || "Mohsin Designs",
