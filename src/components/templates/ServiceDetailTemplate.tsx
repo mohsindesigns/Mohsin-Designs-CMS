@@ -616,7 +616,6 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       titleIntro: dbService?.industries?.titleIntro || "Industries",
       titleHighlight: dbService?.industries?.titleHighlight || "We Specialize In",
       description: dbService?.industries?.description || "Every industry has distinct compliance, customer acquisition funnels, and technical requirements. We tailor our engineering to your exact vertical.",
-      footerLeft: dbService?.industries?.footerLeft || "Target Sector",
       footerLeft: dbService?.industries?.footerLeft,
       footerRight: dbService?.industries?.footerRight,
       list: (Array.isArray(dbService?.industries?.list) && dbService.industries.list.length > 0)
