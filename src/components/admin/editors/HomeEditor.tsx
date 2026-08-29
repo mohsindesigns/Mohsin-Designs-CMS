@@ -411,7 +411,184 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                            onSelect={(items) => updateSection("services", "list", items)}
                         />
                      </div>
+                  </div>
+               )}
 
+               {/* INDUSTRIES WE SERVE SECTION */}
+               {activeTab === "industries" && (
+                  <div className="space-y-12">
+                     <div className="space-y-6">
+                        <h3 className={UI.sectionHeader}>1. Section Header & Narrative</h3>
+                        <div className="space-y-1.5">
+                           <label className={UI.label}>Badge / Tag (Eyebrow)</label>
+                           <input
+                              type="text"
+                              value={data.industries?.eyebrow || data.industries?.sectionTag || "08 // SECTORS WE ACCELERATE"}
+                              onChange={(e) => updateSection("industries", "eyebrow", e.target.value)}
+                              className={UI.input}
+                              placeholder="e.g. 08 // SECTORS WE ACCELERATE"
+                           />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Title Intro (Plain)</label>
+                              <input
+                                 type="text"
+                                 value={data.industries?.titleIntro || "Industries"}
+                                 onChange={(e) => updateSection("industries", "titleIntro", e.target.value)}
+                                 className={UI.input}
+                                 placeholder="e.g. Industries"
+                              />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Title Highlight <span className="text-[#2271b1] font-bold">(accent italic)</span></label>
+                              <input
+                                 type="text"
+                                 value={data.industries?.titleHighlight || data.industries?.title || "We Specialize In"}
+                                 onChange={(e) => updateSection("industries", "titleHighlight", e.target.value)}
+                                 className={UI.input + " font-bold border-[#2271b1] text-[#2271b1]"}
+                                 placeholder="e.g. We Specialize In"
+                              />
+                           </div>
+                        </div>
+                        <div className="space-y-1.5">
+                           <label className={UI.label}>Section Description</label>
+                           <textarea
+                              rows={3}
+                              value={data.industries?.description || "Every industry has distinct compliance, customer acquisition funnels, and technical requirements. We tailor our engineering to your exact vertical."}
+                              onChange={(e) => updateSection("industries", "description", e.target.value)}
+                              className={UI.input}
+                              placeholder="e.g. Vertical-specific expertise..."
+                           />
+                        </div>
+                     </div>
+
+                     {/* Industry Sector Cards */}
+                     <div className="space-y-6 pt-8 border-t border-[#f0f0f1]">
+                        <div className="flex items-center justify-between">
+                           <h3 className={UI.sectionHeader}>2. Industry Sector Cards</h3>
+                           <button
+                              type="button"
+                              onClick={() => {
+                                 const current = Array.isArray(data.industries?.list)
+                                    ? data.industries.list
+                                    : (Array.isArray(data.industries?.items) ? data.industries.items : []);
+                                 updateSection("industries", "list", [
+                                    ...current,
+                                    { title: "New Industry Sector", desc: "Industry overview and expertise.", iconName: "Building2", watermark: "IN" }
+                                 ]);
+                              }}
+                              className={UI.buttonAdd}
+                           >
+                              + Add Industry
+                           </button>
+                        </div>
+
+                        <div className="space-y-4">
+                           {((Array.isArray(data.industries?.list) && data.industries.list.length > 0)
+                              ? data.industries.list
+                              : (Array.isArray(data.industries?.items) && data.industries.items.length > 0
+                                 ? data.industries.items
+                                 : [
+                                    { title: "Home Services & Contracting", desc: "Roofing, decking, remodeling, and local trade contractors scaling regional territories.", iconName: "Building2", watermark: "HS" },
+                                    { title: "Technology & SaaS", desc: "Fast-growth software startups and tech firms demanding high conversion rates.", iconName: "Cpu", watermark: "TS" },
+                                    { title: "Commercial Real Estate", desc: "Property developers, architectural firms, and luxury real estate agencies.", iconName: "Building2", watermark: "CR" },
+                                    { title: "E-Commerce & Retail", desc: "Direct-to-consumer and B2B brands scaling transactions with seamless checkout.", iconName: "ShoppingCart", watermark: "EC" },
+                                    { title: "Professional Services", desc: "Law firms, financial consultancies, and executive agencies building trust.", iconName: "Briefcase", watermark: "PS" },
+                                    { title: "Healthcare & Wellness", desc: "Clinics, medical practices, and private health facilities seeking patient acquisition.", iconName: "Heart", watermark: "HW" }
+                                 ])
+                           ).map((ind: any, idx: number) => {
+                              const currentList = (Array.isArray(data.industries?.list) && data.industries.list.length > 0)
+                                 ? data.industries.list
+                                 : (Array.isArray(data.industries?.items) && data.industries.items.length > 0
+                                    ? data.industries.items
+                                    : [
+                                       { title: "Home Services & Contracting", desc: "Roofing, decking, remodeling, and local trade contractors scaling regional territories.", iconName: "Building2", watermark: "HS" },
+                                       { title: "Technology & SaaS", desc: "Fast-growth software startups and tech firms demanding high conversion rates.", iconName: "Cpu", watermark: "TS" },
+                                       { title: "Commercial Real Estate", desc: "Property developers, architectural firms, and luxury real estate agencies.", iconName: "Building2", watermark: "CR" },
+                                       { title: "E-Commerce & Retail", desc: "Direct-to-consumer and B2B brands scaling transactions with seamless checkout.", iconName: "ShoppingCart", watermark: "EC" },
+                                       { title: "Professional Services", desc: "Law firms, financial consultancies, and executive agencies building trust.", iconName: "Briefcase", watermark: "PS" },
+                                       { title: "Healthcare & Wellness", desc: "Clinics, medical practices, and private health facilities seeking patient acquisition.", iconName: "Heart", watermark: "HW" }
+                                    ]);
+                              return (
+                                 <div key={idx} className={UI.card + " space-y-4"}>
+                                    <div className="flex items-center justify-between border-b border-[#f0f0f1] pb-2">
+                                       <span className="text-[10px] font-bold text-[#646970] uppercase">Sector #{idx + 1}</span>
+                                       <button
+                                          type="button"
+                                          onClick={() => {
+                                             const list = currentList.filter((_: any, i: number) => i !== idx);
+                                             updateSection("industries", "list", list);
+                                          }}
+                                          className="text-[#d63638] hover:text-[#b32d2e] p-1"
+                                       >
+                                          <Trash2 className="w-3.5 h-3.5" />
+                                       </button>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                       <div className="space-y-1.5 sm:col-span-2">
+                                          <label className={UI.label}>Sector Title</label>
+                                          <input
+                                             type="text"
+                                             value={ind.title || ""}
+                                             onChange={(e) => {
+                                                const list = [...currentList];
+                                                list[idx] = { ...list[idx], title: e.target.value };
+                                                updateSection("industries", "list", list);
+                                             }}
+                                             className={UI.input + " font-bold"}
+                                             placeholder="e.g. Healthcare & Life Sciences"
+                                          />
+                                       </div>
+                                       <div className="space-y-1.5">
+                                          <label className={UI.label}>Watermark (2 Letters)</label>
+                                          <input
+                                             type="text"
+                                             maxLength={3}
+                                             value={ind.watermark || ""}
+                                             onChange={(e) => {
+                                                const list = [...currentList];
+                                                list[idx] = { ...list[idx], watermark: e.target.value };
+                                                updateSection("industries", "list", list);
+                                             }}
+                                             className={UI.input + " font-mono uppercase text-center font-bold"}
+                                             placeholder="e.g. HL"
+                                          />
+                                       </div>
+                                    </div>
+
+                                    <div className="space-y-1.5">
+                                       <label className={UI.label}>Card Icon</label>
+                                       <IconSelector
+                                          value={ind.iconName || "Building2"}
+                                          onChange={(icon) => {
+                                             const list = [...currentList];
+                                             list[idx] = { ...list[idx], iconName: icon };
+                                             updateSection("industries", "list", list);
+                                          }}
+                                       />
+                                    </div>
+
+                                    <div className="space-y-1.5">
+                                       <label className={UI.label}>Description</label>
+                                       <textarea
+                                          rows={2}
+                                          value={ind.desc || ind.description || ""}
+                                          onChange={(e) => {
+                                             const list = [...currentList];
+                                             list[idx] = { ...list[idx], desc: e.target.value, description: e.target.value };
+                                             updateSection("industries", "list", list);
+                                          }}
+                                          className={UI.input}
+                                          placeholder="Description of the solutions provided for this industry..."
+                                       />
+                                    </div>
+                                 </div>
+                              );
+                           })}
+                        </div>
+                     </div>
                   </div>
                )}
 

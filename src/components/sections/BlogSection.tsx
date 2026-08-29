@@ -116,18 +116,23 @@ export default function BlogSection({
 
   // Resolve posts strictly from props, or page-specific selectedPosts
   let activePosts: BlogPost[] = [];
-  if (Array.isArray(propPosts)) {
+  if (Array.isArray(propPosts) && propPosts.length > 0) {
     activePosts = propPosts;
-  } else if (Array.isArray(rawBlog.selectedPosts) && Array.isArray(content.allBlogs)) {
-    activePosts = content.allBlogs.filter((p: any) => rawBlog.selectedPosts.includes(p._id));
-  } else if (Array.isArray(content.allBlogs) && content.allBlogs.length > 0 && !overrideData) {
-    // Only default to first 4 blogs if on generic blog page without specific configuration
+  } else if (Array.isArray(rawBlog.selectedPosts) && rawBlog.selectedPosts.length > 0 && Array.isArray(content.allBlogs)) {
+    const matched = content.allBlogs.filter((p: any) => 
+      rawBlog.selectedPosts.includes(p._id) || 
+      rawBlog.selectedPosts.includes(p.id) || 
+      rawBlog.selectedPosts.includes(p.slug)
+    );
+    if (matched.length > 0) activePosts = matched;
+  }
+  
+  if (activePosts.length === 0 && Array.isArray(content.allBlogs) && content.allBlogs.length > 0) {
     activePosts = content.allBlogs.slice(0, 4);
   }
 
-  // If no posts are chosen or available for this section, do not display ghost content
   if (activePosts.length === 0) {
-    return null;
+    activePosts = defaultPosts;
   }
 
   // Helper to extract clean text from blog post content or SEO description

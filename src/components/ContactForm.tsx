@@ -194,17 +194,34 @@ export default function ContactForm({ data }: { data?: any }) {
                 </a>
 
                 {/* Location Item */}
-                <div className="flex items-center gap-4 p-2.5 rounded-2xl">
-                  <div className="w-10 h-10 rounded-xl bg-brand-blue/10 dark:bg-brand-yellow/10 border border-brand-blue/20 dark:border-brand-yellow/20 flex items-center justify-center text-brand-blue dark:text-brand-yellow shrink-0">
-                    <MapPin className="w-4 h-4" />
+                {contact.locationHref || contact.locationLink || contact.addressLink ? (
+                  <a
+                    href={contact.locationHref || contact.locationLink || contact.addressLink}
+                    className="flex items-center gap-4 group/item p-2.5 rounded-2xl hover:bg-brand-blue/5 dark:hover:bg-white/5 transition-colors"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-brand-blue/10 dark:bg-brand-yellow/10 border border-brand-blue/20 dark:border-brand-yellow/20 flex items-center justify-center text-brand-blue dark:text-brand-yellow group-hover/item:scale-105 transition-transform shrink-0">
+                      <MapPin className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <span className="block text-[9px] font-mono font-bold text-brand-zinc-400 uppercase tracking-wider">{contact.locationLabel || "LOCATION"}</span>
+                      <span className="text-xs font-black text-brand-dark dark:text-white group-hover/item:text-brand-blue dark:group-hover/item:text-brand-yellow transition-colors font-mono block">
+                        {contact.location}
+                      </span>
+                    </div>
+                  </a>
+                ) : (
+                  <div className="flex items-center gap-4 p-2.5 rounded-2xl">
+                    <div className="w-10 h-10 rounded-xl bg-brand-blue/10 dark:bg-brand-yellow/10 border border-brand-blue/20 dark:border-brand-yellow/20 flex items-center justify-center text-brand-blue dark:text-brand-yellow shrink-0">
+                      <MapPin className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <span className="block text-[9px] font-mono font-bold text-brand-zinc-400 uppercase tracking-wider">{contact.locationLabel || "LOCATION"}</span>
+                      <span className="text-xs font-black text-brand-dark dark:text-white font-mono block">
+                        {contact.location}
+                      </span>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <span className="block text-[9px] font-mono font-bold text-brand-zinc-400 uppercase tracking-wider">{contact.locationLabel}</span>
-                    <span className="text-xs font-black text-brand-dark dark:text-white font-mono block">
-                      {contact.location}
-                    </span>
-                  </div>
-                </div>
+                )}
 
                 {/* Phone Item */}
                 <a

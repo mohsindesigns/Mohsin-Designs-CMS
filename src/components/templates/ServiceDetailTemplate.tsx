@@ -624,11 +624,13 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       description: dbService?.industries?.description || "Every industry has distinct compliance, customer acquisition funnels, and technical requirements. We tailor our engineering to your exact vertical.",
       footerLeft: dbService?.industries?.footerLeft || "Target Sector",
       footerRight: dbService?.industries?.footerRight || "Verified Optimization",
-      list: (dbService?.industries?.list && dbService.industries.list.length > 0)
+      list: (Array.isArray(dbService?.industries?.list) && dbService.industries.list.length > 0)
         ? dbService.industries.list
         : (Array.isArray(dbService?.industries?.items) && dbService.industries.items.length > 0)
           ? dbService.industries.items
-          : [
+          : (Array.isArray(dbService?.industries) && dbService.industries.length > 0)
+            ? dbService.industries
+            : [
               { title: "Home Services & Contracting", desc: "Roofing, decking, remodeling, and local trade contractors scaling regional territories.", watermark: "HS" },
               { title: "Technology & SaaS", desc: "Fast-growth software startups and tech firms demanding high conversion rates.", watermark: "TS" },
               { title: "Commercial Real Estate", desc: "Property developers, architectural firms, and luxury real estate agencies.", watermark: "CR" },
@@ -642,9 +644,13 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       titleIntro: dbService?.tools?.titleIntro || "Modern",
       titleHighlight: dbService?.tools?.titleHighlight || "Frameworks & Tools",
       description: dbService?.tools?.description || "High-performance frameworks and analytics systems driving client ROI metrics.",
-      list: (dbService?.tools?.list && dbService.tools.list.length > 0)
+      list: (Array.isArray(dbService?.tools?.list) && dbService.tools.list.length > 0)
         ? dbService.tools.list
-        : [
+        : (Array.isArray(dbService?.tools?.items) && dbService.tools.items.length > 0)
+          ? dbService.tools.items
+          : (Array.isArray(dbService?.tools) && dbService.tools.length > 0)
+            ? dbService.tools
+            : [
             { name: "Next.js", iconName: "Monitor", tag: "CORE DEV", desc: "Headless rendering backend with automatic static optimization and route pre-fetching." },
             { name: "React.js", iconName: "Cpu", tag: "FRONTEND", desc: "Modular, reactive front-end library built for speedy interaction states." },
             { name: "Tailwind CSS", iconName: "Palette", tag: "STYLING", desc: "Utility-first CSS compiler to keep stylesheet sizes down and performance high." },
@@ -897,9 +903,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-              className="lg:col-span-5 flex justify-center w-full"
+              className="lg:col-span-5 flex justify-center lg:justify-end w-full"
             >
-              <div id="contact-form" className="contact-card-glass p-4.5 xs:p-6 sm:p-7 rounded-[24px] xs:rounded-[30px] shadow-2xl relative border border-brand-zinc-200/95 dark:border-white/10 overflow-hidden w-full max-w-[420px]">
+              <div id="contact-form" className="contact-card-glass p-4.5 xs:p-6 sm:p-7 rounded-[24px] xs:rounded-[30px] shadow-2xl relative border border-brand-zinc-200/95 dark:border-white/10 overflow-hidden w-full max-w-[390px]">
                 <div className="mb-4 text-left">
                   <h2 className="font-heading text-xl sm:text-2xl font-extrabold text-brand-dark dark:text-white leading-tight">
                     {service.hero.formHeading || "Request a Free Audit"}
@@ -1143,9 +1149,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                   </div>
                 </div>
 
-                {Array.isArray(pillar.features) && pillar.features.length > 0 && (
+                {Array.isArray(pillar.features) && pillar.features.filter((f: any) => f && typeof f === 'string' && f.trim().length > 0).length > 0 && (
                   <ul className="space-y-2.5 pt-5 mt-5 border-t border-brand-zinc-150 dark:border-white/5 text-left">
-                    {pillar.features.map((feature: string, fIdx: number) => (
+                    {pillar.features.filter((f: any) => f && typeof f === 'string' && f.trim().length > 0).map((feature: string, fIdx: number) => (
                       <li key={fIdx} className="flex items-center gap-2.5 text-xs text-brand-zinc-655 dark:text-zinc-355 font-bold group/item">
                         <span className="w-5 h-5 rounded-full bg-brand-blue/10 dark:bg-brand-yellow/10 text-brand-blue dark:text-brand-yellow flex items-center justify-center shrink-0 border border-brand-blue/15 dark:border-brand-yellow/15 group-hover/item:scale-105 transition-transform duration-300">
                           <Check className="w-3 h-3 stroke-[2.5]" />
@@ -1269,10 +1275,12 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                     </div>
                   </div>
 
-                  <div className="pt-3.5 border-t border-zinc-100 dark:border-white/5 flex items-center justify-between text-brand-blue dark:text-brand-yellow font-mono text-[9.5px] font-black uppercase tracking-wider mt-5">
-                    <span>{b.outcomeText || service.benefits.outcomeText || "Guaranteed Outcome"}</span>
-                    <Sparkles className="w-3.5 h-3.5 animate-pulse shrink-0" />
-                  </div>
+                  {b.outcomeText && (
+                    <div className="pt-3.5 border-t border-zinc-100 dark:border-white/5 flex items-center justify-between text-brand-blue dark:text-brand-yellow font-mono text-[9.5px] font-black uppercase tracking-wider mt-5">
+                      <span>{b.outcomeText}</span>
+                      <Sparkles className="w-3.5 h-3.5 animate-pulse shrink-0" />
+                    </div>
+                  )}
                 </SpotlightCard>
               );
             })}
@@ -1332,7 +1340,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                           0{idx + 1}
                         </span>
                         <span className="font-mono text-[8.5px] font-black tracking-widest text-[#0306AC] dark:text-[#E9BD36] bg-brand-blue/5 dark:bg-[#E9BD36]/10 px-3 py-1 rounded-full uppercase">
-                          {step.phaseTag || `PHASE 0${idx + 1} // CAMPAIGN`}
+                          {step.phaseTag || step.phase || step.badge || step.tag || `PHASE 0${idx + 1}`}
                         </span>
                       </div>
 
@@ -1401,24 +1409,28 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               <div className="space-y-4 pt-4 border-t border-brand-zinc-200 dark:border-white/15 w-full">
                 <div className="flex items-center justify-between gap-4">
                   <h4 className="font-mono text-[9px] font-black uppercase text-brand-zinc-400 tracking-widest">
-                    {service.results.caseStudiesEyebrow}
+                    {service.results.caseStudiesEyebrow || "Featured Case Studies"}
                   </h4>
-                  <div className="flex items-center gap-1.5 select-none">
-                    {service.results.caseStudies.map((_: any, idx: number) => (
-                      <button
-                        key={idx}
-                        onClick={() => setActiveCaseIdx(idx)}
-                        className={`h-2.5 rounded-full transition-all duration-300 ${
-                          activeCaseIdx === idx
-                            ? "w-6 bg-[#0306AC] dark:bg-[#E9BD36]"
-                            : "w-2.5 bg-brand-zinc-300 dark:bg-zinc-700 hover:bg-brand-zinc-400"
-                        }`}
-                      />
-                    ))}
-                  </div>
                 </div>
 
-                <div className="w-full">
+                {/* Case Selector Tabs */}
+                <div className="flex flex-wrap gap-2">
+                  {service.results.caseStudies.map((cs: any, idx: number) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveCaseIdx(idx)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                        activeCaseIdx === idx
+                          ? "bg-brand-blue dark:bg-brand-yellow text-white dark:text-[#080710] shadow-sm scale-[1.02]"
+                          : "bg-white dark:bg-[#12121e] border border-brand-zinc-200 dark:border-white/10 text-brand-zinc-600 dark:text-zinc-400 hover:border-brand-blue/30 hover:text-brand-blue dark:hover:text-brand-yellow"
+                      }`}
+                    >
+                      {cs.title || `Case 0${idx + 1}`}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="w-full pt-1">
                   <AnimatePresence mode="wait">
                     {service.results.caseStudies.map((cs: any, idx: number) => {
                       if (activeCaseIdx !== idx) return null;
@@ -1429,7 +1441,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -10 }}
                           transition={{ duration: 0.25 }}
-                          className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#12121e] border border-brand-zinc-200/90 dark:border-white/10 text-xs text-left space-y-3 shadow-sm"
+                          className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#12121e] border border-brand-zinc-200/90 dark:border-white/10 text-xs text-left space-y-3.5 shadow-sm"
                         >
                           <div className="space-y-2">
                             <div className="flex items-center gap-2">
@@ -1438,17 +1450,31 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                                 {cs.title}
                               </span>
                             </div>
-                            {(cs.desc || cs.challenge || cs.strategy) && (
+                            {cs.desc && (
                               <p className="text-brand-zinc-600 dark:text-zinc-350 font-normal leading-relaxed text-xs">
-                                {cs.desc || cs.challenge || cs.strategy}
+                                {cs.desc}
                               </p>
                             )}
                           </div>
+
+                          {cs.challenge && (
+                            <div className="space-y-1 bg-zinc-50 dark:bg-white/[0.02] p-3 rounded-xl border border-zinc-100 dark:border-white/5">
+                              <span className="text-[9px] font-mono font-bold text-brand-zinc-400 uppercase tracking-wider block">The Challenge</span>
+                              <p className="text-brand-zinc-700 dark:text-zinc-300 text-xs leading-relaxed">{cs.challenge}</p>
+                            </div>
+                          )}
+
+                          {cs.strategy && (
+                            <div className="space-y-1 bg-zinc-50 dark:bg-white/[0.02] p-3 rounded-xl border border-zinc-100 dark:border-white/5">
+                              <span className="text-[9px] font-mono font-bold text-brand-blue dark:text-brand-yellow uppercase tracking-wider block">Engineered Strategy</span>
+                              <p className="text-brand-zinc-700 dark:text-zinc-300 text-xs leading-relaxed">{cs.strategy}</p>
+                            </div>
+                          )}
                           
                           {(cs.outcome || cs.outcomeLabel) && (
                             <div className="flex items-center justify-between pt-3 border-t border-brand-zinc-150 dark:border-white/5">
                               <span className="font-mono text-[9px] uppercase tracking-wider text-brand-zinc-400">
-                                {cs.outcomeLabel || "Campaign Outcome"}
+                                {cs.outcomeLabel || "Verified Outcome"}
                               </span>
                               <span className="font-mono text-xs font-black text-brand-blue dark:text-brand-yellow">
                                 {cs.outcome}
@@ -1850,9 +1876,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                         <span className="font-heading font-black text-4xl sm:text-5xl bg-clip-text text-transparent bg-gradient-to-r from-brand-blue to-blue-500 dark:from-brand-yellow dark:to-amber-400 leading-none">
                           {plan.price}
                         </span>
-                        {plan.period && (
+                        {plan.period && plan.period.trim() && (
                           <span className="font-mono text-[9px] text-brand-zinc-400 dark:text-zinc-555 uppercase tracking-wider pl-1 whitespace-nowrap shrink-0">
-                            / {plan.period}
+                            {plan.period.startsWith('/') ? plan.period : `/ ${plan.period}`}
                           </span>
                         )}
                       </div>

@@ -6,12 +6,13 @@ import {
   Loader2, Plus, Trash2, Image as ImageIcon,
   CheckCircle2, Sparkles, Send, HelpCircle,
   Briefcase, Globe, DollarSign, Layers, ShieldCheck,
-  TrendingUp, Terminal, Settings, Star, Award, Check
+  TrendingUp, Terminal, Settings, Star, Award, Check, MapPin
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import IconSelector from "@/components/admin/IconSelector";
 import ImageField from "@/components/admin/ImageField";
 import BlogSelector from "@/components/admin/BlogSelector";
+import { AVAILABLE_COUNTRIES, resolveCountryLocation } from "@/lib/countryLocations";
 import { UI } from "./styles";
 
 // Safe comma separated input helper to prevent cursor swallowing
@@ -1860,46 +1861,233 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
 
             {/* 12. GLOBAL COVERAGE (SERVICE AREA) */}
             {activeTab === "serviceArea" && (
-              <div className="space-y-6">
-                <h3 className={UI.sectionHeader}>Global Coverage & Service Area</h3>
-                <div className="space-y-1.5">
-                  <label className={UI.label}>Badge / Tag</label>
-                  <input
-                    type="text"
-                    value={data.serviceArea?.sectionTag || "12 // GLOBAL REACH"}
-                    onChange={(e) => updateSection("serviceArea", "sectionTag", e.target.value)}
-                    className={UI.input}
-                  />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-12">
+                <div className="space-y-6">
+                  <h3 className={UI.sectionHeader}>1. Section Header & Narrative</h3>
                   <div className="space-y-1.5">
-                    <label className={UI.label}>Title Intro</label>
+                    <label className={UI.label}>Badge / Tag</label>
                     <input
                       type="text"
-                      value={data.serviceArea?.titleIntro || "Serving Clients Across "}
-                      onChange={(e) => updateSection("serviceArea", "titleIntro", e.target.value)}
+                      value={data.serviceArea?.sectionTag || "12 // GLOBAL REACH"}
+                      onChange={(e) => updateSection("serviceArea", "sectionTag", e.target.value)}
                       className={UI.input}
+                      placeholder="e.g. 12 // GLOBAL REACH"
                     />
                   </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Title Intro</label>
+                      <input
+                        type="text"
+                        value={data.serviceArea?.titleIntro || "Serving Clients Across "}
+                        onChange={(e) => updateSection("serviceArea", "titleIntro", e.target.value)}
+                        className={UI.input}
+                        placeholder="e.g. Serving Clients Across "
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Title Highlight</label>
+                      <input
+                        type="text"
+                        value={data.serviceArea?.titleHighlight || "Prime Global Markets"}
+                        onChange={(e) => updateSection("serviceArea", "titleHighlight", e.target.value)}
+                        className={UI.input + " font-bold border-[#2271b1] text-[#2271b1]"}
+                        placeholder="e.g. Prime Global Markets"
+                      />
+                    </div>
+                  </div>
+
                   <div className="space-y-1.5">
-                    <label className={UI.label}>Title Highlight</label>
-                    <input
-                      type="text"
-                      value={data.serviceArea?.titleHighlight || "Prime Global Markets"}
-                      onChange={(e) => updateSection("serviceArea", "titleHighlight", e.target.value)}
-                      className={UI.input + " font-bold border-[#2271b1] text-[#2271b1]"}
+                    <label className={UI.label}>Description</label>
+                    <textarea
+                      rows={2}
+                      value={data.serviceArea?.description || "Deploying high-performance digital platforms across North America, Europe, and worldwide."}
+                      onChange={(e) => updateSection("serviceArea", "description", e.target.value)}
+                      className={UI.input}
+                      placeholder="e.g. Deploying high-performance digital platforms across North America, Europe, and worldwide."
                     />
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className={UI.label}>Description</label>
-                  <textarea
-                    rows={2}
-                    value={data.serviceArea?.description || "Deploying high-performance digital platforms across North America, Europe, and worldwide."}
-                    onChange={(e) => updateSection("serviceArea", "description", e.target.value)}
-                    className={UI.input}
-                  />
+                {/* 2. CTA Button */}
+                <div className="space-y-6 pt-8 border-t border-[#f0f0f1]">
+                  <h3 className={UI.sectionHeader}>2. Call to Action Button</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Button Text</label>
+                      <input
+                        type="text"
+                        value={data.serviceArea?.ctaText || "Schedule Global Consultation"}
+                        onChange={(e) => updateSection("serviceArea", "ctaText", e.target.value)}
+                        className={UI.input}
+                        placeholder="e.g. Schedule Global Consultation"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Button Link</label>
+                      <input
+                        type="text"
+                        value={data.serviceArea?.ctaHref || "#contact-form"}
+                        onChange={(e) => updateSection("serviceArea", "ctaHref", e.target.value)}
+                        className={UI.input}
+                        placeholder="e.g. #contact-form or /contact"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Global Operating Locations (Hubs) */}
+                <div className="space-y-6 pt-8 border-t border-[#f0f0f1]">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h3 className={UI.sectionHeader}>3. Active Global Operating Locations</h3>
+                      <p className="text-xs text-[#646970]">Choose or type any country or state. Real GPS coordinates are automatically mapped on the live interactive globe.</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const currentHubs = (Array.isArray(data.serviceArea?.hubs) && data.serviceArea.hubs.length > 0)
+                          ? data.serviceArea.hubs
+                          : [
+                            { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", link: "/locations" },
+                            { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", link: "/locations" },
+                            { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", link: "/locations" },
+                            { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", link: "/locations" }
+                          ];
+                        const newHub = { id: `hub-${Date.now()}`, name: "California, USA", focus: "Regional Hub", timezone: "PST", link: "/locations" };
+                        updateSection("serviceArea", "hubs", [...currentHubs, newHub]);
+                      }}
+                      className={UI.buttonAdd}
+                    >
+                      + Add Location Hub
+                    </button>
+                  </div>
+
+                  <div className="space-y-4">
+                    {((Array.isArray(data.serviceArea?.hubs) && data.serviceArea.hubs.length > 0)
+                      ? data.serviceArea.hubs
+                      : [
+                        { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", link: "/locations" },
+                        { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", link: "/locations" },
+                        { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", link: "/locations" },
+                        { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", link: "/locations" }
+                      ]
+                    ).map((hub: any, hIdx: number) => {
+                      const currentHubs = (Array.isArray(data.serviceArea?.hubs) && data.serviceArea.hubs.length > 0)
+                        ? data.serviceArea.hubs
+                        : [
+                          { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", link: "/locations" },
+                          { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", link: "/locations" },
+                          { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", link: "/locations" },
+                          { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", link: "/locations" }
+                        ];
+                      const geo = resolveCountryLocation(hub.name);
+
+                      return (
+                        <div key={hIdx} className={UI.card + " space-y-3 bg-[#f6f7f7] border border-[#dcdcde]"}>
+                          <div className="flex justify-between items-center pb-2 border-b border-[#e2e4e7]">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <MapPin className="w-4 h-4 text-[#2271b1]" />
+                              <span className="text-[13px] font-bold text-[#1d2327]">{hub.name || `Location #${hIdx + 1}`}</span>
+                              <span className="text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                📍 Auto-Geolocated ({geo.region})
+                              </span>
+                              {hub.link && (
+                                <span className="text-[10px] bg-blue-50 text-[#2271b1] border border-blue-200 px-2 py-0.5 rounded font-mono truncate max-w-[200px]">
+                                  🔗 {hub.link}
+                                </span>
+                              )}
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newHubs = currentHubs.filter((_: any, i: number) => i !== hIdx);
+                                updateSection("serviceArea", "hubs", newHubs);
+                              }}
+                              className="text-[#d63638] hover:opacity-80 p-1 flex items-center gap-1 text-xs font-semibold"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              Remove
+                            </button>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-bold uppercase text-[#50575e]">Country / State Name</label>
+                              <input
+                                list={`service-countries-list-${hIdx}`}
+                                type="text"
+                                value={hub.name || ""}
+                                onChange={(e) => {
+                                  const countryVal = e.target.value;
+                                  const newHubs = [...currentHubs];
+                                  const autoGeo = resolveCountryLocation(countryVal);
+                                  newHubs[hIdx] = {
+                                    ...newHubs[hIdx],
+                                    name: countryVal,
+                                    timezone: newHubs[hIdx].timezone || autoGeo.timezone
+                                  };
+                                  updateSection("serviceArea", "hubs", newHubs);
+                                }}
+                                className={UI.input + " font-bold"}
+                                placeholder="e.g. United States or Germany"
+                              />
+                              <datalist id={`service-countries-list-${hIdx}`}>
+                                {AVAILABLE_COUNTRIES.map((c) => (
+                                  <option key={c} value={c} />
+                                ))}
+                              </datalist>
+                            </div>
+
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-bold uppercase text-[#50575e]">Specialty / Focus</label>
+                              <input
+                                type="text"
+                                value={hub.focus || ""}
+                                onChange={(e) => {
+                                  const newHubs = [...currentHubs];
+                                  newHubs[hIdx] = { ...newHubs[hIdx], focus: e.target.value };
+                                  updateSection("serviceArea", "hubs", newHubs);
+                                }}
+                                className={UI.input}
+                                placeholder="e.g. Architecture & Design"
+                              />
+                            </div>
+
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-bold uppercase text-[#50575e]">Timezone Badge</label>
+                              <input
+                                type="text"
+                                value={hub.timezone || geo.timezone || ""}
+                                onChange={(e) => {
+                                  const newHubs = [...currentHubs];
+                                  newHubs[hIdx] = { ...newHubs[hIdx], timezone: e.target.value };
+                                  updateSection("serviceArea", "hubs", newHubs);
+                                }}
+                                className={UI.input + " font-mono"}
+                                placeholder="e.g. PST, EST, GMT, CET"
+                              />
+                            </div>
+
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-bold uppercase text-[#50575e]">Navigation Link (URL)</label>
+                              <input
+                                type="text"
+                                value={hub.link || ""}
+                                onChange={(e) => {
+                                  const newHubs = [...currentHubs];
+                                  newHubs[hIdx] = { ...newHubs[hIdx], link: e.target.value };
+                                  updateSection("serviceArea", "hubs", newHubs);
+                                }}
+                                className={UI.input}
+                                placeholder="e.g. /locations"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             )}

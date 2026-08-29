@@ -147,8 +147,7 @@ export default function Hero() {
 
   return (
     <section className="relative overflow-hidden bg-transparent pt-28 md:pt-36 lg:pt-40 pb-0 flex flex-col justify-between min-h-[65vh] lg:min-h-[80vh]">
-
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 w-full z-20 relative pointer-events-none lg:flex-1 lg:flex lg:flex-col lg:justify-end">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 w-full z-20 relative pointer-events-none lg:flex-1 lg:flex lg:flex-col lg:justify-end pb-8 sm:pb-12 lg:pb-14">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-stretch">
 
           {/* Left Column: Headline, Description, Buttons, Social Proof */}
@@ -158,7 +157,7 @@ export default function Hero() {
             whileInView="visible"
             viewport={{ once: false, amount: 0.15 }}
             style={{ y: yText }}
-            className="lg:col-span-7 space-y-6 text-center lg:text-left flex flex-col items-center lg:items-start will-change-transform"
+            className="lg:col-span-7 space-y-6 text-center lg:text-left flex flex-col items-center lg:items-start will-change-transform pb-4"
           >
             {/* Pill Badge */}
             <motion.div variants={itemVariants} className="inline-flex pointer-events-auto">
@@ -193,11 +192,11 @@ export default function Hero() {
                         x="0"
                         y="0"
                         height="100%"
-                        variants={clipVariants}
-                        custom={{ delay: 0.5, duration: 0.85 }}
                         initial="hidden"
                         whileInView="visible"
-                        viewport={{ once: false }}
+                        viewport={{ once: true }}
+                        variants={clipVariants}
+                        custom={{ delay: 0.45, duration: 0.8 }}
                       />
                     </clipPath>
                     <clipPath id="underlineClip2">
@@ -205,27 +204,33 @@ export default function Hero() {
                         x="0"
                         y="0"
                         height="100%"
-                        variants={clipVariants}
-                        custom={{ delay: 0.75, duration: 0.75 }}
                         initial="hidden"
                         whileInView="visible"
-                        viewport={{ once: false }}
+                        viewport={{ once: true }}
+                        variants={clipVariants}
+                        custom={{ delay: 0.65, duration: 0.7 }}
                       />
                     </clipPath>
                   </defs>
-                  {/* First natural tapered brush stroke (spring animates on hover) */}
+                  {/* Primary bold sweeping stroke */}
                   <motion.path
-                    d="M 2 7 Q 50 2, 98 5 C 99 5, 99 6, 98 6.5 Q 50 9, 2 8 C 1 8, 1 7, 2 7 Z"
-                    fill="url(#brushGradient)"
+                    d="M 2 7 Q 28 2, 54 4.5 T 98 7"
+                    fill="none"
+                    stroke="url(#brushGradient)"
+                    strokeWidth="4"
+                    strokeLinecap="round"
                     clipPath="url(#underlineClip1)"
                     variants={{
-                      hover: { y: 1.5, scaleX: 1.025, transition: { type: "spring", stiffness: 350, damping: 14 } }
+                      hover: { y: 2.2, x: 1, scaleX: 1.025, transition: { type: "spring", stiffness: 350, damping: 14 } }
                     }}
                   />
-                  {/* Second natural tapered brush stroke (spring animates on hover) */}
+                  {/* Secondary organic textured baseline accent */}
                   <motion.path
-                    d="M 8 10 Q 50 7, 92 8.5 C 93 8.5, 93 9.5, 92 10 Q 50 12, 8 11 C 7 11, 7 10, 8 10 Z"
-                    fill="url(#brushGradient)"
+                    d="M 6 10 Q 38 7, 70 8.5 T 94 9.5"
+                    fill="none"
+                    stroke="#FFA800"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
                     opacity="0.85"
                     clipPath="url(#underlineClip2)"
                     variants={{
@@ -239,7 +244,7 @@ export default function Hero() {
             {/* Description */}
             <motion.div
               variants={itemVariants}
-              className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg"
+              className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-xl"
             >
               <RichTextRenderer content={description} stripParagraphs={true} />
             </motion.div>
@@ -248,7 +253,7 @@ export default function Hero() {
             {buttonsList.length > 0 && (
               <motion.div
                 variants={itemVariants}
-                className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-1 w-full sm:w-auto"
+                className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2 w-full sm:w-auto"
               >
                 {buttonsList.map((btn: any, idx: number) => {
                   const btnText = btn.text || btn.label || btn.title || (idx === 0 ? "Get Estimate" : "Our Services");
@@ -336,7 +341,7 @@ export default function Hero() {
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.9, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-        className="relative w-full h-16 md:h-20 bg-[#080710] dark:bg-[#161622] text-white flex items-center overflow-hidden z-30 border-t border-brand-zinc-800 dark:border-white/10 mt-16 lg:mt-2"
+        className="relative w-full h-16 md:h-20 bg-[#080710] dark:bg-[#161622] text-white flex items-center overflow-hidden z-30 border-t border-brand-zinc-800 dark:border-white/10 mt-14 sm:mt-16 lg:mt-20"
       >
         <div className="flex whitespace-nowrap gap-12 md:gap-16 select-none w-full">
           <div

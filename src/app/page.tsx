@@ -189,6 +189,11 @@ export default async function Index() {
 
   const homePage = defaultHomePageDoc ? JSON.parse(JSON.stringify(defaultHomePageDoc)) : null;
 
+  // Find published blog posts to provide to ContentProvider
+  const Post = (await import("@/models/Post")).default;
+  const postsDoc = await Post.find({ status: 'published' }).sort({ publishedAt: -1 }).limit(10).lean();
+  const initialBlogs = postsDoc ? JSON.parse(JSON.stringify(postsDoc)) : [];
+
   const schema = generateSchema({
     title: homePage?.seo?.metaTitle || homePage?.title || settings?.siteTitle || "Mohsin Designs",
     description: homePage?.seo?.metaDescription || "",
@@ -214,6 +219,7 @@ export default async function Index() {
           }
         }}
         globalData={content?.data || {}}
+        initialBlogs={initialBlogs}
         params={Promise.resolve({ slug: ['/'] })}
       />
     </>

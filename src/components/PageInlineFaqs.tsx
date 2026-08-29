@@ -23,6 +23,8 @@ interface PageInlineFaqsProps {
   hideHeader?: boolean;
   faqSchemaMarkup?: string;
   showFilters?: boolean;
+  titleIntro?: string;
+  titleHighlight?: string;
 }
 
 export default function PageInlineFaqs({
@@ -32,6 +34,8 @@ export default function PageInlineFaqs({
   subtitle,
   badge,
   description,
+  titleIntro: propTitleIntro,
+  titleHighlight: propTitleHighlight,
   hideHeader = false,
   faqSchemaMarkup,
   showFilters
@@ -44,8 +48,8 @@ export default function PageInlineFaqs({
   const sectionTag = badge || rawFaq.faqBadge || rawFaq.sectionTag || rawFaq.section?.badge || "FREQUENTLY ASKED QUESTIONS";
   
   // Clean dynamic heading resolution without unwanted hardcoded prefixes
-  const explicitIntro = rawFaq.faqTitleIntro !== undefined ? rawFaq.faqTitleIntro : (rawFaq.titleIntro !== undefined ? rawFaq.titleIntro : undefined);
-  const explicitHighlight = title || rawFaq.faqTitleHighlight || rawFaq.titleHighlight || rawFaq.faqTitle || rawFaq.section?.headlineHighlight || rawFaq.section?.headline;
+  const explicitIntro = propTitleIntro !== undefined ? propTitleIntro : (rawFaq.faqTitleIntro !== undefined ? rawFaq.faqTitleIntro : (rawFaq.titleIntro !== undefined ? rawFaq.titleIntro : undefined));
+  const explicitHighlight = propTitleHighlight || title || rawFaq.faqTitleHighlight || rawFaq.titleHighlight || rawFaq.faqTitle || rawFaq.section?.headlineHighlight || rawFaq.section?.headline;
 
   let titleIntro = "";
   let titleHighlight = "";

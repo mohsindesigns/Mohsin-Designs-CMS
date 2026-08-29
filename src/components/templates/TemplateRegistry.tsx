@@ -47,7 +47,7 @@ export const getTemplate = (name: string) => {
   return TEMPLATE_MAP[name] || HomeTemplate;
 };
 
-export const TemplateWrapper = ({ templateName, pageData, globalData, params }: any) => {
+export const TemplateWrapper = ({ templateName, pageData, globalData, initialBlogs, params }: any) => {
   const Template = getTemplate(templateName);
 
   const hasInlineFaqs = !['home', 'faq', 'service-detail', 'about', 'service-area', 'location', 'locations', 'services', 'contact', 'blog', 'country', 'state', 'industry', 'industries'].includes(templateName) &&
@@ -73,7 +73,7 @@ export const TemplateWrapper = ({ templateName, pageData, globalData, params }: 
     };
 
   return (
-    <ContentProvider initialData={providerData}>
+    <ContentProvider initialData={providerData} initialBlogs={initialBlogs}>
       <Template pageData={pageData} params={params} />
       {hasInlineFaqs && (
         <PageInlineFaqs
