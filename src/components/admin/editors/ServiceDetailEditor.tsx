@@ -952,6 +952,29 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                   />
                 </div>
 
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-[#f0f0f1]">
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Process Callout Tag / Badge (Optional)</label>
+                    <input
+                      type="text"
+                      value={data.process?.calloutTag || ""}
+                      onChange={(e) => updateSection("process", "calloutTag", e.target.value)}
+                      className={UI.input + " font-mono text-xs"}
+                      placeholder="e.g. // PROCESS COMPLIANCE"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Process Callout Description (Optional)</label>
+                    <input
+                      type="text"
+                      value={data.process?.calloutText || ""}
+                      onChange={(e) => updateSection("process", "calloutText", e.target.value)}
+                      className={UI.input}
+                      placeholder="e.g. Every milestone is cataloged in the shared workspace..."
+                    />
+                  </div>
+                </div>
+
                 <div className="space-y-4 pt-4 border-t border-[#f0f0f1]">
                   <div className="flex items-center justify-between">
                     <span className={UI.label}>Roadmap Sprints / Milestones</span>

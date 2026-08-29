@@ -520,67 +520,51 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       titleIntro: dbService?.process?.titleIntro || "Our Step-by-Step",
       titleHighlight: dbService?.process?.titleHighlight || "Roadmap",
       description: dbService?.process?.description || "We orchestrate campaigns sequentially, guaranteeing structured code deliverables and auditable checkpoints at each stage of your roadmap.",
-      calloutTag: dbService?.process?.calloutTag || "// PROCESS COMPLIANCE",
-      calloutText: dbService?.process?.calloutText || "Every milestone is cataloged in the shared workspace, providing real-time deployment logs and verification reports.",
-      steps: (dbService?.process?.steps && dbService.process.steps.length > 0)
+      calloutTag: dbService?.process?.calloutTag,
+      calloutText: dbService?.process?.calloutText,
+      steps: (Array.isArray(dbService?.process?.steps) && dbService.process.steps.length > 0)
         ? dbService.process.steps
-        : (dbService?.process && Array.isArray(dbService.process) && dbService.process.length > 0
+        : (Array.isArray(dbService?.process) && dbService.process.length > 0
             ? dbService.process.map((p: any, idx: number) => ({
                 title: p.title || p.name || "Milestone",
                 desc: p.desc || p.description || "Structured sprint execution.",
-                phaseTag: p.phaseTag || `PHASE 0${idx + 1} // CAMPAIGN`,
-                deliverables: p.deliverables || defaultRoadmapDeliverables[idx] || [],
-                footerLeft: p.footerLeft || "Verification Checkpoint",
-                footerRight: p.footerRight || "Verified Node"
+                phaseTag: p.phaseTag || p.badge || `PHASE 0${idx + 1} // SPRINT`,
+                deliverables: Array.isArray(p.deliverables) ? p.deliverables : [],
+                footerLeft: p.footerLeft || "",
+                footerRight: p.footerRight || ""
               }))
             : [
                 {
                   title: "Discovery & Technical Diagnostics",
                   desc: "Full audit of your digital ecosystem, tech stack, and user funnels.",
-                  phaseTag: "PHASE 01 // CAMPAIGN",
-                  deliverables: defaultRoadmapDeliverables[0],
-                  footerLeft: "Verification Checkpoint",
-                  footerRight: "Verified Node"
+                  phaseTag: "PHASE 01 // SPRINT",
+                  deliverables: [],
+                  footerLeft: "",
+                  footerRight: ""
                 },
                 {
-                  title: "Architecture & Wireframing",
+                  title: "Architecture & Production Build",
                   desc: "Structuring high-converting user flows and component hierarchies.",
-                  phaseTag: "PHASE 02 // CAMPAIGN",
-                  deliverables: defaultRoadmapDeliverables[1],
-                  footerLeft: "Verification Checkpoint",
-                  footerRight: "Verified Node"
-                },
-                {
-                  title: "Production Build & Optimization",
-                  desc: "Clean development with modern frameworks and strict performance standards.",
-                  phaseTag: "PHASE 03 // CAMPAIGN",
-                  deliverables: defaultRoadmapDeliverables[2],
-                  footerLeft: "Verification Checkpoint",
-                  footerRight: "Verified Node"
+                  phaseTag: "PHASE 02 // SPRINT",
+                  deliverables: [],
+                  footerLeft: "",
+                  footerRight: ""
                 },
                 {
                   title: "Verification & Quality Assurance",
                   desc: "Multi-device cross-browser testing and performance stress audits.",
-                  phaseTag: "PHASE 04 // CAMPAIGN",
-                  deliverables: defaultRoadmapDeliverables[3],
-                  footerLeft: "Verification Checkpoint",
-                  footerRight: "Verified Node"
+                  phaseTag: "PHASE 03 // SPRINT",
+                  deliverables: [],
+                  footerLeft: "",
+                  footerRight: ""
                 },
                 {
-                  title: "Deployment & Attribution Sync",
-                  desc: "Live rollout with custom event telemetry and analytics tracking.",
-                  phaseTag: "PHASE 05 // CAMPAIGN",
-                  deliverables: defaultRoadmapDeliverables[4],
-                  footerLeft: "Verification Checkpoint",
-                  footerRight: "Verified Node"
-                },
-                {
-                  title: "Iterative Growth & Scaling",
-                  desc: "Continuous improvements driven by verified performance data.",
-                  phaseTag: "PHASE 06 // CAMPAIGN",
-                  deliverables: defaultRoadmapDeliverables[5],
-                  footerLeft: "Verification Checkpoint",
-                  footerRight: "Verified Node"
+                  title: "Deployment & Growth Scaling",
+                  desc: "Live rollout with custom telemetry and continuous optimizations.",
+                  phaseTag: "PHASE 04 // SPRINT",
+                  deliverables: [],
+                  footerLeft: "",
+                  footerRight: ""
                 }
               ])
     },
@@ -590,25 +574,35 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       titleHighlight: dbService?.results?.titleHighlight || "Impact & ROI",
       description: dbService?.results?.description || "Verifiable metric indicators driven by precise performance scaling and custom coding.",
       caseStudiesEyebrow: dbService?.results?.caseStudiesEyebrow || "Featured Case Studies",
-      caseStudies: (dbService?.results?.caseStudies && dbService.results.caseStudies.length > 0)
+      caseStudies: (Array.isArray(dbService?.results?.caseStudies) && dbService.results.caseStudies.length > 0)
         ? dbService.results.caseStudies
-        : [
-            {
-              title: "Enterprise Brand Growth",
-              challenge: "Outdated legacy site experiencing slow load speeds and declining conversions.",
-              strategy: "Engineered headless architecture with streamlined conversion pathways.",
-              outcome: "+240% Qualified Inbound Inquiries",
-              outcomeLabel: "Campaign Outcome"
-            },
-            {
-              title: "Commercial Multi-Location Reach",
-              challenge: "Fragmented map listings and poor regional organic rankings.",
-              strategy: "Deployed localized landing architecture and high-authority citation schema.",
-              outcome: "+410% Map Pack Actions",
-              outcomeLabel: "Campaign Outcome"
-            }
-          ],
-      metrics: (dbService?.results?.metrics && dbService.results.metrics.length > 0)
+        : (dbService?.results?.caseStudy && (dbService.results.caseStudy.title || dbService.results.caseStudy.metric || dbService.results.caseStudy.desc)
+            ? [
+                {
+                  title: dbService.results.caseStudy.title || "Featured Case Study",
+                  challenge: dbService.results.caseStudy.desc || "Overcoming legacy bottlenecks with custom architecture.",
+                  strategy: dbService.results.caseStudy.strategy || "Engineered scalable architecture with streamlined conversion pathways.",
+                  outcome: dbService.results.caseStudy.metric || "+240% Growth",
+                  outcomeLabel: "Campaign Outcome"
+                }
+              ]
+            : [
+                {
+                  title: "Enterprise Brand Growth",
+                  challenge: "Outdated legacy site experiencing slow load speeds and declining conversions.",
+                  strategy: "Engineered headless architecture with streamlined conversion pathways.",
+                  outcome: "+240% Qualified Inbound Inquiries",
+                  outcomeLabel: "Campaign Outcome"
+                },
+                {
+                  title: "Commercial Multi-Location Reach",
+                  challenge: "Fragmented map listings and poor regional organic rankings.",
+                  strategy: "Deployed localized landing architecture and high-authority citation schema.",
+                  outcome: "+410% Map Pack Actions",
+                  outcomeLabel: "Campaign Outcome"
+                }
+              ]),
+      metrics: (Array.isArray(dbService?.results?.metrics) && dbService.results.metrics.length > 0)
         ? dbService.results.metrics
         : [
             { value: "450%", label: "TRAFFIC GROWTH", desc: "Average organic session boost across 12-month engagements.", tag: "M01" },
@@ -623,7 +617,8 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       titleHighlight: dbService?.industries?.titleHighlight || "We Specialize In",
       description: dbService?.industries?.description || "Every industry has distinct compliance, customer acquisition funnels, and technical requirements. We tailor our engineering to your exact vertical.",
       footerLeft: dbService?.industries?.footerLeft || "Target Sector",
-      footerRight: dbService?.industries?.footerRight || "Verified Optimization",
+      footerLeft: dbService?.industries?.footerLeft,
+      footerRight: dbService?.industries?.footerRight,
       list: (Array.isArray(dbService?.industries?.list) && dbService.industries.list.length > 0)
         ? dbService.industries.list
         : (Array.isArray(dbService?.industries?.items) && dbService.industries.items.length > 0)
@@ -631,33 +626,52 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
           : (Array.isArray(dbService?.industries) && dbService.industries.length > 0)
             ? dbService.industries
             : [
-              { title: "Home Services & Contracting", desc: "Roofing, decking, remodeling, and local trade contractors scaling regional territories.", watermark: "HS" },
-              { title: "Technology & SaaS", desc: "Fast-growth software startups and tech firms demanding high conversion rates.", watermark: "TS" },
-              { title: "Commercial Real Estate", desc: "Property developers, architectural firms, and luxury real estate agencies.", watermark: "CR" },
-              { title: "E-Commerce & Retail", desc: "Direct-to-consumer and B2B brands scaling transactions with seamless checkout.", watermark: "EC" },
-              { title: "Professional Services", desc: "Law firms, financial consultancies, and executive agencies building trust.", watermark: "PS" },
-              { title: "Healthcare & Wellness", desc: "Clinics, medical practices, and private health facilities seeking patient acquisition.", watermark: "HW" }
-            ]
+                { title: "Home Services & Contracting", desc: "Roofing, decking, remodeling, and local trade contractors scaling regional territories.", watermark: "HS" },
+                { title: "Technology & SaaS", desc: "Fast-growth software startups and tech firms demanding high conversion rates.", watermark: "TS" },
+                { title: "Commercial Real Estate", desc: "Property developers, architectural firms, and luxury real estate agencies.", watermark: "CR" },
+                { title: "E-Commerce & Retail", desc: "Direct-to-consumer and B2B brands scaling transactions with seamless checkout.", watermark: "EC" }
+              ]
     },
     tools: {
       eyebrow: dbService?.tools?.eyebrow || "09 // TECH STACK",
       titleIntro: dbService?.tools?.titleIntro || "Modern",
       titleHighlight: dbService?.tools?.titleHighlight || "Frameworks & Tools",
       description: dbService?.tools?.description || "High-performance frameworks and analytics systems driving client ROI metrics.",
-      list: (Array.isArray(dbService?.tools?.list) && dbService.tools.list.length > 0)
-        ? dbService.tools.list
-        : (Array.isArray(dbService?.tools?.items) && dbService.tools.items.length > 0)
-          ? dbService.tools.items
-          : (Array.isArray(dbService?.tools) && dbService.tools.length > 0)
-            ? dbService.tools
-            : [
-            { name: "Next.js", iconName: "Monitor", tag: "CORE DEV", desc: "Headless rendering backend with automatic static optimization and route pre-fetching." },
-            { name: "React.js", iconName: "Cpu", tag: "FRONTEND", desc: "Modular, reactive front-end library built for speedy interaction states." },
-            { name: "Tailwind CSS", iconName: "Palette", tag: "STYLING", desc: "Utility-first CSS compiler to keep stylesheet sizes down and performance high." },
-            { name: "Google Analytics 4", iconName: "BarChart2", tag: "DATA RUN", desc: "Server-side tag setup to capture 100% of campaign lead and attribution logs." },
-            { name: "Google Search", iconName: "Search", tag: "SEO CORE", desc: "Indexation audits, keyword position mapping, and search volume gap tracing." },
-            { name: "Vercel", iconName: "Globe", tag: "EDGE NETWORK", desc: "Serverless global edge CDN network offering 99.9% uptime and instant caching." }
-          ]
+      list: (() => {
+        if (Array.isArray(dbService?.tools?.list) && dbService.tools.list.length > 0) {
+          return dbService.tools.list;
+        }
+        if (Array.isArray(dbService?.tools?.items) && dbService.tools.items.length > 0) {
+          return dbService.tools.items;
+        }
+        if (Array.isArray(dbService?.tools?.categories) && dbService.tools.categories.length > 0) {
+          return dbService.tools.categories.flatMap((cat: any) => {
+            const catName = cat.category || cat.name || "TOOL";
+            const items = Array.isArray(cat.items) ? cat.items : (Array.isArray(cat.tools) ? cat.tools : []);
+            return items.map((item: any) => {
+              if (typeof item === 'string') {
+                const spec = getToolDescription(item);
+                return { name: item, tag: catName, desc: spec.desc, iconName: "Cpu" };
+              }
+              return {
+                name: item.name || item.title || "Tool",
+                tag: item.tag || catName,
+                desc: item.desc || item.description || getToolDescription(item.name).desc,
+                iconName: item.iconName || item.icon || "Cpu"
+              };
+            });
+          });
+        }
+        if (Array.isArray(dbService?.tools) && dbService.tools.length > 0) {
+          return dbService.tools;
+        }
+        return [
+          { name: "Next.js", iconName: "Monitor", tag: "CORE DEV", desc: "Headless rendering backend with automatic static optimization and route pre-fetching." },
+          { name: "React.js", iconName: "Cpu", tag: "FRONTEND", desc: "Modular, reactive front-end library built for speedy interaction states." },
+          { name: "Tailwind CSS", iconName: "Palette", tag: "STYLING", desc: "Utility-first CSS compiler to keep stylesheet sizes down and performance high." },
+          { name: "Vercel", iconName: "Globe", tag: "EDGE NETWORK", desc: "Serverless global edge CDN network offering 99.9% uptime and instant caching." }
+        ];
+      })()
     },
     whyChooseUs: {
       eyebrow: dbService?.whyChooseUs?.eyebrow || "10 // OUR ADVANTAGE",
@@ -1324,9 +1338,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             {/* Right Column: Process Cards */}
             <div className="lg:col-span-7 space-y-6 text-left relative pl-1">
               {service.process.steps.map((step: any, idx: number) => {
-                const deliverables = (step.deliverables && step.deliverables.length > 0)
-                  ? step.deliverables
-                  : (defaultRoadmapDeliverables[idx] || []);
+                const deliverables = Array.isArray(step.deliverables)
+                  ? step.deliverables.filter((d: any) => typeof d === 'string' && d.trim().length > 0)
+                  : [];
 
                 return (
                   <SpotlightCard

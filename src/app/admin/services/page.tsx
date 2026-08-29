@@ -153,7 +153,10 @@ const DEFAULT_SERVICE_TEMPLATE = {
       "Next.js Speed & Performance",
       "Conversion-Focused Architecture",
       "Dedicated Support & Real-Time Sync"
-    ]
+    ],
+    formHeading: "Request a Free Audit",
+    formSubheading: "Direct architect consultation and custom scope estimation within 24 hours.",
+    formButtonText: "Request Free Proposal"
   },
   clientTrust: {
     heading: "ENTERPRISE PLATFORMS WE INTEGRATE & ACCELERATE",
@@ -214,11 +217,13 @@ const DEFAULT_SERVICE_TEMPLATE = {
     titleIntro: "A Systematic Path To",
     titleHighlight: "Market Leadership",
     description: "From discovery to post-launch optimization, our methodology is built for speed and precision.",
+    calloutTag: "// PROCESS COMPLIANCE",
+    calloutText: "Every milestone is cataloged in the shared workspace, providing real-time deployment logs and verification reports.",
     steps: [
-      { step: "01", title: "Discovery & Analysis", desc: "Comprehensive technical review and competitive audit.", badge: "PHASE 01" },
-      { step: "02", title: "System Architecture", desc: "Designing scalable blueprints and modular component design.", badge: "PHASE 02" },
-      { step: "03", title: "Production Build", desc: "Writing clean, performant Next.js code with zero compromises.", badge: "PHASE 03" },
-      { step: "04", title: "QA & Deployment", desc: "Rigorous automated testing and live production deployment.", badge: "PHASE 04" }
+      { step: "01", title: "Discovery & Analysis", desc: "Comprehensive technical review and competitive audit.", badge: "PHASE 01", deliverables: ["Technical Audit", "Stack Mapping"] },
+      { step: "02", title: "System Architecture", desc: "Designing scalable blueprints and modular component design.", badge: "PHASE 02", deliverables: ["Figma Wireframes", "UX Flows"] },
+      { step: "03", title: "Production Build", desc: "Writing clean, performant Next.js code with zero compromises.", badge: "PHASE 03", deliverables: ["Next.js Build", "API Endpoints"] },
+      { step: "04", title: "QA & Deployment", desc: "Rigorous automated testing and live production deployment.", badge: "PHASE 04", deliverables: ["WCAG 2.1 Audit", "Stress Testing"] }
     ]
   },
   results: {
@@ -230,6 +235,15 @@ const DEFAULT_SERVICE_TEMPLATE = {
       { value: "+340%", label: "Organic Search Lift", subtext: "Average client lift within 90 days of rollout" },
       { value: "<0.8s", label: "Page Load Speed", subtext: "Global average largest contentful paint" },
       { value: "4.9/5", label: "Client Satisfaction", subtext: "Across 120+ custom enterprise deployments" }
+    ],
+    caseStudies: [
+      {
+        title: "Enterprise Brand Growth",
+        challenge: "Outdated legacy site experiencing slow load speeds and declining conversions.",
+        strategy: "Engineered headless architecture with streamlined conversion pathways.",
+        outcome: "+240% Qualified Inbound Inquiries",
+        outcomeLabel: "Campaign Outcome"
+      }
     ],
     caseStudy: {
       title: "Global Logistics Redesign",
@@ -1018,6 +1032,42 @@ export default function ServicesAdminPage() {
                                     placeholder="e.g. Data-Driven Growth Strategies"
                                   />
                                 </div>
+
+                                <div className="space-y-6 pt-6 border-t border-[#f0f0f1]">
+                                  <h3 className={UI.sectionHeader}>6. Hero Embedded Consultation Form</h3>
+                                  <div className="space-y-4">
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Form Heading / Title</label>
+                                      <input
+                                        type="text"
+                                        value={form.hero?.formHeading || ""}
+                                        onChange={(e) => setForm({ ...form, hero: { ...form.hero, formHeading: e.target.value } })}
+                                        className={UI.input + " font-bold"}
+                                        placeholder="e.g. Request a Free Technical Audit"
+                                      />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Form Subheading / Subtitle</label>
+                                      <input
+                                        type="text"
+                                        value={form.hero?.formSubheading || ""}
+                                        onChange={(e) => setForm({ ...form, hero: { ...form.hero, formSubheading: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="e.g. Direct architect consultation within 24 hours."
+                                      />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Submit Button Label</label>
+                                      <input
+                                        type="text"
+                                        value={form.hero?.formButtonText || ""}
+                                        onChange={(e) => setForm({ ...form, hero: { ...form.hero, formButtonText: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="e.g. Request Free Proposal"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
                             )}
 
@@ -1528,6 +1578,28 @@ export default function ServicesAdminPage() {
                                         className={UI.input}
                                       />
                                     </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-[#f0f0f1]">
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Process Callout Tag / Badge (Optional)</label>
+                                        <input
+                                          type="text"
+                                          value={form.process?.calloutTag || ""}
+                                          onChange={(e) => setForm({ ...form, process: { ...form.process, calloutTag: e.target.value } })}
+                                          className={UI.input + " font-mono text-xs"}
+                                          placeholder="e.g. // PROCESS COMPLIANCE"
+                                        />
+                                      </div>
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Process Callout Description (Optional)</label>
+                                        <input
+                                          type="text"
+                                          value={form.process?.calloutText || ""}
+                                          onChange={(e) => setForm({ ...form, process: { ...form.process, calloutText: e.target.value } })}
+                                          className={UI.input}
+                                          placeholder="e.g. Every milestone is cataloged in the shared workspace..."
+                                        />
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
 
@@ -1554,10 +1626,10 @@ export default function ServicesAdminPage() {
                                             <label className={UI.label}>Phase Badge</label>
                                             <input
                                               type="text"
-                                              value={step.badge || `PHASE 0${idx + 1}`}
+                                              value={step.badge || step.phaseTag || `PHASE 0${idx + 1}`}
                                               onChange={(e) => {
                                                 const s = [...form.process.steps];
-                                                s[idx] = { ...s[idx], badge: e.target.value };
+                                                s[idx] = { ...s[idx], badge: e.target.value, phaseTag: e.target.value };
                                                 setForm({ ...form, process: { ...form.process, steps: s } });
                                               }}
                                               className={UI.input}
@@ -2454,7 +2526,7 @@ export default function ServicesAdminPage() {
                                                   updated[hIdx] = {
                                                     ...updated[hIdx],
                                                     name: val,
-                                                    id: resolved?.id || hub.id || val.toLowerCase().replace(/[^a-z0-9]/g, "-"),
+                                                    id: (resolved as any)?.id || hub.id || val.toLowerCase().replace(/[^a-z0-9]/g, "-"),
                                                     timezone: resolved?.timezone || hub.timezone || "UTC",
                                                     x: resolved?.x || hub.x || "50%",
                                                     y: resolved?.y || hub.y || "50%"
