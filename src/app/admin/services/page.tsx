@@ -281,11 +281,11 @@ const DEFAULT_SERVICE_TEMPLATE = {
     titleIntro: "Why Industry Leaders",
     titleHighlight: "Partner With Us",
     description: "We don't just build websites; we engineer durable competitive advantages for market-leading brands.",
-    points: [
-      { title: "Zero Technical Debt", desc: "Clean, modular, fully typed codebase structured for lifetime extensibility.", icon: "CheckCircle2" },
-      { title: "Direct Architect Access", desc: "Work directly with senior engineers and designers with zero middle-management bloat.", icon: "Users" },
-      { title: "Performance Guarantees", desc: "Every deployment is guaranteed 95+ Google Lighthouse scores across all metrics.", icon: "Zap" },
-      { title: "Transparent Fixed Pricing", desc: "Clear milestones, defined deliverables, and predictable timelines with zero hidden fees.", icon: "Award" }
+    list: [
+      { tag: "Differentiator 01", title: "Zero Technical Debt", desc: "Clean, modular, fully typed codebase structured for lifetime extensibility." },
+      { tag: "Differentiator 02", title: "Direct Architect Access", desc: "Work directly with senior engineers and designers with zero middle-management bloat." },
+      { tag: "Differentiator 03", title: "Performance Guarantees", desc: "Every deployment is guaranteed 95+ Google Lighthouse scores across all metrics." },
+      { tag: "Differentiator 04", title: "Transparent Fixed Pricing", desc: "Clear milestones, defined deliverables, and predictable timelines with zero hidden fees." }
     ]
   },
   pricing: {
@@ -299,7 +299,7 @@ const DEFAULT_SERVICE_TEMPLATE = {
         price: "$4,500",
         period: "/ project",
         description: "Ideal for growing brands needing a high-performance targeted overhaul or single core feature.",
-        popular: false,
+        isPopular: false,
         features: [
           "Complete Technical & UX Audit",
           "Custom Single-Page Architecture",
@@ -315,7 +315,7 @@ const DEFAULT_SERVICE_TEMPLATE = {
         price: "$9,500",
         period: "/ project",
         description: "Full-scale custom engineering, brand positioning, and conversion architecture for established market leaders.",
-        popular: true,
+        isPopular: true,
         features: [
           "Full Multi-Page Next.js Architecture",
           "Headless CMS Integration",
