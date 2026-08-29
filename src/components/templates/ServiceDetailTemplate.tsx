@@ -48,6 +48,7 @@ import { useContent } from "@/hooks/useContent";
 import FAQ from "@/components/FAQ";
 import Blog from "@/components/Blog";
 import ServiceArea from "@/components/ServiceArea";
+import PageInlineFaqs from "@/components/PageInlineFaqs";
 
 // ── Icon Map Resolver ──
 const iconMap: Record<string, React.ElementType> = {
@@ -130,64 +131,11 @@ const drawVariants = {
 };
 
 // ── Digit Ticker Components ──
-const TickerDigit = ({ digit }: { digit: number }) => {
-  const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-  return (
-    <span
-      className="relative inline-block overflow-hidden select-none"
-      style={{
-        width: "0.58em",
-        height: "1.02em"
-      }}
-    >
-      <motion.span
-        className="absolute left-0 top-0 flex flex-col w-full"
-        initial={{ y: 0 }}
-        whileInView={{ y: `-${digit}em` }}
-        viewport={{ once: true }}
-        transition={{
-          type: "spring",
-          stiffness: 45,
-          damping: 12,
-          mass: 0.8,
-          delay: 0.1
-        }}
-      >
-        {numbers.map((num) => (
-          <span
-            key={num}
-            className="flex items-center justify-center leading-none bg-clip-text text-transparent bg-gradient-to-r from-brand-blue to-blue-500 dark:from-brand-yellow dark:to-amber-400"
-            style={{
-              height: "1em",
-              WebkitBackgroundClip: "text"
-            }}
-          >
-            {num}
-          </span>
-        ))}
-      </motion.span>
-    </span>
-  );
-};
-
 const DigitTicker = ({ value }: { value: string | number }) => {
-  const digits = String(value || "0").split("");
+  const text = String(value ?? "");
   return (
-    <span className="inline-flex items-baseline">
-      {digits.map((digit, idx) => {
-        if (!/[0-9]/.test(digit)) {
-          return (
-            <span
-              key={idx}
-              className="leading-none bg-clip-text text-transparent bg-gradient-to-r from-brand-blue to-blue-500 dark:from-brand-yellow dark:to-amber-400"
-              style={{ WebkitBackgroundClip: "text" }}
-            >
-              {digit}
-            </span>
-          );
-        }
-        return <TickerDigit key={idx} digit={Number(digit)} />;
-      })}
+    <span className="inline-block leading-none tracking-tight text-[#0306AC] dark:text-[#E9BD36]">
+      {text}
     </span>
   );
 };
@@ -496,7 +444,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             "Next.js Speed & Performance",
             "Conversion-Focused Architecture",
             "Dedicated Support & Real-Time Sync"
-          ])
+          ]),
+      formHeading: dbService?.hero?.formHeading || dbService?.hero?.formTitle || "Request a Free Audit",
+      formSubheading: dbService?.hero?.formSubheading || dbService?.hero?.formSubtitle || "Direct architect consultation and custom scope estimation within 24 hours.",
+      formButtonText: dbService?.hero?.formButtonText || dbService?.hero?.btnSubmit || "Request Free Proposal"
     },
     clientTrust: {
       heading: dbService?.clientTrust?.heading || "ENTERPRISE PLATFORMS WE INTEGRATE & ACCELERATE",
@@ -514,6 +465,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       eyebrow: dbService?.whatIncluded?.eyebrow || "03 // CORE CAPABILITIES",
       titleIntro: dbService?.whatIncluded?.titleIntro || "What's Included in",
       titleHighlight: dbService?.whatIncluded?.titleHighlight || "Our Delivery",
+      description: dbService?.whatIncluded?.description || "",
       pillars: (dbService?.whatIncluded?.pillars && dbService.whatIncluded.pillars.length > 0)
         ? dbService.whatIncluded.pillars
         : [
@@ -669,18 +621,21 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       eyebrow: dbService?.industries?.eyebrow || "08 // SECTORS WE ACCELERATE",
       titleIntro: dbService?.industries?.titleIntro || "Industries",
       titleHighlight: dbService?.industries?.titleHighlight || "We Specialize In",
+      description: dbService?.industries?.description || "Every industry has distinct compliance, customer acquisition funnels, and technical requirements. We tailor our engineering to your exact vertical.",
       footerLeft: dbService?.industries?.footerLeft || "Target Sector",
       footerRight: dbService?.industries?.footerRight || "Verified Optimization",
       list: (dbService?.industries?.list && dbService.industries.list.length > 0)
         ? dbService.industries.list
-        : [
-            { title: "Home Services & Contracting", desc: "Roofing, decking, remodeling, and local trade contractors scaling regional territories.", watermark: "HS" },
-            { title: "Technology & SaaS", desc: "Fast-growth software startups and tech firms demanding high conversion rates.", watermark: "TS" },
-            { title: "Commercial Real Estate", desc: "Property developers, architectural firms, and luxury real estate agencies.", watermark: "CR" },
-            { title: "E-Commerce & Retail", desc: "Direct-to-consumer and B2B brands scaling transactions with seamless checkout.", watermark: "EC" },
-            { title: "Professional Services", desc: "Law firms, financial consultancies, and executive agencies building trust.", watermark: "PS" },
-            { title: "Healthcare & Wellness", desc: "Clinics, medical practices, and private health facilities seeking patient acquisition.", watermark: "HW" }
-          ]
+        : (Array.isArray(dbService?.industries?.items) && dbService.industries.items.length > 0)
+          ? dbService.industries.items
+          : [
+              { title: "Home Services & Contracting", desc: "Roofing, decking, remodeling, and local trade contractors scaling regional territories.", watermark: "HS" },
+              { title: "Technology & SaaS", desc: "Fast-growth software startups and tech firms demanding high conversion rates.", watermark: "TS" },
+              { title: "Commercial Real Estate", desc: "Property developers, architectural firms, and luxury real estate agencies.", watermark: "CR" },
+              { title: "E-Commerce & Retail", desc: "Direct-to-consumer and B2B brands scaling transactions with seamless checkout.", watermark: "EC" },
+              { title: "Professional Services", desc: "Law firms, financial consultancies, and executive agencies building trust.", watermark: "PS" },
+              { title: "Healthcare & Wellness", desc: "Clinics, medical practices, and private health facilities seeking patient acquisition.", watermark: "HW" }
+            ]
     },
     tools: {
       eyebrow: dbService?.tools?.eyebrow || "09 // TECH STACK",
@@ -723,6 +678,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       eyebrow: dbService?.pricing?.eyebrow || "11 // TRANSPARENT TIERS",
       titleIntro: dbService?.pricing?.titleIntro || "Scalable Growth",
       titleHighlight: dbService?.pricing?.titleHighlight || "Investment Packages",
+      description: dbService?.pricing?.description || "Clear fixed scopes with zero hidden fees. Choose a sprint tier tailored to your immediate milestones.",
       plans: (dbService?.pricing?.plans && dbService.pricing.plans.length > 0)
         ? dbService.pricing.plans
         : [
@@ -873,7 +829,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               initial={{ opacity: 0, y: 25 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="lg:col-span-6 space-y-6 text-left"
+              className="lg:col-span-7 space-y-6 text-left"
             >
               {/* Breadcrumbs */}
               <nav className="flex items-center gap-2 text-[10px] sm:text-xs font-mono tracking-wider uppercase text-brand-zinc-400 dark:text-zinc-550 select-none">
@@ -907,7 +863,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 </span>
               </h1>
 
-              <p className="text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal">
+              <p className="text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line">
                 {service.hero.description}
               </p>
 
@@ -936,17 +892,24 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               </div>
             </motion.div>
 
-            {/* RIGHT: Contact Form Card */}
+            {/* RIGHT: Contact Form Card (Compact & Balanced Width) */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-              className="lg:col-span-6 flex justify-center w-full"
+              className="lg:col-span-5 flex justify-center w-full"
             >
-              <div id="contact-form" className="contact-card-glass p-4.5 xs:p-6 sm:p-9 rounded-[24px] xs:rounded-[32px] shadow-2xl relative border border-brand-zinc-200/95 dark:border-white/10 overflow-hidden w-full max-w-xl">
-                <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-brand-dark dark:text-white mb-5">
-                  Request a Free Audit
-                </h2>
+              <div id="contact-form" className="contact-card-glass p-4.5 xs:p-6 sm:p-7 rounded-[24px] xs:rounded-[30px] shadow-2xl relative border border-brand-zinc-200/95 dark:border-white/10 overflow-hidden w-full max-w-[420px]">
+                <div className="mb-4 text-left">
+                  <h2 className="font-heading text-xl sm:text-2xl font-extrabold text-brand-dark dark:text-white leading-tight">
+                    {service.hero.formHeading || "Request a Free Audit"}
+                  </h2>
+                  {service.hero.formSubheading && (
+                    <p className="text-xs font-sans text-brand-zinc-500 dark:text-zinc-400 mt-1 leading-snug">
+                      {service.hero.formSubheading}
+                    </p>
+                  )}
+                </div>
 
                 <AnimatePresence>
                   {submitted && (
@@ -954,23 +917,23 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                       initial={{ opacity: 0, scale: 0.96 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.96 }}
-                      className="absolute inset-0 bg-white/98 dark:bg-[#12121e]/98 backdrop-blur-md rounded-[32px] p-6 sm:p-10 flex flex-col items-center justify-center text-center z-30 space-y-4"
+                      className="absolute inset-0 bg-white/98 dark:bg-[#12121e]/98 backdrop-blur-md rounded-[30px] p-6 sm:p-8 flex flex-col items-center justify-center text-center z-30 space-y-3"
                     >
-                      <div className="w-14 h-14 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto border border-emerald-500/20 shadow-md animate-pulse">
-                        <Check className="w-7 h-7" />
+                      <div className="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto border border-emerald-500/20 shadow-md animate-pulse">
+                        <Check className="w-6 h-6" />
                       </div>
-                      <h3 className="font-heading text-xl font-bold text-brand-dark dark:text-white">
+                      <h3 className="font-heading text-lg font-bold text-brand-dark dark:text-white">
                         Consultation Booked!
                       </h3>
                       <p className="text-xs font-sans text-brand-zinc-655 dark:text-zinc-355 max-w-xs mx-auto leading-relaxed">
-                        Thanks for reaching out! We'll audit your brand's presence and email you a customized growth strategy within 24 hours.
+                        Thanks for reaching out! We'll audit your project requirements and email you a customized growth strategy within 24 hours.
                       </p>
                     </motion.div>
                   )}
                 </AnimatePresence>
 
-                <form onSubmit={handleSubmit} className="space-y-3.5">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <form onSubmit={handleSubmit} className="space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <input
                       type="text"
                       required
@@ -989,7 +952,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <input
                       type="tel"
                       placeholder="Phone Number"
@@ -1031,7 +994,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                     className="contact-input resize-none text-xs sm:text-sm"
                   />
 
-                  <div className="flex items-center gap-2.5 pt-1">
+                  <div className="flex items-center gap-2.5 pt-0.5">
                     <input
                       type="checkbox"
                       id="privacy"
@@ -1047,10 +1010,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
                   <button
                     type="submit"
-                    className="w-full py-3.5 px-6 rounded-2xl bg-brand-yellow hover:bg-amber-400 text-[#080710] font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-brand-yellow/15 hover:shadow-brand-yellow/30 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 cursor-pointer mt-2"
+                    className="w-full py-3.5 px-6 rounded-2xl bg-brand-yellow hover:bg-amber-400 text-[#080710] font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-brand-yellow/15 hover:shadow-brand-yellow/30 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 cursor-pointer mt-1"
                   >
                     <Send className="w-3.5 h-3.5" />
-                    <span>Request Free Proposal</span>
+                    <span>{service.hero.formButtonText || "Request Free Proposal"}</span>
                   </button>
                 </form>
               </div>
@@ -1156,12 +1119,17 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 </svg>
               </span>
             </h2>
+            {service.whatIncluded.description && (
+              <p className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
+                {service.whatIncluded.description}
+              </p>
+            )}
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 text-left">
             {service.whatIncluded.pillars.map((pillar: any, idx: number) => (
-              <SpotlightCard key={idx} className="bg-zinc-50/80 dark:bg-[#0c0b18] border border-brand-zinc-200/80 dark:border-white/10 p-5 xs:p-7 sm:p-8 flex flex-col justify-between h-full min-h-[280px] sm:min-h-[340px] hover:shadow-2xl hover:border-brand-blue/60 dark:hover:border-brand-yellow/60 transition-all duration-300 relative overflow-hidden group">
-                <div className="space-y-5">
+              <SpotlightCard key={idx} className="bg-zinc-50/80 dark:bg-[#0c0b18] border border-brand-zinc-200/80 dark:border-white/10 p-5 xs:p-7 sm:p-8 flex flex-col justify-between h-full min-h-[260px] sm:min-h-[300px] hover:shadow-2xl hover:border-brand-blue/60 dark:hover:border-brand-yellow/60 transition-all duration-300 relative overflow-hidden group">
+                <div className="space-y-4">
                   <span className="font-serif italic text-4xl sm:text-5xl font-black text-brand-zinc-200 dark:text-white/10 group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-500 leading-none select-none">
                     0{idx + 1}
                   </span>
@@ -1175,16 +1143,18 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                   </div>
                 </div>
 
-                <ul className="space-y-2.5 pt-6 mt-6 border-t border-brand-zinc-150 dark:border-white/5 text-left">
-                  {(pillar.features || []).map((feature: string, fIdx: number) => (
-                    <li key={fIdx} className="flex items-center gap-2.5 text-xs text-brand-zinc-655 dark:text-zinc-355 font-bold group/item">
-                      <span className="w-5 h-5 rounded-full bg-brand-blue/10 dark:bg-brand-yellow/10 text-brand-blue dark:text-brand-yellow flex items-center justify-center shrink-0 border border-brand-blue/15 dark:border-brand-yellow/15 group-hover/item:scale-105 transition-transform duration-300">
-                        <Check className="w-3 h-3 stroke-[2.5]" />
-                      </span>
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
+                {Array.isArray(pillar.features) && pillar.features.length > 0 && (
+                  <ul className="space-y-2.5 pt-5 mt-5 border-t border-brand-zinc-150 dark:border-white/5 text-left">
+                    {pillar.features.map((feature: string, fIdx: number) => (
+                      <li key={fIdx} className="flex items-center gap-2.5 text-xs text-brand-zinc-655 dark:text-zinc-355 font-bold group/item">
+                        <span className="w-5 h-5 rounded-full bg-brand-blue/10 dark:bg-brand-yellow/10 text-brand-blue dark:text-brand-yellow flex items-center justify-center shrink-0 border border-brand-blue/15 dark:border-brand-yellow/15 group-hover/item:scale-105 transition-transform duration-300">
+                          <Check className="w-3 h-3 stroke-[2.5]" />
+                        </span>
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </SpotlightCard>
             ))}
           </div>
@@ -1274,33 +1244,32 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {service.benefits.list.map((b: any, idx: number) => {
-              const benefitIcons = [TrendingUp, Target, Award, DollarSign];
-              const BenefitIcon = benefitIcons[idx % benefitIcons.length];
+              const defaultIcons = [TrendingUp, Target, ShieldCheck, Zap];
+              const BenefitIcon = (b.iconName && iconMap[b.iconName]) || defaultIcons[idx % defaultIcons.length] || TrendingUp;
 
               return (
-                <SpotlightCard key={idx} className="bg-white dark:bg-[#12121e] border border-brand-zinc-200/90 dark:border-white/10 p-4.5 xs:p-6 sm:p-7 rounded-[20px] xs:rounded-[26px] hover:shadow-2xl transition-all duration-300 flex flex-col justify-between min-h-[250px] relative overflow-hidden group">
-                  <div className="relative flex items-center justify-between w-full pb-2.5 mb-3">
-                    <BenefitIcon className="h-4.5 w-4.5 text-[#0306AC] dark:text-[#E9BD36] transition-transform duration-300 group-hover:rotate-[15deg]" />
-                    <span className="text-[8.5px] font-mono tracking-widest text-brand-zinc-400 dark:text-zinc-500 select-none">BENEFIT 0{idx + 1}</span>
-                    <div className="absolute bottom-0 left-0 w-full h-[1px] bg-brand-zinc-150 dark:bg-white/5" />
-                    <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-[#0306AC] dark:bg-[#E9BD36] group-hover:w-full transition-all duration-500 ease-out" />
-                  </div>
-
-                  <div className="space-y-2 text-left">
-                    <div className="flex items-baseline gap-0.5 text-brand-dark dark:text-white">
-                      <span className="font-heading font-black text-3xl sm:text-4xl tracking-tighter leading-none">
-                        <DigitTicker value={b.metric} />
-                      </span>
+                <SpotlightCard key={idx} className="bg-white dark:bg-[#121124] border border-zinc-200/80 dark:border-white/10 p-6 sm:p-7 rounded-[26px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:shadow-[0_16px_40px_-8px_rgba(3,6,172,0.12)] dark:hover:shadow-[0_16px_40px_-8px_rgba(233,189,54,0.08)] hover:border-brand-blue/40 dark:hover:border-brand-yellow/40 transition-all duration-300 flex flex-col justify-between min-h-[260px] group">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between w-full pb-3.5 border-b border-zinc-100 dark:border-white/5">
+                      <div className="w-11 h-11 rounded-2xl bg-brand-blue/10 dark:bg-brand-yellow/10 border border-brand-blue/20 dark:border-brand-yellow/20 flex items-center justify-center text-brand-blue dark:text-brand-yellow shadow-sm group-hover:scale-110 group-hover:rotate-2 transition-transform duration-300 shrink-0">
+                        <BenefitIcon className="w-5 h-5 stroke-[2.2]" />
+                      </div>
                     </div>
-                    <h3 className="font-heading text-sm sm:text-base font-extrabold text-brand-dark dark:text-white mt-2 transition-colors duration-300 group-hover:text-brand-blue dark:group-hover:text-brand-yellow">
-                      {b.title}
-                    </h3>
-                    <p className="text-xs font-sans text-brand-zinc-555 dark:text-zinc-400 leading-relaxed font-normal">
-                      {b.desc}
-                    </p>
+
+                    <div className="space-y-2 text-left">
+                      <div className="font-heading font-black text-3xl sm:text-4xl text-[#0306AC] dark:text-[#E9BD36] leading-none tracking-tight break-words">
+                        <DigitTicker value={b.metric} />
+                      </div>
+                      <h3 className="font-heading text-base font-extrabold text-brand-dark dark:text-white transition-colors duration-300 group-hover:text-brand-blue dark:group-hover:text-brand-yellow pt-1">
+                        {b.title}
+                      </h3>
+                      <p className="text-[12px] font-sans text-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
+                        {b.desc || b.description}
+                      </p>
+                    </div>
                   </div>
 
-                  <div className="pt-3 border-t border-brand-zinc-150 dark:border-white/5 flex items-center justify-between text-brand-blue dark:text-brand-yellow font-mono text-[9px] font-black uppercase tracking-wider mt-5">
+                  <div className="pt-3.5 border-t border-zinc-100 dark:border-white/5 flex items-center justify-between text-brand-blue dark:text-brand-yellow font-mono text-[9.5px] font-black uppercase tracking-wider mt-5">
                     <span>{b.outcomeText || service.benefits.outcomeText || "Guaranteed Outcome"}</span>
                     <Sparkles className="w-3.5 h-3.5 animate-pulse shrink-0" />
                   </div>
@@ -1449,35 +1418,43 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                   </div>
                 </div>
 
-                <div className="relative min-h-[195px] xs:min-h-[165px] w-full">
+                <div className="w-full">
                   <AnimatePresence mode="wait">
                     {service.results.caseStudies.map((cs: any, idx: number) => {
                       if (activeCaseIdx !== idx) return null;
                       return (
                         <motion.div
                           key={idx}
-                          initial={{ opacity: 0, x: 15 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -15 }}
-                          transition={{ duration: 0.35, ease: "easeOut" }}
-                          className="p-5 rounded-2xl bg-white dark:bg-[#12121e]/50 border border-brand-zinc-200/60 dark:border-white/5 text-xs text-left space-y-2.5 shadow-sm absolute inset-0 w-full h-full flex flex-col justify-between"
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.25 }}
+                          className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#12121e] border border-brand-zinc-200/90 dark:border-white/10 text-xs text-left space-y-3 shadow-sm"
                         >
-                          <div className="space-y-1.5">
+                          <div className="space-y-2">
                             <div className="flex items-center gap-2">
-                              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                              <span className="font-heading font-extrabold text-[13px] text-brand-dark dark:text-white leading-tight">
+                              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                              <span className="font-heading font-extrabold text-sm sm:text-base text-brand-dark dark:text-white leading-tight">
                                 {cs.title}
                               </span>
                             </div>
-                            <p className="text-brand-zinc-555 dark:text-zinc-400 font-normal leading-relaxed text-[11.5px] line-clamp-3">
-                              {cs.desc || cs.challenge || cs.strategy || ""}
-                            </p>
+                            {(cs.desc || cs.challenge || cs.strategy) && (
+                              <p className="text-brand-zinc-600 dark:text-zinc-350 font-normal leading-relaxed text-xs">
+                                {cs.desc || cs.challenge || cs.strategy}
+                              </p>
+                            )}
                           </div>
                           
-                          <div className="flex items-center justify-between pt-2.5 border-t border-brand-zinc-100 dark:border-white/5">
-                            <span className="font-mono text-[9px] uppercase tracking-wider text-brand-zinc-400">{cs.outcomeLabel || "Campaign Outcome"}</span>
-                            <span className="font-mono text-[10px] font-black text-brand-blue dark:text-brand-yellow">{cs.outcome}</span>
-                          </div>
+                          {(cs.outcome || cs.outcomeLabel) && (
+                            <div className="flex items-center justify-between pt-3 border-t border-brand-zinc-150 dark:border-white/5">
+                              <span className="font-mono text-[9px] uppercase tracking-wider text-brand-zinc-400">
+                                {cs.outcomeLabel || "Campaign Outcome"}
+                              </span>
+                              <span className="font-mono text-xs font-black text-brand-blue dark:text-brand-yellow">
+                                {cs.outcome}
+                              </span>
+                            </div>
+                          )}
                         </motion.div>
                       );
                     })}
@@ -1489,22 +1466,40 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             {/* Right side stats counters */}
             <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
               {service.results.metrics.map((metric: any, idx: number) => (
-                <div key={idx} className="bg-white dark:bg-[#0c0b18] border border-brand-zinc-200 dark:border-white/5 p-4.5 xs:p-6 rounded-[20px] xs:rounded-[22px] shadow-[0_4px_25px_rgba(0,0,0,0.015)] flex flex-col justify-between hover:-translate-y-1 hover:border-brand-blue/30 dark:hover:border-brand-yellow/30 transition-all duration-300 group min-h-[170px] relative overflow-hidden">
-                  <div className="relative flex items-center justify-between w-full pb-2 mb-3">
-                    <Trophy className="h-4.5 w-4.5 text-brand-blue dark:text-brand-yellow transition-transform duration-300 group-hover:rotate-[15deg]" />
-                    <span className="text-[8px] font-mono tracking-widest text-brand-zinc-400 dark:text-zinc-500 select-none">{metric.tag || `M0${idx + 1}`}</span>
-                    <div className="absolute bottom-0 left-0 w-full h-[1px] bg-brand-zinc-150 dark:bg-white/5" />
-                    <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-brand-blue dark:bg-brand-yellow group-hover:w-full transition-all duration-500 ease-out" />
-                  </div>
+                <SpotlightCard
+                  key={idx}
+                  className="bg-white dark:bg-[#121124] border border-zinc-200/80 dark:border-white/10 p-6 sm:p-7 rounded-[26px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:shadow-[0_16px_40px_-8px_rgba(3,6,172,0.12)] dark:hover:shadow-[0_16px_40px_-8px_rgba(233,189,54,0.08)] hover:border-brand-blue/40 dark:hover:border-brand-yellow/40 transition-all duration-300 flex flex-col justify-between group min-h-[200px]"
+                >
+                  <div className="space-y-4">
+                    {/* Header with Icon Badge & Tag */}
+                    <div className="flex items-center justify-between pb-3.5 border-b border-zinc-100 dark:border-white/5">
+                      <div className="w-11 h-11 rounded-2xl bg-brand-blue/10 dark:bg-brand-yellow/10 border border-brand-blue/20 dark:border-brand-yellow/20 flex items-center justify-center text-brand-blue dark:text-brand-yellow shadow-sm group-hover:scale-110 group-hover:rotate-2 transition-transform duration-300 shrink-0">
+                        <Trophy className="w-5 h-5 stroke-[2.2]" />
+                      </div>
+                      <span className="text-[9px] font-mono font-black tracking-widest text-zinc-500 dark:text-zinc-400 bg-zinc-100/90 dark:bg-white/[0.06] border border-zinc-200/60 dark:border-white/5 px-3 py-1 rounded-full uppercase select-none">
+                        {metric.tag || `M0${idx + 1}`}
+                      </span>
+                    </div>
 
-                  <div className="text-left space-y-1">
-                    <span className="block font-heading font-black text-3xl sm:text-4xl text-brand-dark dark:text-white leading-none">
-                      <DigitTicker value={metric.value} />
-                    </span>
-                    <span className="block font-mono text-[9px] font-black uppercase text-brand-blue dark:text-brand-yellow tracking-widest pt-1">{metric.label}</span>
-                    <span className="block text-[11px] font-sans text-brand-zinc-555 dark:text-zinc-400 pt-1 leading-snug font-normal">{metric.desc}</span>
+                    {/* Metric Content */}
+                    <div className="text-left space-y-1.5">
+                      <div className="font-heading font-black text-3xl sm:text-4xl text-[#0306AC] dark:text-[#E9BD36] leading-none tracking-tight break-words">
+                        <DigitTicker value={metric.value} />
+                      </div>
+                      <div className="flex items-center gap-1.5 pt-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-brand-blue dark:bg-brand-yellow shrink-0" />
+                        <span className="font-mono text-[10px] font-black uppercase text-zinc-800 dark:text-zinc-200 tracking-wider">
+                          {metric.label}
+                        </span>
+                      </div>
+                      {metric.desc && (
+                        <p className="text-[12px] font-sans text-zinc-600 dark:text-zinc-400 pt-1 leading-relaxed font-normal">
+                          {metric.desc}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
+                </SpotlightCard>
               ))}
             </div>
 
@@ -1543,15 +1538,20 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 </svg>
               </span>
             </h2>
+            {service.industries.description && (
+              <p className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
+                {service.industries.description}
+              </p>
+            )}
           </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {service.industries.list.map((ind: any, idx: number) => {
-              const indIcons = [Globe, Cpu, Building2, ShoppingCart, Star, Briefcase];
-              const IndustryIcon = indIcons[idx % indIcons.length];
+              const defaultIcons = [Building2, Cpu, Building2, ShoppingCart, Briefcase, Star];
+              const IndustryIcon = (ind.iconName && iconMap[ind.iconName]) || defaultIcons[idx % defaultIcons.length] || Building2;
               
               const words = String(ind.title || "").split(" ");
-              const abbreviation = words.map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
+              const abbreviation = ind.watermark || words.map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
 
               return (
                 <SpotlightCard
@@ -1574,7 +1574,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                         {ind.title}
                       </h3>
                       <p className="text-xs sm:text-[13.5px] font-sans text-slate-600 dark:text-zinc-400 leading-relaxed font-normal">
-                        {ind.desc}
+                        {ind.desc || ind.description}
                       </p>
                     </div>
                   </div>
@@ -1797,6 +1797,11 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                   </svg>
                 </span>
               </h2>
+              {service.pricing.description && (
+                <p className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
+                  {service.pricing.description}
+                </p>
+              )}
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
@@ -1830,14 +1835,14 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
                     <div className="space-y-6 text-left relative z-10">
                       <div className="space-y-2">
-                        <span className="font-mono text-[9px] font-black text-brand-zinc-400 dark:text-zinc-550 uppercase tracking-widest block">
+                        <span className="font-mono text-[9px] font-black text-brand-zinc-400 dark:text-zinc-555 uppercase tracking-widest block">
                           {plan.tag || `PLAN 0${idx + 1}`}
                         </span>
                         <h3 className="font-heading text-2xl font-black tracking-tight text-brand-dark dark:text-white group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-300">
                           {plan.name}
                         </h3>
                         <p className="text-[12.5px] font-sans text-brand-zinc-555 dark:text-zinc-400 leading-relaxed font-normal min-h-[50px]">
-                          {plan.desc}
+                          {plan.desc || plan.description}
                         </p>
                       </div>
 
@@ -1845,9 +1850,11 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                         <span className="font-heading font-black text-4xl sm:text-5xl bg-clip-text text-transparent bg-gradient-to-r from-brand-blue to-blue-500 dark:from-brand-yellow dark:to-amber-400 leading-none">
                           {plan.price}
                         </span>
-                        <span className="font-mono text-[9px] text-brand-zinc-400 dark:text-zinc-550 uppercase tracking-wider pl-1 whitespace-nowrap shrink-0">
-                          / {plan.period}
-                        </span>
+                        {plan.period && (
+                          <span className="font-mono text-[9px] text-brand-zinc-400 dark:text-zinc-555 uppercase tracking-wider pl-1 whitespace-nowrap shrink-0">
+                            / {plan.period}
+                          </span>
+                        )}
                       </div>
 
                       <ul className="space-y-4 pt-1">
@@ -1987,29 +1994,25 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       )}
 
       {/* ── 13. SERVICE AREA SECTION ── */}
-      {service.serviceArea && <ServiceArea data={service.serviceArea} />}
+      <ServiceArea data={service.serviceArea || content?.serviceArea} />
 
       {/* ── 14. FAQ SECTION ── */}
-      <FAQ
-        data={{
-          sectionTag: service.faqSection?.sectionTag || "14 // FREQUENTLY ASKED",
-          faqTitleIntro: service.faqSection?.titleIntro ?? "Service ",
-          faqTitleHighlight: service.faqSection?.titleHighlight || "FAQ",
-          faqDescription: service.faqSection?.description || "",
-          strategyAudit: {
-            badge: service.faqSection?.ctaBadge || undefined,
-            title: service.faqSection?.ctaTitle || undefined,
-            desc: service.faqSection?.ctaDesc || undefined,
-            button: service.faqSection?.ctaBtnText || undefined,
-            href: service.faqSection?.ctaBtnLink || undefined
-          },
-          list: (service.faqs || []).map((f: any) => ({
-            category: service.title,
-            question: f.q || f.question,
-            answer: f.a || f.answer
-          }))
-        }}
-      />
+      <section id="faq">
+        <PageInlineFaqs
+          faqs={(Array.isArray(pageData?.content?.faqs) && pageData.content.faqs.length > 0)
+            ? pageData.content.faqs
+            : (Array.isArray(service.faqs) && service.faqs.length > 0)
+              ? service.faqs
+              : (Array.isArray(dbService?.faq) && dbService.faq.length > 0)
+                ? dbService.faq
+                : (service.faqs || [])}
+          faqSchemaMarkup={pageData?.content?.faqSchemaMarkup || dbService?.faqSchemaMarkup}
+          badge={pageData?.content?.faqBadge || service.faqSection?.sectionTag || "14 // FREQUENTLY ASKED"}
+          title={pageData?.content?.faqTitle || service.faqSection?.titleHighlight || "Service FAQs"}
+          description={pageData?.content?.faqDescription || service.faqSection?.description}
+          data={pageData?.content || service}
+        />
+      </section>
 
       {/* ── 14. FINAL CTA BANNER ── */}
       <section className="my-10 relative overflow-hidden">

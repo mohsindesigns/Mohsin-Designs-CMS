@@ -86,6 +86,7 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
       { id: "hero", label: "Home" },
       { id: "about", label: "About" },
       { id: "services", label: "Services" },
+      { id: "industries", label: "Industries" },
       { id: "portfolio", label: "Work" },
       { id: "testimonials", label: "Reviews" },
       { id: "whyChooseUs", label: "Value Props" },
@@ -953,6 +954,152 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                   </div>
                )}
 
+                {/* INDUSTRIES SECTION */}
+                {activeTab === "industries" && (
+                   <div className="space-y-12">
+                      <div className="space-y-6">
+                         <h3 className={UI.sectionHeader}>1. Section Intro & Narrative</h3>
+                         <div className="space-y-1.5">
+                            <label className={UI.label}>Badge / Eyebrow</label>
+                            <input
+                               type="text"
+                               value={data.industries?.eyebrow || "08 // SECTORS WE ACCELERATE"}
+                               onChange={(e) => updateSection("industries", "eyebrow", e.target.value)}
+                               className={UI.input}
+                               placeholder="e.g. 08 // SECTORS WE ACCELERATE"
+                            />
+                         </div>
+                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-1.5">
+                               <label className={UI.label}>Headline Intro</label>
+                               <input
+                                  type="text"
+                                  value={data.industries?.titleIntro || "Industries"}
+                                  onChange={(e) => updateSection("industries", "titleIntro", e.target.value)}
+                                  className={UI.input}
+                               />
+                            </div>
+                            <div className="space-y-1.5">
+                               <label className={UI.label}>Headline Highlight (Accent)</label>
+                               <input
+                                  type="text"
+                                  value={data.industries?.titleHighlight || "We Specialize In"}
+                                  onChange={(e) => updateSection("industries", "titleHighlight", e.target.value)}
+                                  className={UI.input + " font-bold border-[#2271b1] text-[#2271b1]"}
+                               />
+                            </div>
+                         </div>
+                         <div className="space-y-1.5">
+                            <label className={UI.label}>Section Description</label>
+                            <textarea
+                               rows={3}
+                               value={data.industries?.description || "Every industry has distinct compliance, customer acquisition funnels, and technical requirements. We tailor our engineering to your exact vertical."}
+                               onChange={(e) => updateSection("industries", "description", e.target.value)}
+                               className={UI.input}
+                            />
+                         </div>
+                      </div>
+
+                      <div className="space-y-6 border-t border-[#f0f0f1] pt-10">
+                         <div className="flex items-center justify-between">
+                            <h3 className={UI.sectionHeader}>2. Industry Sector Cards</h3>
+                            <button
+                               type="button"
+                               onClick={() => {
+                                  const currentList = Array.isArray(data.industries?.list) ? data.industries.list : [];
+                                  updateSection("industries", "list", [
+                                     ...currentList,
+                                     { title: "New Industry Sector", desc: "Specialized vertical capability tailored for growth.", iconName: "Building2", watermark: "IS" }
+                                  ]);
+                               }}
+                               className={UI.buttonAdd}
+                            >
+                               <Plus className="w-3 h-3" /> Add Industry Card
+                            </button>
+                         </div>
+
+                         <div className="space-y-4">
+                            {(Array.isArray(data.industries?.list) ? data.industries.list : [
+                               { title: "Home Services & Contracting", desc: "Roofing, decking, remodeling, and local trade contractors scaling regional territories.", iconName: "Building2", watermark: "HS" },
+                               { title: "Technology & SaaS", desc: "Fast-growth software startups and tech firms demanding high conversion rates.", iconName: "Cpu", watermark: "TS" },
+                               { title: "Commercial Real Estate", desc: "Property developers, architectural firms, and luxury real estate agencies.", iconName: "Building2", watermark: "CR" },
+                               { title: "E-Commerce & Retail", desc: "Direct-to-consumer and B2B brands scaling transactions with seamless checkout.", iconName: "ShoppingCart", watermark: "EC" },
+                               { title: "Professional Services", desc: "Law firms, financial consultancies, and executive agencies building trust.", iconName: "Briefcase", watermark: "PS" },
+                               { title: "Healthcare & Wellness", desc: "Clinics, medical practices, and private health facilities seeking patient acquisition.", iconName: "Heart", watermark: "HW" }
+                            ]).map((ind: any, i: number) => (
+                               <div key={i} className={UI.card + " space-y-4"}>
+                                  <div className="flex items-center justify-between border-b border-[#f0f0f1] pb-2">
+                                     <span className="text-[10px] font-bold text-[#646970] uppercase">Sector Card #{i + 1}</span>
+                                     <button
+                                        type="button"
+                                        onClick={() => {
+                                           const currentList = Array.isArray(data.industries?.list) ? data.industries.list : [];
+                                           updateSection("industries", "list", currentList.filter((_: any, idx: number) => idx !== i));
+                                        }}
+                                        className="text-[#d63638] hover:text-[#b32d2e] p-1"
+                                     >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                     </button>
+                                  </div>
+                                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                     <div className="space-y-1.5 sm:col-span-2">
+                                        <label className={UI.label}>Industry Title</label>
+                                        <input
+                                           type="text"
+                                           value={ind.title || ""}
+                                           onChange={(e) => {
+                                              const list = Array.isArray(data.industries?.list) ? [...data.industries.list] : [];
+                                              list[i] = { ...list[i], title: e.target.value };
+                                              updateSection("industries", "list", list);
+                                           }}
+                                           className={UI.input}
+                                        />
+                                     </div>
+                                     <div className="space-y-1.5">
+                                        <label className={UI.label}>Watermark (2-3 chars)</label>
+                                        <input
+                                           type="text"
+                                           value={ind.watermark || ""}
+                                           onChange={(e) => {
+                                              const list = Array.isArray(data.industries?.list) ? [...data.industries.list] : [];
+                                              list[i] = { ...list[i], watermark: e.target.value };
+                                              updateSection("industries", "list", list);
+                                           }}
+                                           className={UI.input}
+                                           placeholder="e.g. HS"
+                                        />
+                                     </div>
+                                  </div>
+                                  <div className="space-y-1.5">
+                                     <label className={UI.label}>Card Icon</label>
+                                     <IconSelector
+                                        value={ind.iconName || "Building2"}
+                                        onChange={(icon) => {
+                                           const list = Array.isArray(data.industries?.list) ? [...data.industries.list] : [];
+                                           list[i] = { ...list[i], iconName: icon };
+                                           updateSection("industries", "list", list);
+                                        }}
+                                     />
+                                  </div>
+                                  <div className="space-y-1.5">
+                                     <label className={UI.label}>Description</label>
+                                     <textarea
+                                        rows={2}
+                                        value={ind.desc || ind.description || ""}
+                                        onChange={(e) => {
+                                           const list = Array.isArray(data.industries?.list) ? [...data.industries.list] : [];
+                                           list[i] = { ...list[i], desc: e.target.value };
+                                           updateSection("industries", "list", list);
+                                        }}
+                                        className={UI.input}
+                                     />
+                                  </div>
+                               </div>
+                            ))}
+                         </div>
+                      </div>
+                   </div>
+                )}
 
 
                {/* PORTFOLIO SECTION */}
@@ -1586,6 +1733,16 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                                  value={data.contact?.location || "Austin, TX & Remote Worldwide"}
                                  onChange={(e) => updateSection("contact", "location", e.target.value)}
                                  className={UI.input}
+                              />
+                           </div>
+                           <div className="space-y-1.5 sm:col-span-2">
+                              <label className={UI.label}>Location Link / Page URL (Optional Interlink)</label>
+                              <input
+                                 type="text"
+                                 value={data.contact?.locationHref || data.contact?.locationLink || data.contact?.addressLink || ""}
+                                 onChange={(e) => updateSection("contact", "locationHref", e.target.value)}
+                                 className={UI.input}
+                                 placeholder="e.g. /locations/austin or https://maps.google.com/..."
                               />
                            </div>
                         </div>

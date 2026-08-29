@@ -10,12 +10,26 @@ const AboutOwner = dynamic(() => import("@/components/AboutOwner"), { ssr: false
 const Portfolio = dynamic(() => import("@/components/Portfolio"));
 const Testimonials = dynamic(() => import("@/components/Testimonials"), { ssr: false });
 const HowWeWork = dynamic(() => import("@/components/HowWeWork"), { ssr: false });
+const IndustriesSection = dynamic(() => import("@/components/IndustriesSection"), { ssr: false });
 const ServiceArea = dynamic(() => import("@/components/ServiceArea"), { ssr: false });
 const BlogSection = dynamic(() => import("@/components/sections/BlogSection"), { ssr: false });
 const ContactForm = dynamic(() => import("@/components/ContactForm"));
 
 export default function HomeTemplate({ pageData, params }: { pageData?: any; params?: any }) {
   const { allBlogs, blogSection, faq } = useContent();
+
+  const blogData = pageData?.content?.blogSection || pageData?.content?.blog;
+  const selectedBlogIds = blogData?.selectedPosts || [];
+
+  const resolvedPosts = (Array.isArray(selectedBlogIds) && selectedBlogIds.length > 0)
+    ? (allBlogs ? allBlogs.filter((p: any) => {
+        return selectedBlogIds.includes(p._id) || 
+               selectedBlogIds.includes(p.id) || 
+               selectedBlogIds.includes(p.slug) || 
+               selectedBlogIds.some((s: any) => (typeof s === 'object' && (s._id === p._id || s.id === p._id || s.slug === p.slug)));
+      }) : [])
+    : (allBlogs && allBlogs.length > 0 ? allBlogs.slice(0, 4) : undefined);
+
   return (
     <div className="relative">
       <Hero />
@@ -25,6 +39,11 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any; par
 
       <section id="services">
         <Services />
+      </section>
+
+      {/* Industries We Serve Section */}
+      <section id="industries">
+        <IndustriesSection data={pageData?.content?.industries || pageData?.content?.domainExpertise} />
       </section>
 
       <section id="portfolio">
@@ -40,6 +59,7 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any; par
       <section id="service-area">
         <ServiceArea />
       </section>
+
       <section id="faq">
         <PageInlineFaqs
           faqs={pageData?.content?.faqs}
@@ -51,15 +71,16 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any; par
         />
       </section>
 
-      {pageData?.content?.blogSection && Array.isArray(pageData.content.blogSection.selectedPosts) && pageData.content.blogSection.selectedPosts.length > 0 && (
+      {/* Blog Section */}
+      <section id="blog">
         <BlogSection
-          title={pageData.content.blogSection.title}
-          subtitle={pageData.content.blogSection.subtitle}
-          description={pageData.content.blogSection.description}
-          data={pageData.content.blogSection}
-          posts={allBlogs ? allBlogs.filter((p: any) => pageData.content.blogSection.selectedPosts.includes(p._id)) : []}
+          title={blogData?.title}
+          subtitle={blogData?.subtitle || blogData?.sectionTag}
+          description={blogData?.description}
+          data={blogData}
+          posts={resolvedPosts}
         />
-      )}
+      </section>
 
       {/* Direct Contact Form Section */}
       <section id="contact">

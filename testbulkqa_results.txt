@@ -1,0 +1,37 @@
+STATUS CODE: 200
+HTML TOTAL LENGTH: 649360
+TOTAL OCCURRENCES OF "testbulkqa": 396
+
+--- SECTION-BY-SECTION RENDER REPORT ---
+[✓ PASS] Hero Title & Highlight
+[✓ PASS] Hero Description Multi-line
+[✓ PASS] Hero Benefits Checklist
+[✓ PASS] Hero Form Heading
+[✓ PASS] Hero Form Subheading
+[✓ PASS] Hero Form Submit Button
+[✓ PASS] Client Trust Heading & Logos
+[✓ PASS] Deliverables Eyebrow & Description
+[✓ PASS] Deliverables Pillars & Features
+[✓ PASS] Strategy Approach Steps
+[✓ PASS] Outcomes Metrics & Guaranteed Outcome
+[✓ PASS] Process Roadmap & Phase Tag
+[✓ PASS] Results & Case Studies
+[✓ PASS] Industries We Specialize In
+[✓ PASS] Tech Stack & Tool Tag
+[✓ PASS] Why Choose Us Differentiators
+[✓ PASS] Pricing Plans & Features
+[✓ PASS] Global Coverage / Service Area
+[✓ PASS] FAQs Questions & Answers
+[✓ PASS] Final CTA Banner
+
+--- DISTINCT TOKENS MATCHED ---
+testbulkqa
+testbulkqastat1
+testbulkqastat1)
+testbulkqastat2
+testbulkqastat2)
+testbulkqa&amp;plan=testbulkqa
+testbulkqa\
+testbulkqa/#breadcrumb\
+testbulkqa/#service\
+testbulkqa\\ntestbulkqa
