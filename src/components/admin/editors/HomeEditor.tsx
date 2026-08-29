@@ -28,20 +28,31 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
    const [activeTab, setActiveTab] = useState("hero");
 
    useEffect(() => {
-      if (data && Object.keys(data).length === 0) {
-         setData({
-            hero: { badge: "", headlines: [{ text: "", highlight: false }], description: "", buttons: [{ text: "", href: "", primary: true }], stats: [], images: [], bgImageAlt: "" },
-            about: { badge: "", headline: { prefix: "", highlight: "", suffix: "" }, description: "", image: { src: "", alt: "", badge: "" }, points: [] },
-            services: { badge: "", headline: { prefix: "", highlight: "", suffix: "" }, description: [], stats: [], services: [] },
-            whyChooseUs: { section: { badge: "", headline: "", description: "" }, features: [], stats: [] },
-            leadership: {
-               section: { badge: "", headline: "", description: "" },
-               ceo: { name: "", title: "", image: { src: "", alt: "" }, badges: { top: "", bottom: "" }, quotes: [""], description: "", socials: [] }
-            },
-            portfolio: { section: { badge: "", headline: "" }, projects: [], button: { text: "", link: "" } },
-            testimonials: { section: { badge: "", headline: "", featured: "" }, stats: { subscribers: "" }, testimonials: [] },
-            quote: { section: { badge: "", headline: "", description: "" }, success: { title: "", message: "", buttonText: "" }, services: [], timelines: [] }
-         });
+      if (data && (!data.hero || Object.keys(data).length === 0)) {
+         fetch("/api/content?key=complete_data")
+            .then(res => res.json())
+            .then(resData => {
+               const defaultData = resData?.data || resData || {};
+               setData((prev: any) => ({
+                  ...defaultData,
+                  ...(prev || {}),
+               }));
+            })
+            .catch(() => {
+               setData({
+                  hero: { badge: "", headlines: [{ text: "", highlight: false }], description: "", buttons: [{ text: "", href: "", primary: true }], stats: [], images: [], bgImageAlt: "" },
+                  about: { badge: "", headline: { prefix: "", highlight: "", suffix: "" }, description: "", image: { src: "", alt: "", badge: "" }, points: [] },
+                  services: { badge: "", headline: { prefix: "", highlight: "", suffix: "" }, description: [], stats: [], services: [] },
+                  whyChooseUs: { section: { badge: "", headline: "", description: "" }, features: [], stats: [] },
+                  leadership: {
+                     section: { badge: "", headline: "", description: "" },
+                     ceo: { name: "", title: "", image: { src: "", alt: "" }, badges: { top: "", bottom: "" }, quotes: [""], description: "", socials: [] }
+                  },
+                  portfolio: { section: { badge: "", headline: "" }, projects: [], button: { text: "", link: "" } },
+                  testimonials: { section: { badge: "", headline: "", featured: "" }, stats: { subscribers: "" }, testimonials: [] },
+                  quote: { section: { badge: "", headline: "", description: "" }, success: { title: "", message: "", buttonText: "" }, services: [], timelines: [] }
+               });
+            });
       }
    }, [data, setData]);
 

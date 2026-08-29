@@ -22,8 +22,10 @@ const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor")
 
 const EDITOR_TEMPLATES = [
   { id: 'home', label: 'Home Page', icon: LayoutTemplate },
+  { id: 'about', label: 'About Page', icon: Type },
   { id: 'new-about', label: 'New About Page', icon: Type },
   { id: 'services', label: 'Services Index', icon: Briefcase },
+  { id: 'service-detail', label: 'Service Detail', icon: Briefcase },
   { id: 'gallery', label: 'Project Gallery', icon: ImageIcon },
   { id: 'team', label: 'Team Directory', icon: Users },
   { id: 'careers', label: 'Career Board', icon: Briefcase },
@@ -36,6 +38,8 @@ const EDITOR_TEMPLATES = [
   { id: 'blog', label: 'Blog Index', icon: BookOpen },
   { id: 'country', label: 'Country Page', icon: Globe },
   { id: 'state', label: 'State Page', icon: Globe },
+  { id: 'industry', label: 'Industry Page', icon: Globe },
+  { id: 'industries', label: 'Industries Hub', icon: Globe },
 ];
 
 export default function DynamicPageEditor({ params }: { params: Promise<{ id: string }> }) {
@@ -60,6 +64,10 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
       const res = await fetch(`/api/admin/pages/${id}`);
       if (res.ok) {
         const data = await res.json();
+        // Normalize template name
+        let tmpl = data.template || 'home';
+        if (tmpl === 'newabout') tmpl = 'new-about';
+        data.template = tmpl;
         setPage(data);
         const pageContent = data.content || {};
         if (!pageContent.faqs) pageContent.faqs = [];

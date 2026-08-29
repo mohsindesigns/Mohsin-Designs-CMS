@@ -2,9 +2,15 @@ import dynamic from 'next/dynamic';
 
 export const TemplateEditors: Record<string, any> = {
   home: dynamic(() => import('./HomeEditor')),
+  homepage: dynamic(() => import('./HomeEditor')),
+  'home-page': dynamic(() => import('./HomeEditor')),
+  about: dynamic(() => import('./NewAboutEditor')),
+  'about-page': dynamic(() => import('./NewAboutEditor')),
   'new-about': dynamic(() => import('./NewAboutEditor')),
   newabout: dynamic(() => import('./NewAboutEditor')),
   services: dynamic(() => import('./ServicesEditor')),
+  'service-detail': dynamic(() => import('./ServiceDetailEditor')),
+  servicedetail: dynamic(() => import('./ServiceDetailEditor')),
   team: dynamic(() => import('./TeamEditor')),
   careers: dynamic(() => import('./CareersEditor')),
   gallery: dynamic(() => import('./GalleryEditor')),
@@ -12,7 +18,6 @@ export const TemplateEditors: Record<string, any> = {
   contact: dynamic(() => import('./ContactEditor')),
   reviews: dynamic(() => import('./ReviewsEditor')),
   blog: dynamic(() => import('./BlogEditor')),
-  'service-detail': dynamic(() => import('./ServiceDetailEditor')),
   settings: dynamic(() => import('./SettingsEditor')),
   'service-area': dynamic(() => import('./LocationEditor')),
   location: dynamic(() => import('./LocationEditor')),
