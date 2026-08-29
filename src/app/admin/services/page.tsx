@@ -17,6 +17,7 @@ import SeoEditor from "@/components/admin/SeoEditor";
 import MediaSelector from "@/components/admin/MediaSelector";
 import { BASE_URL } from "@/lib/constants";
 import { UI } from "@/components/admin/editors/styles";
+import { AVAILABLE_COUNTRIES, resolveCountryLocation, COUNTRIES_DATABASE } from "@/lib/countryLocations";
 
 // ── Bullet Point / Array Input Helper ────────────────────────────────────────
 function BulletListEditor({
@@ -314,6 +315,20 @@ const DEFAULT_SERVICE_TEMPLATE = {
       }
     ]
   },
+  serviceArea: {
+    sectionTag: "12 // GLOBAL OPERATIONAL HUBS",
+    titleIntro: "Serving Clients Across ",
+    titleHighlight: "Prime Global Markets",
+    description: "Deploying high-performance digital platforms and engineering solutions worldwide.",
+    ctaText: "Schedule Global Consultation",
+    ctaHref: "#contact-form",
+    hubs: [
+      { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", link: "/locations" },
+      { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", link: "/locations" },
+      { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", link: "/locations" },
+      { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", link: "/locations" }
+    ]
+  },
   finalCta: {
     eyebrow: "12 // START BUILDING",
     titleIntro: "Ready to Transform Your",
@@ -520,6 +535,10 @@ export default function ServicesAdminPage() {
         ...DEFAULT_SERVICE_TEMPLATE.pricing,
         ...(service.pricing || {})
       },
+      serviceArea: {
+        ...DEFAULT_SERVICE_TEMPLATE.serviceArea,
+        ...(service.serviceArea || {})
+      },
       faqBadge: service.faqBadge || service.sectionTag || DEFAULT_SERVICE_TEMPLATE.faqBadge,
       faqTitleIntro: service.faqTitleIntro || DEFAULT_SERVICE_TEMPLATE.faqTitleIntro,
       faqTitleHighlight: service.faqTitleHighlight || DEFAULT_SERVICE_TEMPLATE.faqTitleHighlight,
@@ -700,18 +719,19 @@ export default function ServicesAdminPage() {
   });
 
   const subTabs = [
-    { id: "hero", label: "Hero" },
-    { id: "trust", label: "Trust" },
-    { id: "what-included", label: "Deliverables" },
-    { id: "strategy", label: "Strategy" },
-    { id: "benefits", label: "Outcomes" },
-    { id: "process", label: "Process" },
-    { id: "results", label: "Case Study" },
-    { id: "industries", label: "Industries" },
-    { id: "tools", label: "Tech Stack" },
-    { id: "why-us", label: "Why Partner" },
-    { id: "pricing", label: "Pricing" },
-    { id: "final-cta", label: "CTA Banner" },
+    { id: "hero", label: "1. Hero & Form" },
+    { id: "trust", label: "2. Trust Bar" },
+    { id: "what-included", label: "3. Deliverables" },
+    { id: "strategy", label: "4. Strategy Roadmap" },
+    { id: "benefits", label: "5. Outcomes" },
+    { id: "process", label: "6. Execution Process" },
+    { id: "results", label: "7. Case Studies" },
+    { id: "industries", label: "8. Target Industries" },
+    { id: "tools", label: "9. Tech Stack" },
+    { id: "why-us", label: "10. Why Partner" },
+    { id: "pricing", label: "11. Pricing Packages" },
+    { id: "serviceArea", label: "12. Global Coverage" },
+    { id: "final-cta", label: "13. CTA Banner" },
   ];
 
   if (loading) {
@@ -2276,6 +2296,244 @@ export default function ServicesAdminPage() {
                                     >
                                       + Add Pricing Tier
                                     </button>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* SUBTAB: GLOBAL COVERAGE / SERVICE AREA */}
+                            {activeSubTab === "serviceArea" && (
+                              <div className="space-y-12">
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>1. Section Header & Narrative</h3>
+                                  <div className="space-y-1.5">
+                                    <label className={UI.label}>Badge / Tag</label>
+                                    <input
+                                      type="text"
+                                      value={form.serviceArea?.sectionTag || "12 // GLOBAL REACH"}
+                                      onChange={(e) => setForm({ ...form, serviceArea: { ...(form.serviceArea || {}), sectionTag: e.target.value } })}
+                                      className={UI.input}
+                                      placeholder="e.g. 12 // GLOBAL REACH"
+                                    />
+                                  </div>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Title Intro</label>
+                                      <input
+                                        type="text"
+                                        value={form.serviceArea?.titleIntro || "Serving Clients Across "}
+                                        onChange={(e) => setForm({ ...form, serviceArea: { ...(form.serviceArea || {}), titleIntro: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="e.g. Serving Clients Across "
+                                      />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Title Highlight</label>
+                                      <input
+                                        type="text"
+                                        value={form.serviceArea?.titleHighlight || "Prime Global Markets"}
+                                        onChange={(e) => setForm({ ...form, serviceArea: { ...(form.serviceArea || {}), titleHighlight: e.target.value } })}
+                                        className={UI.input + " font-bold border-[#2271b1] text-[#2271b1]"}
+                                        placeholder="e.g. Prime Global Markets"
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <div className="space-y-1.5">
+                                    <label className={UI.label}>Description</label>
+                                    <textarea
+                                      rows={2}
+                                      value={form.serviceArea?.description || "Deploying high-performance digital platforms across North America, Europe, and worldwide."}
+                                      onChange={(e) => setForm({ ...form, serviceArea: { ...(form.serviceArea || {}), description: e.target.value } })}
+                                      className={UI.input}
+                                      placeholder="e.g. Deploying high-performance digital platforms across North America, Europe, and worldwide."
+                                    />
+                                  </div>
+                                </div>
+
+                                {/* 2. CTA Button */}
+                                <div className="space-y-6 pt-8 border-t border-[#f0f0f1]">
+                                  <h3 className={UI.sectionHeader}>2. Call to Action Button</h3>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Button Text</label>
+                                      <input
+                                        type="text"
+                                        value={form.serviceArea?.ctaText || "Schedule Global Consultation"}
+                                        onChange={(e) => setForm({ ...form, serviceArea: { ...(form.serviceArea || {}), ctaText: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="e.g. Schedule Global Consultation"
+                                      />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Button Link</label>
+                                      <input
+                                        type="text"
+                                        value={form.serviceArea?.ctaHref || "#contact-form"}
+                                        onChange={(e) => setForm({ ...form, serviceArea: { ...(form.serviceArea || {}), ctaHref: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="e.g. #contact-form or /contact"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* 3. Global Operating Locations (Hubs) */}
+                                <div className="space-y-6 pt-8 border-t border-[#f0f0f1]">
+                                  <div className="flex justify-between items-center">
+                                    <div>
+                                      <h3 className={UI.sectionHeader}>3. Active Global Operating Locations</h3>
+                                      <p className="text-xs text-[#646970]">Choose or type any country or state. Real GPS coordinates are automatically mapped on the live interactive globe.</p>
+                                    </div>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const currentHubs = (Array.isArray(form.serviceArea?.hubs) && form.serviceArea.hubs.length > 0)
+                                          ? form.serviceArea.hubs
+                                          : [
+                                            { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", link: "/locations" },
+                                            { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", link: "/locations" },
+                                            { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", link: "/locations" },
+                                            { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", link: "/locations" }
+                                          ];
+                                        const newHub = { id: `hub-${Date.now()}`, name: "California, USA", focus: "Regional Hub", timezone: "PST", link: "/locations" };
+                                        setForm({ ...form, serviceArea: { ...(form.serviceArea || {}), hubs: [...currentHubs, newHub] } });
+                                      }}
+                                      className={UI.buttonAdd}
+                                    >
+                                      + Add Location Hub
+                                    </button>
+                                  </div>
+
+                                  <div className="space-y-4">
+                                    {((Array.isArray(form.serviceArea?.hubs) && form.serviceArea.hubs.length > 0)
+                                      ? form.serviceArea.hubs
+                                      : [
+                                        { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", link: "/locations" },
+                                        { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", link: "/locations" },
+                                        { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", link: "/locations" },
+                                        { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", link: "/locations" }
+                                      ]
+                                    ).map((hub: any, hIdx: number) => {
+                                      const currentHubs = (Array.isArray(form.serviceArea?.hubs) && form.serviceArea.hubs.length > 0)
+                                        ? form.serviceArea.hubs
+                                        : [
+                                          { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", link: "/locations" },
+                                          { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", link: "/locations" },
+                                          { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", link: "/locations" },
+                                          { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", link: "/locations" }
+                                        ];
+
+                                      return (
+                                        <div key={hIdx} className={UI.card + " space-y-4 relative"}>
+                                          <div className="flex justify-between items-center border-b border-[#f0f0f1] pb-2">
+                                            <span className="text-xs font-bold text-[#1d2327]">Location Hub #{hIdx + 1}: {hub.name || "Unnamed"}</span>
+                                            <button
+                                              type="button"
+                                              onClick={() => {
+                                                const updated = currentHubs.filter((_: any, idx: number) => idx !== hIdx);
+                                                setForm({ ...form, serviceArea: { ...(form.serviceArea || {}), hubs: updated } });
+                                              }}
+                                              className="text-[#d63638] hover:text-[#b32d2e] p-1 text-xs font-semibold"
+                                            >
+                                              <Trash2 className="w-3.5 h-3.5" />
+                                            </button>
+                                          </div>
+
+                                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div className="space-y-1.5">
+                                              <label className={UI.label}>Country or US State</label>
+                                              <input
+                                                type="text"
+                                                list="service-countries-list"
+                                                value={hub.name || ""}
+                                                onChange={(e) => {
+                                                  const val = e.target.value;
+                                                  const resolved = resolveCountryLocation(val);
+                                                  const updated = [...currentHubs];
+                                                  updated[hIdx] = {
+                                                    ...updated[hIdx],
+                                                    name: val,
+                                                    id: resolved?.id || hub.id || val.toLowerCase().replace(/[^a-z0-9]/g, "-"),
+                                                    timezone: resolved?.timezone || hub.timezone || "UTC",
+                                                    x: resolved?.x || hub.x || "50%",
+                                                    y: resolved?.y || hub.y || "50%"
+                                                  };
+                                                  setForm({ ...form, serviceArea: { ...(form.serviceArea || {}), hubs: updated } });
+                                                }}
+                                                className={UI.input + " font-bold text-[#2271b1]"}
+                                                placeholder="e.g. Germany, Florida, United Kingdom..."
+                                              />
+                                              <datalist id="service-countries-list">
+                                                {AVAILABLE_COUNTRIES.map((c) => (
+                                                  <option key={c} value={c} />
+                                                ))}
+                                              </datalist>
+                                            </div>
+
+                                            <div className="space-y-1.5">
+                                              <label className={UI.label}>Regional Focus / Specialization</label>
+                                              <input
+                                                type="text"
+                                                value={hub.focus || ""}
+                                                onChange={(e) => {
+                                                  const updated = [...currentHubs];
+                                                  updated[hIdx] = { ...updated[hIdx], focus: e.target.value };
+                                                  setForm({ ...form, serviceArea: { ...(form.serviceArea || {}), hubs: updated } });
+                                                }}
+                                                className={UI.input}
+                                                placeholder="e.g. High Performance Web, Enterprise UI"
+                                              />
+                                            </div>
+                                          </div>
+
+                                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                            <div className="space-y-1.5">
+                                              <label className={UI.label}>Timezone</label>
+                                              <input
+                                                type="text"
+                                                value={hub.timezone || ""}
+                                                onChange={(e) => {
+                                                  const updated = [...currentHubs];
+                                                  updated[hIdx] = { ...updated[hIdx], timezone: e.target.value };
+                                                  setForm({ ...form, serviceArea: { ...(form.serviceArea || {}), hubs: updated } });
+                                                }}
+                                                className={UI.input}
+                                                placeholder="e.g. CET, EST, GMT"
+                                              />
+                                            </div>
+                                            <div className="space-y-1.5">
+                                              <label className={UI.label}>Map Pin X% Coordinate</label>
+                                              <input
+                                                type="text"
+                                                value={hub.x || ""}
+                                                onChange={(e) => {
+                                                  const updated = [...currentHubs];
+                                                  updated[hIdx] = { ...updated[hIdx], x: e.target.value };
+                                                  setForm({ ...form, serviceArea: { ...(form.serviceArea || {}), hubs: updated } });
+                                                }}
+                                                className={UI.input}
+                                                placeholder="e.g. 49.66%"
+                                              />
+                                            </div>
+                                            <div className="space-y-1.5">
+                                              <label className={UI.label}>Map Pin Y% Coordinate</label>
+                                              <input
+                                                type="text"
+                                                value={hub.y || ""}
+                                                onChange={(e) => {
+                                                  const updated = [...currentHubs];
+                                                  updated[hIdx] = { ...updated[hIdx], y: e.target.value };
+                                                  setForm({ ...form, serviceArea: { ...(form.serviceArea || {}), hubs: updated } });
+                                                }}
+                                                className={UI.input}
+                                                placeholder="e.g. 43.78%"
+                                              />
+                                            </div>
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
                                   </div>
                                 </div>
                               </div>
