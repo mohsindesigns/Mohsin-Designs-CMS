@@ -34,11 +34,25 @@ export const ContentProvider = ({ children, initialData, initialBlogs }: { child
   const [isLoading, setIsLoading] = useState(!initialData);
 
   useEffect(() => {
+    if (Array.isArray(initialBlogs) && initialBlogs.length > 0) {
+      setBlogs(initialBlogs);
+    }
+  }, [initialBlogs]);
+
+  useEffect(() => {
     // If initialData is provided (such as for a specific CMS page, country, or state),
     // NEVER fetch and merge global homepage content into it (prevents data leakage).
     if (initialData) {
       setContent(initialData);
       setIsLoading(false);
+      if (!initialBlogs || initialBlogs.length === 0) {
+        fetch('/api/blog')
+          .then(res => res.ok ? res.json() : [])
+          .then(data => {
+            if (Array.isArray(data) && data.length > 0) setBlogs(data);
+          })
+          .catch(() => {});
+      }
       return;
     }
 

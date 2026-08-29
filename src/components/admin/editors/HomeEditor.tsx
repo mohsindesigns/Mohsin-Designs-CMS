@@ -1787,13 +1787,93 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                            })}
                         </div>
                      </div>
-                  </div>
-               )}
+                              </div>
+                )}
 
+                {/* BLOG SECTION */}
+                {activeTab === "blog" && (
+                   <div className="space-y-12">
+                      <div className="space-y-6">
+                         <h3 className={UI.sectionHeader}>1. Section Header & Narrative</h3>
+                         <div className="space-y-1.5">
+                            <label className={UI.label}>Badge / Tag (Eyebrow)</label>
+                            <input
+                               type="text"
+                               value={data.blogSection?.sectionTag || data.blogSection?.subtitle || data.blog?.sectionTag || "LATEST ARTICLES & INSIGHTS"}
+                               onChange={(e) => {
+                                  updateSection("blogSection", "sectionTag", e.target.value);
+                                  updateSection("blog", "sectionTag", e.target.value);
+                               }}
+                               className={UI.input}
+                               placeholder="e.g. LATEST ARTICLES & INSIGHTS"
+                            />
+                         </div>
+                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-1.5">
+                               <label className={UI.label}>Headline Intro</label>
+                               <input
+                                  type="text"
+                                  value={data.blogSection?.titleIntro || data.blog?.titleIntro || "Thinking, Strategies &"}
+                                  onChange={(e) => {
+                                     updateSection("blogSection", "titleIntro", e.target.value);
+                                     updateSection("blog", "titleIntro", e.target.value);
+                                  }}
+                                  className={UI.input}
+                                  placeholder="e.g. Thinking, Strategies &"
+                               />
+                            </div>
+                            <div className="space-y-1.5">
+                               <label className={UI.label}>Headline Highlight <span className="text-primary font-bold">(Italic / Highlight color)</span></label>
+                               <input
+                                  type="text"
+                                  value={data.blogSection?.titleHighlight || data.blogSection?.title || data.blog?.titleHighlight || "Industry Insights"}
+                                  onChange={(e) => {
+                                     updateSection("blogSection", "titleHighlight", e.target.value);
+                                     updateSection("blogSection", "title", e.target.value);
+                                     updateSection("blog", "titleHighlight", e.target.value);
+                                  }}
+                                  className={UI.input + " font-bold border-[#2271b1] text-[#2271b1]"}
+                                  placeholder="e.g. Industry Insights"
+                               />
+                            </div>
+                         </div>
+                         <div className="space-y-1.5">
+                            <label className={UI.label}>Intro Description</label>
+                            <textarea
+                               rows={3}
+                               value={data.blogSection?.description || data.blog?.description || "Explore our latest thoughts on high-performance web engineering, modern UI/UX design architectures, and conversion rate optimization."}
+                               onChange={(e) => {
+                                  updateSection("blogSection", "description", e.target.value);
+                                  updateSection("blog", "description", e.target.value);
+                               }}
+                               className={UI.input}
+                               placeholder="e.g. Explore our latest thoughts on high-performance web engineering..."
+                            />
+                         </div>
+                      </div>
 
+                      {/* Blog Post Selection */}
+                      <div className="space-y-6 pt-8 border-t border-[#f0f0f1]">
+                         <h3 className={UI.sectionHeader}>2. Featured Blog Articles Selection</h3>
+                         <p className="text-[11px] text-[#646970] italic -mt-3">
+                            Pick the published blog posts to display on the homepage. If none are selected, the latest published posts are automatically displayed.
+                         </p>
+                         <BlogSelector
+                            selectedIds={Array.isArray(data.blogSection?.selectedPosts)
+                               ? data.blogSection.selectedPosts
+                               : (Array.isArray(data.blog?.selectedPosts) ? data.blog.selectedPosts : [])}
+                            onChange={(selectedIds) => {
+                               updateSection("blogSection", "selectedPosts", selectedIds);
+                               updateSection("blog", "selectedPosts", selectedIds);
+                            }}
+                            label="Select Featured Homepage Articles"
+                         />
+                      </div>
+                   </div>
+                )}
 
-               {/* CONTACT FORM SECTION */}
-               {activeTab === "quote" && (
+                {/* CONTACT FORM SECTION */}
+                {activeTab === "quote" && (
                   <div className="space-y-10">
                      {/* 1. Header & Badges */}
                      <div className="space-y-6">

@@ -114,21 +114,50 @@ export default function BlogSection({
     }
   ];
 
-  // Resolve posts strictly from props, or page-specific selectedPosts
+  const [liveBlogs, setLiveBlogs] = useState<BlogPost[]>([]);
+
+  useEffect(() => {
+    // If allBlogs is empty in context, fetch fresh from /api/blog
+    if (!content.allBlogs || content.allBlogs.length === 0) {
+      fetch('/api/blog')
+        .then(res => res.ok ? res.json() : [])
+        .then(data => {
+          if (Array.isArray(data) && data.length > 0) {
+            setLiveBlogs(data);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [content.allBlogs]);
+
+  const poolOfBlogs = (Array.isArray(content.allBlogs) && content.allBlogs.length > 0)
+    ? content.allBlogs
+    : liveBlogs;
+
+  // Resolve posts strictly from props, page-specific selectedPosts, or blog pool
   let activePosts: BlogPost[] = [];
+  
   if (Array.isArray(propPosts) && propPosts.length > 0) {
     activePosts = propPosts;
-  } else if (Array.isArray(rawBlog.selectedPosts) && rawBlog.selectedPosts.length > 0 && Array.isArray(content.allBlogs)) {
-    const matched = content.allBlogs.filter((p: any) => 
-      rawBlog.selectedPosts.includes(p._id) || 
-      rawBlog.selectedPosts.includes(p.id) || 
-      rawBlog.selectedPosts.includes(p.slug)
-    );
-    if (matched.length > 0) activePosts = matched;
+  } else if (Array.isArray(rawBlog.selectedPosts) && rawBlog.selectedPosts.length > 0) {
+    if (rawBlog.selectedPosts.every((s: any) => typeof s === 'object' && s && s.title)) {
+      activePosts = rawBlog.selectedPosts;
+    } else if (Array.isArray(poolOfBlogs) && poolOfBlogs.length > 0) {
+      const matched = poolOfBlogs.filter((p: any) => {
+        const pId = String(p._id || p.id || '');
+        const pSlug = String(p.slug || '');
+        return rawBlog.selectedPosts.some((s: any) => {
+          if (typeof s === 'string') return s === pId || s === pSlug;
+          if (typeof s === 'object' && s) return String(s._id || s.id || '') === pId || String(s.slug || '') === pSlug;
+          return false;
+        });
+      });
+      if (matched.length > 0) activePosts = matched;
+    }
   }
   
-  if (activePosts.length === 0 && Array.isArray(content.allBlogs) && content.allBlogs.length > 0) {
-    activePosts = content.allBlogs.slice(0, 4);
+  if (activePosts.length === 0 && Array.isArray(poolOfBlogs) && poolOfBlogs.length > 0) {
+    activePosts = poolOfBlogs.slice(0, 4);
   }
 
   if (activePosts.length === 0) {
@@ -188,18 +217,13 @@ export default function BlogSection({
     let href = p.link || (p.slug ? `/blog/${p.slug}` : `/blog/${p._id || idx}`);
     let extractedExcerpt = getPostExcerpt(p);
 
-    // If this is the featured post (idx === 0) and CMS has an override excerpt, use it
-    if (idx === 0 && rawBlog.featuredExcerpt && rawBlog.featuredExcerpt.trim()) {
-      extractedExcerpt = rawBlog.featuredExcerpt.trim();
-    }
-
     return {
       id: p._id || p.id || `post-${idx}`,
-      title: (idx === 0 && rawBlog.featuredTitle) ? rawBlog.featuredTitle : (p.title || "Untitled Post"),
+      title: p.title || (idx === 0 && rawBlog.featuredTitle ? rawBlog.featuredTitle : "Untitled Post"),
       link: href,
-      image: (idx === 0 && rawBlog.featuredImage) ? rawBlog.featuredImage : img,
+      image: p.featuredImage || p.image || (idx === 0 && rawBlog.featuredImage ? rawBlog.featuredImage : img),
       excerpt: extractedExcerpt,
-      category: (idx === 0 && rawBlog.featuredCategory) ? rawBlog.featuredCategory : cat,
+      category: cat || (idx === 0 && rawBlog.featuredCategory ? rawBlog.featuredCategory : "Article"),
       date: formattedDate,
       readTime: reading
     };
@@ -311,6 +335,7 @@ export default function BlogSection({
                     src={posts[0].image}
                     alt={posts[0].title}
                     fill
+                    unoptimized={posts[0].image?.startsWith('http') || posts[0].image?.startsWith('/uploads') || posts[0].image?.startsWith('/cdn-images')}
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                     sizes="(max-width: 1024px) 100vw, 680px"
                     priority
@@ -371,6 +396,7 @@ export default function BlogSection({
                       src={post.image}
                       alt={post.title}
                       fill
+                      unoptimized={post.image?.startsWith('http') || post.image?.startsWith('/uploads') || post.image?.startsWith('/cdn-images')}
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                       sizes="(max-width: 640px) 100vw, 100px"
                     />

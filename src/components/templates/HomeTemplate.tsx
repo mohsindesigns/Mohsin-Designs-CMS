@@ -18,17 +18,32 @@ const ContactForm = dynamic(() => import("@/components/ContactForm"));
 export default function HomeTemplate({ pageData, params }: { pageData?: any; params?: any }) {
   const { allBlogs, blogSection, faq } = useContent();
 
-  const blogData = pageData?.content?.blogSection || pageData?.content?.blog;
+  const blogData = pageData?.content?.blogSection || pageData?.content?.blog || blogSection;
   const selectedBlogIds = blogData?.selectedPosts || [];
 
-  const resolvedPosts = (Array.isArray(selectedBlogIds) && selectedBlogIds.length > 0)
-    ? (allBlogs ? allBlogs.filter((p: any) => {
-        return selectedBlogIds.includes(p._id) || 
-               selectedBlogIds.includes(p.id) || 
-               selectedBlogIds.includes(p.slug) || 
-               selectedBlogIds.some((s: any) => (typeof s === 'object' && (s._id === p._id || s.id === p._id || s.slug === p.slug)));
-      }) : [])
-    : (allBlogs && allBlogs.length > 0 ? allBlogs.slice(0, 4) : undefined);
+  // Match selected posts by string ID, ObjectID, slug, or if selectedBlogIds contains full post objects
+  let resolvedPosts: any[] | undefined = undefined;
+
+  if (Array.isArray(selectedBlogIds) && selectedBlogIds.length > 0) {
+    if (selectedBlogIds.every((s: any) => typeof s === 'object' && s && s.title)) {
+      resolvedPosts = selectedBlogIds;
+    } else if (Array.isArray(allBlogs) && allBlogs.length > 0) {
+      const matched = allBlogs.filter((p: any) => {
+        const pId = String(p._id || p.id || '');
+        const pSlug = String(p.slug || '');
+        return selectedBlogIds.some((s: any) => {
+          if (typeof s === 'string') return s === pId || s === pSlug;
+          if (typeof s === 'object' && s) return String(s._id || s.id || '') === pId || String(s.slug || '') === pSlug;
+          return false;
+        });
+      });
+      if (matched.length > 0) resolvedPosts = matched;
+    }
+  }
+
+  if (!resolvedPosts && Array.isArray(allBlogs) && allBlogs.length > 0) {
+    resolvedPosts = allBlogs.slice(0, 4);
+  }
 
   return (
     <div className="relative">
