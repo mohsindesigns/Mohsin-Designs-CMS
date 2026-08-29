@@ -22,6 +22,7 @@ import { ContentProvider } from "@/context/ContentContext";
 
 export const TEMPLATE_MAP: Record<string, React.ComponentType<any>> = {
   'home': HomeTemplate,
+  'about': NewAboutTemplate,
   'new-about': NewAboutTemplate,
   'newabout': NewAboutTemplate,
   'service-detail': ServiceDetailTemplate,

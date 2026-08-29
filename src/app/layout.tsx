@@ -9,6 +9,7 @@ import { BASE_URL } from "@/lib/constants";
 import InteractiveBackground from "@/components/InteractiveBackground";
 import { resolveRobotsMetadata } from "@/lib/seo";
 
+
 const lora = Lora({
   variable: "--font-heading",
   subsets: ["latin"],

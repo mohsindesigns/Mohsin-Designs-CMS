@@ -8,6 +8,7 @@ const PageSchema = new mongoose.Schema({
     required: true,
     enum: [
       'home',
+      'about',
       'new-about',
       'newabout',
       'team',
