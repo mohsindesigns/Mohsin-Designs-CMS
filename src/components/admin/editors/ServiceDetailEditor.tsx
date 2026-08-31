@@ -2033,21 +2033,36 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                             className={UI.input}
                           />
                         </div>
-                        <div className="flex items-center gap-2 pt-6">
-                          <label className="flex items-center gap-2 text-xs font-bold text-[#1d2327] cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={Boolean(plan.isPopular)}
-                              onChange={(e) => {
-                                const list = [...(data.pricing?.plans || [])];
-                                list[idx] = { ...list[idx], isPopular: e.target.checked };
-                                updateSection("pricing", "plans", list);
-                              }}
-                              className="rounded border-[#c3c4c7] text-[#2271b1]"
-                            />
-                            Highlight as "Most Popular"
-                          </label>
+                        <div className="space-y-1.5">
+                          <label className={UI.label}>CTA Button Link (Optional)</label>
+                          <input
+                            type="text"
+                            value={plan.ctaLink || ""}
+                            onChange={(e) => {
+                              const list = [...(data.pricing?.plans || [])];
+                              list[idx] = { ...list[idx], ctaLink: e.target.value };
+                              updateSection("pricing", "plans", list);
+                            }}
+                            className={UI.input}
+                            placeholder="e.g. #contact-form or /contact"
+                          />
                         </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 pt-2">
+                        <label className="flex items-center gap-2 text-xs font-bold text-[#1d2327] cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={Boolean(plan.isPopular)}
+                            onChange={(e) => {
+                              const list = [...(data.pricing?.plans || [])];
+                              list[idx] = { ...list[idx], isPopular: e.target.checked };
+                              updateSection("pricing", "plans", list);
+                            }}
+                            className="rounded border-[#c3c4c7] text-[#2271b1]"
+                          />
+                          Highlight as "Most Popular"
+                        </label>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

@@ -28,7 +28,7 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
   const titleHighlight = serviceArea.titleHighlight || "Worldwide";
   const description = serviceArea.description || "With distributed engineering hubs and round-the-clock availability, we partner with industry leaders across North America, Europe, the Middle East, and Asia-Pacific.";
   const ctaText = serviceArea.ctaText || "Schedule Global Consultation";
-  const ctaHref = serviceArea.ctaHref || "#contact";
+  const ctaHref = serviceArea.ctaHref || serviceArea.ctaLink || "#contact-form";
 
   // Auto-enrich hubs with geocoded coordinates & timezone if missing
   const rawHubs: any[] = Array.isArray(serviceArea.hubs) && serviceArea.hubs.length > 0 ? serviceArea.hubs : [

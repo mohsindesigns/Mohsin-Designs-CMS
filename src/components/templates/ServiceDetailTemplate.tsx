@@ -935,9 +935,27 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
   const [submitted, setSubmitted] = useState(false);
   const [activeCaseIdx, setActiveCaseIdx] = useState<number>(0);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
+    try {
+      await fetch('/api/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          company: formData.company,
+          service: formData.service || service.title,
+          message: formData.message,
+          type: "Service Detail Consultation",
+          source: typeof window !== "undefined" ? window.location.pathname : `/services/${service.slug}`
+        })
+      });
+    } catch (err) {
+      console.error('Failed to submit consultation form:', err);
+    }
     setTimeout(() => {
       setSubmitted(false);
       setFormData({
@@ -1216,7 +1234,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                         ) : logoName.includes("Bing") ? (
                           <BingLogo />
                         ) : (
-                          <AppleLogo />
+                          <Globe className="h-4.5 w-4.5 text-brand-blue dark:text-brand-yellow shrink-0" />
                         )}
                         {logoItem.name && <span>{logoItem.name}</span>}
                       </div>
@@ -1255,9 +1273,11 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             viewport={{ once: true }}
             className="text-center mb-14 space-y-4"
           >
-            <div className="flex justify-center">
-              <span className="eyebrow-pill">{service.whatIncluded.eyebrow}</span>
-            </div>
+            {service.whatIncluded.eyebrow && (
+              <div className="flex justify-center">
+                <span className="eyebrow-pill">{service.whatIncluded.eyebrow}</span>
+              </div>
+            )}
             <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
               {service.whatIncluded.titleIntro}{" "}
               <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
@@ -1465,7 +1485,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             
             {/* Left Sticky Panel */}
             <div className="lg:col-span-5 lg:sticky lg:top-28 self-start space-y-4 text-left">
-              <span className="eyebrow-pill">{service.process.eyebrow}</span>
+              {service.process.eyebrow && <span className="eyebrow-pill">{service.process.eyebrow}</span>}
               <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12] max-w-sm">
                 {service.process.titleIntro}{" "}
                 <span className="text-brand-blue dark:text-brand-yellow font-serif font-normal italic">
@@ -1561,7 +1581,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             {/* Left side text & Dynamic Case switcher */}
             <div className="lg:col-span-5 text-left space-y-6 lg:sticky lg:top-28">
               <div className="space-y-4">
-                <span className="eyebrow-pill">{service.results.eyebrow}</span>
+                {service.results.eyebrow && <span className="eyebrow-pill">{service.results.eyebrow}</span>}
                 <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl font-black text-brand-dark dark:text-white leading-[1.15]">
                   {service.results.titleIntro}
                   <span className="text-brand-blue dark:text-brand-yellow font-serif font-normal italic block mt-1">
@@ -1712,9 +1732,11 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             viewport={{ once: true }}
             className="text-center mb-14 space-y-4"
           >
-            <div className="flex justify-center">
-              <span className="eyebrow-pill">{service.industries.eyebrow}</span>
-            </div>
+            {service.industries.eyebrow && (
+              <div className="flex justify-center">
+                <span className="eyebrow-pill">{service.industries.eyebrow}</span>
+              </div>
+            )}
             <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
               {service.industries.titleIntro}{" "}
               <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
@@ -1793,7 +1815,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-14 text-left">
             <div className="space-y-3">
-              <span className="eyebrow-pill">{service.tools.eyebrow}</span>
+              {service.tools.eyebrow && <span className="eyebrow-pill">{service.tools.eyebrow}</span>}
               <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl font-black text-brand-dark dark:text-white tracking-tight leading-tight">
                 {service.tools.titleIntro}{" "}
                 <span className="text-brand-blue dark:text-brand-yellow ml-1 font-black">
@@ -1869,7 +1891,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             {/* Left Sticky Column with Stat Rings */}
             <div className="lg:w-[42%] lg:shrink-0 lg:sticky lg:top-28 self-start flex flex-col justify-start lg:pr-16 lg:border-r border-brand-zinc-200 dark:border-white/10 text-left space-y-7">
               <div className="space-y-4">
-                <span className="eyebrow-pill">{service.whyChooseUs.eyebrow}</span>
+                {service.whyChooseUs.eyebrow && <span className="eyebrow-pill">{service.whyChooseUs.eyebrow}</span>}
                 <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white leading-[1.15] tracking-tight">
                   {service.whyChooseUs.titleIntro}{" "}
                   <span className="text-brand-blue dark:text-brand-yellow font-serif font-normal italic">
@@ -1970,9 +1992,11 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               viewport={{ once: true }}
               className="text-center mb-14 space-y-4"
             >
+              {service.pricing.eyebrow && (
               <div className="flex justify-center">
                 <span className="eyebrow-pill">{service.pricing.eyebrow}</span>
               </div>
+            )}
               <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
                 {service.pricing.titleIntro}{" "}
                 <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
@@ -2064,7 +2088,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
                     <div className="pt-6 mt-8 border-t border-brand-zinc-200/80 dark:border-white/5 w-full relative z-10">
                       <Link
-                        href={`/contact?service=${service.slug}&plan=${plan.name}`}
+                        href={plan.ctaLink || `/contact?service=${service.slug}&plan=${encodeURIComponent(plan.name || "")}`}
                         className={`w-full py-3.5 px-4 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all duration-300 shadow-sm ${
                           isPopular
                             ? "bg-brand-blue dark:bg-brand-yellow text-white dark:text-brand-dark hover:shadow-[0_8px_25px_rgba(3,6,172,0.25)] dark:hover:shadow-[0_8px_25px_rgba(233,189,54,0.3)] hover:-translate-y-0.5"
@@ -2092,9 +2116,11 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-14 text-left">
               <div className="space-y-4">
-                <div className="flex">
-                  <span className="eyebrow-pill">{service.recommendedSection.eyebrow}</span>
-                </div>
+                {service.recommendedSection.eyebrow && (
+                  <div className="flex">
+                    <span className="eyebrow-pill">{service.recommendedSection.eyebrow}</span>
+                  </div>
+                )}
                 <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
                   {service.recommendedSection.titleIntro}{" "}
                   <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-2 font-black font-serif italic font-normal">
@@ -2183,7 +2209,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             subtitle: service.blogSection.subtitle,
             description: service.blogSection.description,
             data: service.blogSection,
-            posts: content?.allBlogs ? content.allBlogs.filter((p: any) => service.blogSection.selectedPosts.includes(p._id)) : []
+            posts: content?.allBlogs ? content.allBlogs.filter((p: any) => service.blogSection.selectedPosts.includes(p._id) || service.blogSection.selectedPosts.includes(p.slug) || service.blogSection.selectedPosts.includes(p.id)) : []
           }}
         />
       )}
