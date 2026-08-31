@@ -255,25 +255,7 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                         </div>
                      </div>
                      <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>5. Trust Stats</h3>
-                        <div className="space-y-4">
-                           {(data.hero?.stats || []).map((s: any, i: number) => (
-                              <div key={i} className={UI.card + " space-y-4"}>
-                                 <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
-                                    <span className="text-[10px] font-bold text-[#646970] uppercase">Stat #{i + 1}</span>
-                                    <button onClick={() => { updateSection("hero", "stats", (prev: any[]) => prev.filter((_: any, idx: number) => idx !== i)); }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
-                                 </div>
-                                 <div className="space-y-1.5"><label className={UI.label}>Value</label><input type="text" value={s.value || ""} onChange={(e) => { const val = e.target.value; updateSection("hero", "stats", (prev: any[]) => { const newS = [...prev]; newS[i].value = val; return newS; }); }} className={UI.inputLarge} /></div>
-                                 <div className="space-y-1.5"><label className={UI.label}>Label</label><input type="text" value={s.label || ""} onChange={(e) => { const val = e.target.value; updateSection("hero", "stats", (prev: any[]) => { const newS = [...prev]; newS[i].label = val; return newS; }); }} className={UI.input} /></div>
-                                 <div className="space-y-1.5"><label className={UI.label}>Sub-label / Description</label><input type="text" value={s.description || ""} onChange={(e) => { const val = e.target.value; updateSection("hero", "stats", (prev: any[]) => { const newS = [...prev]; newS[i].description = val; return newS; }); }} className={UI.input} placeholder="e.g. 2x website traffic increase" /></div>
-                                 <IconSelector label="Icon" value={s.icon} onChange={(val) => { updateSection("hero", "stats", (prev: any[]) => { const newS = [...prev]; newS[i].icon = val; return newS; }); }} />
-                              </div>
-                           ))}
-                           <button onClick={() => updateSection("hero", "stats", (prev: any[]) => [...(prev || []), { value: "", label: "", icon: "Star" }])} className={UI.buttonAdd}>+ Add Stat</button>
-                        </div>
-                     </div>
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>6. Showcase / Hero Image</h3>
+                        <h3 className={UI.sectionHeader}>5. Showcase / Hero Image</h3>
                         <ImageField
                            label="Hero Showcase Image"
                            value={data.hero?.image || data.hero?.imageSrc || data.hero?.images?.[0] || data.hero?.bgImage || ""}
@@ -291,7 +273,7 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                         />
                      </div>
                      <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>7. Interactive Elements</h3>
+                        <h3 className={UI.sectionHeader}>6. Interactive Elements</h3>
                         <div className="space-y-4">
                            <div className="space-y-1.5"><label className={UI.label}>Rotating Circle Text</label><input type="text" value={data.hero?.circleText || ""} onChange={(e) => updateSection("hero", "circleText", e.target.value)} className={UI.input} /></div>
                            <div className="space-y-1.5"><label className={UI.label}>Rotating Circle Center Letter</label><input type="text" value={data.hero?.circleLetter || ""} onChange={(e) => updateSection("hero", "circleLetter", e.target.value)} className={UI.input} /></div>
