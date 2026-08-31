@@ -50,6 +50,7 @@ import FAQ from "@/components/FAQ";
 import Blog from "@/components/Blog";
 import ServiceArea from "@/components/ServiceArea";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
+import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
 
 // ── Dynamic Icon Map Resolver ──
 const baseIconMap: Record<string, React.ElementType> = {
@@ -636,7 +637,8 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             strategy: cs.strategy || "",
             outcome: cs.outcome || cs.metric || "",
             outcomeLabel: cs.outcomeLabel || "Verified Outcome",
-            desc: cs.desc || ""
+            desc: cs.desc || "",
+            iconName: cs.iconName || cs.icon || ""
           }));
         }
         if (dbService?.results?.caseStudy && (dbService.results.caseStudy.title || dbService.results.caseStudy.metric || dbService.results.caseStudy.desc)) {
@@ -646,7 +648,8 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             strategy: dbService.results.caseStudy.strategy || "Engineered scalable architecture with streamlined conversion pathways.",
             outcome: dbService.results.caseStudy.metric || "+240% Growth",
             outcomeLabel: dbService.results.caseStudy.outcomeLabel || "Campaign Outcome",
-            desc: dbService.results.caseStudy.desc || ""
+            desc: dbService.results.caseStudy.desc || "",
+            iconName: dbService.results.caseStudy.iconName || dbService.results.caseStudy.icon || ""
           }];
         }
         return [
@@ -656,7 +659,8 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             strategy: "Engineered headless architecture with streamlined conversion pathways.",
             outcome: "+240% Qualified Inbound Inquiries",
             outcomeLabel: "Campaign Outcome",
-            desc: ""
+            desc: "",
+            iconName: ""
           },
           {
             title: "Commercial Multi-Location Reach",
@@ -664,7 +668,8 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             strategy: "Deployed localized landing architecture and high-authority citation schema.",
             outcome: "+410% Map Pack Actions",
             outcomeLabel: "Campaign Outcome",
-            desc: ""
+            desc: "",
+            iconName: ""
           }
         ];
       })(),
@@ -673,13 +678,14 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             value: m.value || "",
             label: m.label || "",
             desc: m.desc || m.subtext || "",
-            tag: m.tag || `M0${idx + 1}`
+            tag: m.tag || `M0${idx + 1}`,
+            iconName: m.iconName || m.icon || "Trophy"
           }))
         : [
-            { value: "450%", label: "TRAFFIC GROWTH", desc: "Average organic session boost across 12-month engagements.", tag: "M01" },
-            { value: "3.8x", label: "ROI MULTIPLIER", desc: "Documented revenue acceleration from attributed funnels.", tag: "M02" },
-            { value: "99%", label: "CLIENT RETENTION", desc: "Long-term client partnerships built on consistent delivery.", tag: "M03" },
-            { value: "24/7", label: "SUPPORT SYNC", desc: "Continuous uptime and real-time response capability.", tag: "M04" }
+            { value: "450%", label: "TRAFFIC GROWTH", desc: "Average organic session boost across 12-month engagements.", tag: "M01", iconName: "TrendingUp" },
+            { value: "3.8x", label: "ROI MULTIPLIER", desc: "Documented revenue acceleration from attributed funnels.", tag: "M02", iconName: "Target" },
+            { value: "99%", label: "CLIENT RETENTION", desc: "Long-term client partnerships built on consistent delivery.", tag: "M03", iconName: "ShieldCheck" },
+            { value: "24/7", label: "SUPPORT SYNC", desc: "Continuous uptime and real-time response capability.", tag: "M04", iconName: "Zap" }
           ]
     },
     industries: {
@@ -701,13 +707,15 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
         if (rawList.length > 0) {
           return rawList.map((ind: any) => {
             const title = ind.title || ind.name || "";
-            const words = String(title).split(" ").filter(Boolean);
-            const autoAbbr = words.map((w: string) => w[0]).join("").toUpperCase().slice(0, 2) || "IN";
+            const words = String(title).trim().split(/\s+/).filter(Boolean);
+            const autoAbbr = words.length > 1
+              ? (words[0][0] + words[1][0]).toUpperCase()
+              : (words[0] ? words[0].slice(0, 2).toUpperCase() : "IN");
             return {
               title: title,
               desc: ind.desc || ind.description || "",
               iconName: ind.iconName || ind.icon || "Building2",
-              watermark: ind.watermark || autoAbbr,
+              watermark: autoAbbr,
               footerLeft: ind.footerLeft || "",
               footerRight: ind.footerRight || ""
             };
@@ -905,11 +913,11 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       eyebrow: dbService?.finalCta?.eyebrow ?? dbService?.finalCta?.badge ?? "READY TO ACCELERATE?",
       titleIntro: dbService?.finalCta?.titleIntro || "Let's Build Your Next",
       titleHighlight: dbService?.finalCta?.titleHighlight || "Competitive Edge",
-      titleLine2: dbService?.finalCta?.titleLine2 !== undefined ? dbService.finalCta.titleLine2 : "Together.",
+      titleLine2: dbService?.finalCta?.titleLine2 || "",
       description: dbService?.finalCta?.description !== undefined ? dbService.finalCta.description : "Schedule a free strategic consultation. We'll audit your existing presence and map out a concrete blueprint for scalable growth.",
       primaryCtaText: dbService?.finalCta?.primaryCtaText || dbService?.finalCta?.primaryCta?.text || dbService?.finalCta?.btnText || "Schedule Discovery Session",
       primaryCtaLink: dbService?.finalCta?.primaryCtaLink || dbService?.finalCta?.primaryCta?.link || dbService?.finalCta?.btnLink || "#contact-form",
-      secondaryCtaText: dbService?.finalCta?.secondaryCtaText || dbService?.finalCta?.secondaryCta?.text || "Contact Office",
+      secondaryCtaText: dbService?.finalCta?.secondaryCtaText || dbService?.finalCta?.secondaryCta?.text || "",
       secondaryCtaLink: dbService?.finalCta?.secondaryCtaLink || dbService?.finalCta?.secondaryCta?.link || "/contact",
       founderImage: dbService?.finalCta?.founderImage || dbService?.finalCta?.image || dbService?.finalCta?.backgroundImage || dbService?.finalCta?.bgImage || "/founder_portrait_nobg.png"
     },
@@ -946,6 +954,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
     message: "",
     agreePrivacy: false
   });
+  const [captchaToken, setCaptchaToken] = useState<string>("");
   const [submitted, setSubmitted] = useState(false);
   const [activeCaseIdx, setActiveCaseIdx] = useState<number>(0);
 
@@ -964,6 +973,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
           service: formData.service || service.title,
           message: formData.message,
           type: "Service Detail Consultation",
+          captchaToken: captchaToken,
           source: typeof window !== "undefined" ? window.location.pathname : `/services/${service.slug}`
         })
       });
@@ -981,6 +991,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
         message: "",
         agreePrivacy: false
       });
+      setCaptchaToken("");
     }, 4500);
   };
 
@@ -1195,6 +1206,13 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                       I agree to the <Link href="/privacy" className="text-brand-blue dark:text-brand-yellow font-bold underline">Privacy Policy</Link>
                     </label>
                   </div>
+
+                  <TurnstileCaptcha
+                    onVerify={(token) => setCaptchaToken(token)}
+                    onExpire={() => setCaptchaToken("")}
+                    size="flexible"
+                    theme="auto"
+                  />
 
                   <button
                     type="submit"
@@ -1693,21 +1711,23 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
             {/* Right side stats counters */}
             <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
-              {service.results.metrics.map((metric: any, idx: number) => (
-                <SpotlightCard
-                  key={idx}
-                  className="bg-white dark:bg-[#121124] border border-zinc-200/80 dark:border-white/10 p-6 sm:p-7 rounded-[26px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:shadow-[0_16px_40px_-8px_rgba(3,6,172,0.12)] dark:hover:shadow-[0_16px_40px_-8px_rgba(233,189,54,0.08)] hover:border-brand-blue/40 dark:hover:border-brand-yellow/40 transition-all duration-300 flex flex-col justify-between group min-h-[200px]"
-                >
-                  <div className="space-y-4">
-                    {/* Header with Icon Badge & Tag */}
-                    <div className="flex items-center justify-between pb-3.5 border-b border-zinc-100 dark:border-white/5">
-                      <div className="w-11 h-11 rounded-2xl bg-brand-blue/10 dark:bg-brand-yellow/10 border border-brand-blue/20 dark:border-brand-yellow/20 flex items-center justify-center text-brand-blue dark:text-brand-yellow shadow-sm group-hover:scale-110 group-hover:rotate-2 transition-transform duration-300 shrink-0">
-                        <Trophy className="w-5 h-5 stroke-[2.2]" />
+              {service.results.metrics.map((metric: any, idx: number) => {
+                const MetricIcon = (metric.iconName && iconMap[metric.iconName]) || (metric.icon && iconMap[metric.icon]) || Trophy;
+                return (
+                  <SpotlightCard
+                    key={idx}
+                    className="bg-white dark:bg-[#121124] border border-zinc-200/80 dark:border-white/10 p-6 sm:p-7 rounded-[26px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:shadow-[0_16px_40px_-8px_rgba(3,6,172,0.12)] dark:hover:shadow-[0_16px_40px_-8px_rgba(233,189,54,0.08)] hover:border-brand-blue/40 dark:hover:border-brand-yellow/40 transition-all duration-300 flex flex-col justify-between group min-h-[200px]"
+                  >
+                    <div className="space-y-4">
+                      {/* Header with Icon Badge & Tag */}
+                      <div className="flex items-center justify-between pb-3.5 border-b border-zinc-100 dark:border-white/5">
+                        <div className="w-11 h-11 rounded-2xl bg-brand-blue/10 dark:bg-brand-yellow/10 border border-brand-blue/20 dark:border-brand-yellow/20 flex items-center justify-center text-brand-blue dark:text-brand-yellow shadow-sm group-hover:scale-110 group-hover:rotate-2 transition-transform duration-300 shrink-0">
+                          <MetricIcon className="w-5 h-5 stroke-[2.2]" />
+                        </div>
+                        <span className="text-[9px] font-mono font-black tracking-widest text-zinc-500 dark:text-zinc-400 bg-zinc-100/90 dark:bg-white/[0.06] border border-zinc-200/60 dark:border-white/5 px-3 py-1 rounded-full uppercase select-none">
+                          {metric.tag || `M0${idx + 1}`}
+                        </span>
                       </div>
-                      <span className="text-[9px] font-mono font-black tracking-widest text-zinc-500 dark:text-zinc-400 bg-zinc-100/90 dark:bg-white/[0.06] border border-zinc-200/60 dark:border-white/5 px-3 py-1 rounded-full uppercase select-none">
-                        {metric.tag || `M0${idx + 1}`}
-                      </span>
-                    </div>
 
                     {/* Metric Content */}
                     <div className="text-left space-y-1.5">
@@ -1728,7 +1748,8 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                     </div>
                   </div>
                 </SpotlightCard>
-              ))}
+                );
+              })}
             </div>
 
           </div>
@@ -1945,50 +1966,53 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               </div>
             </div>
 
-            {/* Right Column: Differentiators Rows with custom inline vector illustrations */}
+            {/* Right Column: Differentiators Rows with custom inline vector illustrations or images */}
             <div className="lg:flex-1 lg:pl-14 flex flex-col text-left">
-              {service.whyChooseUs.list.map((item: any, idx: number) => (
-                <div
-                  key={idx}
-                  className="group border-b border-brand-zinc-200 dark:border-white/10 last:border-b-0 py-8 first:pt-0 last:pb-0"
-                >
-                  <div className="flex items-center gap-6">
-                    
-                    {/* Left details */}
-                    <div className="flex items-start gap-4 flex-1 min-w-0">
-                      <div className="shrink-0 flex h-11 w-11 items-center justify-center rounded-xl bg-brand-blue/8 border border-brand-blue/15 text-brand-blue dark:text-brand-yellow dark:bg-brand-yellow/10 dark:border-brand-yellow/20 group-hover:bg-[#0306AC] group-hover:text-white dark:group-hover:bg-[#E9BD36] dark:group-hover:text-brand-dark group-hover:border-none transition-all duration-300 mt-0.5 shadow-sm">
-                        <Check className="h-[18px] w-[18px] stroke-[3]" />
-                      </div>
+              {service.whyChooseUs.list.map((item: any, idx: number) => {
+                const DiffIcon = (item.icon && iconMap[item.icon]) || (item.iconName && iconMap[item.iconName]) || Check;
+                return (
+                  <div
+                    key={idx}
+                    className="group border-b border-brand-zinc-200 dark:border-white/10 last:border-b-0 py-8 first:pt-0 last:pb-0"
+                  >
+                    <div className="flex items-center gap-6">
                       
-                      <div className="flex-1 min-w-0 space-y-1.5">
-                        <span className="font-mono text-[9px] font-black text-brand-blue/60 dark:text-brand-yellow/60 tracking-widest uppercase">
-                          {item.tag || `Differentiator 0${idx + 1}`}
-                        </span>
-                        <h3 className="font-heading font-extrabold text-[1.1rem] text-brand-dark dark:text-white group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-300 leading-snug">
-                          {item.title}
-                        </h3>
-                        <p className="text-[13px] text-brand-zinc-500 dark:text-zinc-400 leading-relaxed font-normal">
-                          {item.desc}
-                        </p>
+                      {/* Left details */}
+                      <div className="flex items-start gap-4 flex-1 min-w-0">
+                        <div className="shrink-0 flex h-11 w-11 items-center justify-center rounded-xl bg-brand-blue/8 border border-brand-blue/15 text-brand-blue dark:text-brand-yellow dark:bg-brand-yellow/10 dark:border-brand-yellow/20 group-hover:bg-[#0306AC] group-hover:text-white dark:group-hover:bg-[#E9BD36] dark:group-hover:text-brand-dark group-hover:border-none transition-all duration-300 mt-0.5 shadow-sm">
+                          <DiffIcon className="h-[18px] w-[18px] stroke-[2.5]" />
+                        </div>
+                        
+                        <div className="flex-1 min-w-0 space-y-1.5">
+                          <span className="font-mono text-[9px] font-black text-brand-blue/60 dark:text-brand-yellow/60 tracking-widest uppercase">
+                            {item.tag || `Differentiator 0${idx + 1}`}
+                          </span>
+                          <h3 className="font-heading font-extrabold text-[1.1rem] text-brand-dark dark:text-white group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-300 leading-snug">
+                            {item.title}
+                          </h3>
+                          <p className="text-[13px] text-brand-zinc-500 dark:text-zinc-400 leading-relaxed font-normal">
+                            {item.desc}
+                          </p>
+                        </div>
                       </div>
-                    </div>
 
-                    {/* Right Illustration container - dynamic image or SVG fallback */}
-                    <div className="hidden md:block shrink-0 w-[140px] h-[88px] rounded-2xl border border-brand-blue/10 bg-gradient-to-br from-brand-blue/4 to-transparent overflow-hidden group-hover:border-brand-blue/20 group-hover:from-brand-blue/8 transition-all duration-400">
-                      <div className="w-full h-full group-hover:scale-[1.03] transition-transform duration-400 origin-center">
-                        {item.image ? (
-                          <Image src={item.image} alt={item.title || ""} width={140} height={88} className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="w-full h-full p-2">
-                            {differentiatorsIllustrations[idx % differentiatorsIllustrations.length]}
-                          </div>
-                        )}
+                      {/* Right Illustration container - dynamic image or SVG fallback */}
+                      <div className="hidden md:block shrink-0 w-[140px] h-[88px] rounded-2xl border border-brand-blue/10 bg-gradient-to-br from-brand-blue/4 to-transparent overflow-hidden group-hover:border-brand-blue/20 group-hover:from-brand-blue/8 transition-all duration-400">
+                        <div className="w-full h-full group-hover:scale-[1.03] transition-transform duration-400 origin-center flex items-center justify-center">
+                          {item.image ? (
+                            <img src={item.image} alt={item.title || ""} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full p-2">
+                              {differentiatorsIllustrations[idx % differentiatorsIllustrations.length]}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
 
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
           </div>

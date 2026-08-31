@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff, Shield, Lock, User, AlertCircle, Loader2, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
 
 function LoginForm() {
   const router = useRouter();
@@ -14,6 +15,7 @@ function LoginForm() {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -33,7 +35,7 @@ function LoginForm() {
       const res = await fetch("/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password, captchaToken }),
       });
 
       const data = await res.json();
@@ -118,6 +120,12 @@ function LoginForm() {
                 </button>
               </div>
             </div>
+
+            <TurnstileCaptcha
+              onVerify={(token) => setCaptchaToken(token)}
+              onExpire={() => setCaptchaToken("")}
+              theme="light"
+            />
 
             <div className="flex items-center justify-between pt-2">
               <label className="flex items-center gap-2 text-[13px] text-[#50575e] cursor-pointer">

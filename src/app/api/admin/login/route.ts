@@ -4,13 +4,25 @@ import User from '@/models/User';
 import Role from '@/models/Role';
 import { signToken } from '@/lib/auth';
 import { recordActivity } from '@/lib/logger';
+import { verifyTurnstileToken } from '@/lib/turnstile';
+import { sanitizeFormString } from '@/lib/sanitizeInput';
 
 export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown';
   
   try {
     const body = await req.json();
-    const { username, password } = body;
+    const { username: rawUsername, password, captchaToken } = body;
+
+    // 1. Verify Turnstile token if provided
+    if (captchaToken) {
+      const captchaResult = await verifyTurnstileToken(captchaToken, ip);
+      if (!captchaResult.success) {
+        return NextResponse.json({ error: captchaResult.error || 'Captcha verification failed.' }, { status: 400 });
+      }
+    }
+
+    const username = sanitizeFormString(rawUsername);
 
     await connectToDatabase();
 

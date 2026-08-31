@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '../config/icons';
 import { useContent } from '../hooks/useContent';
 import RichTextRenderer from './ui/RichTextRenderer';
+import TurnstileCaptcha from './ui/TurnstileCaptcha';
 
 // SMS Consent Checkbox Component
 const SMSConsentCheckbox = ({ checked, onChange }: { checked: boolean; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) => {
@@ -94,6 +95,7 @@ const QuickQuote = () => {
         projectType: '',
         message: ''
     });
+    const [captchaToken, setCaptchaToken] = useState<string>("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [step, setStep] = useState(1);
@@ -166,6 +168,7 @@ ${formData.message}
                         phone: formData.phone,
                         project_type: (projectTypes as any[]).find((t: any) => t.value === formData.projectType)?.label,
                         message: formData.message,
+                        captchaToken: captchaToken,
                         sms_consent: 'Yes'
                     })
                 });
@@ -685,10 +688,17 @@ ${formData.message}
 
                                             {/* SMS Consent Checkbox - shown in step 3 */}
                                             {step === 3 && (
-                                                <SMSConsentCheckbox
-                                                    checked={smsConsent}
-                                                    onChange={(e) => setSmsConsent(e.target.checked)}
-                                                />
+                                                <>
+                                                    <SMSConsentCheckbox
+                                                        checked={smsConsent}
+                                                        onChange={(e) => setSmsConsent(e.target.checked)}
+                                                    />
+                                                    <TurnstileCaptcha
+                                                        onVerify={(token) => setCaptchaToken(token)}
+                                                        onExpire={() => setCaptchaToken("")}
+                                                        theme="auto"
+                                                    />
+                                                </>
                                             )}
 
                                             <div className="flex items-center justify-between pt-6 border-t border-border">

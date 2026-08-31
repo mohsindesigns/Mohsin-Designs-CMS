@@ -1,0 +1,145 @@
+{
+  "title": "Service Detail: Frontend / Editor / Backend Field Parity Audit",
+  "date": "2026-08-31",
+  "branch": "fresh-main",
+  "scope": [
+    "src/components/templates/ServiceDetailTemplate.tsx",
+    "src/components/admin/editors/ServiceDetailEditor.tsx",
+    "src/app/admin/services/page.tsx",
+    "src/models/Content.ts",
+    "src/models/Page.ts",
+    "src/app/api/content/route.ts"
+  ],
+  "architectureNote": "There is no Prisma/Zod schema for services. Content.ts and Page.ts store content as mongoose.Schema.Types.Mixed, and PUT /api/content writes the request body verbatim. A field can never be 'missing from the database' in the validation sense - Mongo stores whatever key is sent. The real failure mode is a field the template renders that the editor never exposes an input for, leaving it stuck on a hardcoded fallback.",
+  "structuralRisk": {
+    "summary": "Two independent, hand-duplicated editors maintain the same content shape with no shared source of truth.",
+    "files": [
+      "src/components/admin/editors/ServiceDetailEditor.tsx",
+      "src/app/admin/services/page.tsx (DEFAULT_SERVICE_TEMPLATE)"
+    ],
+    "evidence": "Commit bcab5f4 renamed whyChooseUs.points -> list and popular -> isPopular only inside admin/services/page.tsx, because ServiceDetailEditor.tsx already used the correct names - proof the two files already drifted apart once."
+  },
+  "summary": {
+    "critical": 2,
+    "medium": 4,
+    "minor": 4,
+    "confirmedOk": 5
+  },
+  "findings": [
+    {
+      "id": 1,
+      "severity": "critical",
+      "field": "hero.primaryCta.{text,link} / hero.secondaryCta.{text,link}",
+      "section": "hero",
+      "issue": "Hero CTA buttons rendered by the template have no inputs anywhere in the editor; only a hardcoded default is set once at seed time.",
+      "refs": [
+        "ServiceDetailTemplate.tsx:1072-1079",
+        "ServiceDetailEditor.tsx:58-59"
+      ]
+    },
+    {
+      "id": 2,
+      "severity": "critical",
+      "field": "faqBadge, faqTitleIntro, faqTitleHighlight, faqDescription, faqSchemaMarkup",
+      "section": "faq meta",
+      "issue": "Drives the FAQ section header and JSON-LD schema markup; read directly off the service record but has no inputs in this editor. Editable in the parallel admin/services/page.tsx editor, confirming divergence.",
+      "refs": [
+        "ServiceDetailTemplate.tsx:894-902",
+        "ServiceDetailTemplate.tsx:2244-2248",
+        "admin/services/page.tsx:360-364"
+      ]
+    },
+    {
+      "id": 3,
+      "severity": "medium",
+      "field": "clientTrust.logos[].icon / logos[].image",
+      "section": "clientTrust",
+      "issue": "Used for the trust marquee logo art; only 'name' is editable.",
+      "refs": [
+        "ServiceDetailTemplate.tsx:1230-1241",
+        "ServiceDetailEditor.tsx:492-516"
+      ]
+    },
+    {
+      "id": 4,
+      "severity": "medium",
+      "field": "process.steps[].footerLeft / footerRight",
+      "section": "process",
+      "issue": "Rendered per roadmap card; only seeded as a constant when a new step is added, never exposed as an editable input afterward.",
+      "refs": [
+        "ServiceDetailTemplate.tsx:1573-1578",
+        "ServiceDetailEditor.tsx:1017-1018"
+      ]
+    },
+    {
+      "id": 5,
+      "severity": "medium",
+      "field": "industries.footerLeft / footerRight (section-level and per-card list[].footerLeft/footerRight)",
+      "section": "industries",
+      "issue": "Rendered on industry cards when set; only present as one-time seed defaults, never exposed as inputs.",
+      "refs": [
+        "ServiceDetailTemplate.tsx:1812-1817",
+        "ServiceDetailEditor.tsx:162-163"
+      ]
+    },
+    {
+      "id": 6,
+      "severity": "medium",
+      "field": "results.metrics[].tag",
+      "section": "results",
+      "issue": "Rendered as the M01/M02 badge on metric cards; no input in the metrics editor. Degrades gracefully to an auto M0# default, so lower severity.",
+      "refs": [
+        "ServiceDetailTemplate.tsx:1707-1709",
+        "ServiceDetailEditor.tsx:1289-1334"
+      ]
+    },
+    {
+      "id": 7,
+      "severity": "minor",
+      "field": "service.tag",
+      "section": "root",
+      "issue": "Editable and normalized but never rendered anywhere in the template JSX. Dead field.",
+      "refs": ["ServiceDetailTemplate.tsx:430"]
+    },
+    {
+      "id": 8,
+      "severity": "minor",
+      "field": "whyChooseUs.list[].icon / iconName",
+      "section": "whyChooseUs",
+      "issue": "Normalized on the template side but never read - differentiator rows always render a static check icon. Correctly not exposed in the editor; worth pruning from normalization.",
+      "refs": [
+        "ServiceDetailTemplate.tsx:814",
+        "ServiceDetailTemplate.tsx:1950-1992"
+      ]
+    },
+    {
+      "id": 9,
+      "severity": "minor",
+      "field": "icon (top-level service record field)",
+      "section": "root (list-only)",
+      "issue": "Recommended-service icons are chosen purely from slug via getServiceIcon(); the stored .icon value from DEFAULT_SERVICE_TEMPLATE is never read.",
+      "refs": ["admin/services/page.tsx:134"]
+    },
+    {
+      "id": 10,
+      "severity": "minor",
+      "field": "faqs[].category",
+      "section": "faqs",
+      "issue": "Normalized on the template side but not settable in the editor. Low confidence it renders downstream via PageInlineFaqs - not inspected in this audit.",
+      "refs": ["ServiceDetailTemplate.tsx:885"]
+    }
+  ],
+  "confirmedInSync": [
+    "whyChooseUs.stats[].{value,label,sublabel,percentage} - fully wired end to end",
+    "whyChooseUs.list (renamed from .points) and pricing.plans[].isPopular (renamed from .popular) - correct in ServiceDetailEditor.tsx; drift only ever existed in admin/services/page.tsx, patched separately",
+    "industries list core fields (title/desc/iconName/watermark) - fully synced aside from footer gap (finding 5)",
+    "Roadmap 'unused deliverables' cleanup - dead hardcoded constant removed from template; steps[].deliverables[] remains correctly wired in both files",
+    "pricing.plans[].{badgeText,isCustom,ctaLink} - full parity confirmed including checkboxes in editor UI"
+  ],
+  "recommendedNextSteps": [
+    "Fix the two critical gaps: add hero CTA inputs and the five FAQ meta fields to ServiceDetailEditor.tsx",
+    "Fix the four medium gaps: expose logo icon/image, step footers, industries footers, and metric tag as real inputs",
+    "Resolve the structural risk: decide whether admin/services/page.tsx or ServiceDetailEditor.tsx is canonical, then delete the other or extract a shared field schema both consume",
+    "Prune the minor dead fields once the above is settled"
+  ]
+}

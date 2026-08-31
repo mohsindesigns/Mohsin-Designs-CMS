@@ -6,6 +6,7 @@ import { Upload, Send, Briefcase, FileText, User, Mail, Phone, CheckCircle, Arro
 import { useContent } from "../../hooks/useContent";
 import RichTextRenderer from '../ui/RichTextRenderer';
 import PageInlineFaqs from "@/components/PageInlineFaqs";
+import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
 
 const Images = {
   Pattern: "https://images.unsplash.com/photo-1502691876148-a84978e59af8?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
@@ -31,6 +32,7 @@ export default function CareersTemplate({ pageData, params }: { pageData?: any, 
   // Prefer page-specific content (saved in editor) over global fallback
   const careersData = pageData?.content?.careers || globalCareersData;
   const [fileName, setFileName] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -50,6 +52,9 @@ export default function CareersTemplate({ pageData, params }: { pageData?: any, 
     const formData = new FormData(e.currentTarget);
     formData.append("type", "Job Application");
     formData.append("_subject", "New Job Application - Mohsin Designs");
+    if (captchaToken) {
+      formData.append("captchaToken", captchaToken);
+    }
 
     try {
       const response = await fetch("/api/send", {
@@ -59,6 +64,7 @@ export default function CareersTemplate({ pageData, params }: { pageData?: any, 
       const data = await response.json().catch(() => ({}));
       if (response.ok || data.success || data.submissionId) {
         setIsSuccess(true);
+        setCaptchaToken("");
       } else {
         // Log the specific error from API
         console.error("API Submission Error:", data.error, data.details);
@@ -189,6 +195,11 @@ ${message}
                     <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2"><FileText className="w-4 h-4 text-blue-500" />{careersData?.labels?.summary}</label>
                     <textarea name="message" required rows={4} className="w-full px-5 py-4 bg-slate-50/50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"></textarea>
                   </div>
+                  <TurnstileCaptcha
+                    onVerify={(token) => setCaptchaToken(token)}
+                    onExpire={() => setCaptchaToken("")}
+                    theme="light"
+                  />
                   <button type="submit" disabled={isSubmitting} className="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all disabled:opacity-70">
                     {isSubmitting ? 'SENDING...' : 'SUBMIT APPLICATION'}
                   </button>

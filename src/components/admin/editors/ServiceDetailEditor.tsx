@@ -306,10 +306,11 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
     { id: "tools", label: "9. Tech Stack" },
     { id: "whyChooseUs", label: "10. The Advantage" },
     { id: "pricing", label: "11. Pricing Plans" },
-    { id: "serviceArea", label: "12. Global Coverage" },
-    { id: "faqs", label: "13. Page FAQs" },
-    { id: "finalCta", label: "14. Final CTA Banner" },
-    { id: "blogSection", label: "15. Related Insights" }
+    { id: "recommendedSection", label: "12. Recommended Pairings" },
+    { id: "serviceArea", label: "13. Global Coverage" },
+    { id: "faqs", label: "14. Page FAQs" },
+    { id: "finalCta", label: "15. Final CTA Banner" },
+    { id: "blogSection", label: "16. Related Insights" }
   ];
 
   return (
@@ -1284,10 +1285,39 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
 
                 {/* Right Side Stats Counters */}
                 <div className="space-y-4 pt-4 border-t border-[#f0f0f1]">
-                  <span className={UI.label}>Performance Stat Counters</span>
+                  <div className="flex items-center justify-between">
+                    <span className={UI.label}>Performance Stat Counters (Cards)</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const current = Array.isArray(data.results?.metrics) ? data.results.metrics : [];
+                        updateSection("results", "metrics", [
+                          ...current,
+                          { value: "+300%", label: "NEW METRIC", desc: "Measurable impact description.", tag: `M0${current.length + 1}`, iconName: "TrendingUp" }
+                        ]);
+                      }}
+                      className={UI.buttonAdd}
+                    >
+                      <Plus className="w-3 h-3" /> Add Metric Card
+                    </button>
+                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {(Array.isArray(data.results?.metrics) ? data.results.metrics : []).map((metric: any, idx: number) => (
                       <div key={idx} className={UI.card + " space-y-3"}>
+                        <div className="flex items-center justify-between border-b border-[#f0f0f1] pb-2">
+                          <span className="text-[10px] font-bold text-[#646970] uppercase">Performance Card #{idx + 1}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const list = (data.results?.metrics || []).filter((_: any, i: number) => i !== idx);
+                              updateSection("results", "metrics", list);
+                            }}
+                            className="text-[#d63638] hover:text-[#b32d2e] p-1"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+
                         <div className="grid grid-cols-2 gap-2">
                           <div className="space-y-1">
                             <label className={UI.label}>Stat Value</label>
@@ -1300,6 +1330,7 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                                 updateSection("results", "metrics", list);
                               }}
                               className={UI.input + " font-black"}
+                              placeholder="e.g. 450%"
                             />
                           </div>
                           <div className="space-y-1">
@@ -1313,9 +1344,39 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                                 updateSection("results", "metrics", list);
                               }}
                               className={UI.input}
+                              placeholder="e.g. TRAFFIC GROWTH"
                             />
                           </div>
                         </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <div className="space-y-1">
+                            <label className={UI.label}>Badge Tag</label>
+                            <input
+                              type="text"
+                              value={metric.tag || `M0${idx + 1}`}
+                              onChange={(e) => {
+                                const list = [...(data.results?.metrics || [])];
+                                list[idx] = { ...list[idx], tag: e.target.value };
+                                updateSection("results", "metrics", list);
+                              }}
+                              className={UI.input + " font-mono text-xs"}
+                              placeholder="e.g. M01"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className={UI.label}>Card Icon</label>
+                            <IconSelector
+                              value={metric.iconName || metric.icon || "Trophy"}
+                              onChange={(icon) => {
+                                const list = [...(data.results?.metrics || [])];
+                                list[idx] = { ...list[idx], iconName: icon, icon: icon };
+                                updateSection("results", "metrics", list);
+                              }}
+                            />
+                          </div>
+                        </div>
+
                         <div className="space-y-1">
                           <label className={UI.label}>Description</label>
                           <input
@@ -1327,6 +1388,7 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                               updateSection("results", "metrics", list);
                             }}
                             className={UI.input}
+                            placeholder="Average organic session boost across 12-month engagements."
                           />
                         </div>
                       </div>
@@ -1414,34 +1476,19 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                         </button>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div className="space-y-1.5 sm:col-span-2">
-                          <label className={UI.label}>Industry Title</label>
-                          <input
-                            type="text"
-                            value={ind.title || ""}
-                            onChange={(e) => {
-                              const list = [...(data.industries?.list || [])];
-                              list[idx] = { ...list[idx], title: e.target.value };
-                              updateSection("industries", "list", list);
-                            }}
-                            className={UI.input}
-                          />
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className={UI.label}>Watermark (2-3 chars)</label>
-                          <input
-                            type="text"
-                            value={ind.watermark || ""}
-                            onChange={(e) => {
-                              const list = [...(data.industries?.list || [])];
-                              list[idx] = { ...list[idx], watermark: e.target.value };
-                              updateSection("industries", "list", list);
-                            }}
-                            className={UI.input}
-                            placeholder="e.g. HS"
-                          />
-                        </div>
+                      <div className="space-y-1.5">
+                        <label className={UI.label}>Industry Title</label>
+                        <input
+                          type="text"
+                          value={ind.title || ""}
+                          onChange={(e) => {
+                            const list = [...(data.industries?.list || [])];
+                            list[idx] = { ...list[idx], title: e.target.value };
+                            updateSection("industries", "list", list);
+                          }}
+                          className={UI.input}
+                          placeholder="e.g. Home Services & Contracting"
+                        />
                       </div>
 
                       <div className="space-y-1.5">
@@ -1820,6 +1867,18 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                       </div>
 
                       <div className="space-y-1.5">
+                        <label className={UI.label}>Card Icon</label>
+                        <IconSelector
+                          value={item.icon || item.iconName || "CheckCircle2"}
+                          onChange={(icon) => {
+                            const list = [...(data.whyChooseUs?.list || [])];
+                            list[idx] = { ...list[idx], icon: icon, iconName: icon };
+                            updateSection("whyChooseUs", "list", list);
+                          }}
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
                         <label className={UI.label}>Description</label>
                         <textarea
                           rows={2}
@@ -1830,11 +1889,12 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                             updateSection("whyChooseUs", "list", list);
                           }}
                           className={UI.input}
+                          placeholder="Key value proposition narrative."
                         />
                       </div>
 
                       <ImageField
-                        label="Illustration Image (Optional)"
+                        label="Right-Side Artwork Image (Replaces Default SVG Illustration)"
                         value={item.image || ""}
                         onChange={(url) => {
                           const list = [...(data.whyChooseUs?.list || [])];
@@ -2102,7 +2162,56 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
               </div>
             )}
 
-            {/* 12. GLOBAL COVERAGE (SERVICE AREA) */}
+            {/* 12. RECOMMENDED PAIRINGS SECTION */}
+            {activeTab === "recommendedSection" && (
+              <div className="space-y-6">
+                <h3 className={UI.sectionHeader}>Recommended Pairings Section</h3>
+                <div className="space-y-1.5">
+                  <label className={UI.label}>Badge / Eyebrow</label>
+                  <input
+                    type="text"
+                    value={data.recommendedSection?.eyebrow || "11 // RECOMMENDATION"}
+                    onChange={(e) => updateSection("recommendedSection", "eyebrow", e.target.value)}
+                    className={UI.input}
+                    placeholder="e.g. 11 // RECOMMENDATION"
+                  />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Title Intro</label>
+                    <input
+                      type="text"
+                      value={data.recommendedSection?.titleIntro || "Services That Pair"}
+                      onChange={(e) => updateSection("recommendedSection", "titleIntro", e.target.value)}
+                      className={UI.input}
+                      placeholder="e.g. Services That Pair"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Title Highlight</label>
+                    <input
+                      type="text"
+                      value={data.recommendedSection?.titleHighlight || "Perfect Together"}
+                      onChange={(e) => updateSection("recommendedSection", "titleHighlight", e.target.value)}
+                      className={UI.input + " font-bold border-[#2271b1] text-[#2271b1]"}
+                      placeholder="e.g. Perfect Together"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className={UI.label}>Description Narrative</label>
+                  <textarea
+                    rows={3}
+                    value={data.recommendedSection?.description || "Scale faster by pairing multi-channel growth campaigns and high-performance visual coding solutions."}
+                    onChange={(e) => updateSection("recommendedSection", "description", e.target.value)}
+                    className={UI.input}
+                    placeholder="Overview narrative for recommended services section."
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* 13. GLOBAL COVERAGE (SERVICE AREA) */}
             {activeTab === "serviceArea" && (
               <div className="space-y-12">
                 <div className="space-y-6">
@@ -2403,7 +2512,7 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
               </div>
             )}
 
-            {/* 14. FINAL CTA BANNER */}
+            {/* 15. FINAL CTA BANNER */}
             {activeTab === "finalCta" && (
               <div className="space-y-6">
                 <h3 className={UI.sectionHeader}>High-Conversion CTA Banner</h3>
@@ -2441,10 +2550,10 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                   <label className={UI.label}>Title Line 2 (Optional — Leave blank to hide)</label>
                   <input
                     type="text"
-                    value={data.finalCta?.titleLine2 !== undefined ? data.finalCta.titleLine2 : "Together."}
+                    value={data.finalCta?.titleLine2 || ""}
                     onChange={(e) => updateSection("finalCta", "titleLine2", e.target.value)}
                     className={UI.input}
-                    placeholder="e.g. Together."
+                    placeholder="e.g. Together. (Leave blank to hide)"
                   />
                 </div>
 

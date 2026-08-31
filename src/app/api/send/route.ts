@@ -7,6 +7,8 @@ import Page from '@/models/Page';
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";
+import { verifyTurnstileToken } from '@/lib/turnstile';
+import { sanitizeFormString, sanitizeFormData } from '@/lib/sanitizeInput';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,8 +16,11 @@ export async function POST(request: Request) {
   try {
     await connectDB();
     const contentType = request.headers.get('content-type') || '';
+    const clientIp = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+
     let name, email, phone, message, subject, type, attachmentUrl: string | undefined, extraData: any = {};
     let attachments: any[] = [];
+    let captchaToken: string | undefined;
 
     if (contentType.includes('multipart/form-data')) {
       const formData = await request.formData();
@@ -26,6 +31,7 @@ export async function POST(request: Request) {
       message = formData.get('message') as string;
       subject = formData.get('subject') as string || formData.get('_subject') as string;
       type = formData.get('type') as string || 'Career Application';
+      captchaToken = (formData.get('captchaToken') || formData.get('turnstileToken') || formData.get('_captcha') || formData.get('cf-turnstile-response')) as string;
 
       // Handle file attachment
       const file = formData.get('attachment') as File;
@@ -55,7 +61,7 @@ export async function POST(request: Request) {
 
       // Collect other fields
       formData.forEach((value, key) => {
-        if (!['name', 'email', 'phone', 'message', 'subject', '_subject', 'type', 'attachment', '_captcha', '_template'].includes(key)) {
+        if (!['name', 'email', 'phone', 'message', 'subject', '_subject', 'type', 'attachment', '_captcha', 'captchaToken', 'turnstileToken', 'cf-turnstile-response', '_template'].includes(key)) {
           extraData[key] = value;
         }
       });
@@ -67,14 +73,32 @@ export async function POST(request: Request) {
       message = body.message;
       subject = body.subject;
       type = body.type || 'Contact Form';
+      captchaToken = body.captchaToken || body.turnstileToken || body._captcha || body['cf-turnstile-response'];
 
       // Collect other fields
       for (const [key, value] of Object.entries(body)) {
-        if (!['name', 'fullName', 'email', 'phone', 'message', 'subject', 'type'].includes(key)) {
+        if (!['name', 'fullName', 'email', 'phone', 'message', 'subject', 'type', 'captchaToken', 'turnstileToken', '_captcha', 'cf-turnstile-response'].includes(key)) {
           extraData[key] = value;
         }
       }
     }
+
+    // ── 1. Cloudflare Turnstile Security Verification ──
+    if (captchaToken) {
+      const captchaResult = await verifyTurnstileToken(captchaToken, clientIp);
+      if (!captchaResult.success) {
+        return NextResponse.json({ error: captchaResult.error || 'Security challenge verification failed. Please try again.' }, { status: 400 });
+      }
+    }
+
+    // ── 2. Strip / Disable All JavaScript and Dangerous Tags from Form Inputs ──
+    name = sanitizeFormString(name);
+    email = sanitizeFormString(email);
+    phone = sanitizeFormString(phone);
+    message = sanitizeFormString(message);
+    subject = sanitizeFormString(subject);
+    type = sanitizeFormString(type);
+    extraData = sanitizeFormData(extraData);
 
     if (!email) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });

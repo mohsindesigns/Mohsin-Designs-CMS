@@ -12,6 +12,7 @@ import { useContent } from "../hooks/useContent";
 import Image from "next/image";
 import Link from "next/link";
 import RichTextRenderer from "./ui/RichTextRenderer";
+import TurnstileCaptcha from "./ui/TurnstileCaptcha";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -533,6 +534,7 @@ const GetQuote = () => {
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
   const [smsConsent, setSmsConsent] = useState(false);
   const [showSmsError, setShowSmsError] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string>("");
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -631,6 +633,7 @@ ${formData.message}
         timeline: timelines.find((t: any) => t.value === formData.timeline)?.label || 'Not specified',
         services: serviceNames || 'None selected',
         message: formData.message || "New Quote Request from Homepage",
+        captchaToken: captchaToken,
         sms_consent: 'Yes'
       };
 
@@ -1018,6 +1021,11 @@ ${formData.message}
                             </div>
                           </div>
                         </div>
+                        <TurnstileCaptcha
+                          onVerify={(token) => setCaptchaToken(token)}
+                          onExpire={() => setCaptchaToken("")}
+                          theme="auto"
+                        />
                       </motion.div>
                     </motion.div>
                   )}

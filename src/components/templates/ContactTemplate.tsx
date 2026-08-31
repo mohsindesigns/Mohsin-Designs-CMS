@@ -19,6 +19,7 @@ import {
   Loader2
 } from "lucide-react";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
+import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
 
 // Dynamic Lucide Icon Resolver
 function DynamicIcon({ name, className }: { name?: string; className?: string }) {
@@ -156,6 +157,7 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
     agreePrivacy: false
   });
 
+  const [captchaToken, setCaptchaToken] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -175,6 +177,7 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
           service: formData.service,
           message: formData.message,
           type: 'Contact Inquiry',
+          captchaToken: captchaToken,
           subject: `New Contact Request: ${formData.fullName} - ${formData.service}`
         })
       });
@@ -193,6 +196,7 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
             message: "",
             agreePrivacy: false
           });
+          setCaptchaToken("");
         }, 5000);
       } else {
         alert(result.error || 'Failed to submit form. Please try again.');
@@ -212,6 +216,7 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
           message: "",
           agreePrivacy: false
         });
+        setCaptchaToken("");
       }, 5000);
     } finally {
       setIsSubmitting(false);
@@ -402,6 +407,12 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
                       I agree to the <Link href="/privacy" className="text-brand-blue dark:text-brand-yellow font-bold underline">Privacy Policy</Link>
                     </label>
                   </div>
+
+                  <TurnstileCaptcha
+                    onVerify={(token) => setCaptchaToken(token)}
+                    onExpire={() => setCaptchaToken("")}
+                    theme="auto"
+                  />
 
                   {/* Submit Button */}
                   <button

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
 import {
   ArrowRight,
   Play,
@@ -107,6 +108,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
     industry: "",
     message: ""
   });
+  const [captchaToken, setCaptchaToken] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [formError, setFormError] = useState("");
@@ -125,6 +127,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
           email: formData.email,
           phone: formData.phone,
           type: "Industry Consultation Request",
+          captchaToken: captchaToken,
           subject: `New Industry Lead: ${formData.name} (${formData.industry || "General"})`,
           message: formData.message || `Interested in strategy session for ${formData.industry || "Industry Page"}.`,
           industry: formData.industry
@@ -134,6 +137,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
       const data = await res.json().catch(() => ({}));
       if (res.ok || data.success || data.submissionId) {
         setFormSubmitted(true);
+        setCaptchaToken("");
       } else {
         setFormError(data.error || "Failed to submit request. Please try again.");
       }
@@ -570,6 +574,12 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                         {formError}
                       </div>
                     )}
+
+                    <TurnstileCaptcha
+                      onVerify={(token) => setCaptchaToken(token)}
+                      onExpire={() => setCaptchaToken("")}
+                      theme="auto"
+                    />
 
                     <button
                       type="submit"
