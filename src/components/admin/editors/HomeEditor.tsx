@@ -95,6 +95,7 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
 
    const tabs = [
       { id: "hero", label: "Home" },
+      { id: "trustedBrands", label: "Trusted Brands" },
       { id: "about", label: "About" },
       { id: "services", label: "Services" },
       { id: "industries", label: "Industries" },
@@ -303,6 +304,180 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                                  className={UI.input}
                               />
                            </div>
+                        </div>
+                     </div>
+                  </div>
+               )}
+
+               {/* TRUSTED BRANDS / CLIENT TRUST MARQUEE SECTION */}
+               {activeTab === "trustedBrands" && (
+                  <div className="space-y-10">
+                     <div className="space-y-6">
+                        <h3 className={UI.sectionHeader}>1. Section Header & Narrative</h3>
+                        <div className="space-y-1.5">
+                           <label className={UI.label}>Badge / Eyebrow</label>
+                           <input
+                              type="text"
+                              value={data.trustedBrands?.badge ?? data.trustedBrands?.eyebrow ?? "02 // CLIENT PROOF"}
+                              onChange={(e) => updateSection("trustedBrands", "badge", e.target.value)}
+                              className={UI.input}
+                              placeholder="e.g. 02 // CLIENT PROOF"
+                           />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Title Intro</label>
+                              <input
+                                 type="text"
+                                 value={data.trustedBrands?.titleIntro !== undefined ? data.trustedBrands.titleIntro : "Trusted by"}
+                                 onChange={(e) => updateSection("trustedBrands", "titleIntro", e.target.value)}
+                                 className={UI.input}
+                                 placeholder="e.g. Trusted by"
+                              />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Title Highlight (Accent/Italic)</label>
+                              <input
+                                 type="text"
+                                 value={data.trustedBrands?.titleHighlight !== undefined ? data.trustedBrands.titleHighlight : "Leading Brands"}
+                                 onChange={(e) => updateSection("trustedBrands", "titleHighlight", e.target.value)}
+                                 className={UI.input + " font-bold border-[#2271b1] text-[#2271b1]"}
+                                 placeholder="e.g. Leading Brands"
+                              />
+                           </div>
+                        </div>
+                        <div className="space-y-1.5">
+                           <label className={UI.label}>Description Narrative</label>
+                           <textarea
+                              rows={3}
+                              value={data.trustedBrands?.description !== undefined ? data.trustedBrands.description : "Powering innovative market disruptors, scaling enterprises, and high-performance industry leaders worldwide."}
+                              onChange={(e) => updateSection("trustedBrands", "description", e.target.value)}
+                              className={UI.input}
+                              placeholder="Describe the client proof or partnerships."
+                           />
+                        </div>
+                        <div className="space-y-1.5">
+                           <label className={UI.label}>Marquee Animation Speed (Seconds)</label>
+                           <input
+                              type="number"
+                              value={data.trustedBrands?.speed || 28}
+                              onChange={(e) => updateSection("trustedBrands", "speed", Number(e.target.value) || 28)}
+                              className={UI.input + " max-w-xs"}
+                              placeholder="28"
+                           />
+                        </div>
+                     </div>
+
+                     <div className="space-y-6 pt-4 border-t border-[#f0f0f1]">
+                        <div className="flex justify-between items-center">
+                           <h3 className={UI.sectionHeader}>2. Brand Logos & Cards</h3>
+                           <button
+                              type="button"
+                              onClick={() => {
+                                 const currentLogos = Array.isArray(data.trustedBrands?.logos) ? data.trustedBrands.logos : [
+                                    { name: "Google Cloud", sub: "Enterprise Partner", image: "" },
+                                    { name: "Shopify Plus", sub: "Commerce Tier", image: "" },
+                                    { name: "Stripe", sub: "Verified Partner", image: "" },
+                                    { name: "Vercel", sub: "Deployment Fleet", image: "" },
+                                    { name: "AWS", sub: "Cloud Infrastructure", image: "" },
+                                    { name: "Meta", sub: "Performance Ad Hub", image: "" },
+                                    { name: "HubSpot", sub: "Inbound Solutions", image: "" },
+                                    { name: "Webflow", sub: "Visual Engine", image: "" }
+                                 ];
+                                 updateSection("trustedBrands", "logos", [
+                                    ...currentLogos,
+                                    { name: "New Brand", sub: "Strategic Client", image: "", link: "" }
+                                 ]);
+                              }}
+                              className={UI.buttonAdd}
+                           >
+                              <Plus className="w-3.5 h-3.5" /> Add Brand Logo
+                           </button>
+                        </div>
+
+                        <div className="space-y-4">
+                           {(Array.isArray(data.trustedBrands?.logos) ? data.trustedBrands.logos : [
+                              { name: "Google Cloud", sub: "Enterprise Partner", image: "" },
+                              { name: "Shopify Plus", sub: "Commerce Tier", image: "" },
+                              { name: "Stripe", sub: "Verified Partner", image: "" },
+                              { name: "Vercel", sub: "Deployment Fleet", image: "" },
+                              { name: "AWS", sub: "Cloud Infrastructure", image: "" },
+                              { name: "Meta", sub: "Performance Ad Hub", image: "" },
+                              { name: "HubSpot", sub: "Inbound Solutions", image: "" },
+                              { name: "Webflow", sub: "Visual Engine", image: "" }
+                           ]).map((brand: any, bIdx: number) => (
+                              <div key={bIdx} className={UI.card + " space-y-4"}>
+                                 <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
+                                    <span className="text-[10px] font-bold text-[#646970] uppercase">Brand #{bIdx + 1}</span>
+                                    <button
+                                       type="button"
+                                       onClick={() => {
+                                          const list = (data.trustedBrands?.logos || []).filter((_: any, i: number) => i !== bIdx);
+                                          updateSection("trustedBrands", "logos", list);
+                                       }}
+                                       className="text-[#d63638] hover:text-[#b32d2e] p-1"
+                                    >
+                                       <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                 </div>
+
+                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div className="space-y-1.5">
+                                       <label className={UI.label}>Brand Name</label>
+                                       <input
+                                          type="text"
+                                          value={brand.name || ""}
+                                          onChange={(e) => {
+                                             const list = [...(data.trustedBrands?.logos || [])];
+                                             list[bIdx] = { ...list[bIdx], name: e.target.value };
+                                             updateSection("trustedBrands", "logos", list);
+                                          }}
+                                          className={UI.input}
+                                          placeholder="e.g. Google Cloud"
+                                       />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                       <label className={UI.label}>Category / Sub-label</label>
+                                       <input
+                                          type="text"
+                                          value={brand.sub || ""}
+                                          onChange={(e) => {
+                                             const list = [...(data.trustedBrands?.logos || [])];
+                                             list[bIdx] = { ...list[bIdx], sub: e.target.value };
+                                             updateSection("trustedBrands", "logos", list);
+                                          }}
+                                          className={UI.input}
+                                          placeholder="e.g. Enterprise Partner"
+                                       />
+                                    </div>
+                                 </div>
+
+                                 <div className="space-y-1.5">
+                                    <label className={UI.label}>Target URL / Website (Optional)</label>
+                                    <input
+                                       type="text"
+                                       value={brand.link || ""}
+                                       onChange={(e) => {
+                                          const list = [...(data.trustedBrands?.logos || [])];
+                                          list[bIdx] = { ...list[bIdx], link: e.target.value };
+                                          updateSection("trustedBrands", "logos", list);
+                                       }}
+                                       className={UI.input}
+                                       placeholder="e.g. https://google.com"
+                                    />
+                                 </div>
+
+                                 <ImageField
+                                    label="Custom Logo Image (Optional — if blank, matches recognized SVG)"
+                                    value={brand.image || ""}
+                                    onChange={(url) => {
+                                       const list = [...(data.trustedBrands?.logos || [])];
+                                       list[bIdx] = { ...list[bIdx], image: url };
+                                       updateSection("trustedBrands", "logos", list);
+                                    }}
+                                 />
+                              </div>
+                           ))}
                         </div>
                      </div>
                   </div>

@@ -6,6 +6,7 @@ import Services from "@/components/Services";
 import { useContent } from "@/hooks/useContent";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 
+const TrustedBrandsSection = dynamic(() => import("@/components/sections/TrustedBrandsSection"), { ssr: false });
 const AboutOwner = dynamic(() => import("@/components/AboutOwner"), { ssr: false });
 const Portfolio = dynamic(() => import("@/components/Portfolio"));
 const Testimonials = dynamic(() => import("@/components/Testimonials"), { ssr: false });
@@ -48,6 +49,12 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any; par
   return (
     <div className="relative">
       <Hero />
+
+      {/* ── TRUSTED BY LEADING BRANDS MARQUEE ── */}
+      <section id="trusted-brands">
+        <TrustedBrandsSection data={pageData?.content?.trustedBrands || pageData?.content?.clientTrust || pageData?.content?.trustedBy} />
+      </section>
+
       <section id="about">
         <AboutOwner />
       </section>
