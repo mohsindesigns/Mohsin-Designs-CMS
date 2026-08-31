@@ -772,7 +772,7 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
             {/* 5. MEASURABLE OUTCOMES (BENEFITS) */}
             {activeTab === "benefits" && (
               <div className="space-y-6">
-                <h3 className={UI.sectionHeader}>Measurable Business Outcomes (No Tags / Badges)</h3>
+                <h3 className={UI.sectionHeader}>Measurable Business Outcomes & Advantages</h3>
                 <div className="space-y-1.5">
                   <label className={UI.label}>Badge / Eyebrow</label>
                   <input
@@ -804,6 +804,17 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                 </div>
 
                 <div className="space-y-1.5">
+                  <label className={UI.label}>Section Description</label>
+                  <textarea
+                    rows={2}
+                    value={data.benefits?.description || ""}
+                    onChange={(e) => updateSection("benefits", "description", e.target.value)}
+                    className={UI.input}
+                    placeholder="Enter optional description for measurable outcomes..."
+                  />
+                </div>
+
+                <div className="space-y-1.5">
                   <label className={UI.label}>Outcome Guarantee Footer Label</label>
                   <input
                     type="text"
@@ -823,7 +834,7 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                         const current = Array.isArray(data.benefits?.list) ? data.benefits.list : [];
                         updateSection("benefits", "list", [
                           ...current,
-                          { metric: "100%", title: "New Verifiable Outcome", desc: "Outcome description.", iconName: "TrendingUp" }
+                          { metric: "100%", title: "New Verifiable Outcome", desc: "Outcome description.", tag: "Advantage", iconName: "TrendingUp" }
                         ]);
                       }}
                       className={UI.buttonAdd}
@@ -850,6 +861,20 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
 
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div className="space-y-1.5">
+                          <label className={UI.label}>Tag / Badge</label>
+                          <input
+                            type="text"
+                            value={b.tag || ""}
+                            onChange={(e) => {
+                              const list = [...(data.benefits?.list || [])];
+                              list[idx] = { ...list[idx], tag: e.target.value };
+                              updateSection("benefits", "list", list);
+                            }}
+                            className={UI.input}
+                            placeholder="Organic Reach"
+                          />
+                        </div>
+                        <div className="space-y-1.5">
                           <label className={UI.label}>Metric (e.g. 350%, 4.8x, &lt;1s)</label>
                           <input
                             type="text"
@@ -862,30 +887,30 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                             className={UI.input + " font-black"}
                           />
                         </div>
-                        <div className="space-y-1.5 sm:col-span-2">
-                          <label className={UI.label}>Outcome Title</label>
-                          <input
-                            type="text"
-                            value={b.title || ""}
-                            onChange={(e) => {
+                        <div className="space-y-1.5">
+                          <label className={UI.label}>Card Icon</label>
+                          <IconSelector
+                            value={b.iconName || b.icon || "TrendingUp"}
+                            onChange={(icon) => {
                               const list = [...(data.benefits?.list || [])];
-                              list[idx] = { ...list[idx], title: e.target.value };
+                              list[idx] = { ...list[idx], iconName: icon, icon: icon };
                               updateSection("benefits", "list", list);
                             }}
-                            className={UI.input}
                           />
                         </div>
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className={UI.label}>Card Icon</label>
-                        <IconSelector
-                          value={b.iconName || "TrendingUp"}
-                          onChange={(icon) => {
+                        <label className={UI.label}>Outcome Title</label>
+                        <input
+                          type="text"
+                          value={b.title || ""}
+                          onChange={(e) => {
                             const list = [...(data.benefits?.list || [])];
-                            list[idx] = { ...list[idx], iconName: icon };
+                            list[idx] = { ...list[idx], title: e.target.value };
                             updateSection("benefits", "list", list);
                           }}
+                          className={UI.input}
                         />
                       </div>
 
@@ -896,7 +921,7 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                           value={b.desc || b.description || ""}
                           onChange={(e) => {
                             const list = [...(data.benefits?.list || [])];
-                            list[idx] = { ...list[idx], desc: e.target.value };
+                            list[idx] = { ...list[idx], desc: e.target.value, description: e.target.value };
                             updateSection("benefits", "list", list);
                           }}
                           className={UI.input}

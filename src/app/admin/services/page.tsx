@@ -1203,6 +1203,16 @@ export default function ServicesAdminPage() {
                                         />
                                       </div>
                                     </div>
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Section Description (Optional)</label>
+                                      <textarea
+                                        rows={2}
+                                        value={form.whatIncluded?.description || ""}
+                                        onChange={(e) => setForm({ ...form, whatIncluded: { ...form.whatIncluded, description: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="Enter overview description for deliverables..."
+                                      />
+                                    </div>
                                   </div>
                                 </div>
 
@@ -1252,7 +1262,7 @@ export default function ServicesAdminPage() {
                                           />
                                         </div>
                                         <BulletListEditor
-                                          label="Deliverables Checklist"
+                                          label="Deliverables Checklist (Optional — Leave blank to hide bullet list)"
                                           items={pillar.features || []}
                                           onChange={(feats) => {
                                             const p = [...form.whatIncluded.pillars];
@@ -1267,7 +1277,7 @@ export default function ServicesAdminPage() {
                                       type="button"
                                       onClick={() => {
                                         const p = [...(form.whatIncluded?.pillars || [])];
-                                        p.push({ title: "New Capability Pillar", desc: "Description...", features: ["Inclusion 1", "Inclusion 2"] });
+                                        p.push({ title: "New Capability Pillar", desc: "Description...", features: [] });
                                         setForm({ ...form, whatIncluded: { ...form.whatIncluded, pillars: p } });
                                       }}
                                       className={UI.buttonAdd}
@@ -1452,18 +1462,29 @@ export default function ServicesAdminPage() {
                                         value={form.benefits?.description || ""}
                                         onChange={(e) => setForm({ ...form, benefits: { ...form.benefits, description: e.target.value } })}
                                         className={UI.input}
+                                        placeholder="Enter optional description for outcomes..."
+                                      />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Outcome Guarantee Footer Label</label>
+                                      <input
+                                        type="text"
+                                        value={form.benefits?.outcomeText || ""}
+                                        onChange={(e) => setForm({ ...form, benefits: { ...form.benefits, outcomeText: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="e.g. Guaranteed Outcome"
                                       />
                                     </div>
                                   </div>
                                 </div>
 
                                 <div className="space-y-6">
-                                  <h3 className={UI.sectionHeader}>2. Benefit Cards</h3>
+                                  <h3 className={UI.sectionHeader}>2. Benefit / Outcome Cards</h3>
                                   <div className="space-y-4">
                                     {(form.benefits?.list || []).map((b: any, idx: number) => (
                                       <div key={idx} className={UI.card + " space-y-4"}>
                                         <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
-                                          <span className="text-[10px] font-bold text-[#646970] uppercase">Benefit Card #{idx + 1}</span>
+                                          <span className="text-[10px] font-bold text-[#646970] uppercase">Outcome Card #{idx + 1}</span>
                                           <button
                                             type="button"
                                             onClick={() => {
@@ -1490,29 +1511,54 @@ export default function ServicesAdminPage() {
                                               placeholder="Organic Reach"
                                             />
                                           </div>
-                                          <div className="md:col-span-2 space-y-1.5">
-                                            <label className={UI.label}>Title</label>
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Metric (e.g. 350%, 4.8x)</label>
                                             <input
                                               type="text"
-                                              value={b.title || ""}
+                                              value={b.metric || ""}
                                               onChange={(e) => {
                                                 const l = [...form.benefits.list];
-                                                l[idx] = { ...l[idx], title: e.target.value };
+                                                l[idx] = { ...l[idx], metric: e.target.value };
                                                 setForm({ ...form, benefits: { ...form.benefits, list: l } });
                                               }}
-                                              className={UI.input}
-                                              placeholder="Compounding Traffic & Authority"
+                                              className={UI.input + " font-black"}
+                                              placeholder="350%"
                                             />
                                           </div>
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Card Icon</label>
+                                            <IconSelector
+                                              value={b.iconName || b.icon || "TrendingUp"}
+                                              onChange={(v) => {
+                                                const l = [...form.benefits.list];
+                                                l[idx] = { ...l[idx], iconName: v, icon: v };
+                                                setForm({ ...form, benefits: { ...form.benefits, list: l } });
+                                              }}
+                                            />
+                                          </div>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                          <label className={UI.label}>Title</label>
+                                          <input
+                                            type="text"
+                                            value={b.title || ""}
+                                            onChange={(e) => {
+                                              const l = [...form.benefits.list];
+                                              l[idx] = { ...l[idx], title: e.target.value };
+                                              setForm({ ...form, benefits: { ...form.benefits, list: l } });
+                                            }}
+                                            className={UI.input}
+                                            placeholder="Compounding Traffic & Authority"
+                                          />
                                         </div>
                                         <div className="space-y-1.5">
                                           <label className={UI.label}>Description</label>
                                           <textarea
                                             rows={2}
-                                            value={b.desc || ""}
+                                            value={b.desc || b.description || ""}
                                             onChange={(e) => {
                                               const l = [...form.benefits.list];
-                                              l[idx] = { ...l[idx], desc: e.target.value };
+                                              l[idx] = { ...l[idx], desc: e.target.value, description: e.target.value };
                                               setForm({ ...form, benefits: { ...form.benefits, list: l } });
                                             }}
                                             className={UI.input}
@@ -1524,7 +1570,7 @@ export default function ServicesAdminPage() {
                                       type="button"
                                       onClick={() => {
                                         const l = [...(form.benefits?.list || [])];
-                                        l.push({ num: `0${l.length + 1}`, title: "New Outcome", desc: "Details...", tag: "Advantage" });
+                                        l.push({ metric: "100%", title: "New Outcome", desc: "Details...", tag: "Advantage", iconName: "TrendingUp" });
                                         setForm({ ...form, benefits: { ...form.benefits, list: l } });
                                       }}
                                       className={UI.buttonAdd}
@@ -1669,13 +1715,23 @@ export default function ServicesAdminPage() {
                                             className={UI.input}
                                           />
                                         </div>
+                                        <BulletListEditor
+                                          label="Deliverables / Bullet Points (Optional — Leave blank to hide)"
+                                          items={step.deliverables || []}
+                                          onChange={(items) => {
+                                            const s = [...form.process.steps];
+                                            s[idx] = { ...s[idx], deliverables: items };
+                                            setForm({ ...form, process: { ...form.process, steps: s } });
+                                          }}
+                                          placeholder="e.g. Technical Audit, Wireframes"
+                                        />
                                       </div>
                                     ))}
                                     <button
                                       type="button"
                                       onClick={() => {
                                         const s = [...(form.process?.steps || [])];
-                                        s.push({ step: `0${s.length + 1}`, title: "New Roadmap Step", desc: "Step details...", badge: `PHASE 0${s.length + 1}` });
+                                        s.push({ step: `0${s.length + 1}`, title: "New Roadmap Step", desc: "Step details...", badge: `PHASE 0${s.length + 1}`, deliverables: [] });
                                         setForm({ ...form, process: { ...form.process, steps: s } });
                                       }}
                                       className={UI.buttonAdd}
@@ -1691,7 +1747,200 @@ export default function ServicesAdminPage() {
                             {activeSubTab === "results" && (
                               <div className="space-y-12">
                                 <div className="space-y-6">
-                                  <h3 className={UI.sectionHeader}>1. Performance Metrics</h3>
+                                  <h3 className={UI.sectionHeader}>1. Section Header</h3>
+                                  <div className="space-y-4">
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Eyebrow Tag</label>
+                                      <input
+                                        type="text"
+                                        value={form.results?.eyebrow || ""}
+                                        onChange={(e) => setForm({ ...form, results: { ...form.results, eyebrow: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="07 // PROVEN IMPACT"
+                                      />
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Title Intro</label>
+                                        <input
+                                          type="text"
+                                          value={form.results?.titleIntro || ""}
+                                          onChange={(e) => setForm({ ...form, results: { ...form.results, titleIntro: e.target.value } })}
+                                          className={UI.input}
+                                          placeholder="Demonstrated"
+                                        />
+                                      </div>
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Title Highlight</label>
+                                        <input
+                                          type="text"
+                                          value={form.results?.titleHighlight || ""}
+                                          onChange={(e) => setForm({ ...form, results: { ...form.results, titleHighlight: e.target.value } })}
+                                          className={UI.input + " font-bold border-[#2271b1]"}
+                                          placeholder="Performance Lift"
+                                        />
+                                      </div>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Description</label>
+                                      <textarea
+                                        rows={2}
+                                        value={form.results?.description || ""}
+                                        onChange={(e) => setForm({ ...form, results: { ...form.results, description: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="Enter optional description..."
+                                      />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Case Studies Subhead Eyebrow</label>
+                                      <input
+                                        type="text"
+                                        value={form.results?.caseStudiesEyebrow || ""}
+                                        onChange={(e) => setForm({ ...form, results: { ...form.results, caseStudiesEyebrow: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="FEATURED CASE STUDY"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>2. Case Studies (Left Switcher / Tab Cards)</h3>
+                                  <div className="space-y-4">
+                                    {((Array.isArray(form.results?.caseStudies) && form.results.caseStudies.length > 0)
+                                      ? form.results.caseStudies
+                                      : form.results?.caseStudy ? [form.results.caseStudy] : []
+                                    ).map((cs: any, idx: number) => (
+                                      <div key={idx} className={UI.card + " space-y-4"}>
+                                        <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
+                                          <span className="text-[10px] font-bold text-[#646970] uppercase">Case Study #{idx + 1}</span>
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              const currentList = Array.isArray(form.results?.caseStudies) ? form.results.caseStudies : (form.results?.caseStudy ? [form.results.caseStudy] : []);
+                                              const filtered = currentList.filter((_: any, i: number) => i !== idx);
+                                              setForm({ ...form, results: { ...form.results, caseStudies: filtered, caseStudy: filtered[0] || {} } });
+                                            }}
+                                            className="text-[#d63638]"
+                                          >
+                                            <Trash2 className="w-4 h-4" />
+                                          </button>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Client / Case Title</label>
+                                            <input
+                                              type="text"
+                                              value={cs.title || ""}
+                                              onChange={(e) => {
+                                                const currentList = [...(Array.isArray(form.results?.caseStudies) && form.results.caseStudies.length > 0 ? form.results.caseStudies : (form.results?.caseStudy ? [form.results.caseStudy] : [{ title: "" }]))];
+                                                currentList[idx] = { ...currentList[idx], title: e.target.value };
+                                                setForm({ ...form, results: { ...form.results, caseStudies: currentList, caseStudy: currentList[0] } });
+                                              }}
+                                              className={UI.input}
+                                              placeholder="Fintech Platform Re-architecture"
+                                            />
+                                          </div>
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Outcome / Metric Highlight</label>
+                                            <input
+                                              type="text"
+                                              value={cs.outcome || cs.metric || ""}
+                                              onChange={(e) => {
+                                                const currentList = [...(Array.isArray(form.results?.caseStudies) && form.results.caseStudies.length > 0 ? form.results.caseStudies : (form.results?.caseStudy ? [form.results.caseStudy] : [{ title: "" }]))];
+                                                currentList[idx] = { ...currentList[idx], outcome: e.target.value, metric: e.target.value };
+                                                setForm({ ...form, results: { ...form.results, caseStudies: currentList, caseStudy: currentList[0] } });
+                                              }}
+                                              className={UI.input + " font-bold border-[#2271b1]"}
+                                              placeholder="+312% Organic Conversions"
+                                            />
+                                          </div>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Challenge Statement</label>
+                                            <textarea
+                                              rows={2}
+                                              value={cs.challenge || ""}
+                                              onChange={(e) => {
+                                                const currentList = [...(Array.isArray(form.results?.caseStudies) && form.results.caseStudies.length > 0 ? form.results.caseStudies : (form.results?.caseStudy ? [form.results.caseStudy] : [{ title: "" }]))];
+                                                currentList[idx] = { ...currentList[idx], challenge: e.target.value };
+                                                setForm({ ...form, results: { ...form.results, caseStudies: currentList, caseStudy: currentList[0] } });
+                                              }}
+                                              className={UI.input}
+                                              placeholder="Legacy monolithic stack causing slow load times and dropped signups..."
+                                            />
+                                          </div>
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Strategy Applied</label>
+                                            <textarea
+                                              rows={2}
+                                              value={cs.strategy || ""}
+                                              onChange={(e) => {
+                                                const currentList = [...(Array.isArray(form.results?.caseStudies) && form.results.caseStudies.length > 0 ? form.results.caseStudies : (form.results?.caseStudy ? [form.results.caseStudy] : [{ title: "" }]))];
+                                                currentList[idx] = { ...currentList[idx], strategy: e.target.value };
+                                                setForm({ ...form, results: { ...form.results, caseStudies: currentList, caseStudy: currentList[0] } });
+                                              }}
+                                              className={UI.input}
+                                              placeholder="Migrated to headless Next.js architecture with automated edge caching..."
+                                            />
+                                          </div>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Outcome Label</label>
+                                            <input
+                                              type="text"
+                                              value={cs.outcomeLabel || ""}
+                                              onChange={(e) => {
+                                                const currentList = [...(Array.isArray(form.results?.caseStudies) && form.results.caseStudies.length > 0 ? form.results.caseStudies : (form.results?.caseStudy ? [form.results.caseStudy] : [{ title: "" }]))];
+                                                currentList[idx] = { ...currentList[idx], outcomeLabel: e.target.value };
+                                                setForm({ ...form, results: { ...form.results, caseStudies: currentList, caseStudy: currentList[0] } });
+                                              }}
+                                              className={UI.input}
+                                              placeholder="Result Achieved"
+                                            />
+                                          </div>
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Summary Description (Optional)</label>
+                                            <input
+                                              type="text"
+                                              value={cs.desc || ""}
+                                              onChange={(e) => {
+                                                const currentList = [...(Array.isArray(form.results?.caseStudies) && form.results.caseStudies.length > 0 ? form.results.caseStudies : (form.results?.caseStudy ? [form.results.caseStudy] : [{ title: "" }]))];
+                                                currentList[idx] = { ...currentList[idx], desc: e.target.value };
+                                                setForm({ ...form, results: { ...form.results, caseStudies: currentList, caseStudy: currentList[0] } });
+                                              }}
+                                              className={UI.input}
+                                              placeholder="Optional short summary..."
+                                            />
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const currentList = [...(Array.isArray(form.results?.caseStudies) && form.results.caseStudies.length > 0 ? form.results.caseStudies : (form.results?.caseStudy ? [form.results.caseStudy] : []))];
+                                        currentList.push({
+                                          title: "New Case Study",
+                                          challenge: "Challenge description...",
+                                          strategy: "Strategy executed...",
+                                          outcome: "+150% Performance",
+                                          outcomeLabel: "Result Achieved",
+                                          desc: ""
+                                        });
+                                        setForm({ ...form, results: { ...form.results, caseStudies: currentList, caseStudy: currentList[0] } });
+                                      }}
+                                      className={UI.buttonAdd}
+                                    >
+                                      + Add Case Study
+                                    </button>
+                                  </div>
+                                </div>
+
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>3. Performance Metric Counters (Right Side)</h3>
                                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     {(form.results?.metrics || []).map((m: any, idx: number) => (
                                       <div key={idx} className={UI.card + " space-y-3"}>
@@ -1709,7 +1958,7 @@ export default function ServicesAdminPage() {
                                           </button>
                                         </div>
                                         <div className="space-y-1.5">
-                                          <label className={UI.label}>Value</label>
+                                          <label className={UI.label}>Value / Statistic</label>
                                           <input
                                             type="text"
                                             value={m.value || ""}
@@ -1737,17 +1986,31 @@ export default function ServicesAdminPage() {
                                           />
                                         </div>
                                         <div className="space-y-1.5">
-                                          <label className={UI.label}>Subtext</label>
+                                          <label className={UI.label}>Subtext / Context</label>
                                           <input
                                             type="text"
-                                            value={m.subtext || ""}
+                                            value={m.subtext || m.desc || ""}
                                             onChange={(e) => {
                                               const metrics = [...form.results.metrics];
-                                              metrics[idx] = { ...metrics[idx], subtext: e.target.value };
+                                              metrics[idx] = { ...metrics[idx], subtext: e.target.value, desc: e.target.value };
                                               setForm({ ...form, results: { ...form.results, metrics } });
                                             }}
                                             className={UI.input}
                                             placeholder="Within 90 days"
+                                          />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                          <label className={UI.label}>Badge / Tag (Optional)</label>
+                                          <input
+                                            type="text"
+                                            value={m.tag || ""}
+                                            onChange={(e) => {
+                                              const metrics = [...form.results.metrics];
+                                              metrics[idx] = { ...metrics[idx], tag: e.target.value };
+                                              setForm({ ...form, results: { ...form.results, metrics } });
+                                            }}
+                                            className={UI.input}
+                                            placeholder="VERIFIED"
                                           />
                                         </div>
                                       </div>
@@ -1757,69 +2020,13 @@ export default function ServicesAdminPage() {
                                     type="button"
                                     onClick={() => {
                                       const metrics = [...(form.results?.metrics || [])];
-                                      metrics.push({ value: "99.9%", label: "Uptime SLA", subtext: "Enterprise availability" });
+                                      metrics.push({ value: "99.9%", label: "Uptime SLA", subtext: "Enterprise availability", tag: "SLA" });
                                       setForm({ ...form, results: { ...form.results, metrics } });
                                     }}
                                     className={UI.buttonAdd}
                                   >
                                     + Add Metric
                                   </button>
-                                </div>
-
-                                <div className="space-y-6">
-                                  <h3 className={UI.sectionHeader}>2. Spotlight Case Study Card</h3>
-                                  <div className="space-y-4">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                      <div className="space-y-1.5">
-                                        <label className={UI.label}>Title</label>
-                                        <input
-                                          type="text"
-                                          value={form.results?.caseStudy?.title || ""}
-                                          onChange={(e) => setForm({ ...form, results: { ...form.results, caseStudy: { ...form.results?.caseStudy, title: e.target.value } } })}
-                                          className={UI.input}
-                                          placeholder="Global Logistics Redesign"
-                                        />
-                                      </div>
-                                      <div className="space-y-1.5">
-                                        <label className={UI.label}>Metric Highlight</label>
-                                        <input
-                                          type="text"
-                                          value={form.results?.caseStudy?.metric || ""}
-                                          onChange={(e) => setForm({ ...form, results: { ...form.results, caseStudy: { ...form.results?.caseStudy, metric: e.target.value } } })}
-                                          className={UI.input + " font-bold border-[#2271b1]"}
-                                          placeholder="+420% Inbound Pipeline"
-                                        />
-                                      </div>
-                                    </div>
-                                    <div className="space-y-1.5">
-                                      <label className={UI.label}>Description</label>
-                                      <textarea
-                                        rows={2}
-                                        value={form.results?.caseStudy?.desc || ""}
-                                        onChange={(e) => setForm({ ...form, results: { ...form.results, caseStudy: { ...form.results?.caseStudy, desc: e.target.value } } })}
-                                        className={UI.input}
-                                      />
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                      <div className="space-y-1.5">
-                                        <label className={UI.label}>Case Link</label>
-                                        <input
-                                          type="text"
-                                          value={form.results?.caseStudy?.link || ""}
-                                          onChange={(e) => setForm({ ...form, results: { ...form.results, caseStudy: { ...form.results?.caseStudy, link: e.target.value } } })}
-                                          className={UI.input}
-                                          placeholder="/portfolio"
-                                        />
-                                      </div>
-                                      <div className="space-y-1.5">
-                                        <ImageField
-                                          label="Cover Image"
-                                          value={form.results?.caseStudy?.image || ""}
-                                          onChange={(url) => setForm({ ...form, results: { ...form.results, caseStudy: { ...form.results?.caseStudy, image: url } } })}
-                                        />
-                                      </div>
-                                    </div>
-                                  </div>
                                 </div>
                               </div>
                             )}
@@ -1877,15 +2084,15 @@ export default function ServicesAdminPage() {
                                 <div className="space-y-6">
                                   <h3 className={UI.sectionHeader}>2. Industry Sectors</h3>
                                   <div className="space-y-4">
-                                    {(form.industries?.items || []).map((item: any, idx: number) => (
+                                    {(form.industries?.items || form.industries?.list || []).map((item: any, idx: number) => (
                                       <div key={idx} className={UI.card + " space-y-4"}>
                                         <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
                                           <span className="text-[10px] font-bold text-[#646970] uppercase">Sector #{idx + 1}</span>
                                           <button
                                             type="button"
                                             onClick={() => {
-                                              const items = form.industries.items.filter((_: any, i: number) => i !== idx);
-                                              setForm({ ...form, industries: { ...form.industries, items } });
+                                              const currentItems = (form.industries.items || form.industries.list || []).filter((_: any, i: number) => i !== idx);
+                                              setForm({ ...form, industries: { ...form.industries, items: currentItems, list: currentItems } });
                                             }}
                                             className="text-[#d63638]"
                                           >
@@ -1894,14 +2101,14 @@ export default function ServicesAdminPage() {
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                           <div className="space-y-1.5">
-                                            <label className={UI.label}>Name</label>
+                                            <label className={UI.label}>Sector Name / Title</label>
                                             <input
                                               type="text"
-                                              value={item.name || ""}
+                                              value={item.title || item.name || ""}
                                               onChange={(e) => {
-                                                const items = [...form.industries.items];
-                                                items[idx] = { ...items[idx], name: e.target.value };
-                                                setForm({ ...form, industries: { ...form.industries, items } });
+                                                const currentItems = [...(form.industries.items || form.industries.list || [])];
+                                                currentItems[idx] = { ...currentItems[idx], name: e.target.value, title: e.target.value };
+                                                setForm({ ...form, industries: { ...form.industries, items: currentItems, list: currentItems } });
                                               }}
                                               className={UI.input}
                                               placeholder="SaaS & Enterprise Tech"
@@ -1910,11 +2117,11 @@ export default function ServicesAdminPage() {
                                           <div className="space-y-1.5">
                                             <label className={UI.label}>Icon</label>
                                             <IconSelector
-                                              value={item.icon || "Cpu"}
+                                              value={item.icon || item.iconName || "Cpu"}
                                               onChange={(v) => {
-                                                const items = [...form.industries.items];
-                                                items[idx] = { ...items[idx], icon: v };
-                                                setForm({ ...form, industries: { ...form.industries, items } });
+                                                const currentItems = [...(form.industries.items || form.industries.list || [])];
+                                                currentItems[idx] = { ...currentItems[idx], icon: v, iconName: v };
+                                                setForm({ ...form, industries: { ...form.industries, items: currentItems, list: currentItems } });
                                               }}
                                             />
                                           </div>
@@ -1923,11 +2130,11 @@ export default function ServicesAdminPage() {
                                           <label className={UI.label}>Description</label>
                                           <textarea
                                             rows={2}
-                                            value={item.desc || ""}
+                                            value={item.desc || item.description || ""}
                                             onChange={(e) => {
-                                              const items = [...form.industries.items];
-                                              items[idx] = { ...items[idx], desc: e.target.value };
-                                              setForm({ ...form, industries: { ...form.industries, items } });
+                                              const currentItems = [...(form.industries.items || form.industries.list || [])];
+                                              currentItems[idx] = { ...currentItems[idx], desc: e.target.value, description: e.target.value };
+                                              setForm({ ...form, industries: { ...form.industries, items: currentItems, list: currentItems } });
                                             }}
                                             className={UI.input}
                                           />
@@ -1937,9 +2144,9 @@ export default function ServicesAdminPage() {
                                     <button
                                       type="button"
                                       onClick={() => {
-                                        const items = [...(form.industries?.items || [])];
-                                        items.push({ name: "New Industry Sector", desc: "Description...", icon: "Cpu" });
-                                        setForm({ ...form, industries: { ...form.industries, items } });
+                                        const currentItems = [...(form.industries?.items || form.industries?.list || [])];
+                                        currentItems.push({ name: "New Industry Sector", title: "New Industry Sector", desc: "Description...", icon: "Cpu", iconName: "Cpu" });
+                                        setForm({ ...form, industries: { ...form.industries, items: currentItems, list: currentItems } });
                                       }}
                                       className={UI.buttonAdd}
                                     >
@@ -1988,11 +2195,110 @@ export default function ServicesAdminPage() {
                                         />
                                       </div>
                                     </div>
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Section Description</label>
+                                      <textarea
+                                        rows={2}
+                                        value={form.tools?.description || ""}
+                                        onChange={(e) => setForm({ ...form, tools: { ...form.tools, description: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="Our stack is engineered with modern frameworks..."
+                                      />
+                                    </div>
                                   </div>
                                 </div>
 
                                 <div className="space-y-6">
-                                  <h3 className={UI.sectionHeader}>2. Tech Stack Category Groups</h3>
+                                  <h3 className={UI.sectionHeader}>2. Individual Tool Cards (Featured Stack Grid)</h3>
+                                  <div className="space-y-4">
+                                    {(form.tools?.list || form.tools?.items || []).map((tool: any, idx: number) => (
+                                      <div key={idx} className={UI.card + " space-y-4"}>
+                                        <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
+                                          <span className="text-[10px] font-bold text-[#646970] uppercase">Tool #{idx + 1}</span>
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              const list = (form.tools.list || form.tools.items || []).filter((_: any, i: number) => i !== idx);
+                                              setForm({ ...form, tools: { ...form.tools, list, items: list } });
+                                            }}
+                                            className="text-[#d63638]"
+                                          >
+                                            <Trash2 className="w-4 h-4" />
+                                          </button>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Tool Name</label>
+                                            <input
+                                              type="text"
+                                              value={tool.name || ""}
+                                              onChange={(e) => {
+                                                const list = [...(form.tools.list || form.tools.items || [])];
+                                                list[idx] = { ...list[idx], name: e.target.value };
+                                                setForm({ ...form, tools: { ...form.tools, list, items: list } });
+                                              }}
+                                              className={UI.input}
+                                              placeholder="Next.js 16"
+                                            />
+                                          </div>
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Category Tag</label>
+                                            <input
+                                              type="text"
+                                              value={tool.tag || tool.category || ""}
+                                              onChange={(e) => {
+                                                const list = [...(form.tools.list || form.tools.items || [])];
+                                                list[idx] = { ...list[idx], tag: e.target.value, category: e.target.value };
+                                                setForm({ ...form, tools: { ...form.tools, list, items: list } });
+                                              }}
+                                              className={UI.input}
+                                              placeholder="Framework"
+                                            />
+                                          </div>
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Icon</label>
+                                            <IconSelector
+                                              value={tool.iconName || tool.icon || "Code2"}
+                                              onChange={(v) => {
+                                                const list = [...(form.tools.list || form.tools.items || [])];
+                                                list[idx] = { ...list[idx], iconName: v, icon: v };
+                                                setForm({ ...form, tools: { ...form.tools, list, items: list } });
+                                              }}
+                                            />
+                                          </div>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                          <label className={UI.label}>Card Description</label>
+                                          <textarea
+                                            rows={2}
+                                            value={tool.desc || tool.description || ""}
+                                            onChange={(e) => {
+                                              const list = [...(form.tools.list || form.tools.items || [])];
+                                              list[idx] = { ...list[idx], desc: e.target.value, description: e.target.value };
+                                              setForm({ ...form, tools: { ...form.tools, list, items: list } });
+                                            }}
+                                            className={UI.input}
+                                            placeholder="Server-side rendering & app router architecture..."
+                                          />
+                                        </div>
+                                      </div>
+                                    ))}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const list = [...(form.tools?.list || form.tools?.items || [])];
+                                        list.push({ name: "New Tool", tag: "Tech", desc: "Tool description...", iconName: "Code2", icon: "Code2" });
+                                        setForm({ ...form, tools: { ...form.tools, list, items: list } });
+                                      }}
+                                      className={UI.buttonAdd}
+                                    >
+                                      + Add Tool Card
+                                    </button>
+                                  </div>
+                                </div>
+
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>3. Tech Stack Category Groups</h3>
                                   <div className="space-y-4">
                                     {(form.tools?.categories || []).map((cat: any, idx: number) => (
                                       <div key={idx} className={UI.card + " space-y-4"}>
@@ -2092,37 +2398,132 @@ export default function ServicesAdminPage() {
                                         />
                                       </div>
                                     </div>
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Description</label>
+                                      <textarea
+                                        rows={2}
+                                        value={form.whyChooseUs?.description || ""}
+                                        onChange={(e) => setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, description: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="Enter overview description..."
+                                      />
+                                    </div>
                                   </div>
                                 </div>
 
                                 <div className="space-y-6">
-                                  <h3 className={UI.sectionHeader}>2. Value Proposition Points</h3>
+                                  <h3 className={UI.sectionHeader}>2. Circular Animated Stat Rings</h3>
+                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    {(form.whyChooseUs?.stats || [
+                                      { value: "99.8%", label: "SLA Uptime", sublabel: "Guaranteed Performance", percentage: 99 },
+                                      { value: "4.8x", label: "Average ROI", sublabel: "Year-over-Year", percentage: 90 },
+                                      { value: "100%", label: "IP Ownership", sublabel: "Full Source Code", percentage: 100 }
+                                    ]).map((st: any, idx: number) => (
+                                      <div key={idx} className={UI.card + " space-y-3"}>
+                                        <span className="text-[10px] font-bold text-[#646970] uppercase">Stat Ring #{idx + 1}</span>
+                                        <div className="space-y-1.5">
+                                          <label className={UI.label}>Value (e.g. 99.8%, 4.8x)</label>
+                                          <input
+                                            type="text"
+                                            value={st.value || ""}
+                                            onChange={(e) => {
+                                              const stats = [...(form.whyChooseUs?.stats || [{}, {}, {}])];
+                                              stats[idx] = { ...stats[idx], value: e.target.value };
+                                              setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, stats } });
+                                            }}
+                                            className={UI.input + " font-bold border-[#2271b1]"}
+                                            placeholder="99.8%"
+                                          />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                          <label className={UI.label}>Label</label>
+                                          <input
+                                            type="text"
+                                            value={st.label || ""}
+                                            onChange={(e) => {
+                                              const stats = [...(form.whyChooseUs?.stats || [{}, {}, {}])];
+                                              stats[idx] = { ...stats[idx], label: e.target.value };
+                                              setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, stats } });
+                                            }}
+                                            className={UI.input}
+                                            placeholder="SLA Uptime"
+                                          />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                          <label className={UI.label}>Sublabel</label>
+                                          <input
+                                            type="text"
+                                            value={st.sublabel || ""}
+                                            onChange={(e) => {
+                                              const stats = [...(form.whyChooseUs?.stats || [{}, {}, {}])];
+                                              stats[idx] = { ...stats[idx], sublabel: e.target.value };
+                                              setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, stats } });
+                                            }}
+                                            className={UI.input}
+                                            placeholder="Guaranteed Performance"
+                                          />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                          <label className={UI.label}>Progress Percentage (0-100)</label>
+                                          <input
+                                            type="number"
+                                            value={st.percentage ?? 100}
+                                            onChange={(e) => {
+                                              const stats = [...(form.whyChooseUs?.stats || [{}, {}, {}])];
+                                              stats[idx] = { ...stats[idx], percentage: Number(e.target.value) };
+                                              setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, stats } });
+                                            }}
+                                            className={UI.input}
+                                            placeholder="95"
+                                          />
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>3. Value Proposition Differentiators</h3>
                                   <div className="space-y-4">
-                                    {(form.whyChooseUs?.points || []).map((pt: any, idx: number) => (
+                                    {(form.whyChooseUs?.list || form.whyChooseUs?.points || []).map((pt: any, idx: number) => (
                                       <div key={idx} className={UI.card + " space-y-4"}>
                                         <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
-                                          <span className="text-[10px] font-bold text-[#646970] uppercase">Point #{idx + 1}</span>
+                                          <span className="text-[10px] font-bold text-[#646970] uppercase">Differentiator #{idx + 1}</span>
                                           <button
                                             type="button"
                                             onClick={() => {
-                                              const points = form.whyChooseUs.points.filter((_: any, i: number) => i !== idx);
-                                              setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, points } });
+                                              const currentList = (form.whyChooseUs.list || form.whyChooseUs.points || []).filter((_: any, i: number) => i !== idx);
+                                              setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, list: currentList, points: currentList } });
                                             }}
                                             className="text-[#d63638]"
                                           >
                                             <Trash2 className="w-4 h-4" />
                                           </button>
                                         </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                          <div className="space-y-1.5">
+                                            <label className={UI.label}>Tag / Category (Optional)</label>
+                                            <input
+                                              type="text"
+                                              value={pt.tag || ""}
+                                              onChange={(e) => {
+                                                const currentList = [...(form.whyChooseUs.list || form.whyChooseUs.points || [])];
+                                                currentList[idx] = { ...currentList[idx], tag: e.target.value };
+                                                setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, list: currentList, points: currentList } });
+                                              }}
+                                              className={UI.input}
+                                              placeholder="Architecture"
+                                            />
+                                          </div>
                                           <div className="space-y-1.5">
                                             <label className={UI.label}>Title</label>
                                             <input
                                               type="text"
                                               value={pt.title || ""}
                                               onChange={(e) => {
-                                                const points = [...form.whyChooseUs.points];
-                                                points[idx] = { ...points[idx], title: e.target.value };
-                                                setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, points } });
+                                                const currentList = [...(form.whyChooseUs.list || form.whyChooseUs.points || [])];
+                                                currentList[idx] = { ...currentList[idx], title: e.target.value };
+                                                setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, list: currentList, points: currentList } });
                                               }}
                                               className={UI.input}
                                               placeholder="Zero Technical Debt"
@@ -2131,11 +2532,11 @@ export default function ServicesAdminPage() {
                                           <div className="space-y-1.5">
                                             <label className={UI.label}>Icon</label>
                                             <IconSelector
-                                              value={pt.icon || "CheckCircle2"}
+                                              value={pt.icon || pt.iconName || "CheckCircle2"}
                                               onChange={(v) => {
-                                                const points = [...form.whyChooseUs.points];
-                                                points[idx] = { ...points[idx], icon: v };
-                                                setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, points } });
+                                                const currentList = [...(form.whyChooseUs.list || form.whyChooseUs.points || [])];
+                                                currentList[idx] = { ...currentList[idx], icon: v, iconName: v };
+                                                setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, list: currentList, points: currentList } });
                                               }}
                                             />
                                           </div>
@@ -2144,11 +2545,11 @@ export default function ServicesAdminPage() {
                                           <label className={UI.label}>Description</label>
                                           <textarea
                                             rows={2}
-                                            value={pt.desc || ""}
+                                            value={pt.desc || pt.description || ""}
                                             onChange={(e) => {
-                                              const points = [...form.whyChooseUs.points];
-                                              points[idx] = { ...points[idx], desc: e.target.value };
-                                              setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, points } });
+                                              const currentList = [...(form.whyChooseUs.list || form.whyChooseUs.points || [])];
+                                              currentList[idx] = { ...currentList[idx], desc: e.target.value, description: e.target.value };
+                                              setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, list: currentList, points: currentList } });
                                             }}
                                             className={UI.input}
                                           />
@@ -2158,13 +2559,13 @@ export default function ServicesAdminPage() {
                                     <button
                                       type="button"
                                       onClick={() => {
-                                        const points = [...(form.whyChooseUs?.points || [])];
-                                        points.push({ title: "New Value Point", desc: "Description...", icon: "CheckCircle2" });
-                                        setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, points } });
+                                        const currentList = [...(form.whyChooseUs?.list || form.whyChooseUs?.points || [])];
+                                        currentList.push({ title: "New Value Point", desc: "Description...", tag: "Advantage", icon: "CheckCircle2", iconName: "CheckCircle2" });
+                                        setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, list: currentList, points: currentList } });
                                       }}
                                       className={UI.buttonAdd}
                                     >
-                                      + Add Value Point
+                                      + Add Differentiator Point
                                     </button>
                                   </div>
                                 </div>
@@ -2208,6 +2609,16 @@ export default function ServicesAdminPage() {
                                           placeholder="Every Scale"
                                         />
                                       </div>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Section Description</label>
+                                      <textarea
+                                        rows={2}
+                                        value={form.pricing?.description || ""}
+                                        onChange={(e) => setForm({ ...form, pricing: { ...form.pricing, description: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="Choose the right engagement tier for your team..."
+                                      />
                                     </div>
                                   </div>
                                 </div>

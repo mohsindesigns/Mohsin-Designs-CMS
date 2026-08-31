@@ -407,9 +407,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       : (Array.isArray(content?.services) && content.services.length > 0 ? content.services : []));
 
   // Find target service
-  const dbService = rawServices.find((s: any) => s.slug === resolvedSlug) || pageData;
+  const dbService = rawServices.find((s: any) => s.slug === resolvedSlug) || pageData?.content || pageData;
 
-  // Defaults fallback
+  // Defaults fallback & normalization
   const service = {
     title: dbService?.title || "Professional Service",
     slug: dbService?.slug || resolvedSlug,
@@ -428,37 +428,47 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
         text: dbService?.hero?.secondaryCta?.text || "Explore Inclusions",
         link: dbService?.hero?.secondaryCta?.link || "#what-included"
       },
-      benefits: (dbService?.hero?.benefits && dbService.hero.benefits.length > 0)
-        ? dbService.hero.benefits
-        : (dbService?.features && dbService.features.length > 0 ? dbService.features : [
-            "Data-Driven Growth Strategies",
-            "Next.js Speed & Performance",
-            "Conversion-Focused Architecture",
-            "Dedicated Support & Real-Time Sync"
-          ]),
+      benefits: (Array.isArray(dbService?.hero?.benefits) && dbService.hero.benefits.length > 0)
+        ? dbService.hero.benefits.filter((b: any) => typeof b === 'string' && b.trim().length > 0)
+        : (Array.isArray(dbService?.features) && dbService.features.length > 0
+            ? dbService.features.filter((b: any) => typeof b === 'string' && b.trim().length > 0)
+            : [
+                "Data-Driven Growth Strategies",
+                "Next.js Speed & Performance",
+                "Conversion-Focused Architecture",
+                "Dedicated Support & Real-Time Sync"
+              ]),
       formHeading: dbService?.hero?.formHeading || dbService?.hero?.formTitle || "Request a Free Audit",
       formSubheading: dbService?.hero?.formSubheading || dbService?.hero?.formSubtitle || "Direct architect consultation and custom scope estimation within 24 hours.",
       formButtonText: dbService?.hero?.formButtonText || dbService?.hero?.btnSubmit || "Request Free Proposal"
     },
     clientTrust: {
       heading: dbService?.clientTrust?.heading || "ENTERPRISE PLATFORMS WE INTEGRATE & ACCELERATE",
-      logos: (dbService?.clientTrust?.logos && dbService.clientTrust.logos.length > 0)
+      logos: (Array.isArray(dbService?.clientTrust?.logos) && dbService.clientTrust.logos.length > 0)
         ? dbService.clientTrust.logos
-        : [
-            { name: "Google Ads" },
-            { name: "Meta Business" },
-            { name: "Amazon Ads" },
-            { name: "Bing Ads" },
-            { name: "Apple Search" }
-          ]
+        : (Array.isArray(dbService?.clientTrust) && dbService.clientTrust.length > 0
+            ? dbService.clientTrust
+            : [
+                { name: "Google Ads" },
+                { name: "Meta Business" },
+                { name: "Amazon Ads" },
+                { name: "Bing Ads" },
+                { name: "Apple Search" }
+              ])
     },
     whatIncluded: {
       eyebrow: dbService?.whatIncluded?.eyebrow || "03 // CORE CAPABILITIES",
       titleIntro: dbService?.whatIncluded?.titleIntro || "What's Included in",
       titleHighlight: dbService?.whatIncluded?.titleHighlight || "Our Delivery",
       description: dbService?.whatIncluded?.description || "",
-      pillars: (dbService?.whatIncluded?.pillars && dbService.whatIncluded.pillars.length > 0)
-        ? dbService.whatIncluded.pillars
+      pillars: (Array.isArray(dbService?.whatIncluded?.pillars) && dbService.whatIncluded.pillars.length > 0)
+        ? dbService.whatIncluded.pillars.map((p: any) => ({
+            title: p.title || p.name || "",
+            desc: p.desc || p.description || "",
+            features: Array.isArray(p.features)
+              ? p.features.filter((f: any) => typeof f === 'string' && f.trim().length > 0)
+              : []
+          }))
         : [
             {
               title: "Strategic Discovery & Architecture",
@@ -482,8 +492,12 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       titleIntro: dbService?.strategy?.titleIntro || "Engineered For",
       titleHighlight: dbService?.strategy?.titleHighlight || "Compounding Impact",
       description: dbService?.strategy?.description || "A custom implementation plan targeting bottlenecks and compounding acquisition flows.",
-      components: (dbService?.strategy?.components && dbService.strategy.components.length > 0)
-        ? dbService.strategy.components
+      components: (Array.isArray(dbService?.strategy?.components) && dbService.strategy.components.length > 0)
+        ? dbService.strategy.components.map((c: any, idx: number) => ({
+            num: c.num || `0${idx + 1}`,
+            title: c.title || "",
+            desc: c.desc || c.description || ""
+          }))
         : [
             { num: "01", title: "Diagnostic Audit & Benchmark", desc: "We isolate inefficiencies, crawl errors, and technical bottlenecks before deploying capital." },
             { num: "02", title: "High-Intent Positioning Map", desc: "Prioritizing high-margin conversions and capturing immediate commercial purchase intent." },
@@ -494,33 +508,68 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       eyebrow: dbService?.benefits?.eyebrow || "05 // MEASURABLE OUTCOMES",
       titleIntro: dbService?.benefits?.titleIntro || "Key Business",
       titleHighlight: dbService?.benefits?.titleHighlight || "Advantages",
+      description: dbService?.benefits?.description || "",
       outcomeText: dbService?.benefits?.outcomeText || "Guaranteed Outcome",
-      list: (dbService?.benefits?.list && dbService.benefits.list.length > 0)
-        ? dbService.benefits.list
-        : (dbService?.benefits && Array.isArray(dbService.benefits) && dbService.benefits.length > 0
-            ? dbService.benefits.map((b: any) => ({ metric: b.metric || "100%", title: b.title || "Guaranteed Quality", desc: b.desc || b.description || "Delivering verifiable improvements.", outcomeText: b.outcomeText }))
-            : [
-                { metric: "350%", title: "Organic Visibility", desc: "Accelerating discovery on top search engines through clean structured code.", outcomeText: "Guaranteed Outcome" },
-                { metric: "4.8x", title: "Conversion Yield", desc: "Frictionless UX funnels designed specifically to capture and convert leads.", outcomeText: "Guaranteed Outcome" },
-                { metric: "99.9%", title: "Reliability & Uptime", desc: "Enterprise infrastructure built on modern serverless edge architecture.", outcomeText: "Guaranteed Outcome" },
-                { metric: "<1s", title: "Load Performance", desc: "Lightning fast asset delivery boosting Core Web Vitals and SEO rankings.", outcomeText: "Guaranteed Outcome" }
-              ])
+      list: (Array.isArray(dbService?.benefits?.list) && dbService.benefits.list.length > 0)
+        ? dbService.benefits.list.map((b: any) => ({
+            metric: b.metric || "",
+            title: b.title || "",
+            desc: b.desc || b.description || "",
+            tag: b.tag || b.num || "",
+            iconName: b.iconName || b.icon || "TrendingUp",
+            outcomeText: b.outcomeText || dbService?.benefits?.outcomeText || ""
+          }))
+        : (Array.isArray(dbService?.benefits?.items) && dbService.benefits.items.length > 0
+            ? dbService.benefits.items.map((b: any) => ({
+                metric: b.metric || "",
+                title: b.title || "",
+                desc: b.desc || b.description || "",
+                tag: b.tag || b.num || "",
+                iconName: b.iconName || b.icon || "TrendingUp",
+                outcomeText: b.outcomeText || dbService?.benefits?.outcomeText || ""
+              }))
+            : (Array.isArray(dbService?.benefits) && dbService.benefits.length > 0 && typeof dbService.benefits[0] === 'object'
+                ? dbService.benefits.map((b: any) => ({
+                    metric: b.metric || "",
+                    title: b.title || "",
+                    desc: b.desc || b.description || "",
+                    tag: b.tag || b.num || "",
+                    iconName: b.iconName || b.icon || "TrendingUp",
+                    outcomeText: b.outcomeText || ""
+                  }))
+                : [
+                    { metric: "350%", tag: "ORGANIC REACH", title: "Organic Visibility", desc: "Accelerating discovery on top search engines through clean structured code.", iconName: "TrendingUp", outcomeText: "Guaranteed Outcome" },
+                    { metric: "4.8x", tag: "CONVERSIONS", title: "Conversion Yield", desc: "Frictionless UX funnels designed specifically to capture and convert leads.", iconName: "Target", outcomeText: "Guaranteed Outcome" },
+                    { metric: "99.9%", tag: "UPTIME", title: "Reliability & Uptime", desc: "Enterprise infrastructure built on modern serverless edge architecture.", iconName: "ShieldCheck", outcomeText: "Guaranteed Outcome" },
+                    { metric: "<1s", tag: "CORE VITALS", title: "Load Performance", desc: "Lightning fast asset delivery boosting Core Web Vitals and SEO rankings.", iconName: "Zap", outcomeText: "Guaranteed Outcome" }
+                  ]))
     },
     process: {
       eyebrow: dbService?.process?.eyebrow || "06 // IMPLEMENTATION ROADMAP",
       titleIntro: dbService?.process?.titleIntro || "Our Step-by-Step",
       titleHighlight: dbService?.process?.titleHighlight || "Roadmap",
       description: dbService?.process?.description || "We orchestrate campaigns sequentially, guaranteeing structured code deliverables and auditable checkpoints at each stage of your roadmap.",
-      calloutTag: dbService?.process?.calloutTag,
-      calloutText: dbService?.process?.calloutText,
+      calloutTag: dbService?.process?.calloutTag || "",
+      calloutText: dbService?.process?.calloutText || "",
       steps: (Array.isArray(dbService?.process?.steps) && dbService.process.steps.length > 0)
-        ? dbService.process.steps
+        ? dbService.process.steps.map((p: any, idx: number) => ({
+            title: p.title || p.name || `Sprint 0${idx + 1}`,
+            desc: p.desc || p.description || "",
+            phaseTag: p.phaseTag || p.badge || p.tag || `PHASE 0${idx + 1} // SPRINT`,
+            deliverables: Array.isArray(p.deliverables)
+              ? p.deliverables.filter((d: any) => typeof d === 'string' && d.trim().length > 0)
+              : [],
+            footerLeft: p.footerLeft || "",
+            footerRight: p.footerRight || ""
+          }))
         : (Array.isArray(dbService?.process) && dbService.process.length > 0
             ? dbService.process.map((p: any, idx: number) => ({
                 title: p.title || p.name || "Milestone",
                 desc: p.desc || p.description || "Structured sprint execution.",
                 phaseTag: p.phaseTag || p.badge || `PHASE 0${idx + 1} // SPRINT`,
-                deliverables: Array.isArray(p.deliverables) ? p.deliverables : [],
+                deliverables: Array.isArray(p.deliverables)
+                  ? p.deliverables.filter((d: any) => typeof d === 'string' && d.trim().length > 0)
+                  : [],
                 footerLeft: p.footerLeft || "",
                 footerRight: p.footerRight || ""
               }))
@@ -529,33 +578,33 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                   title: "Discovery & Technical Diagnostics",
                   desc: "Full audit of your digital ecosystem, tech stack, and user funnels.",
                   phaseTag: "PHASE 01 // SPRINT",
-                  deliverables: [],
-                  footerLeft: "",
-                  footerRight: ""
+                  deliverables: ["Technical Stack Audit", "Competitor Benchmark"],
+                  footerLeft: "Architecture Discovery",
+                  footerRight: "Verified Milestone"
                 },
                 {
                   title: "Architecture & Production Build",
                   desc: "Structuring high-converting user flows and component hierarchies.",
                   phaseTag: "PHASE 02 // SPRINT",
-                  deliverables: [],
-                  footerLeft: "",
-                  footerRight: ""
+                  deliverables: ["Modular Component Hierarchy", "Responsive Interface"],
+                  footerLeft: "Core Development",
+                  footerRight: "Verified Milestone"
                 },
                 {
                   title: "Verification & Quality Assurance",
                   desc: "Multi-device cross-browser testing and performance stress audits.",
                   phaseTag: "PHASE 03 // SPRINT",
-                  deliverables: [],
-                  footerLeft: "",
-                  footerRight: ""
+                  deliverables: ["Performance Stress Audit", "Cross-Device Validation"],
+                  footerLeft: "Quality Assurance",
+                  footerRight: "Verified Milestone"
                 },
                 {
                   title: "Deployment & Growth Scaling",
                   desc: "Live rollout with custom telemetry and continuous optimizations.",
                   phaseTag: "PHASE 04 // SPRINT",
-                  deliverables: [],
-                  footerLeft: "",
-                  footerRight: ""
+                  deliverables: ["Edge CDN Deployment", "Live Telemetry Setup"],
+                  footerLeft: "Production Launch",
+                  footerRight: "Verified Milestone"
                 }
               ])
     },
@@ -565,36 +614,53 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       titleHighlight: dbService?.results?.titleHighlight || "Impact & ROI",
       description: dbService?.results?.description || "Verifiable metric indicators driven by precise performance scaling and custom coding.",
       caseStudiesEyebrow: dbService?.results?.caseStudiesEyebrow || "Featured Case Studies",
-      caseStudies: (Array.isArray(dbService?.results?.caseStudies) && dbService.results.caseStudies.length > 0)
-        ? dbService.results.caseStudies
-        : (dbService?.results?.caseStudy && (dbService.results.caseStudy.title || dbService.results.caseStudy.metric || dbService.results.caseStudy.desc)
-            ? [
-                {
-                  title: dbService.results.caseStudy.title || "Featured Case Study",
-                  challenge: dbService.results.caseStudy.desc || "Overcoming legacy bottlenecks with custom architecture.",
-                  strategy: dbService.results.caseStudy.strategy || "Engineered scalable architecture with streamlined conversion pathways.",
-                  outcome: dbService.results.caseStudy.metric || "+240% Growth",
-                  outcomeLabel: "Campaign Outcome"
-                }
-              ]
-            : [
-                {
-                  title: "Enterprise Brand Growth",
-                  challenge: "Outdated legacy site experiencing slow load speeds and declining conversions.",
-                  strategy: "Engineered headless architecture with streamlined conversion pathways.",
-                  outcome: "+240% Qualified Inbound Inquiries",
-                  outcomeLabel: "Campaign Outcome"
-                },
-                {
-                  title: "Commercial Multi-Location Reach",
-                  challenge: "Fragmented map listings and poor regional organic rankings.",
-                  strategy: "Deployed localized landing architecture and high-authority citation schema.",
-                  outcome: "+410% Map Pack Actions",
-                  outcomeLabel: "Campaign Outcome"
-                }
-              ]),
+      caseStudies: (() => {
+        if (Array.isArray(dbService?.results?.caseStudies) && dbService.results.caseStudies.length > 0) {
+          return dbService.results.caseStudies.map((cs: any) => ({
+            title: cs.title || "",
+            challenge: cs.challenge || cs.desc || "",
+            strategy: cs.strategy || "",
+            outcome: cs.outcome || cs.metric || "",
+            outcomeLabel: cs.outcomeLabel || "Verified Outcome",
+            desc: cs.desc || ""
+          }));
+        }
+        if (dbService?.results?.caseStudy && (dbService.results.caseStudy.title || dbService.results.caseStudy.metric || dbService.results.caseStudy.desc)) {
+          return [{
+            title: dbService.results.caseStudy.title || "Featured Case Study",
+            challenge: dbService.results.caseStudy.desc || "Overcoming legacy bottlenecks with custom architecture.",
+            strategy: dbService.results.caseStudy.strategy || "Engineered scalable architecture with streamlined conversion pathways.",
+            outcome: dbService.results.caseStudy.metric || "+240% Growth",
+            outcomeLabel: dbService.results.caseStudy.outcomeLabel || "Campaign Outcome",
+            desc: dbService.results.caseStudy.desc || ""
+          }];
+        }
+        return [
+          {
+            title: "Enterprise Brand Growth",
+            challenge: "Outdated legacy site experiencing slow load speeds and declining conversions.",
+            strategy: "Engineered headless architecture with streamlined conversion pathways.",
+            outcome: "+240% Qualified Inbound Inquiries",
+            outcomeLabel: "Campaign Outcome",
+            desc: ""
+          },
+          {
+            title: "Commercial Multi-Location Reach",
+            challenge: "Fragmented map listings and poor regional organic rankings.",
+            strategy: "Deployed localized landing architecture and high-authority citation schema.",
+            outcome: "+410% Map Pack Actions",
+            outcomeLabel: "Campaign Outcome",
+            desc: ""
+          }
+        ];
+      })(),
       metrics: (Array.isArray(dbService?.results?.metrics) && dbService.results.metrics.length > 0)
-        ? dbService.results.metrics
+        ? dbService.results.metrics.map((m: any, idx: number) => ({
+            value: m.value || "",
+            label: m.label || "",
+            desc: m.desc || m.subtext || "",
+            tag: m.tag || `M0${idx + 1}`
+          }))
         : [
             { value: "450%", label: "TRAFFIC GROWTH", desc: "Average organic session boost across 12-month engagements.", tag: "M01" },
             { value: "3.8x", label: "ROI MULTIPLIER", desc: "Documented revenue acceleration from attributed funnels.", tag: "M02" },
@@ -607,20 +673,40 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       titleIntro: dbService?.industries?.titleIntro || "Industries",
       titleHighlight: dbService?.industries?.titleHighlight || "We Specialize In",
       description: dbService?.industries?.description || "Every industry has distinct compliance, customer acquisition funnels, and technical requirements. We tailor our engineering to your exact vertical.",
-      footerLeft: dbService?.industries?.footerLeft,
-      footerRight: dbService?.industries?.footerRight,
-      list: (Array.isArray(dbService?.industries?.list) && dbService.industries.list.length > 0)
-        ? dbService.industries.list
-        : (Array.isArray(dbService?.industries?.items) && dbService.industries.items.length > 0)
-          ? dbService.industries.items
-          : (Array.isArray(dbService?.industries) && dbService.industries.length > 0)
-            ? dbService.industries
-            : [
-                { title: "Home Services & Contracting", desc: "Roofing, decking, remodeling, and local trade contractors scaling regional territories.", watermark: "HS" },
-                { title: "Technology & SaaS", desc: "Fast-growth software startups and tech firms demanding high conversion rates.", watermark: "TS" },
-                { title: "Commercial Real Estate", desc: "Property developers, architectural firms, and luxury real estate agencies.", watermark: "CR" },
-                { title: "E-Commerce & Retail", desc: "Direct-to-consumer and B2B brands scaling transactions with seamless checkout.", watermark: "EC" }
-              ]
+      footerLeft: dbService?.industries?.footerLeft || "",
+      footerRight: dbService?.industries?.footerRight || "",
+      list: (() => {
+        const rawList = Array.isArray(dbService?.industries?.list) && dbService.industries.list.length > 0
+          ? dbService.industries.list
+          : (Array.isArray(dbService?.industries?.items) && dbService.industries.items.length > 0
+            ? dbService.industries.items
+            : (Array.isArray(dbService?.industries) && dbService.industries.length > 0
+              ? dbService.industries
+              : []));
+
+        if (rawList.length > 0) {
+          return rawList.map((ind: any) => {
+            const title = ind.title || ind.name || "";
+            const words = String(title).split(" ").filter(Boolean);
+            const autoAbbr = words.map((w: string) => w[0]).join("").toUpperCase().slice(0, 2) || "IN";
+            return {
+              title: title,
+              desc: ind.desc || ind.description || "",
+              iconName: ind.iconName || ind.icon || "Building2",
+              watermark: ind.watermark || autoAbbr,
+              footerLeft: ind.footerLeft || "",
+              footerRight: ind.footerRight || ""
+            };
+          });
+        }
+
+        return [
+          { title: "Home Services & Contracting", desc: "Roofing, decking, remodeling, and local trade contractors scaling regional territories.", iconName: "Building2", watermark: "HS", footerLeft: "", footerRight: "" },
+          { title: "Technology & SaaS", desc: "Fast-growth software startups and tech firms demanding high conversion rates.", iconName: "Cpu", watermark: "TS", footerLeft: "", footerRight: "" },
+          { title: "Commercial Real Estate", desc: "Property developers, architectural firms, and luxury real estate agencies.", iconName: "Building2", watermark: "CR", footerLeft: "", footerRight: "" },
+          { title: "E-Commerce & Retail", desc: "Direct-to-consumer and B2B brands scaling transactions with seamless checkout.", iconName: "ShoppingCart", watermark: "EC", footerLeft: "", footerRight: "" }
+        ];
+      })()
     },
     tools: {
       eyebrow: dbService?.tools?.eyebrow || "09 // TECH STACK",
@@ -629,10 +715,20 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       description: dbService?.tools?.description || "High-performance frameworks and analytics systems driving client ROI metrics.",
       list: (() => {
         if (Array.isArray(dbService?.tools?.list) && dbService.tools.list.length > 0) {
-          return dbService.tools.list;
+          return dbService.tools.list.map((t: any) => ({
+            name: t.name || t.title || "Tool",
+            tag: t.tag || "CORE DEV",
+            desc: t.desc || t.description || "",
+            iconName: t.iconName || t.icon || "Cpu"
+          }));
         }
         if (Array.isArray(dbService?.tools?.items) && dbService.tools.items.length > 0) {
-          return dbService.tools.items;
+          return dbService.tools.items.map((t: any) => ({
+            name: t.name || t.title || "Tool",
+            tag: t.tag || "CORE DEV",
+            desc: t.desc || t.description || "",
+            iconName: t.iconName || t.icon || "Cpu"
+          }));
         }
         if (Array.isArray(dbService?.tools?.categories) && dbService.tools.categories.length > 0) {
           return dbService.tools.categories.flatMap((cat: any) => {
@@ -646,14 +742,19 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               return {
                 name: item.name || item.title || "Tool",
                 tag: item.tag || catName,
-                desc: item.desc || item.description || getToolDescription(item.name).desc,
+                desc: item.desc || item.description || (item.name ? getToolDescription(item.name).desc : ""),
                 iconName: item.iconName || item.icon || "Cpu"
               };
             });
           });
         }
         if (Array.isArray(dbService?.tools) && dbService.tools.length > 0) {
-          return dbService.tools;
+          return dbService.tools.map((t: any) => ({
+            name: t.name || t.title || "Tool",
+            tag: t.tag || "CORE DEV",
+            desc: t.desc || t.description || "",
+            iconName: t.iconName || t.icon || "Cpu"
+          }));
         }
         return [
           { name: "Next.js", iconName: "Monitor", tag: "CORE DEV", desc: "Headless rendering backend with automatic static optimization and route pre-fetching." },
@@ -668,29 +769,68 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       titleIntro: dbService?.whyChooseUs?.titleIntro || "Why Leaders Choose",
       titleHighlight: dbService?.whyChooseUs?.titleHighlight || "Mohsin Designs",
       description: dbService?.whyChooseUs?.description || "We design fully custom solutions engineered around revenue metrics, performance, and transparency.",
-      stats: (dbService?.whyChooseUs?.stats && dbService.whyChooseUs.stats.length > 0)
-        ? dbService.whyChooseUs.stats
+      stats: (Array.isArray(dbService?.whyChooseUs?.stats) && dbService.whyChooseUs.stats.length > 0)
+        ? dbService.whyChooseUs.stats.map((st: any) => ({
+            value: st.value || "",
+            label: st.label || "",
+            sublabel: st.sublabel || "",
+            percentage: typeof st.percentage === "number" ? st.percentage : undefined
+          }))
         : [
             { value: "100%", label: "PERFORMANCE", sublabel: "Next.js Headless\nSpeed Optimization", percentage: 1.0 },
             { value: "4.5x", label: "AVERAGE ROI", sublabel: "Attributed Leads\nGrowth Scaling", percentage: 0.9 },
             { value: "24/7", label: "DATA SYNC", sublabel: "Live Tracking\nReal-time Reports", percentage: 0.85 }
           ],
-      list: (dbService?.whyChooseUs?.list && dbService.whyChooseUs.list.length > 0)
-        ? dbService.whyChooseUs.list
-        : [
-            { title: "Engineered For Speed & ROI", desc: "We write clean, high-performance code with zero bloated themes or brittle templates.", tag: "Differentiator 01" },
-            { title: "Direct Strategic Communication", desc: "No junior middlemen — work directly with senior architects dedicated to your vision.", tag: "Differentiator 02" },
-            { title: "Transparent Telemetry & Ownership", desc: "Full ownership of your code, design assets, and marketing data at every step.", tag: "Differentiator 03" },
-            { title: "Compounding Growth Systems", desc: "Solutions designed to build continuous momentum that outperforms competitors over time.", tag: "Differentiator 04" }
-          ]
+      list: (() => {
+        const rawList = Array.isArray(dbService?.whyChooseUs?.list) && dbService.whyChooseUs.list.length > 0
+          ? dbService.whyChooseUs.list
+          : (Array.isArray(dbService?.whyChooseUs?.points) && dbService.whyChooseUs.points.length > 0
+            ? dbService.whyChooseUs.points
+            : (Array.isArray(dbService?.whyChooseUs?.items) && dbService.whyChooseUs.items.length > 0
+              ? dbService.whyChooseUs.items
+              : (Array.isArray(dbService?.whyChooseUs) && dbService.whyChooseUs.length > 0
+                ? dbService.whyChooseUs
+                : [])));
+
+        if (rawList.length > 0) {
+          return rawList.map((item: any, idx: number) => ({
+            tag: item.tag || `Differentiator 0${idx + 1}`,
+            title: item.title || item.name || "",
+            desc: item.desc || item.description || "",
+            icon: item.icon || item.iconName || "CheckCircle2",
+            image: item.image || ""
+          }));
+        }
+
+        return [
+          { title: "Engineered For Speed & ROI", desc: "We write clean, high-performance code with zero bloated themes or brittle templates.", tag: "Differentiator 01", icon: "CheckCircle2", image: "" },
+          { title: "Direct Strategic Communication", desc: "No junior middlemen — work directly with senior architects dedicated to your vision.", tag: "Differentiator 02", icon: "CheckCircle2", image: "" },
+          { title: "Transparent Telemetry & Ownership", desc: "Full ownership of your code, design assets, and marketing data at every step.", tag: "Differentiator 03", icon: "CheckCircle2", image: "" },
+          { title: "Compounding Growth Systems", desc: "Solutions designed to build continuous momentum that outperforms competitors over time.", tag: "Differentiator 04", icon: "CheckCircle2", image: "" }
+        ];
+      })()
     },
     pricing: {
       eyebrow: dbService?.pricing?.eyebrow || "11 // TRANSPARENT TIERS",
       titleIntro: dbService?.pricing?.titleIntro || "Scalable Growth",
       titleHighlight: dbService?.pricing?.titleHighlight || "Investment Packages",
-      description: dbService?.pricing?.description || "Clear fixed scopes with zero hidden fees. Choose a sprint tier tailored to your immediate milestones.",
-      plans: (dbService?.pricing?.plans && dbService.pricing.plans.length > 0)
-        ? dbService.pricing.plans
+      description: dbService?.pricing?.description || "",
+      plans: (Array.isArray(dbService?.pricing?.plans) && dbService.pricing.plans.length > 0)
+        ? dbService.pricing.plans.map((p: any) => ({
+            name: p.name || "",
+            tag: p.tag || "",
+            desc: p.desc || p.description || "",
+            price: p.price || "",
+            period: p.period || "",
+            isPopular: !!(p.isPopular || p.popular),
+            isCustom: !!(p.isCustom || p.custom),
+            badgeText: p.badgeText || (p.isPopular || p.popular ? "Most Popular" : p.isCustom || p.custom ? "Custom Scoped" : ""),
+            ctaText: p.ctaText || "Select Plan",
+            ctaLink: p.ctaLink || "",
+            features: Array.isArray(p.features)
+              ? p.features.filter((f: any) => typeof f === 'string' && f.trim().length > 0)
+              : []
+          }))
         : [
             {
               name: "Sprint Tier",
@@ -727,20 +867,20 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             }
           ]
     },
-    faqs: (dbService?.faqs && dbService.faqs.length > 0)
-      ? dbService.faqs
-      : (dbService?.faq && Array.isArray(dbService.faq) && dbService.faq.length > 0
-          ? dbService.faq.map((f: any) => ({ q: f.q || f.question, a: f.a || f.answer }))
+    faqs: (Array.isArray(dbService?.faqs) && dbService.faqs.length > 0)
+      ? dbService.faqs.map((f: any) => ({ question: f.question || f.q || "", answer: f.answer || f.a || "", category: f.category || "" }))
+      : (Array.isArray(dbService?.faq) && dbService.faq.length > 0
+          ? dbService.faq.map((f: any) => ({ question: f.question || f.q || "", answer: f.answer || f.a || "", category: f.category || "" }))
           : [
-              { q: "How quickly can we get started?", a: "We typically onboard new projects within 3-5 business days following the initial strategy discovery call." },
-              { q: "Do you offer ongoing support and updates?", a: "Yes, we provide flexible retainer and maintenance support options to ensure your platform remains fast, secure, and continuously optimized." },
-              { q: "Will I have complete ownership of all assets?", a: "100%. You retain full ownership of all code, design files, domains, and analytics accounts upon project completion." }
+              { question: "How quickly can we get started?", answer: "We typically onboard new projects within 3-5 business days following the initial strategy discovery call." },
+              { question: "Do you offer ongoing support and updates?", answer: "Yes, we provide flexible retainer and maintenance support options to ensure your platform remains fast, secure, and continuously optimized." },
+              { question: "Will I have complete ownership of all assets?", answer: "100%. You retain full ownership of all code, design files, domains, and analytics accounts upon project completion." }
             ]),
     faqSection: {
-      sectionTag: dbService?.faqSection?.sectionTag || "14 // FREQUENTLY ASKED",
-      titleIntro: dbService?.faqSection?.titleIntro ?? "Service ",
-      titleHighlight: dbService?.faqSection?.titleHighlight || "FAQ",
-      description: dbService?.faqSection?.description || "",
+      sectionTag: dbService?.faqBadge || dbService?.faqSection?.sectionTag || "14 // FREQUENTLY ASKED",
+      titleIntro: dbService?.faqTitleIntro !== undefined ? dbService?.faqTitleIntro : (dbService?.faqSection?.titleIntro ?? "Service "),
+      titleHighlight: dbService?.faqTitleHighlight || dbService?.faqSection?.titleHighlight || dbService?.faqTitle || "Frequently Asked Questions",
+      description: dbService?.faqDescription || dbService?.faqSection?.description || "",
       ctaBadge: dbService?.faqSection?.ctaBadge || "FREE ARCHITECTURE AUDIT",
       ctaTitle: dbService?.faqSection?.ctaTitle || "Have a complex custom build in mind?",
       ctaDesc: dbService?.faqSection?.ctaDesc || "Book a 30-minute high-level technical strategy session with our lead engineer.",
@@ -1230,9 +1370,11 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             viewport={{ once: true }}
             className="text-center mb-14 space-y-4"
           >
-            <div className="flex justify-center">
-              <span className="eyebrow-pill">{service.benefits.eyebrow}</span>
-            </div>
+            {service.benefits.eyebrow && (
+              <div className="flex justify-center">
+                <span className="eyebrow-pill">{service.benefits.eyebrow}</span>
+              </div>
+            )}
             <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
               {service.benefits.titleIntro}{" "}
               <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
@@ -1250,12 +1392,17 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 </svg>
               </span>
             </h2>
+            {service.benefits.description && (
+              <p className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
+                {service.benefits.description}
+              </p>
+            )}
           </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {service.benefits.list.map((b: any, idx: number) => {
               const defaultIcons = [TrendingUp, Target, ShieldCheck, Zap];
-              const BenefitIcon = (b.iconName && iconMap[b.iconName]) || defaultIcons[idx % defaultIcons.length] || TrendingUp;
+              const BenefitIcon = (b.iconName && iconMap[b.iconName]) || (b.icon && iconMap[b.icon]) || defaultIcons[idx % defaultIcons.length] || TrendingUp;
 
               return (
                 <SpotlightCard key={idx} className="bg-white dark:bg-[#121124] border border-zinc-200/80 dark:border-white/10 p-6 sm:p-7 rounded-[26px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:shadow-[0_16px_40px_-8px_rgba(3,6,172,0.12)] dark:hover:shadow-[0_16px_40px_-8px_rgba(233,189,54,0.08)] hover:border-brand-blue/40 dark:hover:border-brand-yellow/40 transition-all duration-300 flex flex-col justify-between min-h-[260px] group">
@@ -1264,18 +1411,29 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                       <div className="w-11 h-11 rounded-2xl bg-brand-blue/10 dark:bg-brand-yellow/10 border border-brand-blue/20 dark:border-brand-yellow/20 flex items-center justify-center text-brand-blue dark:text-brand-yellow shadow-sm group-hover:scale-110 group-hover:rotate-2 transition-transform duration-300 shrink-0">
                         <BenefitIcon className="w-5 h-5 stroke-[2.2]" />
                       </div>
+                      {b.tag && (
+                        <span className="text-[9px] font-mono font-black tracking-widest text-zinc-500 dark:text-zinc-400 bg-zinc-100/90 dark:bg-white/[0.06] border border-zinc-200/60 dark:border-white/5 px-3 py-1 rounded-full uppercase select-none">
+                          {b.tag}
+                        </span>
+                      )}
                     </div>
 
                     <div className="space-y-2 text-left">
-                      <div className="font-heading font-black text-3xl sm:text-4xl text-[#0306AC] dark:text-[#E9BD36] leading-none tracking-tight break-words">
-                        <DigitTicker value={b.metric} />
-                      </div>
-                      <h3 className="font-heading text-base font-extrabold text-brand-dark dark:text-white transition-colors duration-300 group-hover:text-brand-blue dark:group-hover:text-brand-yellow pt-1">
-                        {b.title}
-                      </h3>
-                      <p className="text-[12px] font-sans text-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
-                        {b.desc || b.description}
-                      </p>
+                      {b.metric && (
+                        <div className="font-heading font-black text-3xl sm:text-4xl text-[#0306AC] dark:text-[#E9BD36] leading-none tracking-tight break-words">
+                          <DigitTicker value={b.metric} />
+                        </div>
+                      )}
+                      {b.title && (
+                        <h3 className="font-heading text-base font-extrabold text-brand-dark dark:text-white transition-colors duration-300 group-hover:text-brand-blue dark:group-hover:text-brand-yellow pt-1">
+                          {b.title}
+                        </h3>
+                      )}
+                      {b.desc && (
+                        <p className="text-[12px] font-sans text-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
+                          {b.desc}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -2037,10 +2195,11 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 ? dbService.faq
                 : (service.faqs || [])}
           faqSchemaMarkup={pageData?.content?.faqSchemaMarkup || dbService?.faqSchemaMarkup}
-          badge={pageData?.content?.faqBadge || service.faqSection?.sectionTag || "14 // FREQUENTLY ASKED"}
-          title={pageData?.content?.faqTitle || service.faqSection?.titleHighlight || "Service FAQs"}
-          description={pageData?.content?.faqDescription || service.faqSection?.description}
-          data={pageData?.content || service}
+          badge={dbService?.faqBadge || service.faqSection?.sectionTag || "14 // FREQUENTLY ASKED"}
+          titleIntro={dbService?.faqTitleIntro !== undefined ? dbService?.faqTitleIntro : service.faqSection?.titleIntro}
+          titleHighlight={dbService?.faqTitleHighlight || service.faqSection?.titleHighlight || "Frequently Asked Questions"}
+          description={dbService?.faqDescription || service.faqSection?.description || ""}
+          data={pageData?.content || dbService || service}
         />
       </section>
 
