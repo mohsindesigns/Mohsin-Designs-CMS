@@ -258,11 +258,11 @@ const DEFAULT_SERVICE_TEMPLATE = {
     titleIntro: "Tailored For High-Growth",
     titleHighlight: "Industry Verticals",
     description: "Specialized engineering tailored to the unique regulatory, technical, and conversion demands of your sector.",
-    items: [
-      { name: "SaaS & Enterprise Tech", desc: "Product-led growth architecture, interactive documentation, and high-converting onboarding funnels.", icon: "Cpu" },
-      { name: "E-Commerce & Retail", desc: "Headless storefronts, ultra-fast checkout flows, and dynamic inventory synchronization.", icon: "ShoppingCart" },
-      { name: "Finance & Fintech", desc: "SOC2 compliant UI, data encryption standards, and real-time transaction dashboards.", icon: "DollarSign" },
-      { name: "Healthcare & MedTech", desc: "HIPAA-aligned web infrastructure, patient portals, and accessible responsive interfaces.", icon: "Shield" }
+    list: [
+      { title: "SaaS & Enterprise Tech", desc: "Product-led growth architecture, interactive documentation, and high-converting onboarding funnels.", iconName: "Cpu", watermark: "ST" },
+      { title: "E-Commerce & Retail", desc: "Headless storefronts, ultra-fast checkout flows, and dynamic inventory synchronization.", iconName: "ShoppingCart", watermark: "EC" },
+      { title: "Finance & Fintech", desc: "SOC2 compliant UI, data encryption standards, and real-time transaction dashboards.", iconName: "DollarSign", watermark: "FF" },
+      { title: "Healthcare & MedTech", desc: "HIPAA-aligned web infrastructure, patient portals, and accessible responsive interfaces.", iconName: "Shield", watermark: "HM" }
     ]
   },
   tools: {
@@ -281,6 +281,11 @@ const DEFAULT_SERVICE_TEMPLATE = {
     titleIntro: "Why Industry Leaders",
     titleHighlight: "Partner With Us",
     description: "We don't just build websites; we engineer durable competitive advantages for market-leading brands.",
+    stats: [
+      { value: "99.8%", label: "ON-TIME LAUNCH", sublabel: "Sprint Accuracy", percentage: 0.99 },
+      { value: "4.9★", label: "CLIENT RATING", sublabel: "Verified Feedback", percentage: 0.98 },
+      { value: "100%", label: "CODE OWNERSHIP", sublabel: "Zero Lock-in", percentage: 1.0 }
+    ],
     list: [
       { tag: "Differentiator 01", title: "Zero Technical Debt", desc: "Clean, modular, fully typed codebase structured for lifetime extensibility." },
       { tag: "Differentiator 02", title: "Direct Architect Access", desc: "Work directly with senior engineers and designers with zero middle-management bloat." },

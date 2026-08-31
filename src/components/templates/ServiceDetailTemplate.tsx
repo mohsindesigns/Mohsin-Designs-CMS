@@ -347,15 +347,6 @@ const differentiatorsIllustrations = [
   </svg>
 ];
 
-const defaultRoadmapDeliverables: Record<number, string[]> = {
-  0: ["Google Search Console crawl diagnostics log", "Competitor backlinks overlapping index", "Core Web Vitals loading bottleneck check"],
-  1: ["Commercial search priority map authoring", "Intent-based topic structure planning", "Semantic keyword clusters setup"],
-  2: ["H1-H4 headings structures rewrite rules", "Title & Meta description tags optimizations", "JSON-LD schema structured data injection"],
-  3: ["Render-blocking scripts async tags setup", "Vercel edge CDN cache configuration", "Image formats (WebP/AVIF) audit fixes"],
-  4: ["High-authority editorial mentions pitches", "Niche local citation indexes registry", "Toxic backlink removal & disavow log"],
-  5: ["Custom GA4 key event tracking logs", "Attributed phone calls & forms tracking", "Bi-weekly Looker Studio conversion audit"]
-};
-
 const getServiceIcon = (slug: string) => {
   switch (slug) {
     case "seo": return <Search className="w-5 h-5" />;
