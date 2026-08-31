@@ -888,16 +888,16 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       ctaBtnLink: dbService?.faqSection?.ctaBtnLink || "#contact"
     },
     finalCta: {
-      eyebrow: dbService?.finalCta?.eyebrow || "READY TO ACCELERATE?",
+      eyebrow: dbService?.finalCta?.eyebrow ?? dbService?.finalCta?.badge ?? "READY TO ACCELERATE?",
       titleIntro: dbService?.finalCta?.titleIntro || "Let's Build Your Next",
       titleHighlight: dbService?.finalCta?.titleHighlight || "Competitive Edge",
-      titleLine2: dbService?.finalCta?.titleLine2 || "Together.",
-      description: dbService?.finalCta?.description || "Schedule a free strategic consultation. We'll audit your existing presence and map out a concrete blueprint for scalable growth.",
-      primaryCtaText: dbService?.finalCta?.primaryCtaText || "Schedule Discovery Session",
-      primaryCtaLink: dbService?.finalCta?.primaryCtaLink || "#contact-form",
-      secondaryCtaText: dbService?.finalCta?.secondaryCtaText || "Contact Office",
-      secondaryCtaLink: dbService?.finalCta?.secondaryCtaLink || "/contact",
-      founderImage: dbService?.finalCta?.founderImage || "/founder_portrait_nobg.png"
+      titleLine2: dbService?.finalCta?.titleLine2 !== undefined ? dbService.finalCta.titleLine2 : "Together.",
+      description: dbService?.finalCta?.description !== undefined ? dbService.finalCta.description : "Schedule a free strategic consultation. We'll audit your existing presence and map out a concrete blueprint for scalable growth.",
+      primaryCtaText: dbService?.finalCta?.primaryCtaText || dbService?.finalCta?.primaryCta?.text || dbService?.finalCta?.btnText || "Schedule Discovery Session",
+      primaryCtaLink: dbService?.finalCta?.primaryCtaLink || dbService?.finalCta?.primaryCta?.link || dbService?.finalCta?.btnLink || "#contact-form",
+      secondaryCtaText: dbService?.finalCta?.secondaryCtaText || dbService?.finalCta?.secondaryCta?.text || "Contact Office",
+      secondaryCtaLink: dbService?.finalCta?.secondaryCtaLink || dbService?.finalCta?.secondaryCta?.link || "/contact",
+      founderImage: dbService?.finalCta?.founderImage || dbService?.finalCta?.image || dbService?.finalCta?.backgroundImage || dbService?.finalCta?.bgImage || "/founder_portrait_nobg.png"
     },
     blogSection: dbService?.blogSection,
     serviceArea: dbService?.serviceArea,
@@ -2263,35 +2263,43 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                   <svg className="absolute left-0 bottom-[-2px] w-full h-3 text-[#E9BD36]" viewBox="0 0 100 10" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
                     <path d="M 5 6 C 30 9, 70 9, 95 4" />
                   </svg>
-                </span>{" "}
-                <br />
-                {service.finalCta.titleLine2}
+                </span>
+                {service.finalCta.titleLine2 ? (
+                  <>
+                    <br />
+                    <span>{service.finalCta.titleLine2}</span>
+                  </>
+                ) : null}
               </h2>
 
-              <p className="text-xs sm:text-sm font-sans text-white/90 leading-relaxed max-w-lg font-normal">
-                {service.finalCta.description}
-              </p>
+              {service.finalCta.description && (
+                <p className="text-xs sm:text-sm font-sans text-white/90 leading-relaxed max-w-lg font-normal">
+                  {service.finalCta.description}
+                </p>
+              )}
 
               <div className="flex flex-wrap items-center gap-4 pt-2">
-                <a href={service.finalCta.primaryCtaLink || "#contact-form"} className="btn-primary-cta">
-                  <span>{service.finalCta.primaryCtaText || "Schedule Discovery Session"}</span>
-                  <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
-                </a>
-                <a href={service.finalCta.secondaryCtaLink || "/contact"} className="btn-secondary-cta">
-                  <span>{service.finalCta.secondaryCtaText || "Contact Office"}</span>
-                  <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
-                </a>
+                {service.finalCta.primaryCtaText && (
+                  <a href={service.finalCta.primaryCtaLink || "#contact-form"} className="btn-primary-cta">
+                    <span>{service.finalCta.primaryCtaText}</span>
+                    <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
+                  </a>
+                )}
+                {service.finalCta.secondaryCtaText && (
+                  <a href={service.finalCta.secondaryCtaLink || "/contact"} className="btn-secondary-cta">
+                    <span>{service.finalCta.secondaryCtaText}</span>
+                    <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
+                  </a>
+                )}
               </div>
             </div>
 
             <div className="hidden lg:flex flex-1 items-end justify-center relative pr-8">
               <div className="absolute bottom-0 w-[320px] h-[320px] bg-gradient-to-t from-[#020485] to-[#0408d9] rounded-full opacity-90 border border-white/20 shadow-2xl" />
               <div className="relative z-10 w-[280px] h-[370px] self-end drop-shadow-2xl overflow-hidden rounded-t-[32px] border-t border-l border-r border-white/25 shadow-2xl">
-                <Image
+                <img
                   src={service.finalCta.founderImage || "/founder_portrait_nobg.png"}
                   alt="Founder Strategy Session"
-                  width={320}
-                  height={420}
                   className="w-full h-full object-cover object-top filter contrast-[1.05]"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#010356]/80 via-transparent to-transparent pointer-events-none" />

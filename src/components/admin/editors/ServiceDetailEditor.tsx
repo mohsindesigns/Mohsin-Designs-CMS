@@ -2438,12 +2438,13 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className={UI.label}>Title Line 2</label>
+                  <label className={UI.label}>Title Line 2 (Optional — Leave blank to hide)</label>
                   <input
                     type="text"
-                    value={data.finalCta?.titleLine2 || "Together."}
+                    value={data.finalCta?.titleLine2 !== undefined ? data.finalCta.titleLine2 : "Together."}
                     onChange={(e) => updateSection("finalCta", "titleLine2", e.target.value)}
                     className={UI.input}
+                    placeholder="e.g. Together."
                   />
                 </div>
 
@@ -2451,7 +2452,7 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                   <label className={UI.label}>Description</label>
                   <textarea
                     rows={2}
-                    value={data.finalCta?.description || "Schedule a free strategic consultation. We will audit your existing presence and map out a concrete blueprint for scalable growth."}
+                    value={data.finalCta?.description !== undefined ? data.finalCta.description : "Schedule a free strategic consultation. We will audit your existing presence and map out a concrete blueprint for scalable growth."}
                     onChange={(e) => updateSection("finalCta", "description", e.target.value)}
                     className={UI.input}
                   />
@@ -2462,8 +2463,21 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                     <label className={UI.label}>Primary Button Text</label>
                     <input
                       type="text"
-                      value={data.finalCta?.primaryCtaText || "Schedule Discovery Session"}
-                      onChange={(e) => updateSection("finalCta", "primaryCtaText", e.target.value)}
+                      value={data.finalCta?.primaryCtaText !== undefined ? data.finalCta.primaryCtaText : (data.finalCta?.primaryCta?.text || "Schedule Discovery Session")}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setData((prev: any) => {
+                          const fc = prev?.finalCta || {};
+                          return {
+                            ...prev,
+                            finalCta: {
+                              ...fc,
+                              primaryCtaText: val,
+                              primaryCta: { ...(fc.primaryCta || {}), text: val }
+                            }
+                          };
+                        });
+                      }}
                       className={UI.input}
                     />
                   </div>
@@ -2471,8 +2485,21 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                     <label className={UI.label}>Primary Button Link</label>
                     <input
                       type="text"
-                      value={data.finalCta?.primaryCtaLink || "#contact-form"}
-                      onChange={(e) => updateSection("finalCta", "primaryCtaLink", e.target.value)}
+                      value={data.finalCta?.primaryCtaLink !== undefined ? data.finalCta.primaryCtaLink : (data.finalCta?.primaryCta?.link || "#contact-form")}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setData((prev: any) => {
+                          const fc = prev?.finalCta || {};
+                          return {
+                            ...prev,
+                            finalCta: {
+                              ...fc,
+                              primaryCtaLink: val,
+                              primaryCta: { ...(fc.primaryCta || {}), link: val }
+                            }
+                          };
+                        });
+                      }}
                       className={UI.input}
                     />
                   </div>
@@ -2480,11 +2507,24 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className={UI.label}>Secondary Button Text</label>
+                    <label className={UI.label}>Secondary Button Text (Optional — Leave blank to hide)</label>
                     <input
                       type="text"
-                      value={data.finalCta?.secondaryCtaText || "Contact Office"}
-                      onChange={(e) => updateSection("finalCta", "secondaryCtaText", e.target.value)}
+                      value={data.finalCta?.secondaryCtaText !== undefined ? data.finalCta.secondaryCtaText : (data.finalCta?.secondaryCta?.text || "Contact Office")}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setData((prev: any) => {
+                          const fc = prev?.finalCta || {};
+                          return {
+                            ...prev,
+                            finalCta: {
+                              ...fc,
+                              secondaryCtaText: val,
+                              secondaryCta: { ...(fc.secondaryCta || {}), text: val }
+                            }
+                          };
+                        });
+                      }}
                       className={UI.input}
                     />
                   </div>
@@ -2492,8 +2532,21 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                     <label className={UI.label}>Secondary Button Link</label>
                     <input
                       type="text"
-                      value={data.finalCta?.secondaryCtaLink || "/contact"}
-                      onChange={(e) => updateSection("finalCta", "secondaryCtaLink", e.target.value)}
+                      value={data.finalCta?.secondaryCtaLink !== undefined ? data.finalCta.secondaryCtaLink : (data.finalCta?.secondaryCta?.link || "/contact")}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setData((prev: any) => {
+                          const fc = prev?.finalCta || {};
+                          return {
+                            ...prev,
+                            finalCta: {
+                              ...fc,
+                              secondaryCtaLink: val,
+                              secondaryCta: { ...(fc.secondaryCta || {}), link: val }
+                            }
+                          };
+                        });
+                      }}
                       className={UI.input}
                     />
                   </div>
@@ -2501,8 +2554,22 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
 
                 <ImageField
                   label="Founder Portrait Artwork"
-                  value={data.finalCta?.founderImage || "/founder_portrait_nobg.png"}
-                  onChange={(url) => updateSection("finalCta", "founderImage", url)}
+                  value={data.finalCta?.founderImage || data.finalCta?.image || data.finalCta?.backgroundImage || data.finalCta?.bgImage || "/founder_portrait_nobg.png"}
+                  onChange={(url) => {
+                    setData((prev: any) => {
+                      const fc = prev?.finalCta || {};
+                      return {
+                        ...prev,
+                        finalCta: {
+                          ...fc,
+                          founderImage: url,
+                          image: url,
+                          backgroundImage: url,
+                          bgImage: url
+                        }
+                      };
+                    });
+                  }}
                 />
               </div>
             )}
