@@ -348,6 +348,12 @@ const DEFAULT_SERVICE_TEMPLATE = {
       { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", link: "/locations" }
     ]
   },
+  recommendedSection: {
+    eyebrow: "11 // RECOMMENDATION",
+    titleIntro: "Services That Pair",
+    titleHighlight: "Perfect Together",
+    description: "Scale faster by pairing multi-channel growth campaigns and high-performance visual coding solutions."
+  },
   finalCta: {
     eyebrow: "12 // START BUILDING",
     titleIntro: "Ready to Transform Your",
@@ -558,6 +564,10 @@ export default function ServicesAdminPage() {
         ...DEFAULT_SERVICE_TEMPLATE.serviceArea,
         ...(service.serviceArea || {})
       },
+      recommendedSection: {
+        ...DEFAULT_SERVICE_TEMPLATE.recommendedSection,
+        ...(service.recommendedSection || {})
+      },
       faqBadge: service.faqBadge || service.sectionTag || DEFAULT_SERVICE_TEMPLATE.faqBadge,
       faqTitleIntro: service.faqTitleIntro || DEFAULT_SERVICE_TEMPLATE.faqTitleIntro,
       faqTitleHighlight: service.faqTitleHighlight || DEFAULT_SERVICE_TEMPLATE.faqTitleHighlight,
@@ -749,8 +759,9 @@ export default function ServicesAdminPage() {
     { id: "tools", label: "9. Tech Stack" },
     { id: "why-us", label: "10. Why Partner" },
     { id: "pricing", label: "11. Pricing Packages" },
-    { id: "serviceArea", label: "12. Global Coverage" },
-    { id: "final-cta", label: "13. CTA Banner" },
+    { id: "recommendedSection", label: "12. Recommended Services" },
+    { id: "serviceArea", label: "13. Global Coverage" },
+    { id: "final-cta", label: "14. CTA Banner" },
   ];
 
   if (loading) {
@@ -1725,13 +1736,22 @@ export default function ServicesAdminPage() {
                                           }}
                                           placeholder="e.g. Technical Audit, Wireframes"
                                         />
+                                        <ImageField
+                                          label="Step Artwork Image (Optional)"
+                                          value={step.image || ""}
+                                          onChange={(url) => {
+                                            const s = [...form.process.steps];
+                                            s[idx] = { ...s[idx], image: url };
+                                            setForm({ ...form, process: { ...form.process, steps: s } });
+                                          }}
+                                        />
                                       </div>
                                     ))}
                                     <button
                                       type="button"
                                       onClick={() => {
                                         const s = [...(form.process?.steps || [])];
-                                        s.push({ step: `0${s.length + 1}`, title: "New Roadmap Step", desc: "Step details...", badge: `PHASE 0${s.length + 1}`, deliverables: [] });
+                                        s.push({ step: `0${s.length + 1}`, title: "New Roadmap Step", desc: "Step details...", badge: `PHASE 0${s.length + 1}`, deliverables: [], image: "" });
                                         setForm({ ...form, process: { ...form.process, steps: s } });
                                       }}
                                       className={UI.buttonAdd}
@@ -1826,9 +1846,9 @@ export default function ServicesAdminPage() {
                                             <Trash2 className="w-4 h-4" />
                                           </button>
                                         </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                          <div className="space-y-1.5">
-                                            <label className={UI.label}>Client / Case Title</label>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                          <div className="space-y-1.5 md:col-span-2">
+                                            <label className={UI.label}>Case Study Title</label>
                                             <input
                                               type="text"
                                               value={cs.title || ""}
@@ -1842,19 +1862,30 @@ export default function ServicesAdminPage() {
                                             />
                                           </div>
                                           <div className="space-y-1.5">
-                                            <label className={UI.label}>Outcome / Metric Highlight</label>
-                                            <input
-                                              type="text"
-                                              value={cs.outcome || cs.metric || ""}
-                                              onChange={(e) => {
+                                            <label className={UI.label}>Case Icon</label>
+                                            <IconSelector
+                                              value={cs.iconName || cs.icon || "Target"}
+                                              onChange={(v) => {
                                                 const currentList = [...(Array.isArray(form.results?.caseStudies) && form.results.caseStudies.length > 0 ? form.results.caseStudies : (form.results?.caseStudy ? [form.results.caseStudy] : [{ title: "" }]))];
-                                                currentList[idx] = { ...currentList[idx], outcome: e.target.value, metric: e.target.value };
+                                                currentList[idx] = { ...currentList[idx], iconName: v, icon: v };
                                                 setForm({ ...form, results: { ...form.results, caseStudies: currentList, caseStudy: currentList[0] } });
                                               }}
-                                              className={UI.input + " font-bold border-[#2271b1]"}
-                                              placeholder="+312% Organic Conversions"
                                             />
                                           </div>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                          <label className={UI.label}>Outcome / Metric Highlight</label>
+                                          <input
+                                            type="text"
+                                            value={cs.outcome || cs.metric || ""}
+                                            onChange={(e) => {
+                                              const currentList = [...(Array.isArray(form.results?.caseStudies) && form.results.caseStudies.length > 0 ? form.results.caseStudies : (form.results?.caseStudy ? [form.results.caseStudy] : [{ title: "" }]))];
+                                              currentList[idx] = { ...currentList[idx], outcome: e.target.value, metric: e.target.value };
+                                              setForm({ ...form, results: { ...form.results, caseStudies: currentList, caseStudy: currentList[0] } });
+                                            }}
+                                            className={UI.input + " font-bold border-[#2271b1]"}
+                                            placeholder="+312% Organic Conversions"
+                                          />
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                           <div className="space-y-1.5">
@@ -1924,6 +1955,8 @@ export default function ServicesAdminPage() {
                                         const currentList = [...(Array.isArray(form.results?.caseStudies) && form.results.caseStudies.length > 0 ? form.results.caseStudies : (form.results?.caseStudy ? [form.results.caseStudy] : []))];
                                         currentList.push({
                                           title: "New Case Study",
+                                          iconName: "Target",
+                                          icon: "Target",
                                           challenge: "Challenge description...",
                                           strategy: "Strategy executed...",
                                           outcome: "+150% Performance",
@@ -2011,6 +2044,17 @@ export default function ServicesAdminPage() {
                                             }}
                                             className={UI.input}
                                             placeholder="VERIFIED"
+                                          />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                          <label className={UI.label}>Metric Icon</label>
+                                          <IconSelector
+                                            value={m.iconName || m.icon || "Trophy"}
+                                            onChange={(v) => {
+                                              const metrics = [...form.results.metrics];
+                                              metrics[idx] = { ...metrics[idx], iconName: v, icon: v };
+                                              setForm({ ...form, results: { ...form.results, metrics } });
+                                            }}
                                           />
                                         </div>
                                       </div>
@@ -2554,13 +2598,22 @@ export default function ServicesAdminPage() {
                                             className={UI.input}
                                           />
                                         </div>
+                                        <ImageField
+                                          label="Right-Side Artwork Image (Replaces Default SVG Illustration)"
+                                          value={pt.image || ""}
+                                          onChange={(url) => {
+                                            const currentList = [...(form.whyChooseUs.list || form.whyChooseUs.points || [])];
+                                            currentList[idx] = { ...currentList[idx], image: url };
+                                            setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, list: currentList, points: currentList } });
+                                          }}
+                                        />
                                       </div>
                                     ))}
                                     <button
                                       type="button"
                                       onClick={() => {
                                         const currentList = [...(form.whyChooseUs?.list || form.whyChooseUs?.points || [])];
-                                        currentList.push({ title: "New Value Point", desc: "Description...", tag: "Advantage", icon: "CheckCircle2", iconName: "CheckCircle2" });
+                                        currentList.push({ title: "New Value Point", desc: "Description...", tag: "Advantage", icon: "CheckCircle2", iconName: "CheckCircle2", image: "" });
                                         setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, list: currentList, points: currentList } });
                                       }}
                                       className={UI.buttonAdd}
@@ -2784,6 +2837,59 @@ export default function ServicesAdminPage() {
                                     >
                                       + Add Pricing Tier
                                     </button>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* SUBTAB: RECOMMENDED SERVICES */}
+                            {activeSubTab === "recommendedSection" && (
+                              <div className="space-y-12">
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>1. Section Header & Narrative</h3>
+                                  <div className="space-y-4">
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Badge / Eyebrow</label>
+                                      <input
+                                        type="text"
+                                        value={form.recommendedSection?.eyebrow !== undefined ? form.recommendedSection.eyebrow : "11 // RECOMMENDATION"}
+                                        onChange={(e) => setForm({ ...form, recommendedSection: { ...form.recommendedSection, eyebrow: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="e.g. 11 // RECOMMENDATION"
+                                      />
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Title Intro</label>
+                                        <input
+                                          type="text"
+                                          value={form.recommendedSection?.titleIntro !== undefined ? form.recommendedSection.titleIntro : "Services That Pair"}
+                                          onChange={(e) => setForm({ ...form, recommendedSection: { ...form.recommendedSection, titleIntro: e.target.value } })}
+                                          className={UI.input}
+                                          placeholder="e.g. Services That Pair"
+                                        />
+                                      </div>
+                                      <div className="space-y-1.5">
+                                        <label className={UI.label}>Title Highlight (Accent/Italic)</label>
+                                        <input
+                                          type="text"
+                                          value={form.recommendedSection?.titleHighlight !== undefined ? form.recommendedSection.titleHighlight : "Perfect Together"}
+                                          onChange={(e) => setForm({ ...form, recommendedSection: { ...form.recommendedSection, titleHighlight: e.target.value } })}
+                                          className={UI.input + " font-bold border-[#2271b1] text-[#2271b1]"}
+                                          placeholder="e.g. Perfect Together"
+                                        />
+                                      </div>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                      <label className={UI.label}>Description Narrative</label>
+                                      <textarea
+                                        rows={3}
+                                        value={form.recommendedSection?.description !== undefined ? form.recommendedSection.description : "Scale faster by pairing multi-channel growth campaigns and high-performance visual coding solutions."}
+                                        onChange={(e) => setForm({ ...form, recommendedSection: { ...form.recommendedSection, description: e.target.value } })}
+                                        className={UI.input}
+                                        placeholder="Describe how pairing related services accelerates ROI..."
+                                      />
+                                    </div>
                                   </div>
                                 </div>
                               </div>

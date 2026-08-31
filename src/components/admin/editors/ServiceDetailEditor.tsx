@@ -1097,6 +1097,16 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                           placeholder="e.g. Wireframe System, Architecture Audit"
                         />
                       </div>
+
+                      <ImageField
+                        label="Step Artwork Image (Optional)"
+                        value={step.image || ""}
+                        onChange={(url) => {
+                          const list = [...(data.process?.steps || [])];
+                          list[idx] = { ...list[idx], image: url };
+                          updateSection("process", "steps", list);
+                        }}
+                      />
                     </div>
                   ))}
                 </div>
@@ -1194,8 +1204,8 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                         </button>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div className="space-y-1.5">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div className="space-y-1.5 sm:col-span-2">
                           <label className={UI.label}>Client / Case Title</label>
                           <input
                             type="text"
@@ -1209,18 +1219,30 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                           />
                         </div>
                         <div className="space-y-1.5">
-                          <label className={UI.label}>Outcome Metric (e.g. +240% Inbound)</label>
-                          <input
-                            type="text"
-                            value={cs.outcome || ""}
-                            onChange={(e) => {
+                          <label className={UI.label}>Case Icon</label>
+                          <IconSelector
+                            value={cs.iconName || cs.icon || "Target"}
+                            onChange={(icon) => {
                               const list = [...(data.results?.caseStudies || [])];
-                              list[idx] = { ...list[idx], outcome: e.target.value };
+                              list[idx] = { ...list[idx], iconName: icon, icon: icon };
                               updateSection("results", "caseStudies", list);
                             }}
-                            className={UI.input + " font-black text-[#2271b1]"}
                           />
                         </div>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className={UI.label}>Outcome Metric (e.g. +240% Inbound)</label>
+                        <input
+                          type="text"
+                          value={cs.outcome || ""}
+                          onChange={(e) => {
+                            const list = [...(data.results?.caseStudies || [])];
+                            list[idx] = { ...list[idx], outcome: e.target.value };
+                            updateSection("results", "caseStudies", list);
+                          }}
+                          className={UI.input + " font-black text-[#2271b1]"}
+                        />
                       </div>
 
                       <div className="space-y-1.5">

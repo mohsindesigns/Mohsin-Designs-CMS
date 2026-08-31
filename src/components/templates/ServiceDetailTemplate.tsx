@@ -1573,6 +1573,12 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                         </p>
                       </div>
 
+                      {step.image && (
+                        <div className="w-full h-40 sm:h-48 rounded-2xl overflow-hidden border border-brand-zinc-200 dark:border-white/10 my-3">
+                          <img src={step.image} alt={step.title || ""} className="w-full h-full object-cover" />
+                        </div>
+                      )}
+
                       {/* Technical Deliverables Checklist */}
                       {deliverables.length > 0 && (
                         <ul className="space-y-2 pt-3 border-t border-brand-zinc-150 dark:border-white/5">
