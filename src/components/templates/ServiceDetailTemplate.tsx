@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { motion, AnimatePresence, useMotionValue, useInView } from "framer-motion";
+import * as LucideIcons from "lucide-react";
 import {
   ArrowRight,
   MapPin,
@@ -50,8 +51,8 @@ import Blog from "@/components/Blog";
 import ServiceArea from "@/components/ServiceArea";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 
-// ── Icon Map Resolver ──
-const iconMap: Record<string, React.ElementType> = {
+// ── Dynamic Icon Map Resolver ──
+const baseIconMap: Record<string, React.ElementType> = {
   Search,
   Monitor,
   Megaphone,
@@ -82,6 +83,19 @@ const iconMap: Record<string, React.ElementType> = {
   Droplet,
   Clock
 };
+
+const iconMap: Record<string, React.ElementType> = new Proxy(baseIconMap, {
+  get(target: any, prop: string) {
+    if (typeof prop === "string" && prop in target) return target[prop];
+    if (typeof prop === "string") {
+      const direct = (LucideIcons as any)[prop];
+      if (direct && (typeof direct === "function" || (typeof direct === "object" && direct !== null && (direct as any).$$typeof))) {
+        return direct;
+      }
+    }
+    return undefined;
+  }
+});
 
 // ── Custom Ad Platform Logos for Client Trust ──
 const GoogleAdsLogo = () => (
