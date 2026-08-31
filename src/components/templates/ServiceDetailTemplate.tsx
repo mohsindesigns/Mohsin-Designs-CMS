@@ -742,7 +742,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               return {
                 name: item.name || item.title || "Tool",
                 tag: item.tag || catName,
-                desc: item.desc || item.description || (item.name ? getToolDescription(item.name).desc : ""),
+                desc: item.desc || item.description || "",
                 iconName: item.iconName || item.icon || "Cpu"
               };
             });
@@ -900,7 +900,13 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       founderImage: dbService?.finalCta?.founderImage || "/founder_portrait_nobg.png"
     },
     blogSection: dbService?.blogSection,
-    serviceArea: dbService?.serviceArea
+    serviceArea: dbService?.serviceArea,
+    recommendedSection: {
+      eyebrow: dbService?.recommendedSection?.eyebrow || "11 // RECOMMENDATION",
+      titleIntro: dbService?.recommendedSection?.titleIntro || "Services That Pair",
+      titleHighlight: dbService?.recommendedSection?.titleHighlight || "Perfect Together",
+      description: dbService?.recommendedSection?.description || "Scale faster by pairing multi-channel growth campaigns and high-performance visual coding solutions."
+    }
   };
 
   const sliderRef = useRef<HTMLDivElement>(null);
@@ -1804,7 +1810,6 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {service.tools.list.map((tool: any, idx: number) => {
               const ToolIcon = iconMap[tool.iconName] || Search;
-              const specs = getToolDescription(tool.name);
 
               return (
                 <SpotlightCard
@@ -1819,7 +1824,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                       <span className="w-2.5 h-2.5 rounded-full bg-green-400/80" />
                     </div>
                     <span className="font-mono text-[8px] tracking-widest text-brand-zinc-400 dark:text-zinc-550 font-bold uppercase">
-                      {tool.tag || specs.tag}
+                      {tool.tag}
                     </span>
                   </div>
 
@@ -1835,7 +1840,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                         </h3>
                       </div>
                       <p className="text-xs sm:text-[13px] font-sans text-brand-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
-                        {tool.desc || tool.description || specs.desc}
+                        {tool.desc || tool.description}
                       </p>
                     </div>
 
@@ -2088,17 +2093,19 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-14 text-left">
               <div className="space-y-4">
                 <div className="flex">
-                  <span className="eyebrow-pill">11 // RECOMMENDATION</span>
+                  <span className="eyebrow-pill">{service.recommendedSection.eyebrow}</span>
                 </div>
                 <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
-                  Services That Pair{" "}
+                  {service.recommendedSection.titleIntro}{" "}
                   <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-2 font-black font-serif italic font-normal">
-                    Perfect Together
+                    {service.recommendedSection.titleHighlight}
                   </span>
                 </h2>
-                <p className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-xl leading-relaxed">
-                  Scale faster by pairing multi-channel growth campaigns and high-performance visual coding solutions.
-                </p>
+                {service.recommendedSection.description && (
+                  <p className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-xl leading-relaxed">
+                    {service.recommendedSection.description}
+                  </p>
+                )}
               </div>
 
               {/* Slider Control Buttons */}

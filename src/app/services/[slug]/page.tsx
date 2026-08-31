@@ -103,7 +103,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
-      <ServiceDetailTemplate params={resolvedParams} />
+      <ServiceDetailTemplate params={resolvedParams} pageData={service} />
     </>
   );
 }

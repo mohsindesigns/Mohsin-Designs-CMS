@@ -1146,6 +1146,16 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                       className={UI.input}
                     />
                   </div>
+
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Case Studies Section Label</label>
+                    <input
+                      type="text"
+                      value={data.results?.caseStudiesEyebrow || "Featured Case Studies"}
+                      onChange={(e) => updateSection("results", "caseStudiesEyebrow", e.target.value)}
+                      className={UI.input + " font-mono text-xs"}
+                    />
+                  </div>
                 </div>
 
                 {/* Case Studies Cards */}
@@ -1238,6 +1248,35 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                           }}
                           className={UI.input}
                         />
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="space-y-1.5">
+                          <label className={UI.label}>Outcome Label</label>
+                          <input
+                            type="text"
+                            value={cs.outcomeLabel || "Verified Outcome"}
+                            onChange={(e) => {
+                              const list = [...(data.results?.caseStudies || [])];
+                              list[idx] = { ...list[idx], outcomeLabel: e.target.value };
+                              updateSection("results", "caseStudies", list);
+                            }}
+                            className={UI.input}
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className={UI.label}>Short Description</label>
+                          <input
+                            type="text"
+                            value={cs.desc || ""}
+                            onChange={(e) => {
+                              const list = [...(data.results?.caseStudies || [])];
+                              list[idx] = { ...list[idx], desc: e.target.value };
+                              updateSection("results", "caseStudies", list);
+                            }}
+                            className={UI.input}
+                          />
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -1618,6 +1657,105 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                   />
                 </div>
 
+                {/* Circular Stat Rings */}
+                <div className="space-y-4 pt-4 border-t border-[#f0f0f1]">
+                  <div className="flex items-center justify-between">
+                    <span className={UI.label}>Circular Stat Rings (Left Column)</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const current = Array.isArray(data.whyChooseUs?.stats) ? data.whyChooseUs.stats : [];
+                        updateSection("whyChooseUs", "stats", [
+                          ...current,
+                          { value: "100%", label: "NEW STAT", sublabel: "Description\\nLine 2", percentage: 0.85 }
+                        ]);
+                      }}
+                      className={UI.buttonAdd}
+                    >
+                      <Plus className="w-3 h-3" /> Add Stat Ring
+                    </button>
+                  </div>
+
+                  {(Array.isArray(data.whyChooseUs?.stats) ? data.whyChooseUs.stats : []).map((st: any, idx: number) => (
+                    <div key={idx} className={UI.card + " space-y-3"}>
+                      <div className="flex items-center justify-between border-b border-[#f0f0f1] pb-2">
+                        <span className="text-[10px] font-bold text-[#646970] uppercase">Stat Ring #{idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const list = (data.whyChooseUs?.stats || []).filter((_: any, i: number) => i !== idx);
+                            updateSection("whyChooseUs", "stats", list);
+                          }}
+                          className="text-[#d63638] hover:text-[#b32d2e] p-1"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div className="space-y-1">
+                          <label className={UI.label}>Display Value</label>
+                          <input
+                            type="text"
+                            value={st.value || ""}
+                            onChange={(e) => {
+                              const list = [...(data.whyChooseUs?.stats || [])];
+                              list[idx] = { ...list[idx], value: e.target.value };
+                              updateSection("whyChooseUs", "stats", list);
+                            }}
+                            className={UI.input + " font-black"}
+                            placeholder="e.g. 100% or 4.5x"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className={UI.label}>Label</label>
+                          <input
+                            type="text"
+                            value={st.label || ""}
+                            onChange={(e) => {
+                              const list = [...(data.whyChooseUs?.stats || [])];
+                              list[idx] = { ...list[idx], label: e.target.value };
+                              updateSection("whyChooseUs", "stats", list);
+                            }}
+                            className={UI.input}
+                            placeholder="e.g. PERFORMANCE"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className={UI.label}>Sublabel</label>
+                          <input
+                            type="text"
+                            value={st.sublabel || ""}
+                            onChange={(e) => {
+                              const list = [...(data.whyChooseUs?.stats || [])];
+                              list[idx] = { ...list[idx], sublabel: e.target.value };
+                              updateSection("whyChooseUs", "stats", list);
+                            }}
+                            className={UI.input}
+                            placeholder="Use \\n for line break"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className={UI.label}>Fill % (0-1)</label>
+                          <input
+                            type="number"
+                            step="0.05"
+                            min="0"
+                            max="1"
+                            value={st.percentage ?? 0.85}
+                            onChange={(e) => {
+                              const list = [...(data.whyChooseUs?.stats || [])];
+                              list[idx] = { ...list[idx], percentage: parseFloat(e.target.value) || 0.85 };
+                              updateSection("whyChooseUs", "stats", list);
+                            }}
+                            className={UI.input + " font-mono"}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Differentiator Rows */}
                 <div className="space-y-4 pt-4 border-t border-[#f0f0f1]">
                   <div className="flex items-center justify-between">
                     <span className={UI.label}>Differentiator Rows</span>
@@ -1694,6 +1832,16 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                           className={UI.input}
                         />
                       </div>
+
+                      <ImageField
+                        label="Illustration Image (Optional)"
+                        value={item.image || ""}
+                        onChange={(url) => {
+                          const list = [...(data.whyChooseUs?.list || [])];
+                          list[idx] = { ...list[idx], image: url };
+                          updateSection("whyChooseUs", "list", list);
+                        }}
+                      />
                     </div>
                   ))}
                 </div>
@@ -1898,6 +2046,38 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                               className="rounded border-[#c3c4c7] text-[#2271b1]"
                             />
                             Highlight as "Most Popular"
+                          </label>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="space-y-1.5">
+                          <label className={UI.label}>Custom Badge Text (Optional)</label>
+                          <input
+                            type="text"
+                            value={plan.badgeText || ""}
+                            onChange={(e) => {
+                              const list = [...(data.pricing?.plans || [])];
+                              list[idx] = { ...list[idx], badgeText: e.target.value };
+                              updateSection("pricing", "plans", list);
+                            }}
+                            className={UI.input}
+                            placeholder="e.g. Best Value, Enterprise"
+                          />
+                        </div>
+                        <div className="flex items-center gap-2 pt-6">
+                          <label className="flex items-center gap-2 text-xs font-bold text-[#1d2327] cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={Boolean(plan.isCustom)}
+                              onChange={(e) => {
+                                const list = [...(data.pricing?.plans || [])];
+                                list[idx] = { ...list[idx], isCustom: e.target.checked };
+                                updateSection("pricing", "plans", list);
+                              }}
+                              className="rounded border-[#c3c4c7] text-[#2271b1]"
+                            />
+                            Mark as "Custom Scoped"
                           </label>
                         </div>
                       </div>
@@ -2283,6 +2463,27 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                   </div>
                 </div>
 
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Secondary Button Text</label>
+                    <input
+                      type="text"
+                      value={data.finalCta?.secondaryCtaText || "Contact Office"}
+                      onChange={(e) => updateSection("finalCta", "secondaryCtaText", e.target.value)}
+                      className={UI.input}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Secondary Button Link</label>
+                    <input
+                      type="text"
+                      value={data.finalCta?.secondaryCtaLink || "/contact"}
+                      onChange={(e) => updateSection("finalCta", "secondaryCtaLink", e.target.value)}
+                      className={UI.input}
+                    />
+                  </div>
+                </div>
+
                 <ImageField
                   label="Founder Portrait Artwork"
                   value={data.finalCta?.founderImage || "/founder_portrait_nobg.png"}
@@ -2294,6 +2495,48 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
             {/* 15. RELATED BLOG INSIGHTS */}
             {activeTab === "blogSection" && (
               <div className="space-y-6">
+                <h3 className={UI.sectionHeader}>Recommended Services Header</h3>
+                <p className="text-[11px] text-[#646970] -mt-4">Customize the heading area. Service cards are auto-populated.</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Section Eyebrow</label>
+                    <input
+                      type="text"
+                      value={data.recommendedSection?.eyebrow || "11 // RECOMMENDATION"}
+                      onChange={(e) => updateSection("recommendedSection", "eyebrow", e.target.value)}
+                      className={UI.input}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Title Highlight (Italic)</label>
+                    <input
+                      type="text"
+                      value={data.recommendedSection?.titleHighlight || "Perfect Together"}
+                      onChange={(e) => updateSection("recommendedSection", "titleHighlight", e.target.value)}
+                      className={UI.input + " font-bold border-[#2271b1] text-[#2271b1]"}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className={UI.label}>Title Intro</label>
+                  <input
+                    type="text"
+                    value={data.recommendedSection?.titleIntro || "Services That Pair"}
+                    onChange={(e) => updateSection("recommendedSection", "titleIntro", e.target.value)}
+                    className={UI.input}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className={UI.label}>Section Description</label>
+                  <textarea
+                    rows={2}
+                    value={data.recommendedSection?.description || ""}
+                    onChange={(e) => updateSection("recommendedSection", "description", e.target.value)}
+                    className={UI.input}
+                  />
+                </div>
+
+                <div className="pt-6 mt-2 border-t-2 border-[#2271b1]/20" />
                 <h3 className={UI.sectionHeader}>Related Blog Insights</h3>
                 <div className="space-y-1.5">
                   <label className={UI.label}>Section Badge</label>
