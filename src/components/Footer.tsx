@@ -141,9 +141,9 @@ export default function Footer() {
  
           {/* Quick Links Column */}
           <div className="lg:col-span-2 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
-            <h4 className="font-mono font-bold text-[10px] uppercase tracking-widest text-brand-yellow">
+            <p className="font-mono font-bold text-[10px] uppercase tracking-widest text-brand-yellow">
               {footer?.labelQuickLinks || "Navigation"}
-            </h4>
+            </p>
             <ul className="space-y-2.5 text-xs md:text-sm font-semibold text-brand-zinc-300">
               {quickLinks.map((link: any, idx: number) => (
                 <li key={idx}>
@@ -154,12 +154,12 @@ export default function Footer() {
               ))}
             </ul>
           </div>
- 
+
           {/* Services Column */}
           <div className="lg:col-span-2 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
-            <h4 className="font-mono font-bold text-[10px] uppercase tracking-widest text-brand-yellow">
+            <p className="font-mono font-bold text-[10px] uppercase tracking-widest text-brand-yellow">
               {footer?.labelServices || "Services"}
-            </h4>
+            </p>
             <ul className="space-y-2.5 text-xs md:text-sm font-semibold text-brand-zinc-300">
               {servicesList.map((item: any, idx: number) => (
                 <li key={idx}>
@@ -170,12 +170,12 @@ export default function Footer() {
               ))}
             </ul>
           </div>
- 
+
           {/* Contact Info Column */}
           <div className="lg:col-span-3 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
-            <h4 className="font-mono font-bold text-[10px] uppercase tracking-widest text-brand-yellow">
+            <p className="font-mono font-bold text-[10px] uppercase tracking-widest text-brand-yellow">
               {footer?.labelContactInfo || "Contact Info"}
-            </h4>
+            </p>
             <ul className="space-y-4 text-xs md:text-sm font-semibold text-brand-zinc-300">
               <li className="flex flex-col gap-1">
                 <span className="text-[8px] font-mono font-black text-brand-zinc-500 uppercase tracking-widest">{footer?.labelEmail || "Email"}</span>
@@ -201,12 +201,12 @@ export default function Footer() {
               </li>
             </ul>
           </div>
- 
+
           {/* Newsletter Column */}
           <div className="lg:col-span-2 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
-            <h4 className="font-mono font-bold text-[10px] uppercase tracking-widest text-brand-yellow">
+            <p className="font-mono font-bold text-[10px] uppercase tracking-widest text-brand-yellow">
               {footer?.labelNewsletter || "Newsletter"}
-            </h4>
+            </p>
             <p className="text-xs text-brand-zinc-300 font-semibold leading-relaxed">
               {footer?.newsletterDesc}
             </p>
