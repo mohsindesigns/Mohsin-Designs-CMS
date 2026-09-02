@@ -135,13 +135,14 @@ export default function TeamTemplate({ pageData, params }: { pageData?: any, par
 
   return (
     <main className="bg-white">
-      {(teamData?.enabled !== false && teamData?.section?.enabled !== false) && (
+      {(teamData?.enabled !== false) && (
       <section ref={sectionRef} className="relative py-14 md:py-18 lg:py-20 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none bg-[#f8fafc]">
           <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `linear-gradient(to right, #0f172a 1px, transparent 1px), linear-gradient(to bottom, #0f172a 1px, transparent 1px)`, backgroundSize: '100px 100px' }} />
         </div>
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[90vw] sm:w-[800px] h-[300px] sm:h-[400px] bg-gradient-to-b from-blue-100/50 to-transparent opacity-80 blur-[80px] pointer-events-none" />
         <div className="max-w-7xl mx-auto px-3 sm:px-6 md:px-8 relative z-30">
+          {teamData?.section?.enabled !== false && (
           <div className="max-w-3xl mx-auto text-center mb-16 sm:mb-24 md:mb-32 leadership-reveal relative z-20">
             <div className="flex items-center justify-center gap-2 sm:gap-3 mb-6">
               <div className="w-6 sm:w-8 h-[2px] bg-gradient-to-r from-blue-300 to-blue-500" />
@@ -174,7 +175,9 @@ export default function TeamTemplate({ pageData, params }: { pageData?: any, par
               <RichTextRenderer content={teamData?.section?.description} />
             </div>
           </div>
-          {teamData?.members?.map((member: any, index: number) => {
+          )}
+
+          {teamData?.membersEnabled !== false && teamData?.members?.map((member: any, index: number) => {
             const alignRight = index % 2 !== 0;
             return (
               <div key={member.id || index} className="grid lg:grid-cols-12 gap-8 items-center lg:items-start mb-24 sm:mb-32 md:mb-40 relative">

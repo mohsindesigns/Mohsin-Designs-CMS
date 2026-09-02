@@ -107,13 +107,14 @@ ${message}
 
   return (
     <main className="bg-white min-h-screen font-body w-full overflow-hidden">
-      {(careersData?.enabled !== false && careersData?.section?.enabled !== false) && (
+      {(careersData?.enabled !== false) && (
       <section className="relative py-16 md:py-32 overflow-hidden w-full">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: `linear-gradient(to right, #2563eb 1px, transparent 1px), linear-gradient(to bottom, #2563eb 1px, transparent 1px)`, backgroundSize: '80px 80px' }} />
         </div>
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-blue-50 to-transparent opacity-80 blur-[100px]" />
         <div className="max-w-5xl mx-auto px-4 relative z-30">
+          {careersData?.section?.enabled !== false && (
           <div className="max-w-3xl mx-auto text-center mb-12 md:mb-24">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-center gap-3 mb-6">
               <div className="w-8 h-[2px] bg-gradient-to-r from-blue-300 to-blue-500" />
@@ -140,6 +141,9 @@ ${message}
               <RichTextRenderer content={careersData?.section?.description} />
             </div>
           </div>
+          )}
+
+          {(careersData?.formEnabled !== false && careersData?.form?.enabled !== false) && (
           <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}>
             <div className="relative bg-white/80 backdrop-blur-xl rounded-[2rem] shadow-2xl overflow-hidden border border-white">
               {isSuccess ? (
@@ -166,6 +170,8 @@ ${message}
                       <input type="tel" name="phone" required className="w-full px-5 py-4 bg-slate-50/50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
                     </div>
                   </div>
+
+                  {careersData?.rolesEnabled !== false && (
                   <div className="space-y-3">
                     <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2"><Briefcase className="w-4 h-4 text-blue-500" />{careersData?.labels?.role}</label>
                     <select name="role" required defaultValue="" className="w-full px-5 py-4 bg-slate-50/50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all appearance-none">
@@ -173,6 +179,8 @@ ${message}
                       {careersData?.roles?.map((role: any, index: number) => <option key={index} value={role.value}>{role.label}</option>)}
                     </select>
                   </div>
+                  )}
+
                   <div className="space-y-3">
                     <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2">
                       <FileText className="w-4 h-4 text-blue-500" />
@@ -213,6 +221,7 @@ ${message}
               )}
             </div>
           </motion.div>
+          )}
         </div>
       </section>
       )}

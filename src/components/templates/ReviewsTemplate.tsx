@@ -64,18 +64,24 @@ export default function ReviewsTemplate({ pageData, params }: { pageData?: any, 
 
     return (
         <main className="relative min-h-screen bg-gray-50 dark:bg-background pt-24 pb-16">
-            {(data?.enabled !== false && section?.enabled !== false) && (
+            {data?.enabled !== false && (
             <div className="max-w-6xl mx-auto px-4 text-center">
-                <h1 className="text-4xl sm:text-7xl font-bold tracking-tight mb-4" dangerouslySetInnerHTML={{ __html: section?.headline || 'Customer Stories' }} />
-                <div className="text-lg text-gray-600 max-w-xl mx-auto mb-12">
-                    <RichTextRenderer content={section?.description} stripParagraphs={true} />
-                </div>
+                {section?.enabled !== false && (
+                <>
+                    <h1 className="text-4xl sm:text-7xl font-bold tracking-tight mb-4" dangerouslySetInnerHTML={{ __html: section?.headline || 'Customer Stories' }} />
+                    <div className="text-lg text-gray-600 max-w-xl mx-auto mb-12">
+                        <RichTextRenderer content={section?.description} stripParagraphs={true} />
+                    </div>
+                </>
+                )}
                 
+                {(data?.testimonialsEnabled !== false && data?.testimonials?.enabled !== false) && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
                     {testimonials.map((item: any, i: number) => (
                         <TestimonialCard key={i} testimonial={item} index={i} />
                     ))}
                 </div>
+                )}
             </div>
             )}
 
