@@ -23,15 +23,21 @@ export default function RichTextRenderer({ content, className = "", stripParagra
     return html;
   };
 
+  // Helper to parse markdown links [Anchor Text](url) into standard HTML <a> tags
+  const parseMarkdownLinks = (text: string) => {
+    if (!text || typeof text !== "string") return text;
+    return text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="rich-text-link">$1</a>');
+  };
+
   // Handle array of strings (legacy bio/description pattern)
   if (Array.isArray(content)) {
     return (
-      <div className={`space-y-4 ${className}`}>
+      <div className={`space-y-4 pointer-events-auto ${className}`}>
         {content.map((p, i) => (
           <div 
             key={i} 
-            dangerouslySetInnerHTML={{ __html: makeLinksDoFollow(safeSanitize(cleanMojibake(p))) }} 
-            className="rich-text-content"
+            dangerouslySetInnerHTML={{ __html: makeLinksDoFollow(safeSanitize(parseMarkdownLinks(cleanMojibake(p)))) }} 
+            className="rich-text-content pointer-events-auto"
           />
         ))}
       </div>
@@ -40,8 +46,8 @@ export default function RichTextRenderer({ content, className = "", stripParagra
 
   if (!content) return null;
 
-  // Sanitize and render single HTML string
-  let sanitizedHtml = safeSanitize(cleanMojibake(content as string));
+  // Sanitize and render single HTML string with markdown link parsing
+  let sanitizedHtml = safeSanitize(parseMarkdownLinks(cleanMojibake(content as string)));
 
   // If the user is seeing literal <p> tags, it might be due to double escaping
   // or the editor's output being rendered as text.
@@ -69,7 +75,7 @@ export default function RichTextRenderer({ content, className = "", stripParagra
 
   return (
     <div 
-      className={`rich-text-content 
+      className={`rich-text-content pointer-events-auto
         font-body text-foreground/80 leading-relaxed
         ${className}`}
       dangerouslySetInnerHTML={{ __html: sanitizedHtml }}

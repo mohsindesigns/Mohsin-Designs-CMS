@@ -7,13 +7,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useContent } from "@/hooks/useContent";
 
-export default function Services() {
+export default function Services({ data: propData }: { data?: any }) {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const dragStartPos = useRef({ x: 0, scrollLeft: 0 });
 
   const content = useContent();
-  const raw = content?.services;
+  const raw = propData || content?.services;
 
   // Map CMS fields with fallbacks
   const services = {
@@ -25,6 +25,11 @@ export default function Services() {
     ariaNext:      raw?.ariaNext      || "Next service",
     serviceLabel:  raw?.serviceLabel  || "SERVICE",
     list:          (raw?.list || raw?.services || []) as any[],
+    ctaHeading:    raw?.ctaHeading    || raw?.cta?.heading          || "Need a Custom Architecture or Specialized Solution?",
+    ctaDescription:raw?.ctaDescription|| raw?.cta?.description      || "Discuss your technical requirements directly with our principal engineer. We map out full-funnel architectures and execute with pixel perfection.",
+    ctaButtonText: raw?.ctaButtonText || raw?.cta?.buttonText       || "Schedule Technical Consultation",
+    ctaButtonHref: raw?.ctaButtonHref || raw?.cta?.buttonHref       || "/contact",
+    ctaEyebrow:    raw?.ctaEyebrow    || raw?.cta?.eyebrow          || "STRATEGY & SCOPING"
   };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -47,6 +52,15 @@ export default function Services() {
     const card = carouselRef.current.firstElementChild as HTMLElement;
     if (card) carouselRef.current.scrollBy({ left: (dir === "next" ? 1 : -1) * (card.getBoundingClientRect().width + 24), behavior: "smooth" });
   };
+
+  // Build comprehensive master list of all available global services for robust fallback resolution
+  const anyContent = content as any;
+  const masterServices = [
+    ...(Array.isArray(anyContent?.services?.services) ? anyContent.services.services : []),
+    ...(Array.isArray(anyContent?.services) ? anyContent.services : []),
+    ...(Array.isArray(anyContent?.globalServices) ? anyContent.globalServices : []),
+    ...(Array.isArray(anyContent?.services?.list) ? anyContent.services.list : [])
+  ];
 
   return (
     <section id="services" className="relative overflow-hidden bg-[#F8FAFC] dark:bg-[#0a0a14] py-24 md:py-32 border-t border-brand-zinc-200 dark:border-white/10">
@@ -142,16 +156,26 @@ export default function Services() {
           className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-none w-full -mx-2 px-2 md:mx-0 md:px-0 py-8 carousel-grab select-none"
         >
           {services.list.map((service: any, index: number) => {
-            const globalService = (content?.services?.services || []).find(
-              (s: any) => s.title === service.title || s.slug === service.slug
+            const globalService = masterServices.find(
+              (s: any) =>
+                (service?._id && s?._id === service._id) ||
+                (service?.id && (s?.id === service.id || s?._id === service.id)) ||
+                (service?.slug && s?.slug === service.slug) ||
+                (typeof service === 'string' && (s?._id === service || s?.id === service || s?.slug === service || s?.title === service)) ||
+                (service?.title && s?.title?.toLowerCase() === service.title?.toLowerCase())
             );
-            const imgSrc = service.image || service.overviewImage || globalService?.image || globalService?.overviewImage || "";
-            const num = service.num || String(index + 1).padStart(2, "0");
+
+            const title = service?.title || globalService?.title || (typeof service === 'string' ? service : "Service");
+            const desc = service?.desc || service?.description || service?.shortDescription || service?.tagline || globalService?.desc || globalService?.description || globalService?.shortDescription || globalService?.tagline || globalService?.hero?.description || "";
+            const imgSrc = service?.image || service?.overviewImage || service?.heroImage || service?.featuredImage || globalService?.image || globalService?.overviewImage || globalService?.heroImage || globalService?.featuredImage || globalService?.hero?.bgImage || globalService?.hero?.backgroundImage || "";
+            const category = service?.category || service?.tag || globalService?.category || globalService?.tag || "";
+            const slug = service?.slug || globalService?.slug || "";
+            const num = service?.num || String(index + 1).padStart(2, "0");
 
             return (
-              <div key={service._id || index} className="w-[86%] sm:w-[calc(50%-12px)] lg:w-[calc(33.33%-16px)] shrink-0 snap-start">
+              <div key={service?._id || service?.id || index} className="w-[86%] sm:w-[calc(50%-12px)] lg:w-[calc(33.33%-16px)] shrink-0 snap-start">
                 <Link
-                  href={`/services/${globalService?.slug || service.slug || ""}`}
+                  href={slug ? `/services/${slug}` : "/services"}
                   className="group relative flex flex-col justify-between rounded-[2rem] border border-brand-blue/20 dark:border-white/10 hover:border-transparent bg-white dark:bg-zinc-900 p-6 xs:p-7 md:p-8 transition-all duration-500 hover:-translate-y-3 h-full min-h-[490px] sm:min-h-[520px] md:min-h-[540px] shadow-[0_2px_20px_rgba(3,6,172,0.04)] hover:shadow-[0_32px_64px_rgba(3,6,172,0.28)] dark:hover:shadow-[0_32px_64px_rgba(233,189,54,0.08)] cursor-pointer card-sweep block no-underline"
                 >
 
@@ -179,10 +203,10 @@ export default function Services() {
                     <div className="flex flex-col">
 
                       {/* Category pill */}
-                      {service.category && (
+                      {category && (
                         <div className="inline-flex items-center self-start gap-1.5 mb-5 px-3 py-1 rounded-full bg-brand-blue/8 border border-brand-blue/15 text-brand-blue dark:text-brand-yellow group-hover:bg-white/15 group-hover:border-white/20 group-hover:text-brand-yellow transition-all duration-300">
                           <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                          <span className="font-mono text-[8px] font-black uppercase tracking-widest">{service.category}</span>
+                          <span className="font-mono text-[8px] font-black uppercase tracking-widest">{category}</span>
                         </div>
                       )}
 
@@ -191,7 +215,7 @@ export default function Services() {
                         {imgSrc ? (
                           <Image
                             src={imgSrc}
-                            alt={service.title || "Service"}
+                            alt={title}
                             fill
                             className="object-cover group-hover:scale-105 transition-transform duration-700"
                             sizes="(max-width: 768px) 90vw, 33vw"
@@ -207,12 +231,12 @@ export default function Services() {
 
                       {/* Title */}
                       <h3 className="font-heading text-lg md:text-xl font-black mb-2 leading-tight text-brand-dark dark:text-white group-hover:text-white dark:group-hover:text-brand-yellow transition-colors duration-300">
-                        {service.title}
+                        {title}
                       </h3>
 
                       {/* Description */}
                       <p className="text-xs md:text-[13px] font-medium leading-relaxed text-brand-zinc-500 dark:text-zinc-300 group-hover:text-blue-100 dark:group-hover:text-zinc-200 transition-colors duration-300 line-clamp-3">
-                        {service.desc || service.description || service.shortDescription || ""}
+                        {desc}
                       </p>
                     </div>
 
@@ -232,6 +256,43 @@ export default function Services() {
               </div>
             );
           })}
+        </motion.div>
+
+        {/* Services Bottom CTA Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, margin: "-50px" }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mt-16 md:mt-24 relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#0306AC] via-[#020485] to-[#010356] dark:from-[#12121e] dark:via-[#0f0f1a] dark:to-[#080710] border border-brand-blue/20 dark:border-white/10 p-8 sm:p-12 md:p-16 text-white shadow-2xl"
+        >
+          {/* Subtle glowing ambient lights */}
+          <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-brand-yellow/15 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-white/10 blur-3xl pointer-events-none" />
+          
+          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 md:gap-12">
+            <div className="space-y-4 max-w-2xl text-center lg:text-left">
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 dark:bg-yellow-400/10 px-4 py-1.5 text-[10px] font-mono font-black uppercase tracking-widest text-brand-yellow dark:text-yellow-400 border border-white/10">
+                {services.ctaEyebrow}
+              </span>
+              <h3 className="font-heading text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight tracking-tight">
+                {services.ctaHeading}
+              </h3>
+              <p className="text-white/80 dark:text-zinc-300 text-sm md:text-base font-sans font-normal leading-relaxed">
+                {services.ctaDescription}
+              </p>
+            </div>
+
+            <div className="shrink-0 w-full sm:w-auto flex flex-col sm:flex-row items-center gap-4">
+              <Link
+                href={services.ctaButtonHref}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-brand-yellow text-brand-dark hover:bg-white hover:text-brand-blue font-heading font-black text-xs sm:text-sm uppercase tracking-wider transition-all duration-300 shadow-lg group active:scale-95 no-underline"
+              >
+                <span>{services.ctaButtonText}</span>
+                <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+              </Link>
+            </div>
+          </div>
         </motion.div>
 
       </div>

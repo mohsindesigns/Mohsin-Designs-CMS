@@ -553,10 +553,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                     outcomeText: b.outcomeText || ""
                   }))
                 : [
-                    { metric: "350%", tag: "ORGANIC REACH", title: "Organic Visibility", desc: "Accelerating discovery on top search engines through clean structured code.", iconName: "TrendingUp", outcomeText: "Guaranteed Outcome" },
-                    { metric: "4.8x", tag: "CONVERSIONS", title: "Conversion Yield", desc: "Frictionless UX funnels designed specifically to capture and convert leads.", iconName: "Target", outcomeText: "Guaranteed Outcome" },
-                    { metric: "99.9%", tag: "UPTIME", title: "Reliability & Uptime", desc: "Enterprise infrastructure built on modern serverless edge architecture.", iconName: "ShieldCheck", outcomeText: "Guaranteed Outcome" },
-                    { metric: "<1s", tag: "CORE VITALS", title: "Load Performance", desc: "Lightning fast asset delivery boosting Core Web Vitals and SEO rankings.", iconName: "Zap", outcomeText: "Guaranteed Outcome" }
+                    { title: "Organic Visibility", desc: "Accelerating discovery on top search engines through clean structured code.", iconName: "TrendingUp", outcomeText: "Guaranteed Outcome" },
+                    { title: "Conversion Yield", desc: "Frictionless UX funnels designed specifically to capture and convert leads.", iconName: "Target", outcomeText: "Guaranteed Outcome" },
+                    { title: "Reliability & Uptime", desc: "Enterprise infrastructure built on modern serverless edge architecture.", iconName: "ShieldCheck", outcomeText: "Guaranteed Outcome" },
+                    { title: "Load Performance", desc: "Lightning fast asset delivery boosting Core Web Vitals and SEO rankings.", iconName: "Zap", outcomeText: "Guaranteed Outcome" }
                   ]))
     },
     process: {
@@ -1463,32 +1463,20 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               const BenefitIcon = (b.iconName && iconMap[b.iconName]) || (b.icon && iconMap[b.icon]) || defaultIcons[idx % defaultIcons.length] || TrendingUp;
 
               return (
-                <SpotlightCard key={idx} className="bg-white dark:bg-[#121124] border border-zinc-200/80 dark:border-white/10 p-6 sm:p-7 rounded-[26px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:shadow-[0_16px_40px_-8px_rgba(3,6,172,0.12)] dark:hover:shadow-[0_16px_40px_-8px_rgba(233,189,54,0.08)] hover:border-brand-blue/40 dark:hover:border-brand-yellow/40 transition-all duration-300 flex flex-col justify-between min-h-[260px] group">
+                <SpotlightCard key={idx} className="bg-white dark:bg-[#121124] border border-zinc-200/80 dark:border-white/10 p-6 sm:p-7 rounded-[26px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:shadow-[0_16px_40px_-8px_rgba(3,6,172,0.12)] dark:hover:shadow-[0_16px_40px_-8px_rgba(233,189,54,0.08)] hover:border-brand-blue/40 dark:hover:border-brand-yellow/40 transition-all duration-300 flex flex-col justify-between min-h-[220px] group">
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between w-full pb-3.5 border-b border-zinc-100 dark:border-white/5">
-                      <div className="w-11 h-11 rounded-2xl bg-brand-blue/10 dark:bg-brand-yellow/10 border border-brand-blue/20 dark:border-brand-yellow/20 flex items-center justify-center text-brand-blue dark:text-brand-yellow shadow-sm group-hover:scale-110 group-hover:rotate-2 transition-transform duration-300 shrink-0">
-                        <BenefitIcon className="w-5 h-5 stroke-[2.2]" />
-                      </div>
-                      {b.tag && (
-                        <span className="text-[9px] font-mono font-black tracking-widest text-zinc-500 dark:text-zinc-400 bg-zinc-100/90 dark:bg-white/[0.06] border border-zinc-200/60 dark:border-white/5 px-3 py-1 rounded-full uppercase select-none">
-                          {b.tag}
-                        </span>
-                      )}
+                    <div className="w-11 h-11 rounded-2xl bg-brand-blue/10 dark:bg-brand-yellow/10 border border-brand-blue/20 dark:border-brand-yellow/20 flex items-center justify-center text-brand-blue dark:text-brand-yellow shadow-sm group-hover:scale-110 group-hover:rotate-2 transition-transform duration-300 shrink-0">
+                      <BenefitIcon className="w-5 h-5 stroke-[2.2]" />
                     </div>
 
                     <div className="space-y-2 text-left">
-                      {b.metric && (
-                        <div className="font-heading font-black text-3xl sm:text-4xl text-[#0306AC] dark:text-[#E9BD36] leading-none tracking-tight break-words">
-                          <DigitTicker value={b.metric} />
-                        </div>
-                      )}
                       {b.title && (
-                        <h3 className="font-heading text-base font-extrabold text-brand-dark dark:text-white transition-colors duration-300 group-hover:text-brand-blue dark:group-hover:text-brand-yellow pt-1">
+                        <h3 className="font-heading text-base sm:text-lg font-extrabold text-brand-dark dark:text-white transition-colors duration-300 group-hover:text-brand-blue dark:group-hover:text-brand-yellow">
                           {b.title}
                         </h3>
                       )}
                       {b.desc && (
-                        <p className="text-[12px] font-sans text-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
+                        <p className="text-[13px] font-sans text-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
                           {b.desc}
                         </p>
                       )}

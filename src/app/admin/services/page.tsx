@@ -1507,46 +1507,16 @@ export default function ServicesAdminPage() {
                                             <Trash2 className="w-4 h-4" />
                                           </button>
                                         </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                          <div className="space-y-1.5">
-                                            <label className={UI.label}>Tag / Badge</label>
-                                            <input
-                                              type="text"
-                                              value={b.tag || ""}
-                                              onChange={(e) => {
-                                                const l = [...form.benefits.list];
-                                                l[idx] = { ...l[idx], tag: e.target.value };
-                                                setForm({ ...form, benefits: { ...form.benefits, list: l } });
-                                              }}
-                                              className={UI.input}
-                                              placeholder="Organic Reach"
-                                            />
-                                          </div>
-                                          <div className="space-y-1.5">
-                                            <label className={UI.label}>Metric (e.g. 350%, 4.8x)</label>
-                                            <input
-                                              type="text"
-                                              value={b.metric || ""}
-                                              onChange={(e) => {
-                                                const l = [...form.benefits.list];
-                                                l[idx] = { ...l[idx], metric: e.target.value };
-                                                setForm({ ...form, benefits: { ...form.benefits, list: l } });
-                                              }}
-                                              className={UI.input + " font-black"}
-                                              placeholder="350%"
-                                            />
-                                          </div>
-                                          <div className="space-y-1.5">
-                                            <label className={UI.label}>Card Icon</label>
-                                            <IconSelector
-                                              value={b.iconName || b.icon || "TrendingUp"}
-                                              onChange={(v) => {
-                                                const l = [...form.benefits.list];
-                                                l[idx] = { ...l[idx], iconName: v, icon: v };
-                                                setForm({ ...form, benefits: { ...form.benefits, list: l } });
-                                              }}
-                                            />
-                                          </div>
+                                        <div className="space-y-1.5">
+                                          <label className={UI.label}>Card Icon</label>
+                                          <IconSelector
+                                            value={b.iconName || b.icon || "TrendingUp"}
+                                            onChange={(v) => {
+                                              const l = [...form.benefits.list];
+                                              l[idx] = { ...l[idx], iconName: v, icon: v };
+                                              setForm({ ...form, benefits: { ...form.benefits, list: l } });
+                                            }}
+                                          />
                                         </div>
                                         <div className="space-y-1.5">
                                           <label className={UI.label}>Title</label>
@@ -1581,7 +1551,7 @@ export default function ServicesAdminPage() {
                                       type="button"
                                       onClick={() => {
                                         const l = [...(form.benefits?.list || [])];
-                                        l.push({ metric: "100%", title: "New Outcome", desc: "Details...", tag: "Advantage", iconName: "TrendingUp" });
+                                        l.push({ title: "New Outcome", desc: "Details...", iconName: "TrendingUp" });
                                         setForm({ ...form, benefits: { ...form.benefits, list: l } });
                                       }}
                                       className={UI.buttonAdd}

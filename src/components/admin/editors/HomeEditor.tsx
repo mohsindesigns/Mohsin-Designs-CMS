@@ -568,6 +568,67 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                            onSelect={(items) => updateSection("services", "list", items)}
                         />
                      </div>
+
+                     {/* 3. Bottom Services CTA Banner */}
+                     <div className="space-y-6 pt-10 border-t border-[#f0f0f1]">
+                        <h3 className={UI.sectionHeader}>3. Bottom Services Conversion Banner (CTA)</h3>
+                        <p className="text-[11px] text-[#646970] italic -mt-3">Configure the conversion call-to-action banner displayed at the bottom of the services carousel.</p>
+                        
+                        <div className="space-y-4 bg-[#f8f9fa] p-4 border border-[#c3c4c7] rounded-sm">
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>CTA Eyebrow Tag</label>
+                              <input
+                                 type="text"
+                                 value={data.services?.ctaEyebrow || "STRATEGY & SCOPING"}
+                                 onChange={(e) => updateSection("services", "ctaEyebrow", e.target.value)}
+                                 className={UI.input}
+                                 placeholder="e.g. STRATEGY & SCOPING"
+                              />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>CTA Headline / Question</label>
+                              <input
+                                 type="text"
+                                 value={data.services?.ctaHeading || "Need a Custom Architecture or Specialized Solution?"}
+                                 onChange={(e) => updateSection("services", "ctaHeading", e.target.value)}
+                                 className={UI.input + " font-bold"}
+                                 placeholder="e.g. Need a Custom Architecture or Specialized Solution?"
+                              />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>CTA Description Narrative</label>
+                              <textarea
+                                 rows={3}
+                                 value={data.services?.ctaDescription || "Discuss your technical requirements directly with our principal engineer. We map out full-funnel architectures and execute with pixel perfection."}
+                                 onChange={(e) => updateSection("services", "ctaDescription", e.target.value)}
+                                 className={UI.input}
+                                 placeholder="e.g. Discuss your technical requirements directly with our principal engineer..."
+                              />
+                           </div>
+                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              <div className="space-y-1.5">
+                                 <label className={UI.label}>CTA Button Label</label>
+                                 <input
+                                    type="text"
+                                    value={data.services?.ctaButtonText || "Schedule Technical Consultation"}
+                                    onChange={(e) => updateSection("services", "ctaButtonText", e.target.value)}
+                                    className={UI.input}
+                                    placeholder="e.g. Schedule Technical Consultation"
+                                 />
+                              </div>
+                              <div className="space-y-1.5">
+                                 <label className={UI.label}>CTA Button Destination URL</label>
+                                 <input
+                                    type="text"
+                                    value={data.services?.ctaButtonHref || "/contact"}
+                                    onChange={(e) => updateSection("services", "ctaButtonHref", e.target.value)}
+                                    className={UI.input}
+                                    placeholder="e.g. /contact or #contact"
+                                 />
+                              </div>
+                           </div>
+                        </div>
+                     </div>
                   </div>
                )}
 
@@ -2028,7 +2089,6 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                       </div>
                    </div>
                 )}
-
                 {/* CONTACT FORM SECTION */}
                 {activeTab === "quote" && (
                   <div className="space-y-10">
@@ -2185,171 +2245,47 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                               className={UI.input}
                            />
                         </div>
-                        <div className="space-y-1.5">
-                           <label className={UI.label}>Form Card Subheading</label>
-                           <input
-                              type="text"
-                              value={data.contact?.formSubheading || "Fill out the details below and our team will get back to you within 2 business hours."}
-                              onChange={(e) => updateSection("contact", "formSubheading", e.target.value)}
-                              className={UI.input}
-                           />
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                           <div className="space-y-1.5">
-                              <label className={UI.label}>Submit Button Text</label>
-                              <input
-                                 type="text"
-                                 value={data.contact?.btnSubmit || "Send Message"}
-                                 onChange={(e) => updateSection("contact", "btnSubmit", e.target.value)}
-                                 className={UI.input}
-                              />
-                           </div>
-                           <div className="space-y-1.5">
-                              <label className={UI.label}>Submitting Button Text</label>
-                              <input
-                                 type="text"
-                                 value={data.contact?.btnSubmitting || "Sending Message..."}
-                                 onChange={(e) => updateSection("contact", "btnSubmitting", e.target.value)}
-                                 className={UI.input}
-                              />
-                           </div>
-                        </div>
-                        <div className="space-y-1.5">
-                           <label className={UI.label}>Success Title</label>
-                           <input
-                              type="text"
-                              value={data.contact?.successTitle || "Message Sent Successfully!"}
-                              onChange={(e) => updateSection("contact", "successTitle", e.target.value)}
-                              className={UI.input}
-                           />
-                        </div>
-                     </div>
-                  </div>
-               )}
-
-               {/* BLOG SECTION */}
-               {activeTab === "blog" && (
-                  <div className="space-y-12">
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>1. Section Intro & Narrative</h3>
-                        <div className="space-y-1.5">
-                           <label className={UI.label}>Badge / Tag</label>
-                           <input
-                              type="text"
-                              value={data.blogSection?.sectionTag || data.blogSection?.subtitle || "LATEST ARTICLES & INSIGHTS"}
-                              onChange={(e) => updateSection("blogSection", "sectionTag", e.target.value)}
-                              className={UI.input}
-                              placeholder="e.g. LATEST ARTICLES & INSIGHTS"
-                           />
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                           <div className="space-y-1.5">
-                              <label className={UI.label}>Headline Intro (Prefix)</label>
-                              <input
-                                 type="text"
-                                 value={data.blogSection?.titleIntro || "Thinking, Strategies &"}
-                                 onChange={(e) => updateSection("blogSection", "titleIntro", e.target.value)}
-                                 className={UI.input}
-                                 placeholder="e.g. Thinking, Strategies &"
-                              />
-                           </div>
-                           <div className="space-y-1.5">
-                              <label className={UI.label}>Headline Highlight (Accent Italic)</label>
-                              <input
-                                 type="text"
-                                 value={data.blogSection?.titleHighlight || data.blogSection?.title || "Industry Insights"}
-                                 onChange={(e) => updateSection("blogSection", "titleHighlight", e.target.value)}
-                                 className={UI.input + " font-bold border-[#2271b1] text-[#2271b1]"}
-                                 placeholder="e.g. Industry Insights"
-                              />
-                           </div>
-                        </div>
-                        <div className="space-y-1.5">
-                           <label className={UI.label}>Description</label>
-                           <textarea
-                              rows={3}
-                              value={data.blogSection?.description || ""}
-                              onChange={(e) => updateSection("blogSection", "description", e.target.value)}
-                              className={UI.input}
-                              placeholder="e.g. Explore our latest thoughts on high-performance web engineering, modern UI/UX design architectures, and conversion rate optimization."
-                           />
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                           <div className="space-y-1.5">
-                              <label className={UI.label}>Featured Card CTA Label</label>
-                              <input
-                                 type="text"
-                                 value={data.blogSection?.featuredLabel || "Read Full Article"}
-                                 onChange={(e) => updateSection("blogSection", "featuredLabel", e.target.value)}
-                                 className={UI.input}
-                                 placeholder="e.g. Read Full Article"
-                              />
-                           </div>
-                           <div className="space-y-1.5">
-                              <label className={UI.label}>Date Separator Symbol</label>
-                              <input
-                                 type="text"
-                                 value={data.blogSection?.dateSeparator || " • "}
-                                 onChange={(e) => updateSection("blogSection", "dateSeparator", e.target.value)}
-                                 className={UI.input}
-                                 placeholder="e.g.  • "
-                              />
-                           </div>
-                        </div>
-                     </div>
-
-                     {/* FEATURED MAIN CARD OVERRIDES (OPTIONAL) */}
-                     <div className="space-y-6 pt-8 border-t border-[#f0f0f1]">
-                        <h3 className={UI.sectionHeader}>2. Main Featured Card (Optional Overrides)</h3>
-                        <p className="text-xs text-[#646970]">By default, the main featured card automatically pulls the headline, live excerpt/content, category, and image from the selected post. You can optionally override any of them here.</p>
-
-                        <div className="space-y-4 bg-[#f6f7f7] border border-[#dcdcde] p-5 rounded-sm">
-                           <div className="space-y-1.5">
-                              <label className={UI.label}>Custom Excerpt / Summary (Overrides Auto-Generated Snippet)</label>
-                              <textarea
-                                 rows={3}
-                                 value={data.blogSection?.featuredExcerpt || ""}
-                                 onChange={(e) => updateSection("blogSection", "featuredExcerpt", e.target.value)}
-                                 className={UI.input}
-                                 placeholder="Leave blank to automatically extract from the post content..."
-                              />
-                           </div>
-
-                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                              <div className="space-y-1.5">
-                                 <label className={UI.label}>Custom Headline (Optional Override)</label>
-                                 <input
-                                    type="text"
-                                    value={data.blogSection?.featuredTitle || ""}
-                                    onChange={(e) => updateSection("blogSection", "featuredTitle", e.target.value)}
-                                    className={UI.input}
-                                    placeholder="Leave blank to use post title"
-                                 />
-                              </div>
-                              <div className="space-y-1.5">
-                                 <label className={UI.label}>Custom Category Badge (Optional Override)</label>
-                                 <input
-                                    type="text"
-                                    value={data.blogSection?.featuredCategory || ""}
-                                    onChange={(e) => updateSection("blogSection", "featuredCategory", e.target.value)}
-                                    className={UI.input}
-                                    placeholder="Leave blank to use post category"
-                                 />
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-
-                     <div className="space-y-6 pt-8 border-t border-[#f0f0f1]">
-                        <h3 className={UI.sectionHeader}>3. Selected Posts (Selector)</h3>
-                        <p className="text-xs text-[#646970]">Select the articles you want to highlight. The first post will be showcased in the large featured card, and the rest in the recent list.</p>
-                        <BlogSelector
-                           selectedIds={data.blogSection?.selectedPosts || []}
-                           onChange={(ids) => updateSection("blogSection", "selectedPosts", ids)}
-                        />
-                     </div>
-                  </div>
-               )}
+                                     <div className="space-y-1.5">
+                            <label className={UI.label}>Form Card Subheading</label>
+                            <input
+                               type="text"
+                               value={data.contact?.formSubheading || "Fill out the details below and our team will get back to you within 2 business hours."}
+                               onChange={(e) => updateSection("contact", "formSubheading", e.target.value)}
+                               className={UI.input}
+                            />
+                         </div>
+                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-1.5">
+                               <label className={UI.label}>Submit Button Text</label>
+                               <input
+                                  type="text"
+                                  value={data.contact?.btnSubmit || "Send Message"}
+                                  onChange={(e) => updateSection("contact", "btnSubmit", e.target.value)}
+                                  className={UI.input}
+                               />
+                            </div>
+                            <div className="space-y-1.5">
+                               <label className={UI.label}>Submitting Button Text</label>
+                               <input
+                                  type="text"
+                                  value={data.contact?.btnSubmitting || "Sending Message..."}
+                                  onChange={(e) => updateSection("contact", "btnSubmitting", e.target.value)}
+                                  className={UI.input}
+                               />
+                            </div>
+                         </div>
+                         <div className="space-y-1.5">
+                            <label className={UI.label}>Success Title</label>
+                            <input
+                               type="text"
+                               value={data.contact?.successTitle || "Message Sent Successfully!"}
+                               onChange={(e) => updateSection("contact", "successTitle", e.target.value)}
+                               className={UI.input}
+                            />
+                         </div>
+                      </div>
+                   </div>
+                )}
             </motion.div>
          </AnimatePresence>
       </div>

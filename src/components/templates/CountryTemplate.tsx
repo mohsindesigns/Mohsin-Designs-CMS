@@ -8,7 +8,8 @@ import { useContent } from "@/hooks/useContent";
 
 const Portfolio = dynamic(() => import("@/components/Portfolio"));
 const Testimonials = dynamic(() => import("@/components/Testimonials"), { ssr: false });
-const AboutOwner = dynamic(() => import("@/components/AboutOwner"), { ssr: false });
+const AboutOwnerClean = dynamic(() => import("@/components/AboutOwnerClean"), { ssr: false });
+const TrustedBrandsSection = dynamic(() => import("@/components/sections/TrustedBrandsSection"), { ssr: false });
 const ContactForm = dynamic(() => import("@/components/ContactForm"), { ssr: false });
 const QAForm = dynamic(() => import("@/components/QAForm"), { ssr: false });
 const BlogSection = dynamic(() => import("@/components/sections/BlogSection"), { ssr: false });
@@ -36,17 +37,22 @@ export default function CountryTemplate({ pageData, params }: { pageData?: any; 
       {/* 1. Hero Section */}
       {hasContent(content.hero) && <Hero />}
 
-      {/* 2. About The Owner */}
+      {/* 1.5 Trusted Brands */}
+      {(hasContent(content.trustedBrands) || hasContent(content.clientTrust) || hasContent(content.trustedBy)) && (
+        <TrustedBrandsSection data={content.trustedBrands || content.clientTrust || content.trustedBy} />
+      )}
+
+      {/* 2. About The Owner (Clean - No stats, No CTA button) */}
       {hasContent(content.about || content.aboutOwner) && (
         <section id="about">
-          <AboutOwner />
+          <AboutOwnerClean data={content.about || content.aboutOwner} />
         </section>
       )}
 
       {/* 3. Services Section */}
       {hasContent(content.services) && (
         <section id="services">
-          <Services />
+          <Services data={content.services} />
         </section>
       )}
 

@@ -245,11 +245,6 @@ export default function PageInlineFaqs({
                       </span>
                       
                       <div className="space-y-1">
-                        {/* Category Label */}
-                        <span className="font-mono text-[9px] font-black text-primary/60 dark:text-yellow-400/60 tracking-widest uppercase select-none block">
-                          {f.category}
-                        </span>
-                        
                         {/* Question */}
                         <h3 className={`font-heading font-extrabold text-base sm:text-lg leading-snug transition-colors duration-300 pr-2 ${
                           isOpen ? "text-primary dark:text-yellow-400" : "text-slate-900 dark:text-white group-hover:text-primary dark:group-hover:text-yellow-400"

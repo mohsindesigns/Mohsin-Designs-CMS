@@ -60,7 +60,7 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any; par
       </section>
 
       <section id="services">
-        <Services />
+        <Services data={pageData?.content?.services} />
       </section>
 
       {/* Industries We Serve Section */}

@@ -157,7 +157,7 @@ export default function Hero() {
             whileInView="visible"
             viewport={{ once: false, amount: 0.15 }}
             style={{ y: yText }}
-            className="lg:col-span-7 space-y-6 text-center lg:text-left flex flex-col items-center lg:items-start will-change-transform pb-4"
+            className="lg:col-span-7 space-y-6 text-center lg:text-left flex flex-col items-center lg:items-start will-change-transform pb-4 pointer-events-auto"
           >
             {/* Pill Badge */}
             <motion.div variants={itemVariants} className="inline-flex pointer-events-auto">
@@ -244,7 +244,7 @@ export default function Hero() {
             {/* Description */}
             <motion.div
               variants={itemVariants}
-              className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-xl"
+              className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-xl pointer-events-auto"
             >
               <RichTextRenderer content={description} stripParagraphs={true} />
             </motion.div>

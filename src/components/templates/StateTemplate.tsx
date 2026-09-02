@@ -8,6 +8,7 @@ import { useContent } from "@/hooks/useContent";
 
 const Portfolio = dynamic(() => import("@/components/Portfolio"));
 const Testimonials = dynamic(() => import("@/components/Testimonials"), { ssr: false });
+const TrustedBrandsSection = dynamic(() => import("@/components/sections/TrustedBrandsSection"), { ssr: false });
 const ContactForm = dynamic(() => import("@/components/ContactForm"), { ssr: false });
 const QAForm = dynamic(() => import("@/components/QAForm"), { ssr: false });
 const BlogSection = dynamic(() => import("@/components/sections/BlogSection"), { ssr: false });
@@ -35,10 +36,15 @@ export default function StateTemplate({ pageData, params }: { pageData?: any; pa
       {/* 1. Hero Section */}
       {hasContent(content.hero) && <Hero />}
 
+      {/* 1.5 Trusted Brands */}
+      {(hasContent(content.trustedBrands) || hasContent(content.clientTrust) || hasContent(content.trustedBy)) && (
+        <TrustedBrandsSection data={content.trustedBrands || content.clientTrust || content.trustedBy} />
+      )}
+
       {/* 2. Services Section */}
       {hasContent(content.services) && (
         <section id="services">
-          <Services />
+          <Services data={content.services} />
         </section>
       )}
 

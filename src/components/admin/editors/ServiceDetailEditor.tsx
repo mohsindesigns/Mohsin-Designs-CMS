@@ -835,7 +835,7 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                         const current = Array.isArray(data.benefits?.list) ? data.benefits.list : [];
                         updateSection("benefits", "list", [
                           ...current,
-                          { metric: "100%", title: "New Verifiable Outcome", desc: "Outcome description.", tag: "Advantage", iconName: "TrendingUp" }
+                          { title: "New Verifiable Outcome", desc: "Outcome description.", iconName: "TrendingUp" }
                         ]);
                       }}
                       className={UI.buttonAdd}
@@ -860,45 +860,16 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                         </button>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div className="space-y-1.5">
-                          <label className={UI.label}>Tag / Badge</label>
-                          <input
-                            type="text"
-                            value={b.tag || ""}
-                            onChange={(e) => {
-                              const list = [...(data.benefits?.list || [])];
-                              list[idx] = { ...list[idx], tag: e.target.value };
-                              updateSection("benefits", "list", list);
-                            }}
-                            className={UI.input}
-                            placeholder="Organic Reach"
-                          />
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className={UI.label}>Metric (e.g. 350%, 4.8x, &lt;1s)</label>
-                          <input
-                            type="text"
-                            value={b.metric || ""}
-                            onChange={(e) => {
-                              const list = [...(data.benefits?.list || [])];
-                              list[idx] = { ...list[idx], metric: e.target.value };
-                              updateSection("benefits", "list", list);
-                            }}
-                            className={UI.input + " font-black"}
-                          />
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className={UI.label}>Card Icon</label>
-                          <IconSelector
-                            value={b.iconName || b.icon || "TrendingUp"}
-                            onChange={(icon) => {
-                              const list = [...(data.benefits?.list || [])];
-                              list[idx] = { ...list[idx], iconName: icon, icon: icon };
-                              updateSection("benefits", "list", list);
-                            }}
-                          />
-                        </div>
+                      <div className="space-y-1.5">
+                        <label className={UI.label}>Card Icon</label>
+                        <IconSelector
+                          value={b.iconName || b.icon || "TrendingUp"}
+                          onChange={(icon) => {
+                            const list = [...(data.benefits?.list || [])];
+                            list[idx] = { ...list[idx], iconName: icon, icon: icon };
+                            updateSection("benefits", "list", list);
+                          }}
+                        />
                       </div>
 
                       <div className="space-y-1.5">

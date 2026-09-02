@@ -1088,21 +1088,29 @@
   .rich-text-content p {
     @apply mb-2 last:mb-0;
   }
-  .rich-text-content a {
-    @apply text-primary no-underline transition-colors;
-    text-decoration: none !important;
+  .rich-text-content a,
+  .rich-text-link {
+    @apply text-primary dark:text-brand-yellow font-medium transition-colors cursor-pointer;
+    pointer-events: auto !important;
+    text-decoration: underline !important;
+    text-underline-offset: 3px;
+    position: relative;
+    z-index: 10;
   }
-  .rich-text-content a:hover {
-    @apply text-primary no-underline opacity-80;
-    text-decoration: none !important;
+  .rich-text-content a:hover,
+  .rich-text-link:hover {
+    @apply opacity-80;
   }
   .prose a {
-    @apply text-primary no-underline transition-colors !important;
-    text-decoration: none !important;
+    @apply text-primary dark:text-brand-yellow font-medium transition-colors cursor-pointer !important;
+    pointer-events: auto !important;
+    text-decoration: underline !important;
+    text-underline-offset: 3px;
+    position: relative;
+    z-index: 10;
   }
   .prose a:hover {
-    @apply text-primary no-underline opacity-80 !important;
-    text-decoration: none !important;
+    @apply opacity-80 !important;
   }
 
   /* Prose List Spacing Fixes */
