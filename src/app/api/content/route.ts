@@ -96,12 +96,14 @@ export async function PUT(req: NextRequest) {
     revalidatePath('/', 'layout');
     revalidatePath('/');
     revalidatePath('/services');
+    revalidatePath('/blogs');
     revalidatePath('/blog');
     revalidatePath('/locations');
     revalidatePath('/gallery');
     revalidatePath('/privacy');
     revalidatePath('/terms');
     revalidatePath('/services/[slug]', 'page');
+    revalidatePath('/blogs/[slug]', 'page');
     revalidatePath('/blog/[slug]', 'page');
     revalidatePath('/[...slug]', 'page');
 

@@ -52,7 +52,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const pageTitle = post.seo?.metaTitle || `${post.title} | Mohsin Designs`;
   const pageDesc = post.seo?.metaDescription || post.excerpt || `${post.title} - Strategic insights and architectural blueprints from Mohsin Designs.`;
   const pageImage = post.seo?.ogImage || post.featuredImage || "/portfolio_hero_bg.png";
-  const canonicalUrl = post.seo?.canonicalUrl || `${BASE_URL}/blog/${post.slug}`;
+  const canonicalUrl = post.seo?.canonicalUrl || `${BASE_URL}/blogs/${post.slug}`;
 
   return {
     title: {
@@ -66,7 +66,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: post.seo?.ogTitle || pageTitle,
       description: post.seo?.ogDescription || pageDesc,
-      url: `${BASE_URL}/blog/${post.slug}`,
+      url: `${BASE_URL}/blogs/${post.slug}`,
       type: "article",
       publishedTime: post.publishedAt?.toISOString?.() || post.createdAt?.toISOString?.(),
       modifiedTime: (post.updatedAt || post.publishedAt)?.toISOString?.(),
@@ -104,7 +104,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   // 2. Fetch Blog Page Settings for CMS-managed CTAs and Global Defaults
   const blogPageDoc = await Page.findOne({
-    $or: [{ slug: "blog" }, { template: "blog" }]
+    $or: [{ slug: { $in: ["blogs", "/blogs", "blog", "/blog"] } }, { template: { $in: ["blogs", "blog"] } }]
   }).lean();
 
   const blogPageData = (blogPageDoc as any)?.content?.blogPage || (blogPageDoc as any)?.content || {};
@@ -345,8 +345,8 @@ export default async function BlogPostPage({ params }: Props) {
               Home
             </Link>
             <span className="text-brand-zinc-300 dark:text-zinc-600">/</span>
-            <Link href="/blog" className="hover:text-brand-blue dark:hover:text-brand-yellow transition-colors">
-              Blog
+            <Link href="/blogs" className="hover:text-brand-blue dark:hover:text-brand-yellow transition-colors">
+              Blogs
             </Link>
             <span className="text-brand-zinc-300 dark:text-zinc-600">/</span>
             <span className="text-brand-blue dark:text-brand-yellow font-black">{categoryBadge}</span>
@@ -572,7 +572,7 @@ export default async function BlogPostPage({ params }: Props) {
             {relatedPosts.map((rPost) => (
               <Link
                 key={rPost.id}
-                href={`/blog/${rPost.slug || rPost.id}`}
+                href={`/blogs/${rPost.slug || rPost.id}`}
                 className="bg-white dark:bg-[#12121e] border border-brand-zinc-200/90 dark:border-white/10 hover:border-brand-blue/60 dark:hover:border-brand-yellow/60 rounded-[28px] overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-400 flex flex-col justify-between group select-none relative block cursor-pointer"
               >
                 <div>

@@ -41,7 +41,7 @@ export default function BlogSection({
   description,
   posts: propPosts,
   data: overrideData,
-  viewAllLink = "/blog"
+  viewAllLink = "/blogs"
 }: BlogSectionProps) {
   const content = useContent();
   const rawBlog = overrideData || content.blogSection || {};
@@ -118,9 +118,9 @@ export default function BlogSection({
   const [liveBlogs, setLiveBlogs] = useState<BlogPost[]>([]);
 
   useEffect(() => {
-    // If allBlogs is empty in context, fetch fresh from /api/blog
+    // If allBlogs is empty in context, fetch fresh from /api/blogs
     if (!content.allBlogs || content.allBlogs.length === 0) {
-      fetch('/api/blog')
+      fetch('/api/blogs')
         .then(res => res.ok ? res.json() : [])
         .then(data => {
           if (Array.isArray(data) && data.length > 0) {
@@ -215,7 +215,7 @@ export default function BlogSection({
     let formattedDate = p.date || (p.publishedAt ? new Date(p.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Recent");
     let reading = getPostReadingTime(p);
     let img = p.featuredImage || p.image || defaultPosts[idx % defaultPosts.length].image!;
-    let href = p.link || (p.slug ? `/blog/${p.slug}` : `/blog/${p._id || idx}`);
+    let href = p.link || (p.slug ? `/blogs/${p.slug}` : `/blogs/${p._id || idx}`);
     let extractedExcerpt = getPostExcerpt(p);
 
     return {

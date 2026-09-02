@@ -35,7 +35,7 @@ export default function BlogSelector({
     const fetchPosts = async () => {
         setLoading(true);
         try {
-            const res = await fetch('/api/blog');
+            const res = await fetch('/api/blogs');
             if (res.ok) {
                 const data = await res.json();
                 setAllPosts(data);

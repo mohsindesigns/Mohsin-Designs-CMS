@@ -36,6 +36,7 @@ export const TEMPLATE_MAP: Record<string, React.ComponentType<any>> = {
   'service-area': ServiceAreaTemplate,
   'location': LocationTemplate,
   'locations': LocationTemplate,
+  'blogs': BlogTemplate,
   'blog': BlogTemplate,
   'country': CountryTemplate,
   'state': StateTemplate,
@@ -50,7 +51,7 @@ export const getTemplate = (name: string) => {
 export const TemplateWrapper = ({ templateName, pageData, globalData, initialBlogs, params }: any) => {
   const Template = getTemplate(templateName);
 
-  const hasInlineFaqs = !['home', 'faq', 'service-detail', 'about', 'service-area', 'location', 'locations', 'services', 'contact', 'blog', 'country', 'state', 'industry', 'industries'].includes(templateName) &&
+  const hasInlineFaqs = !['home', 'faq', 'service-detail', 'about', 'service-area', 'location', 'locations', 'services', 'contact', 'blogs', 'blog', 'country', 'state', 'industry', 'industries'].includes(templateName) &&
     ((pageData?.content?.faqs && Array.isArray(pageData.content.faqs) && pageData.content.faqs.length > 0) ||
       (pageData?.content?.faqSchemaMarkup && typeof pageData.content.faqSchemaMarkup === 'string' && pageData.content.faqSchemaMarkup.trim()));
 

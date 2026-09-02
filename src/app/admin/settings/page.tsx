@@ -646,7 +646,7 @@ export default function SettingsEditor() {
                                  className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]"
                                >
                                   <option value="/">Home</option>
-                                  <option value="/blog">Blog Index</option>
+                                  <option value="/blogs">Blogs Index</option>
                                   <optgroup label="Pages">
                                      {pages.filter(p => p.type !== 'service').map((p: any) => (
                                         <option key={p._id} value={p.slug.startsWith('/') ? p.slug : `/${p.slug}`}>{p.title}</option>

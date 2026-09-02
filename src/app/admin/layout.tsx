@@ -13,11 +13,11 @@ import {
 const navItems = [
   { label: "Dashboard",   href: "/admin",           icon: LayoutDashboard, module: 'dashboard' },
   { label: "Pages",       href: "/admin/pages",      icon: FileText, module: 'pages', sub: [{label: "All Pages", href: "/admin/pages"}, {label: "Add New", href: "/admin/pages"}] },
-  { label: "Blog",        href: "/admin/blog",       icon: FileText, module: 'blog', sub: [
-    {label: "All Posts", href: "/admin/blog"},
-    {label: "Add New", href: "/admin/blog/new"},
-    {label: "Categories", href: "/admin/blog/categories"},
-    {label: "Tags", href: "/admin/blog/tags"}
+  { label: "Blogs",       href: "/admin/blogs",      icon: FileText, module: 'blog', sub: [
+    {label: "All Posts", href: "/admin/blogs"},
+    {label: "Add New", href: "/admin/blogs/new"},
+    {label: "Categories", href: "/admin/blogs/categories"},
+    {label: "Tags", href: "/admin/blogs/tags"}
   ] },
   { label: "Media",       href: "/admin/media",      icon: ImageIcon, module: 'media', sub: [{label: "Library", href: "/admin/media"}, {label: "Add New", href: "/admin/media"}] },
   { label: "Reviews",     href: "/admin/reviews",    icon: Star, module: 'pages' }, 

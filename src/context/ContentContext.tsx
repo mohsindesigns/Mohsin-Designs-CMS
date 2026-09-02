@@ -46,7 +46,7 @@ export const ContentProvider = ({ children, initialData, initialBlogs }: { child
       setContent(initialData);
       setIsLoading(false);
       if (!initialBlogs || initialBlogs.length === 0) {
-        fetch('/api/blog')
+        fetch('/api/blogs')
           .then(res => res.ok ? res.json() : [])
           .then(data => {
             if (Array.isArray(data) && data.length > 0) setBlogs(data);
@@ -60,7 +60,7 @@ export const ContentProvider = ({ children, initialData, initialBlogs }: { child
       try {
         const [contentRes, blogRes] = await Promise.all([
           fetch('/api/content'),
-          fetch('/api/blog')
+          fetch('/api/blogs')
         ]);
 
         if (contentRes.ok) {

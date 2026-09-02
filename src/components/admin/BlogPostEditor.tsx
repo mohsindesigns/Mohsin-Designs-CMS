@@ -69,7 +69,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
 
   const fetchPost = async () => {
     try {
-      const res = await fetch(`/api/admin/blog/posts/${id}`);
+      const res = await fetch(`/api/admin/blogs/posts/${id}`);
       const data = await res.json();
       if (res.ok) setPost(data);
     } catch (err) {
@@ -80,13 +80,13 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
   };
 
   const fetchCategories = async () => {
-    const res = await fetch('/api/admin/blog/categories');
+    const res = await fetch('/api/admin/blogs/categories');
     const data = await res.json();
     if (res.ok) setCategories(data);
   };
 
   const fetchTags = async () => {
-    const res = await fetch('/api/admin/blog/tags');
+    const res = await fetch('/api/admin/blogs/tags');
     const data = await res.json();
     if (res.ok) setTags(data);
   };
@@ -112,7 +112,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
 
     setSaving(true);
     try {
-      const url = id ? `/api/admin/blog/posts/${id}` : '/api/admin/blog/posts';
+      const url = id ? `/api/admin/blogs/posts/${id}` : '/api/admin/blogs/posts';
       const method = id ? 'PATCH' : 'POST';
       const res = await fetch(url, {
         method,
@@ -124,7 +124,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
         setMessage("Post saved successfully!");
         if (!id && data._id) {
           const newId = String(data._id);
-          router.push(`/admin/blog/${newId}`);
+          router.push(`/admin/blogs/${newId}`);
         }
         setTimeout(() => setMessage(""), 3000);
       } else {
@@ -149,7 +149,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
     <div className="bg-[#f0f0f1] min-h-screen font-sans pb-10">
       {/* Breadcrumbs */}
       <div className="flex items-center gap-1 text-[13px] text-[#2271b1] mb-3 px-1">
-        <Link href="/admin/blog" className="hover:underline">Blog Posts</Link>
+        <Link href="/admin/blogs" className="hover:underline">Blog Posts</Link>
         <ChevronRight className="w-3.5 h-3.5 text-[#646970] shrink-0" />
         <span className="text-[#646970] truncate">{post.title || (id ? "Edit Post" : "Add New Post")}</span>
       </div>
@@ -162,7 +162,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
         </div>
         <div className="flex items-center gap-3">
           {id && (
-            <Link href={`/blog/${post.slug}`} target="_blank" className="flex items-center gap-1.5 text-[#2271b1] text-[13px] hover:text-[#135e96]">
+            <Link href={`/blogs/${post.slug}`} target="_blank" className="flex items-center gap-1.5 text-[#2271b1] text-[13px] hover:text-[#135e96]">
               <ExternalLink className="w-4 h-4" /> View Post
             </Link>
           )}
@@ -193,7 +193,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
 
           <div className="flex items-center gap-1 text-[12px] text-[#646970]">
             <strong>Permalink:</strong>
-            <span className="bg-[#f0f0f1] px-1 rounded border border-[#c3c4c7] truncate max-w-[200px] sm:max-w-md">{BASE_URL}/blog/{post.slug}</span>
+            <span className="bg-[#f0f0f1] px-1 rounded border border-[#c3c4c7] truncate max-w-[200px] sm:max-w-md">{BASE_URL}/blogs/{post.slug}</span>
             <button onClick={() => {
               const s = prompt("Enter slug:", post.slug);
               if (s) setPost({ ...post, slug: s });
@@ -391,7 +391,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
               </div>
               {post.slug && (
                 <div className="pt-1">
-                  <Link href={`/blog/${post.slug}`} target="_blank" className="text-[#2271b1] hover:underline flex items-center gap-1">
+                  <Link href={`/blogs/${post.slug}`} target="_blank" className="text-[#2271b1] hover:underline flex items-center gap-1">
                     <ExternalLink className="w-3 h-3" /> View Post
                   </Link>
                 </div>
@@ -467,7 +467,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
                   {cat.name}
                 </label>
               ))}
-              <button onClick={() => router.push('/admin/blog/categories')} className="text-[#2271b1] underline text-[11px] block mt-2">+ Add New Category</button>
+              <button onClick={() => router.push('/admin/blogs/categories')} className="text-[#2271b1] underline text-[11px] block mt-2">+ Add New Category</button>
             </div>
           </div>
 
@@ -506,7 +506,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
                   ))}
                 </select>
               </div>
-              <button onClick={() => router.push('/admin/blog/tags')} className="text-[#2271b1] underline text-[11px]">+ Manage Tags</button>
+              <button onClick={() => router.push('/admin/blogs/tags')} className="text-[#2271b1] underline text-[11px]">+ Manage Tags</button>
             </div>
           </div>
 

@@ -370,7 +370,7 @@ export default function BlogTemplate({
               {paginatedPosts.map((post: any) => (
                 <Link
                   key={post.id}
-                  href={`/blog/${post.slug || post.id}`}
+                  href={`/blogs/${post.slug || post.id}`}
                   className="bg-white dark:bg-[#12121e] border border-brand-zinc-200/90 dark:border-white/10 hover:border-brand-blue/60 dark:hover:border-brand-yellow/60 rounded-[28px] overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-400 flex flex-col justify-between group select-none relative block cursor-pointer"
                 >
                   <div>
