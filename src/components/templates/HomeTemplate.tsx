@@ -46,68 +46,92 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any; par
     resolvedPosts = allBlogs.slice(0, 4);
   }
 
+  const content = pageData?.content || {};
+
   return (
     <div className="relative">
-      <Hero />
+      {content.hero?.enabled !== false && <Hero />}
 
       {/* ── TRUSTED BY LEADING BRANDS MARQUEE ── */}
-      <section id="trusted-brands">
-        <TrustedBrandsSection data={pageData?.content?.trustedBrands || pageData?.content?.clientTrust || pageData?.content?.trustedBy} />
-      </section>
+      {(content.trustedBrands?.enabled !== false && content.clientTrust?.enabled !== false && content.trustedBy?.enabled !== false) && (
+        <section id="trusted-brands">
+          <TrustedBrandsSection data={content.trustedBrands || content.clientTrust || content.trustedBy} />
+        </section>
+      )}
 
-      <section id="about">
-        <AboutOwner />
-      </section>
+      {content.aboutOwner?.enabled !== false && (
+        <section id="about">
+          <AboutOwner />
+        </section>
+      )}
 
-      <section id="services">
-        <Services data={pageData?.content?.services} />
-      </section>
+      {content.services?.enabled !== false && (
+        <section id="services">
+          <Services data={content.services} />
+        </section>
+      )}
 
       {/* Industries We Serve Section */}
-      <section id="industries">
-        <IndustriesSection data={pageData?.content?.industries || pageData?.content?.domainExpertise} />
-      </section>
+      {(content.industries?.enabled !== false && content.domainExpertise?.enabled !== false) && (
+        <section id="industries">
+          <IndustriesSection data={content.industries || content.domainExpertise} />
+        </section>
+      )}
 
-      <section id="portfolio">
-        <Portfolio />
-      </section>
+      {content.portfolio?.enabled !== false && (
+        <section id="portfolio">
+          <Portfolio />
+        </section>
+      )}
 
-      <Testimonials />
+      {(content.testimonials?.enabled !== false && content.reviews?.enabled !== false) && (
+        <Testimonials />
+      )}
 
-      <section id="how-we-work">
-        <HowWeWork />
-      </section>
+      {(content.howWeWork?.enabled !== false && content.whyChooseUs?.enabled !== false) && (
+        <section id="how-we-work">
+          <HowWeWork />
+        </section>
+      )}
 
-      <section id="service-area">
-        <ServiceArea />
-      </section>
+      {content.serviceArea?.enabled !== false && (
+        <section id="service-area">
+          <ServiceArea />
+        </section>
+      )}
 
-      <section id="faq">
-        <PageInlineFaqs
-          faqs={pageData?.content?.faqs}
-          faqSchemaMarkup={pageData?.content?.faqSchemaMarkup}
-          badge={pageData?.content?.faqBadge}
-          title={pageData?.content?.faqTitleHighlight || pageData?.content?.faqTitle}
-          description={pageData?.content?.faqDescription}
-          data={pageData?.content}
-        />
-      </section>
+      {(content.faqs?.enabled !== false && content.faqSection?.enabled !== false) && (
+        <section id="faq">
+          <PageInlineFaqs
+            faqs={content.faqs}
+            faqSchemaMarkup={content.faqSchemaMarkup}
+            badge={content.faqBadge}
+            title={content.faqTitleHighlight || content.faqTitle}
+            description={content.faqDescription}
+            data={content}
+          />
+        </section>
+      )}
 
       {/* Blog Section */}
-      <section id="blog">
-        <BlogSection
-          title={blogData?.title}
-          subtitle={blogData?.subtitle || blogData?.sectionTag}
-          description={blogData?.description}
-          data={blogData}
-          posts={resolvedPosts}
-        />
-      </section>
+      {blogData?.enabled !== false && (
+        <section id="blog">
+          <BlogSection
+            title={blogData?.title}
+            subtitle={blogData?.subtitle || blogData?.sectionTag}
+            description={blogData?.description}
+            data={blogData}
+            posts={resolvedPosts}
+          />
+        </section>
+      )}
 
       {/* Direct Contact Form Section */}
-      <section id="contact">
-        <ContactForm data={pageData?.content?.contact} />
-      </section>
+      {content.contact?.enabled !== false && (
+        <section id="contact">
+          <ContactForm data={content.contact} />
+        </section>
+      )}
     </div>
   );
 }

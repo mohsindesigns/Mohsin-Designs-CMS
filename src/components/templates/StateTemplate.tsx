@@ -17,12 +17,13 @@ const ServiceArea = dynamic(() => import("@/components/ServiceArea"), { ssr: fal
 
 function hasContent(obj: any): boolean {
   if (!obj) return false;
+  if (typeof obj === 'object' && obj.enabled === false) return false;
   if (typeof obj === 'string') return obj.trim().length > 0;
   if (typeof obj === 'number') return true;
   if (typeof obj === 'boolean') return obj;
   if (Array.isArray(obj)) return obj.length > 0 && obj.some(hasContent);
   if (typeof obj === 'object') {
-    return Object.values(obj).some(hasContent);
+    return Object.entries(obj).some(([k, v]) => k !== 'enabled' && hasContent(v));
   }
   return false;
 }
@@ -34,46 +35,49 @@ export default function StateTemplate({ pageData, params }: { pageData?: any; pa
   return (
     <div className="relative">
       {/* 1. Hero Section */}
-      {hasContent(content.hero) && <Hero />}
+      {content.hero?.enabled !== false && hasContent(content.hero) && <Hero />}
 
       {/* 1.5 Trusted Brands */}
-      {(hasContent(content.trustedBrands) || hasContent(content.clientTrust) || hasContent(content.trustedBy)) && (
+      {(content.trustedBrands?.enabled !== false && content.clientTrust?.enabled !== false && content.trustedBy?.enabled !== false) && 
+        (hasContent(content.trustedBrands) || hasContent(content.clientTrust) || hasContent(content.trustedBy)) && (
         <TrustedBrandsSection data={content.trustedBrands || content.clientTrust || content.trustedBy} />
       )}
 
       {/* 2. Services Section */}
-      {hasContent(content.services) && (
+      {content.services?.enabled !== false && hasContent(content.services) && (
         <section id="services">
           <Services data={content.services} />
         </section>
       )}
 
       {/* 3. Selected Portfolio Projects */}
-      {hasContent(content.portfolio) && (
+      {content.portfolio?.enabled !== false && hasContent(content.portfolio) && (
         <section id="portfolio">
           <Portfolio />
         </section>
       )}
 
       {/* 4. Reviews / Testimonials */}
-      {hasContent(content.testimonials) && <Testimonials />}
+      {(content.testimonials?.enabled !== false && content.reviews?.enabled !== false) && 
+        (hasContent(content.testimonials) || hasContent(content.reviews)) && <Testimonials />}
 
       {/* 5. How We Work / Value Props */}
-      {hasContent(content.whyChooseUs || content.howWeWork) && (
+      {(content.whyChooseUs?.enabled !== false && content.howWeWork?.enabled !== false) && 
+        (hasContent(content.whyChooseUs || content.howWeWork)) && (
         <section id="how-we-work">
           <HowWeWork />
         </section>
       )}
 
       {/* 6. Service Area (State & Metro cities) */}
-      {hasContent(content.serviceArea) && (
+      {content.serviceArea?.enabled !== false && hasContent(content.serviceArea) && (
         <section id="service-area">
           <ServiceArea />
         </section>
       )}
 
       {/* 7. FAQ Section */}
-      {hasContent(content.faqs) && (
+      {(content.faqs?.enabled !== false && content.faqSection?.enabled !== false) && hasContent(content.faqs) && (
         <section id="faq">
           <PageInlineFaqs
             faqs={content.faqs}
@@ -87,7 +91,7 @@ export default function StateTemplate({ pageData, params }: { pageData?: any; pa
       )}
 
       {/* 8. Blog Section */}
-      {content.blogSection && Array.isArray(content.blogSection.selectedPosts) && content.blogSection.selectedPosts.length > 0 && (
+      {content.blogSection?.enabled !== false && content.blogSection && Array.isArray(content.blogSection.selectedPosts) && content.blogSection.selectedPosts.length > 0 && (
         <BlogSection
           title={content.blogSection.title}
           subtitle={content.blogSection.subtitle}
@@ -98,7 +102,8 @@ export default function StateTemplate({ pageData, params }: { pageData?: any; pa
       )}
 
       {/* 9. CTA Contact Form */}
-      {(hasContent(content.contact) || hasContent(content.quote)) && (
+      {(content.contact?.enabled !== false && content.quote?.enabled !== false) && 
+        (hasContent(content.contact) || hasContent(content.quote)) && (
         <section id="contact">
           <ContactForm data={content.contact} />
         </section>

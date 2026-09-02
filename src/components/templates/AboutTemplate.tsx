@@ -873,27 +873,31 @@ export default function AboutTemplate({ pageData, params }: { pageData?: any, pa
 
   return (
     <main className="bg-background">
-      <Hero content={content.hero} />
-      <RecognitionMarquee content={content.recognition} />
-      <FounderStory content={content.story} />
-      <StatsSection content={content.stats} />
-      <MissionSection content={content.mission} />
-      <ServicesSection content={content.capabilities} featuredServices={content.services} />
-      <ValuesGrid content={content.values} />
-      <div className="max-w-7xl mx-auto px-4 relative z-20">
-        <AwardCTABanner content={content.ctaBanner} />
-      </div>
+      {content.hero?.enabled !== false && <Hero content={content.hero} />}
+      {content.recognition?.enabled !== false && <RecognitionMarquee content={content.recognition} />}
+      {content.story?.enabled !== false && <FounderStory content={content.story} />}
+      {content.stats?.enabled !== false && <StatsSection content={content.stats} />}
+      {content.mission?.enabled !== false && <MissionSection content={content.mission} />}
+      {content.capabilities?.enabled !== false && <ServicesSection content={content.capabilities} featuredServices={content.services} />}
+      {content.values?.enabled !== false && <ValuesGrid content={content.values} />}
+      {content.ctaBanner?.enabled !== false && (
+        <div className="max-w-7xl mx-auto px-4 relative z-20">
+          <AwardCTABanner content={content.ctaBanner} />
+        </div>
+      )}
 
-      <PageInlineFaqs
-        faqs={content.faqs}
-        faqSchemaMarkup={content.faqSchemaMarkup}
-        badge={content.faqBadge}
-        title={content.faqTitleHighlight || content.faqTitle}
-        description={content.faqDescription}
-        data={content}
-      />
+      {(content.faqs?.enabled !== false && content.faqSection?.enabled !== false) && (
+        <PageInlineFaqs
+          faqs={content.faqs}
+          faqSchemaMarkup={content.faqSchemaMarkup}
+          badge={content.faqBadge}
+          title={content.faqTitleHighlight || content.faqTitle}
+          description={content.faqDescription}
+          data={content}
+        />
+      )}
 
-      {content?.blogSection && Array.isArray(content.blogSection.selectedPosts) && content.blogSection.selectedPosts.length > 0 && (
+      {content?.blogSection?.enabled !== false && content?.blogSection && Array.isArray(content.blogSection.selectedPosts) && content.blogSection.selectedPosts.length > 0 && (
         <BlogSection
           title={content.blogSection.title}
           subtitle={content.blogSection.subtitle}

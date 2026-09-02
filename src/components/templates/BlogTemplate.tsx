@@ -288,6 +288,7 @@ export default function BlogTemplate({
       <div className="absolute top-[28%] right-[-10%] w-[45vw] h-[45vw] rounded-full bg-brand-yellow/[0.02] dark:bg-brand-yellow/[0.05] blur-[150px] pointer-events-none select-none -z-10 animate-float-blob-delayed" />
 
       {/* ── 1. HERO SECTION WITH FULL BLEED BACKGROUND ────────────────── */}
+      {((hero as any)?.enabled !== false && (rawData as any).hero?.enabled !== false) && (
       <section className="-mt-[110px] sm:-mt-[125px] lg:-mt-[140px] pt-[175px] sm:pt-[200px] lg:pt-[230px] pb-10 md:pb-14 relative overflow-hidden min-h-[580px] sm:min-h-[640px] lg:min-h-[700px] flex items-center border-b border-brand-zinc-200 dark:border-white/10">
         {/* Full Background Graphic */}
         <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
@@ -352,11 +353,13 @@ export default function BlogTemplate({
           </motion.div>
         </div>
       </section>
+      )}
 
       {/* Main Content Container */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 pt-8 pb-4">
 
         {/* ── 2. MODERN EDITORIAL CARDS WITH LINK WRAPPER ─────────────── */}
+        {((rawData as any).feedEnabled !== false && (rawData as any).feed?.enabled !== false && (rawData as any).articles?.enabled !== false) && (
         <section id="articles" className="my-10">
           <AnimatePresence mode="wait">
             <motion.div
@@ -425,9 +428,10 @@ export default function BlogTemplate({
             </div>
           )}
         </section>
+        )}
 
         {/* ── 4. SLEEK FLOATING GLASSMORPHIC PAGINATION CAPSULE ───────── */}
-        {totalPages > 1 && (
+        {(totalPages > 1 && (rawData as any).feedEnabled !== false && (rawData as any).feed?.enabled !== false) && (
           <section className="my-14 flex items-center justify-center">
             <div className="bg-white/90 dark:bg-[#12121e]/90 backdrop-blur-2xl border border-brand-zinc-200/90 dark:border-white/10 shadow-[0_10px_35px_rgba(3,6,172,0.08)] dark:shadow-[0_10px_35px_rgba(0,0,0,0.4)] p-2 rounded-full flex items-center gap-2 max-w-fit">
               <button
@@ -466,6 +470,7 @@ export default function BlogTemplate({
         )}
 
         {/* ── 5. HIGH-CONVERSION AGENCY CTA BANNER ────────────────────── */}
+        {((ctaBanner as any)?.enabled !== false && (rawData as any).ctaBanner?.enabled !== false) && (
         <section id="contact" className="my-8 relative overflow-hidden">
           <div className="cta-banner-card !shadow-[0_16px_40px_-12px_rgba(3,6,172,0.22)] dark:!shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)]">
             <div className="relative z-10 flex flex-col justify-center gap-6 p-8 sm:p-12 lg:p-14 lg:max-w-[62%]">
@@ -531,9 +536,12 @@ export default function BlogTemplate({
             </div>
           </div>
         </section>
+        )}
 
         {/* ── 6. PAGE SPECIFIC FAQS ── */}
-        <PageInlineFaqs data={pageData?.content} />
+        {(pageData?.content?.faqs?.enabled !== false && pageData?.content?.faqSection?.enabled !== false && (rawData as any)?.faqs?.enabled !== false) && (
+          <PageInlineFaqs data={pageData?.content} />
+        )}
 
       </div>
     </main>

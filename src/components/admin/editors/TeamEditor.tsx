@@ -9,6 +9,7 @@ import {
   ArrowRight, Users, Linkedin, Sparkles, Quote, UserPlus, X
 } from "lucide-react";
 import { UI } from "./styles";
+import SectionToggle from "@/components/admin/SectionToggle";
 import dynamic from "next/dynamic";
 import ImageField from "@/components/admin/ImageField";
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), { 
@@ -116,6 +117,17 @@ export default function TeamEditor({ pageId, data, setData }: { pageId: string, 
             {/* HEADER SECTION */}
             {activeTab === "header" && (
               <div className="max-w-3xl space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Team Intro Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.team?.section?.enabled !== false}
+                    onChange={(v) => updateTeam("section", "enabled", v)}
+                    label="Team Intro"
+                  />
+                </div>
                  <div className={UI.card + " space-y-5"}>
                     <div className="space-y-1.5">
                        <label className={UI.label}>Section Badge</label>
@@ -141,6 +153,17 @@ export default function TeamEditor({ pageId, data, setData }: { pageId: string, 
             {/* MEMBERS SECTION */}
             {activeTab === "members" && (
               <div className="space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Team Roster Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying team members on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.team?.membersEnabled !== false}
+                    onChange={(v) => updateTeam("membersEnabled", null, v)}
+                    label="Team Roster"
+                  />
+                </div>
                   <div className="space-y-8">
                      {(data.team?.members || []).map((member: any, i: number) => (
                        <div key={i} className={UI.card + " space-y-8 relative"}>

@@ -12,6 +12,7 @@ import {
 import ImageField from "@/components/admin/ImageField";
 import IconSelector from "@/components/admin/IconSelector";
 import { UI } from "./styles";
+import SectionToggle from "@/components/admin/SectionToggle";
 
 function BulletListEditor({
   label,
@@ -232,6 +233,17 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
         {/* ── TAB 1: HERO & FORM HEADER ── */}
         {activeTab === "hero" && (
           <div className="space-y-5">
+            <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+              <div>
+                <h2 className="text-base font-bold text-[#1d2327]">Hero & Form Visibility</h2>
+                <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+              </div>
+              <SectionToggle
+                enabled={contact.hero?.enabled !== false}
+                onChange={(v) => updateContact(prev => ({ ...prev, hero: { ...prev.hero, enabled: v } }))}
+                label="Hero & Form"
+              />
+            </div>
             <div className="bg-[#f8f9fa] border border-[#dcdcde] p-4 rounded-[4px] space-y-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-[#1d2327]">Hero Headline & Brand Narrative</h3>
 
@@ -373,6 +385,17 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
         {/* ── TAB 2: CONNECT CHANNELS (4 CARDS) ── */}
         {activeTab === "methods" && (
           <div className="space-y-5">
+            <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+              <div>
+                <h2 className="text-base font-bold text-[#1d2327]">Connect Channels Visibility</h2>
+                <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+              </div>
+              <SectionToggle
+                enabled={contact.contactMethods?.enabled !== false}
+                onChange={(v) => updateContact(prev => ({ ...prev, contactMethods: { ...prev.contactMethods, enabled: v } }))}
+                label="Connect Channels"
+              />
+            </div>
             <div className="bg-[#f8f9fa] border border-[#dcdcde] p-4 rounded-[4px] space-y-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-[#1d2327]">Section Header</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -556,6 +579,17 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
         {/* ── TAB 3: INTERACTIVE MAP & OFFICE ── */}
         {activeTab === "office" && (
           <div className="space-y-5">
+            <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+              <div>
+                <h2 className="text-base font-bold text-[#1d2327]">Interactive Map & Office Visibility</h2>
+                <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+              </div>
+              <SectionToggle
+                enabled={contact.office?.enabled !== false}
+                onChange={(v) => updateContact(prev => ({ ...prev, office: { ...prev.office, enabled: v } }))}
+                label="Map & Office"
+              />
+            </div>
             <div className="bg-[#f8f9fa] border border-[#dcdcde] p-4 rounded-[4px] space-y-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-[#1d2327]">Google Map Embed Settings</h3>
 
@@ -718,6 +752,17 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
         {/* ── TAB 4: BOTTOM CONVERSION CTA BANNER ── */}
         {activeTab === "cta" && (
           <div className="space-y-5">
+            <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+              <div>
+                <h2 className="text-base font-bold text-[#1d2327]">Conversion CTA Banner Visibility</h2>
+                <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+              </div>
+              <SectionToggle
+                enabled={contact.ctaBanner?.enabled !== false}
+                onChange={(v) => updateContact(prev => ({ ...prev, ctaBanner: { ...prev.ctaBanner, enabled: v } }))}
+                label="CTA Banner"
+              />
+            </div>
             <div className="bg-[#f8f9fa] border border-[#dcdcde] p-4 rounded-[4px] space-y-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-[#1d2327]">Signature Agency CTA Banner</h3>
 

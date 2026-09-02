@@ -64,6 +64,7 @@ export default function ReviewsTemplate({ pageData, params }: { pageData?: any, 
 
     return (
         <main className="relative min-h-screen bg-gray-50 dark:bg-background pt-24 pb-16">
+            {(data?.enabled !== false && section?.enabled !== false) && (
             <div className="max-w-6xl mx-auto px-4 text-center">
                 <h1 className="text-4xl sm:text-7xl font-bold tracking-tight mb-4" dangerouslySetInnerHTML={{ __html: section?.headline || 'Customer Stories' }} />
                 <div className="text-lg text-gray-600 max-w-xl mx-auto mb-12">
@@ -76,6 +77,7 @@ export default function ReviewsTemplate({ pageData, params }: { pageData?: any, 
                     ))}
                 </div>
             </div>
+            )}
 
         </main>
     );

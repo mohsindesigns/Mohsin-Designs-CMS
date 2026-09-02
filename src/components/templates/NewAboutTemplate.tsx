@@ -269,6 +269,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808007_1px,transparent_1px),linear-gradient(to_bottom,#80808007_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none -z-10" />
 
         {/* ── 1. HERO SECTION ── */}
+        {hero?.enabled !== false && (
         <section className="relative overflow-hidden py-4 sm:py-6 md:py-8 border-b border-brand-zinc-200 dark:border-white/10">
           <div className="absolute inset-0 -z-10 bg-linear-grid-blue-4 [background-size:40px_40px] opacity-[0.05] dark:opacity-[0.08]" />
 
@@ -348,8 +349,10 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
             </div>
           </div>
         </section>
+        )}
 
         {/* ── 2. STATS BAR SECTION ── */}
+        {stats?.enabled !== false && (
         <section className="relative overflow-hidden py-12 sm:py-16 md:py-20 border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/10 dark:bg-white/[0.005]">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-stretch">
@@ -428,8 +431,10 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
             </div>
           </div>
         </section>
+        )}
 
         {/* ── 3. WHO WE ARE SECTION ── */}
+        {whoWeAre?.enabled !== false && (
         <section className="relative overflow-hidden py-12 sm:py-16 md:py-20 border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710]">
           {whoWeAre.watermark && (
             <div className="absolute right-[5%] top-[10%] text-[15vw] sm:text-[12vw] font-heading font-black tracking-tighter text-[#0306AC]/[0.015] dark:text-white/[0.01] pointer-events-none select-none z-0 leading-none">
@@ -541,8 +546,10 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
             </div>
           </div>
         </section>
+        )}
 
         {/* ── 4. MISSION & VISION SECTION ── */}
+        {philosophy?.enabled !== false && (
         <section
           ref={sectionRef}
           className="relative overflow-hidden py-12 sm:py-16 md:py-20 border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] transition-colors duration-300"
@@ -767,6 +774,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
             </div>
           </div>
         </section>
+        )}
 
         {/* ── 5. OUR SERVICES SECTION ──────── */}
         {stagesList.length > 0 && (
@@ -942,6 +950,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
         )}
 
         {/* ── 6. PROCESS SECTION ──────── */}
+        {methodology?.enabled !== false && (
         <section className="relative overflow-hidden py-12 sm:py-16 md:py-20 border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710]">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 space-y-16">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 text-left border-b border-brand-zinc-200/80 dark:border-white/10 pb-12">
@@ -1023,8 +1032,10 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
             )}
           </div>
         </section>
+        )}
 
         {/* ── 7. DOMAIN EXPERTISE SECTION ──────── */}
+        {domainExpertise?.enabled !== false && (
         <section className="relative overflow-hidden py-12 sm:py-16 md:py-20 border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710]">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 space-y-16">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 text-left border-b border-brand-zinc-200/80 dark:border-white/10 pb-12">
@@ -1096,8 +1107,10 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
             )}
           </div>
         </section>
+        )}
 
         {/* ── 8. WHY BUSINESSES CHOOSE US SECTION ──────── */}
+        {whyChooseUs?.enabled !== false && (
         <section className="relative overflow-hidden py-12 sm:py-16 md:py-20 border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710]">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 space-y-16">
             <div className="text-center flex flex-col items-center max-w-3xl mx-auto space-y-4">
@@ -1162,8 +1175,10 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
             </div>
           </div>
         </section>
+        )}
 
         {/* ── 9. ABOUT FOUNDER SECTION ──────── */}
+        {executiveLeadership?.enabled !== false && (
         <section className="relative overflow-hidden py-12 sm:py-16 md:py-20 border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710]">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
@@ -1219,9 +1234,12 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
             </div>
           </div>
         </section>
+        )}
 
         {/* ── 10. REVIEWS CAROUSEL ──────── */}
-        <ReviewsCarousel reviewsData={reviews} />
+        {reviews?.enabled !== false && (
+          <ReviewsCarousel reviewsData={reviews} />
+        )}
 
         {/* Cursive Font Injector */}
         <style dangerouslySetInnerHTML={{
@@ -1233,6 +1251,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
         `}} />
 
         {/* ── 11. CTA BANNER SECTION ──────── */}
+        {ctaBanner?.enabled !== false && (
         <section className="relative overflow-hidden py-8 sm:py-12 bg-white dark:bg-[#080710]">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
             <div className="cta-banner-card">
@@ -1296,6 +1315,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
             </div>
           </div>
         </section>
+        )}
 
       </main>
     </>

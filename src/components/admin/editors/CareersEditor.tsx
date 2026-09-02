@@ -14,6 +14,7 @@ const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor")
   loading: () => <div className="h-64 bg-[#f6f7f7] animate-pulse border border-[#c3c4c7] rounded-sm flex items-center justify-center text-[#8c8f94] text-xs">Loading Rich Text Editor...</div>
 });
 import { UI } from "./styles";
+import SectionToggle from "@/components/admin/SectionToggle";
 
 export default function CareersEditor({ pageId, data, setData }: { pageId: string, data: any, setData: (d: any) => void }) {
   const [activeTab, setActiveTab] = useState("header");
@@ -102,6 +103,17 @@ export default function CareersEditor({ pageId, data, setData }: { pageId: strin
             {/* HEADER SECTION */}
             {activeTab === "header" && (
               <div className="max-w-3xl space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Recruitment Intro Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.careers?.section?.enabled !== false}
+                    onChange={(v) => updateCareers("section", "enabled", v)}
+                    label="Recruitment Intro"
+                  />
+                </div>
                  <div className={UI.card + " space-y-5"}>
                     <div className="space-y-1.5">
                        <label className={UI.label}>Section Badge</label>
@@ -125,6 +137,17 @@ export default function CareersEditor({ pageId, data, setData }: { pageId: strin
             {/* ROLES SECTION */}
             {activeTab === "roles" && (
               <div className="space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Career Opportunities Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.careers?.rolesEnabled !== false}
+                    onChange={(v) => updateCareers("rolesEnabled", null, v)}
+                    label="Career Opportunities"
+                  />
+                </div>
                  <label className={UI.label}>Available Career Opportunities</label>
                   <div className="space-y-4">
                      {(data.careers?.roles || []).map((role: any, i: number) => (
@@ -157,6 +180,17 @@ export default function CareersEditor({ pageId, data, setData }: { pageId: strin
             {/* FORM CONFIG SECTION */}
             {activeTab === "form" && (
               <div className="grid grid-cols-1 gap-6 max-w-4xl">
+                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Application Form Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.careers?.formEnabled !== false}
+                    onChange={(v) => updateCareers("formEnabled", null, v)}
+                    label="Application Form"
+                  />
+                </div>
                  <div className="space-y-6">
                     <label className={UI.label}>Submission Success State</label>
                     <div className={UI.card + " space-y-6"}>

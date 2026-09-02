@@ -235,6 +235,7 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
       <div className="absolute top-[28%] right-[-10%] w-[45vw] h-[45vw] rounded-full bg-brand-yellow/[0.02] dark:bg-brand-yellow/[0.05] blur-[150px] pointer-events-none select-none -z-10 animate-float-blob-delayed" />
 
       {/* ── 1. HERO SECTION WITH FULL-BLEED BACKGROUND IMAGE ───────── */}
+      {((hero as any)?.enabled !== false && (galleryPage as any).hero?.enabled !== false) && (
       <section className="-mt-[110px] sm:-mt-[125px] lg:-mt-[140px] pt-[180px] sm:pt-[210px] lg:pt-[240px] pb-12 md:pb-16 relative overflow-hidden min-h-[580px] sm:min-h-[640px] lg:min-h-[700px] flex items-center border-b border-brand-zinc-200 dark:border-white/10">
         {/* Full Background Graphic spanning entire width behind navbar */}
         <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
@@ -300,11 +301,13 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
           </motion.div>
         </div>
       </section>
+      )}
 
       {/* Main Content Container */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 pt-12 pb-4">
 
         {/* ── 2. PORTFOLIO GRID (WITHOUT FILTER TABS) ─────────────────── */}
+        {(galleryPage.portfolioGrid?.enabled !== false && galleryPage.projects?.enabled !== false) && (
         <section id="projects" className="my-10">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {projects.map((project: any) => (
@@ -359,8 +362,10 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
             ))}
           </div>
         </section>
+        )}
 
         {/* ── 3. OUR CREATIVE PROCESS SECTION (CLEAN 4-STEP GRID) ── */}
+        {((processSection as any)?.enabled !== false && (galleryPage as any).processSection?.enabled !== false && (galleryPage as any).process?.enabled !== false) && (
         <section className="my-20">
           <div className="bg-white dark:bg-[#12121e] border border-brand-zinc-200/90 dark:border-white/10 rounded-[32px] p-8 sm:p-14 text-center relative overflow-hidden shadow-sm">
             {/* Ambient Glow */}
@@ -423,9 +428,10 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
             </div>
           </div>
         </section>
+        )}
 
         {/* Inline FAQs if attached */}
-        {((pageData?.faq && pageData.faq.length > 0) || (pageData?.faqSchemaMarkup && pageData.faqSchemaMarkup.trim())) && (
+        {((pageData?.faq && pageData.faq.length > 0) || (pageData?.faqSchemaMarkup && pageData.faqSchemaMarkup.trim())) && (pageData?.faqSection?.enabled !== false && pageData?.faqs?.enabled !== false) && (
           <div className="my-16">
             <PageInlineFaqs
               faqs={pageData.faq}
@@ -438,6 +444,7 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
         )}
 
         {/* ── 4. BOTTOM SIGNATURE CTA BANNER ─────────────────────────── */}
+        {((ctaBanner as any)?.enabled !== false && (galleryPage as any).ctaBanner?.enabled !== false) && (
         <section id="contact" className="my-12 relative overflow-hidden">
           <div className="cta-banner-card !shadow-[0_16px_40px_-12px_rgba(3,6,172,0.22)] dark:!shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)]">
             <div className="relative z-10 flex flex-col justify-center gap-6 p-8 sm:p-12 lg:p-14 lg:max-w-[58%]">
@@ -500,6 +507,7 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
             </div>
           </div>
         </section>
+        )}
 
       </div>
     </main>

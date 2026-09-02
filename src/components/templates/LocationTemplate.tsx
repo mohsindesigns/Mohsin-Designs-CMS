@@ -347,6 +347,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#0306ac05_1px,transparent_1px),linear-gradient(to_bottom,#0306ac05_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:48px_48px] pointer-events-none -z-10" />
 
       {/* ── 1. HERO SECTION ── */}
+      {((hero as any)?.enabled !== false && (locationData as any).hero?.enabled !== false) && (
       <section className="-mt-[110px] sm:-mt-[125px] lg:-mt-[140px] pt-[180px] sm:pt-[210px] lg:pt-[240px] pb-12 sm:pb-16 md:pb-20 relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 min-h-[500px] lg:min-h-[560px] flex items-center">
 
         {/* Full-Bleed Background Images */}
@@ -426,8 +427,10 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
           </div>
         </div>
       </section>
+      )}
 
       {/* ── 2. STATS BAR SECTION with 3D Spring Roller Counters ── */}
+      {((stats as any)?.enabled !== false && (locationData as any).stats?.enabled !== false) && (
       <section className="relative overflow-hidden py-12 md:py-16 border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/10 dark:bg-[#0c0b18]/10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -487,8 +490,10 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
           </div>
         </div>
       </section>
+      )}
 
       {/* ── 3. LOGO RUNS ADS INFINITE MARQUEE ── */}
+      {((brandsStrip as any)?.enabled !== false && (locationData as any).brandsStrip?.enabled !== false) && (
       <section className="py-7 border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/20 dark:bg-[#0c0b18]/40 select-none overflow-hidden logo-marquee-wrapper relative">
         <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-white to-transparent dark:from-[#080710] z-20 pointer-events-none" />
         <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-white to-transparent dark:from-[#080710] z-20 pointer-events-none" />
@@ -550,8 +555,10 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
           }
         `}</style>
       </section>
+      )}
 
       {/* ── 4. COUNTRIES WE SERVE ── */}
+      {((presence as any)?.enabled !== false && (locationData as any).presence?.enabled !== false) && (
       <section className="relative overflow-hidden py-20 md:py-28 border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 space-y-16">
 
@@ -716,8 +723,10 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
 
         </div>
       </section>
+      )}
 
       {/* ── 5. CTA BANNER SECTION ── */}
+      {((ctaBanner as any)?.enabled !== false && (locationData as any).ctaBanner?.enabled !== false) && (
       <section id="contact" className="relative overflow-hidden py-12 bg-white dark:bg-[#080710]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
           <div className="cta-banner-card">
@@ -775,9 +784,10 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
           </div>
         </div>
       </section>
+      )}
 
       {/* Page Inline FAQs if available */}
-      {((pageData?.faq && pageData.faq.length > 0) || (pageData?.faqSchemaMarkup && pageData.faqSchemaMarkup.trim())) && (
+      {((pageData?.faq && pageData.faq.length > 0) || (pageData?.faqSchemaMarkup && pageData.faqSchemaMarkup.trim())) && (pageData?.faqSection?.enabled !== false && pageData?.faqs?.enabled !== false) && (
         <div className="my-16 max-w-7xl mx-auto px-4 sm:px-6 md:px-12">
           <PageInlineFaqs
             faqs={pageData.faq}

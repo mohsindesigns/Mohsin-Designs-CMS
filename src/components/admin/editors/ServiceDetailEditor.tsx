@@ -14,6 +14,7 @@ import ImageField from "@/components/admin/ImageField";
 import BlogSelector from "@/components/admin/BlogSelector";
 import { AVAILABLE_COUNTRIES, resolveCountryLocation } from "@/lib/countryLocations";
 import { UI } from "./styles";
+import SectionToggle from "@/components/admin/SectionToggle";
 
 // Safe comma separated input helper to prevent cursor swallowing
 function CommaSeparatedInput({ value, onChange, placeholder, className }: { value: string[]; onChange: (v: string[]) => void; placeholder?: string; className?: string }) {
@@ -349,6 +350,17 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
             {/* 1. HERO & EMBEDDED FORM */}
             {activeTab === "hero" && (
               <div className="space-y-8">
+                <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Hero & Form Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live service page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.hero?.enabled !== false}
+                    onChange={(v) => updateSection("hero", "enabled", v)}
+                    label="Hero & Form"
+                  />
+                </div>
                 <div className="space-y-4">
                   <h3 className={UI.sectionHeader}>1. Service Hero Headline & Narrative</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -464,6 +476,17 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
             {/* 2. CLIENT TRUST */}
             {activeTab === "clientTrust" && (
               <div className="space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Client Trust / Marquee Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live service page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.clientTrust?.enabled !== false}
+                    onChange={(v) => updateSection("clientTrust", "enabled", v)}
+                    label="Client Trust"
+                  />
+                </div>
                 <h3 className={UI.sectionHeader}>Platform Integration Logos & Proof</h3>
                 <div className="space-y-1.5">
                   <label className={UI.label}>Section Heading</label>
@@ -522,6 +545,17 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
             {/* 3. DELIVERABLES (WHAT'S INCLUDED) */}
             {activeTab === "whatIncluded" && (
               <div className="space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">What's Included Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live service page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.whatIncluded?.enabled !== false}
+                    onChange={(v) => updateSection("whatIncluded", "enabled", v)}
+                    label="What's Included"
+                  />
+                </div>
                 <h3 className={UI.sectionHeader}>Core Capabilities & Deliverables</h3>
                 <div className="space-y-1.5">
                   <label className={UI.label}>Badge / Eyebrow</label>
@@ -647,6 +681,17 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
             {/* 4. STRATEGIC APPROACH */}
             {activeTab === "strategy" && (
               <div className="space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Strategic Approach Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live service page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.strategy?.enabled !== false}
+                    onChange={(v) => updateSection("strategy", "enabled", v)}
+                    label="Strategic Approach"
+                  />
+                </div>
                 <h3 className={UI.sectionHeader}>Strategic Approach & Architecture</h3>
                 <div className="space-y-1.5">
                   <label className={UI.label}>Badge / Eyebrow</label>
@@ -773,6 +818,17 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
             {/* 5. MEASURABLE OUTCOMES (BENEFITS) */}
             {activeTab === "benefits" && (
               <div className="space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Measurable Outcomes Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live service page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.benefits?.enabled !== false}
+                    onChange={(v) => updateSection("benefits", "enabled", v)}
+                    label="Measurable Outcomes"
+                  />
+                </div>
                 <h3 className={UI.sectionHeader}>Measurable Business Outcomes & Advantages</h3>
                 <div className="space-y-1.5">
                   <label className={UI.label}>Badge / Eyebrow</label>
@@ -908,6 +964,17 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
             {/* 6. PROCESS ROADMAP */}
             {activeTab === "process" && (
               <div className="space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Implementation Roadmap Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live service page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.process?.enabled !== false}
+                    onChange={(v) => updateSection("process", "enabled", v)}
+                    label="Process Roadmap"
+                  />
+                </div>
                 <h3 className={UI.sectionHeader}>Implementation Roadmap & Process Sprints</h3>
                 <div className="space-y-1.5">
                   <label className={UI.label}>Badge / Eyebrow</label>
@@ -1087,6 +1154,17 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
             {/* 7. RESULTS & CASE STUDIES */}
             {activeTab === "results" && (
               <div className="space-y-8">
+                <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Results & Case Studies Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live service page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.results?.enabled !== false}
+                    onChange={(v) => updateSection("results", "enabled", v)}
+                    label="Results & Proof"
+                  />
+                </div>
                 <div className="space-y-4">
                   <h3 className={UI.sectionHeader}>Featured Case Studies & Proof</h3>
                   <div className="space-y-1.5">
@@ -1394,6 +1472,17 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
             {/* 8. INDUSTRY SECTORS */}
             {activeTab === "industries" && (
               <div className="space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Industry Sectors Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live service page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.industries?.enabled !== false}
+                    onChange={(v) => updateSection("industries", "enabled", v)}
+                    label="Industry Sectors"
+                  />
+                </div>
                 <h3 className={UI.sectionHeader}>Industry Sectors We Accelerate</h3>
                 <div className="space-y-1.5">
                   <label className={UI.label}>Badge / Eyebrow</label>
@@ -1518,6 +1607,17 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
             {/* 9. TECH STACK */}
             {activeTab === "tools" && (
               <div className="space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Tech Stack Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live service page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.tools?.enabled !== false}
+                    onChange={(v) => updateSection("tools", "enabled", v)}
+                    label="Tech Stack"
+                  />
+                </div>
                 <h3 className={UI.sectionHeader}>Modern Tech Stack & Frameworks</h3>
                 <div className="space-y-1.5">
                   <label className={UI.label}>Badge / Eyebrow</label>
@@ -1656,6 +1756,17 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
             {/* 10. THE ADVANTAGE (WHY CHOOSE US) */}
             {activeTab === "whyChooseUs" && (
               <div className="space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">The Advantage Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live service page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.whyChooseUs?.enabled !== false}
+                    onChange={(v) => updateSection("whyChooseUs", "enabled", v)}
+                    label="The Advantage"
+                  />
+                </div>
                 <h3 className={UI.sectionHeader}>The Advantage (Differentiators & Proof)</h3>
                 <div className="space-y-1.5">
                   <label className={UI.label}>Badge / Eyebrow</label>
@@ -2158,6 +2269,20 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
             {/* 12. RECOMMENDED PAIRINGS SECTION */}
             {activeTab === "recommendedSection" && (
               <div className="space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Recommended Pairings Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live service page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.recommendedSection?.enabled !== false && data.recommended?.enabled !== false}
+                    onChange={(v) => {
+                      updateSection("recommendedSection", "enabled", v);
+                      updateSection("recommended", "enabled", v);
+                    }}
+                    label="Recommended Pairings"
+                  />
+                </div>
                 <h3 className={UI.sectionHeader}>Recommended Pairings Section</h3>
                 <div className="space-y-1.5">
                   <label className={UI.label}>Badge / Eyebrow</label>
@@ -2207,6 +2332,17 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
             {/* 13. GLOBAL COVERAGE (SERVICE AREA) */}
             {activeTab === "serviceArea" && (
               <div className="space-y-12">
+                <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Global Coverage Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live service page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.serviceArea?.enabled !== false}
+                    onChange={(v) => updateSection("serviceArea", "enabled", v)}
+                    label="Global Coverage"
+                  />
+                </div>
                 <div className="space-y-6">
                   <h3 className={UI.sectionHeader}>1. Section Header & Narrative</h3>
                   <div className="space-y-1.5">
@@ -2440,6 +2576,22 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
             {/* 13. FAQS */}
             {activeTab === "faqs" && (
               <div className="space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Service FAQs Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live service page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.faqs?.enabled !== false && data.faqSection?.enabled !== false}
+                    onChange={(v) => {
+                      updateSection("faqSection", "enabled", v);
+                      if (Array.isArray(data.faqs)) {
+                        updateRootField("faqsEnabled", v);
+                      }
+                    }}
+                    label="Service FAQs"
+                  />
+                </div>
                 <div className="flex items-center justify-between">
                   <h3 className={UI.sectionHeader}>Service Specific FAQs</h3>
                   <button
@@ -2508,6 +2660,17 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
             {/* 15. FINAL CTA BANNER */}
             {activeTab === "finalCta" && (
               <div className="space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Final CTA Banner Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live service page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.finalCta?.enabled !== false}
+                    onChange={(v) => updateSection("finalCta", "enabled", v)}
+                    label="Final CTA Banner"
+                  />
+                </div>
                 <h3 className={UI.sectionHeader}>High-Conversion CTA Banner</h3>
                 <div className="space-y-1.5">
                   <label className={UI.label}>Badge / Eyebrow</label>
@@ -2679,6 +2842,20 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
             {/* 15. RELATED BLOG INSIGHTS */}
             {activeTab === "blogSection" && (
               <div className="space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Related Insights / Blog Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live service page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.blogSection?.enabled !== false && data.blog?.enabled !== false}
+                    onChange={(v) => {
+                      updateSection("blogSection", "enabled", v);
+                      updateSection("blog", "enabled", v);
+                    }}
+                    label="Related Insights"
+                  />
+                </div>
                 <h3 className={UI.sectionHeader}>Recommended Services Header</h3>
                 <p className="text-[11px] text-[#646970] -mt-4">Customize the heading area. Service cards are auto-populated.</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

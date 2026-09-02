@@ -107,6 +107,7 @@ ${message}
 
   return (
     <main className="bg-white min-h-screen font-body w-full overflow-hidden">
+      {(careersData?.enabled !== false && careersData?.section?.enabled !== false) && (
       <section className="relative py-16 md:py-32 overflow-hidden w-full">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: `linear-gradient(to right, #2563eb 1px, transparent 1px), linear-gradient(to bottom, #2563eb 1px, transparent 1px)`, backgroundSize: '80px 80px' }} />
@@ -214,6 +215,7 @@ ${message}
           </motion.div>
         </div>
       </section>
+      )}
 
     </main>
   );

@@ -7,6 +7,7 @@ import IconSelector from "@/components/admin/IconSelector";
 import ImageField from "@/components/admin/ImageField";
 import ContentSelector from "@/components/admin/ContentSelector";
 import { UI } from "./styles";
+import SectionToggle from "@/components/admin/SectionToggle";
 
 /**
  * Resilient Comma-Separated Input that buffers local string state
@@ -145,6 +146,17 @@ export default function IndustryEditor({
           {/* ───────────────────────────────────────────────────────────── */}
           {activeTab === "hero" && (
             <div className="space-y-12">
+              <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className="text-base font-bold text-[#1d2327]">Hero & Form Visibility</h2>
+                  <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={industryData.hero?.enabled !== false}
+                  onChange={(v) => updateSection("hero", "enabled", v)}
+                  label="Hero & Form"
+                />
+              </div>
               <div className="space-y-6">
                 <h3 className={UI.sectionHeader}>1. Hero Branding & Badges</h3>
                 <div className="space-y-1.5">
@@ -408,6 +420,17 @@ export default function IndustryEditor({
           {/* ───────────────────────────────────────────────────────────── */}
           {activeTab === "services" && (
             <div className="space-y-12">
+              <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className="text-base font-bold text-[#1d2327]">Services Section Visibility</h2>
+                  <p className="text-xs text-[#646970]">Enable or disable displaying services grid on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={industryData.servicesSection?.enabled !== false}
+                  onChange={(v) => updateSection("servicesSection", "enabled", v)}
+                  label="Services Section"
+                />
+              </div>
               <div className="space-y-6">
                 <h3 className={UI.sectionHeader}>1. Section Header & Messaging</h3>
                 <div className="space-y-4">
@@ -477,6 +500,17 @@ export default function IndustryEditor({
           {/* ───────────────────────────────────────────────────────────── */}
           {activeTab === "sectors" && (
             <div className="space-y-12">
+              <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className="text-base font-bold text-[#1d2327]">Industry Sectors Visibility</h2>
+                  <p className="text-xs text-[#646970]">Enable or disable displaying domain sectors on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={industryData.domainExpertise?.enabled !== false}
+                  onChange={(v) => updateSection("domainExpertise", "enabled", v)}
+                  label="Industry Sectors"
+                />
+              </div>
               <div className="space-y-6">
                 <h3 className={UI.sectionHeader}>1. Section Header</h3>
                 <div className="space-y-4">
@@ -647,6 +681,17 @@ export default function IndustryEditor({
           {/* ───────────────────────────────────────────────────────────── */}
           {activeTab === "founder" && (
             <div className="space-y-12">
+              <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className="text-base font-bold text-[#1d2327]">About Founder Visibility</h2>
+                  <p className="text-xs text-[#646970]">Enable or disable displaying founder leadership on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={industryData.founder?.enabled !== false}
+                  onChange={(v) => updateSection("founder", "enabled", v)}
+                  label="About Founder"
+                />
+              </div>
               <div className="space-y-6">
                 <h3 className={UI.sectionHeader}>1. Executive Leadership Header</h3>
                 <div className="space-y-4">
@@ -813,6 +858,17 @@ export default function IndustryEditor({
           {/* ───────────────────────────────────────────────────────────── */}
           {activeTab === "whyChooseUs" && (
             <div className="space-y-12">
+              <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className="text-base font-bold text-[#1d2327]">Why Choose Us Visibility</h2>
+                  <p className="text-xs text-[#646970]">Enable or disable displaying differentiators on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={industryData.whyChooseUs?.enabled !== false}
+                  onChange={(v) => updateSection("whyChooseUs", "enabled", v)}
+                  label="Why Choose Us"
+                />
+              </div>
               <div className="space-y-6">
                 <h3 className={UI.sectionHeader}>1. Section Header & Value Proposition</h3>
                 <div className="space-y-4">
@@ -983,6 +1039,17 @@ export default function IndustryEditor({
           {/* ───────────────────────────────────────────────────────────── */}
           {activeTab === "cta" && (
             <div className="space-y-12">
+              <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className="text-base font-bold text-[#1d2327]">Final CTA Banner Visibility</h2>
+                  <p className="text-xs text-[#646970]">Enable or disable displaying bottom CTA banner on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={industryData.ctaBanner?.enabled !== false}
+                  onChange={(v) => updateSection("ctaBanner", "enabled", v)}
+                  label="CTA Banner"
+                />
+              </div>
               <div className="space-y-6">
                 <h3 className={UI.sectionHeader}>1. Banner Headlines</h3>
                 <div className="space-y-4">

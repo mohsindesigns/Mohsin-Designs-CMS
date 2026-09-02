@@ -7,6 +7,7 @@ import IconSelector from "@/components/admin/IconSelector";
 import ImageField from "@/components/admin/ImageField";
 import ContentSelector from "@/components/admin/ContentSelector";
 import { UI } from "./styles";
+import SectionToggle from "@/components/admin/SectionToggle";
 
 /**
  * Resilient Comma-Separated Input that buffers local string state
@@ -121,6 +122,17 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
           {/* 1. HERO SECTION */}
           {activeTab === "hero" && (
             <div className="space-y-8">
+              <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className="text-base font-bold text-[#1d2327]">Hero Section Visibility</h2>
+                  <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={data.hero?.enabled !== false}
+                  onChange={(v) => updateSection("hero", "enabled", v)}
+                  label="Hero Section"
+                />
+              </div>
               <div className="space-y-4">
                 <h3 className={UI.sectionHeader}>1. Hero Badges & Headlines</h3>
                 <div className="space-y-1.5">
@@ -180,6 +192,17 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
           {/* 2. STATS & METRICS */}
           {activeTab === "stats" && (
             <div className="space-y-8">
+              <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className="text-base font-bold text-[#1d2327]">Stats & Metrics Visibility</h2>
+                  <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={data.stats?.enabled !== false}
+                  onChange={(v) => updateSection("stats", "enabled", v)}
+                  label="Stats & Metrics"
+                />
+              </div>
               <div className="space-y-4">
                 <h3 className={UI.sectionHeader}>1. Section Header Narrative</h3>
                 <div className="space-y-1.5">
@@ -245,6 +268,17 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
           {/* 3. WHO WE ARE */}
           {activeTab === "whoWeAre" && (
             <div className="space-y-8">
+              <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className="text-base font-bold text-[#1d2327]">Who We Are Visibility</h2>
+                  <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={data.whoWeAre?.enabled !== false}
+                  onChange={(v) => updateSection("whoWeAre", "enabled", v)}
+                  label="Who We Are"
+                />
+              </div>
               <div className="space-y-4">
                 <h3 className={UI.sectionHeader}>1. Header & Watermark</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -293,6 +327,17 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
           {/* 4. PHILOSOPHY (MISSION, VISION, VALUES) */}
           {activeTab === "philosophy" && (
             <div className="space-y-10">
+              <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className="text-base font-bold text-[#1d2327]">Mission & Vision Visibility</h2>
+                  <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={data.philosophy?.enabled !== false}
+                  onChange={(v) => updateSection("philosophy", "enabled", v)}
+                  label="Mission & Vision"
+                />
+              </div>
               <div className="space-y-4">
                 <h3 className={UI.sectionHeader}>Header Narrative</h3>
                 <div className="space-y-1.5"><label className={UI.label}>Eyebrow</label><input type="text" autoComplete="off" value={data.philosophy?.eyebrow || ""} onChange={(e) => updateSection("philosophy", "eyebrow", e.target.value)} className={UI.input} placeholder="e.g. CORE PHILOSOPHY & PILLARS" /></div>
@@ -389,6 +434,17 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
           {/* 5. SERVICES DIRECTORY & STICKY STAGES */}
           {activeTab === "servicesDirectory" && (
             <div className="space-y-8">
+              <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className="text-base font-bold text-[#1d2327]">Services Directory Visibility</h2>
+                  <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={data.servicesDirectory?.enabled !== false}
+                  onChange={(v) => updateSection("servicesDirectory", "enabled", v)}
+                  label="Services Directory"
+                />
+              </div>
               <div className="space-y-4">
                 <h3 className={UI.sectionHeader}>1. Section Headlines & CTA</h3>
                 <div className="space-y-1.5"><label className={UI.label}>Eyebrow</label><input type="text" autoComplete="off" value={data.servicesDirectory?.eyebrow || ""} onChange={(e) => updateSection("servicesDirectory", "eyebrow", e.target.value)} className={UI.input} placeholder="OUR CORE CAPABILITIES" /></div>
@@ -467,6 +523,17 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
           {/* 6. METHODOLOGY & 6-STEP PROCESS */}
           {activeTab === "methodology" && (
             <div className="space-y-8">
+              <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className="text-base font-bold text-[#1d2327]">Process Blueprint Visibility</h2>
+                  <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={data.methodology?.enabled !== false}
+                  onChange={(v) => updateSection("methodology", "enabled", v)}
+                  label="Process Blueprint"
+                />
+              </div>
               <div className="space-y-4">
                 <h3 className={UI.sectionHeader}>1. Section Header</h3>
                 <div className="space-y-1.5"><label className={UI.label}>Eyebrow</label><input type="text" autoComplete="off" value={data.methodology?.eyebrow || ""} onChange={(e) => updateSection("methodology", "eyebrow", e.target.value)} className={UI.input} placeholder="OUR 6-STEP BLUEPRINT" /></div>
@@ -511,6 +578,17 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
           {/* 7. DOMAIN EXPERTISE */}
           {activeTab === "domainExpertise" && (
             <div className="space-y-8">
+              <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className="text-base font-bold text-[#1d2327]">Domain Expertise Visibility</h2>
+                  <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={data.domainExpertise?.enabled !== false}
+                  onChange={(v) => updateSection("domainExpertise", "enabled", v)}
+                  label="Domain Expertise"
+                />
+              </div>
               <div className="space-y-4">
                 <h3 className={UI.sectionHeader}>1. Header</h3>
                 <div className="space-y-1.5"><label className={UI.label}>Eyebrow</label><input type="text" autoComplete="off" value={data.domainExpertise?.eyebrow || ""} onChange={(e) => updateSection("domainExpertise", "eyebrow", e.target.value)} className={UI.input} placeholder="VERTICAL EXPERTISE" /></div>
@@ -555,6 +633,17 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
           {/* 8. WHY BUSINESSES CHOOSE US */}
           {activeTab === "whyChooseUs" && (
             <div className="space-y-8">
+              <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className="text-base font-bold text-[#1d2327]">Why Choose Us Visibility</h2>
+                  <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={data.whyChooseUs?.enabled !== false}
+                  onChange={(v) => updateSection("whyChooseUs", "enabled", v)}
+                  label="Why Choose Us"
+                />
+              </div>
               <div className="space-y-4">
                 <h3 className={UI.sectionHeader}>1. Header</h3>
                 <div className="space-y-1.5"><label className={UI.label}>Eyebrow</label><input type="text" autoComplete="off" value={data.whyChooseUs?.eyebrow || ""} onChange={(e) => updateSection("whyChooseUs", "eyebrow", e.target.value)} className={UI.input} placeholder="THE STUDIO ADVANTAGE" /></div>
@@ -604,6 +693,17 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
           {/* 9. FOUNDER & LEADERSHIP */}
           {activeTab === "executiveLeadership" && (
             <div className="space-y-8">
+              <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className="text-base font-bold text-[#1d2327]">Founder & Leadership Visibility</h2>
+                  <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={data.executiveLeadership?.enabled !== false}
+                  onChange={(v) => updateSection("executiveLeadership", "enabled", v)}
+                  label="Founder & Leadership"
+                />
+              </div>
               <div className="space-y-4">
                 <h3 className={UI.sectionHeader}>1. Section Header & Bio</h3>
                 <div className="space-y-1.5"><label className={UI.label}>Eyebrow</label><input type="text" autoComplete="off" value={data.executiveLeadership?.eyebrow || ""} onChange={(e) => updateSection("executiveLeadership", "eyebrow", e.target.value)} className={UI.input} placeholder="STUDIO LEADERSHIP" /></div>
@@ -646,6 +746,17 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
           {/* 10. CLIENT REVIEWS */}
           {activeTab === "reviews" && (
             <div className="space-y-8">
+              <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className="text-base font-bold text-[#1d2327]">Client Reviews Visibility</h2>
+                  <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={data.reviews?.enabled !== false}
+                  onChange={(v) => updateSection("reviews", "enabled", v)}
+                  label="Client Reviews"
+                />
+              </div>
               <div className="space-y-4">
                 <h3 className={UI.sectionHeader}>1. Header & Rating Pill</h3>
                 <div className="space-y-1.5"><label className={UI.label}>Eyebrow</label><input type="text" autoComplete="off" value={data.reviews?.eyebrow || ""} onChange={(e) => updateSection("reviews", "eyebrow", e.target.value)} className={UI.input} placeholder="VERIFIED CLIENT PRAISE" /></div>
@@ -697,6 +808,17 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
           {/* 11. CTA BANNER */}
           {activeTab === "ctaBanner" && (
             <div className="space-y-8">
+              <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className="text-base font-bold text-[#1d2327]">CTA Banner Visibility</h2>
+                  <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={data.ctaBanner?.enabled !== false}
+                  onChange={(v) => updateSection("ctaBanner", "enabled", v)}
+                  label="CTA Banner"
+                />
+              </div>
               <div className="space-y-4">
                 <h3 className={UI.sectionHeader}>1. Banner Headlines</h3>
                 <div className="space-y-1.5"><label className={UI.label}>Eyebrow</label><input type="text" autoComplete="off" value={data.ctaBanner?.eyebrow || ""} onChange={(e) => updateSection("ctaBanner", "eyebrow", e.target.value)} className={UI.input} placeholder="READY TO SCALE YOUR VISION?" /></div>

@@ -231,6 +231,7 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
       <div className="absolute top-[28%] right-[-10%] w-[45vw] h-[45vw] rounded-full bg-brand-yellow/[0.02] dark:bg-brand-yellow/[0.05] blur-[150px] pointer-events-none select-none -z-10 animate-float-blob-delayed" />
 
       {/* ── 1. MAIN CONTACT HERO & FORM SECTION ───────────────────────── */}
+      {((hero as any)?.enabled !== false && (rawData as any).hero?.enabled !== false) && (
       <section id="contact-form" className="-mt-[110px] sm:-mt-[125px] lg:-mt-[140px] pt-[175px] sm:pt-[200px] lg:pt-[230px] pb-16 sm:pb-24 relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10">
         {/* Full Background Bleed Image */}
         <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
@@ -439,11 +440,13 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
           </div>
         </div>
       </section>
+      )}
 
       {/* Main Content Container */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 pt-16">
 
         {/* ── 2. OTHER WAYS TO CONNECT (4 CARDS ROW) ─────────────────── */}
+        {((contactMethods as any)?.enabled !== false && (rawData as any).contactMethods?.enabled !== false && (rawData as any).methods?.enabled !== false) && (
         <section className="mb-20">
           <div className="text-center max-w-xl mx-auto mb-10 space-y-2">
             <span className="text-xs font-mono font-black uppercase tracking-widest text-brand-blue dark:text-brand-yellow">
@@ -482,8 +485,10 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
             ))}
           </div>
         </section>
+        )}
 
         {/* ── 3. INTERACTIVE MAP & OUR OFFICE SECTION ─────────────────── */}
+        {((office as any)?.enabled !== false && (rawData as any).office?.enabled !== false) && (
         <section className="mb-20">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
 
@@ -557,8 +562,10 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
 
           </div>
         </section>
+        )}
 
         {/* ── 4. SIGNATURE AGENCY CTA BANNER ─────────────────────────── */}
+        {((ctaBanner as any)?.enabled !== false && (rawData as any).ctaBanner?.enabled !== false) && (
         <section className="my-8 relative overflow-hidden">
           <div className="cta-banner-card !shadow-[0_16px_40px_-12px_rgba(3,6,172,0.22)] dark:!shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)]">
             <div className="relative z-10 flex flex-col justify-center gap-6 p-8 sm:p-12 lg:p-14 lg:max-w-[62%]">
@@ -624,9 +631,12 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
             </div>
           </div>
         </section>
+        )}
 
         {/* ── 5. PAGE SPECIFIC FAQS ── */}
-        <PageInlineFaqs data={pageData?.content} />
+        {(pageData?.content?.faqs?.enabled !== false && pageData?.content?.faqSection?.enabled !== false && rawData?.faqs?.enabled !== false) && (
+          <PageInlineFaqs data={pageData?.content} />
+        )}
 
       </div>
     </main>

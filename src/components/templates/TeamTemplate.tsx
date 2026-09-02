@@ -135,6 +135,7 @@ export default function TeamTemplate({ pageData, params }: { pageData?: any, par
 
   return (
     <main className="bg-white">
+      {(teamData?.enabled !== false && teamData?.section?.enabled !== false) && (
       <section ref={sectionRef} className="relative py-14 md:py-18 lg:py-20 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none bg-[#f8fafc]">
           <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `linear-gradient(to right, #0f172a 1px, transparent 1px), linear-gradient(to bottom, #0f172a 1px, transparent 1px)`, backgroundSize: '100px 100px' }} />
@@ -225,6 +226,7 @@ export default function TeamTemplate({ pageData, params }: { pageData?: any, par
           })}
         </div>
       </section>
+      )}
 
     </main>
   );

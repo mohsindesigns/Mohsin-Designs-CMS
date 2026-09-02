@@ -23,6 +23,7 @@ const QuillEditor = dynamic(() => import("@/components/admin/QuillEditor"), {
    loading: () => <div className="h-40 bg-[#f6f7f7] animate-pulse border border-[#c3c4c7] rounded-sm flex items-center justify-center text-[#8c8f94] text-xs">Loading editor...</div>
 });
 import { UI } from "./styles";
+import SectionToggle from "@/components/admin/SectionToggle";
 
 export default function HomeEditor({ pageId, data, setData }: { pageId: string, data: any, setData: (d: any) => void }) {
    const [activeTab, setActiveTab] = useState("hero");
@@ -133,6 +134,17 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                {/* HERO SECTION */}
                {activeTab === "hero" && (
                   <div className="space-y-12">
+                     <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                        <div>
+                           <h2 className="text-base font-bold text-[#1d2327]">Hero Section Visibility</h2>
+                           <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                        </div>
+                        <SectionToggle
+                           enabled={data.hero?.enabled !== false}
+                           onChange={(v) => updateSection("hero", "enabled", v)}
+                           label="Hero Section"
+                        />
+                     </div>
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>1. Branding</h3>
                         <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.hero?.badge ?? data.hero?.badgeText ?? ""} onChange={(e) => updateSection("hero", "badge", e.target.value)} className={UI.input} placeholder="e.g. Premium Exterior Solutions" /></div>
@@ -294,6 +306,17 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                {/* TRUSTED BRANDS / CLIENT TRUST MARQUEE SECTION */}
                {activeTab === "trustedBrands" && (
                   <div className="space-y-10">
+                     <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                        <div>
+                           <h2 className="text-base font-bold text-[#1d2327]">Trusted Brands Visibility</h2>
+                           <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                        </div>
+                        <SectionToggle
+                           enabled={data.trustedBrands?.enabled !== false}
+                           onChange={(v) => updateSection("trustedBrands", "enabled", v)}
+                           label="Trusted Brands"
+                        />
+                     </div>
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>1. Section Header & Narrative</h3>
                         <div className="space-y-1.5">
@@ -468,6 +491,17 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                {/* ABOUT SECTION */}
                {activeTab === "about" && (
                   <div className="space-y-10">
+                     <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                        <div>
+                           <h2 className="text-base font-bold text-[#1d2327]">About Section Visibility</h2>
+                           <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                        </div>
+                        <SectionToggle
+                           enabled={data.about?.enabled !== false}
+                           onChange={(v) => updateSection("about", "enabled", v)}
+                           label="About Section"
+                        />
+                     </div>
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>1. Identity</h3>
                         <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.about?.badge || ""} onChange={(e) => updateSection("about", "badge", e.target.value)} className={UI.input} /></div>
@@ -542,6 +576,17 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                {/* SERVICES SECTION */}
                {activeTab === "services" && (
                   <div className="space-y-12">
+                     <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                        <div>
+                           <h2 className="text-base font-bold text-[#1d2327]">Services Section Visibility</h2>
+                           <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                        </div>
+                        <SectionToggle
+                           enabled={data.services?.enabled !== false}
+                           onChange={(v) => updateSection("services", "enabled", v)}
+                           label="Services Section"
+                        />
+                     </div>
 
                      {/* 1. Section Header */}
                      <div className="space-y-6">
@@ -813,6 +858,17 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                {/* HOW WE WORK / WHY CHOOSE US */}
                {activeTab === "whyChooseUs" && (
                   <div className="space-y-12">
+                     <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                        <div>
+                           <h2 className="text-base font-bold text-[#1d2327]">Value Props / How We Work Visibility</h2>
+                           <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                        </div>
+                        <SectionToggle
+                           enabled={data.whyChooseUs?.enabled !== false}
+                           onChange={(v) => updateSection("whyChooseUs", "enabled", v)}
+                           label="Value Props"
+                        />
+                     </div>
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>1. Section Header & Narrative</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1107,6 +1163,17 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                {/* GLOBAL SERVICE AREA / MAP */}
                {activeTab === "serviceArea" && (
                   <div className="space-y-12">
+                     <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                        <div>
+                           <h2 className="text-base font-bold text-[#1d2327]">Global Coverage / Service Area Visibility</h2>
+                           <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                        </div>
+                        <SectionToggle
+                           enabled={data.serviceArea?.enabled !== false}
+                           onChange={(v) => updateSection("serviceArea", "enabled", v)}
+                           label="Global Coverage"
+                        />
+                     </div>
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>1. Section Header & Narrative</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1363,6 +1430,17 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                 {/* INDUSTRIES SECTION */}
                 {activeTab === "industries" && (
                    <div className="space-y-12">
+                      <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                         <div>
+                            <h2 className="text-base font-bold text-[#1d2327]">Industries Section Visibility</h2>
+                            <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                         </div>
+                         <SectionToggle
+                            enabled={data.industries?.enabled !== false}
+                            onChange={(v) => updateSection("industries", "enabled", v)}
+                            label="Industries Section"
+                         />
+                      </div>
                       <div className="space-y-6">
                          <h3 className={UI.sectionHeader}>1. Section Intro & Narrative</h3>
                          <div className="space-y-1.5">
@@ -1511,6 +1589,17 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                {/* PORTFOLIO SECTION */}
                {activeTab === "portfolio" && (
                   <div className="space-y-12">
+                     <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                        <div>
+                           <h2 className="text-base font-bold text-[#1d2327]">Work / Portfolio Visibility</h2>
+                           <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                        </div>
+                        <SectionToggle
+                           enabled={data.portfolio?.enabled !== false}
+                           onChange={(v) => updateSection("portfolio", "enabled", v)}
+                           label="Work / Portfolio"
+                        />
+                     </div>
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>1. Branding</h3>
                         <div className="space-y-1.5"><label className={UI.label}>Badge / Tag</label><input type="text" value={data.portfolio?.sectionTag || data.portfolio?.section?.badge || ""} onChange={(e) => updateSection("portfolio", "sectionTag", e.target.value)} className={UI.input} /></div>
@@ -1698,6 +1787,17 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                {/* TESTIMONIALS SECTION */}
                {activeTab === "testimonials" && (
                   <div className="space-y-12">
+                     <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                        <div>
+                           <h2 className="text-base font-bold text-[#1d2327]">Client Reviews Visibility</h2>
+                           <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                        </div>
+                        <SectionToggle
+                           enabled={data.testimonials?.enabled !== false}
+                           onChange={(v) => updateSection("testimonials", "enabled", v)}
+                           label="Client Reviews"
+                        />
+                     </div>
                      {/* 1. SECTION INTRO */}
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>1. Section Intro & Narrative</h3>
@@ -2011,6 +2111,20 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                 {/* BLOG SECTION */}
                 {activeTab === "blog" && (
                    <div className="space-y-12">
+                      <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                         <div>
+                            <h2 className="text-base font-bold text-[#1d2327]">Blog Section Visibility</h2>
+                            <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                         </div>
+                         <SectionToggle
+                            enabled={data.blogSection?.enabled !== false && data.blog?.enabled !== false}
+                            onChange={(v) => {
+                               updateSection("blogSection", "enabled", v);
+                               updateSection("blog", "enabled", v);
+                            }}
+                            label="Blog Section"
+                         />
+                      </div>
                       <div className="space-y-6">
                          <h3 className={UI.sectionHeader}>1. Section Header & Narrative</h3>
                          <div className="space-y-1.5">
@@ -2091,8 +2205,22 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                 )}
                 {/* CONTACT FORM SECTION */}
                 {activeTab === "quote" && (
-                  <div className="space-y-10">
-                     {/* 1. Header & Badges */}
+                   <div className="space-y-10">
+                      <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                         <div>
+                            <h2 className="text-base font-bold text-[#1d2327]">Contact Form Visibility</h2>
+                            <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                         </div>
+                         <SectionToggle
+                            enabled={data.contact?.enabled !== false && data.quote?.enabled !== false}
+                            onChange={(v) => {
+                               updateSection("contact", "enabled", v);
+                               updateSection("quote", "enabled", v);
+                            }}
+                            label="Contact Form"
+                         />
+                      </div>
+                      {/* 1. Header & Badges */}
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>1. Header & Eyebrow Badges</h3>
                         <div className="space-y-1.5">

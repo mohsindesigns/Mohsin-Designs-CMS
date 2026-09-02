@@ -373,6 +373,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
       {/* ─────────────────────────────────────────────────────────────────── */}
       {/* 1. HERO SECTION WITH EMBEDDED RIGHT FORM                            */}
       {/* ─────────────────────────────────────────────────────────────────── */}
+      {((hero as any)?.enabled !== false && (industryData as any).hero?.enabled !== false) && (
       <section className="relative overflow-hidden pt-28 pb-16 lg:pt-36 lg:pb-24 border-b border-brand-zinc-200 dark:border-white/10">
         {/* Ambient background glows */}
         <div className="absolute top-0 left-1/4 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-br from-[#0306AC]/15 dark:from-[#0306AC]/25 to-transparent rounded-full blur-[140px] pointer-events-none -z-10" />
@@ -601,10 +602,12 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
           </div>
         </div>
       </section>
+      )}
 
       {/* ─────────────────────────────────────────────────────────────────── */}
       {/* 2. SERVICES CAPABILITIES GRID SECTION                               */}
       {/* ─────────────────────────────────────────────────────────────────── */}
+      {((servicesSec as any)?.enabled !== false && (industryData as any).servicesSection?.enabled !== false && (industryData as any).services?.enabled !== false) && (
       <section className="relative overflow-hidden py-16 sm:py-20 lg:py-24 border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/50 dark:bg-white/[0.01]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 space-y-14">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 text-left border-b border-brand-zinc-200/80 dark:border-white/10 pb-8">
@@ -677,10 +680,12 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
           </div>
         </div>
       </section>
+      )}
 
       {/* ─────────────────────────────────────────────────────────────────── */}
       {/* 3. DOMAIN EXPERTISE / INDUSTRIES SECTION                            */}
       {/* ─────────────────────────────────────────────────────────────────── */}
+      {((domainExpertise as any)?.enabled !== false && (industryData as any).domainExpertise?.enabled !== false) && (
       <section id="sectors" className="relative overflow-hidden py-16 sm:py-20 lg:py-24 border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 space-y-16">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 text-left border-b border-brand-zinc-200/80 dark:border-white/10 pb-10">
@@ -755,10 +760,12 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
           </div>
         </div>
       </section>
+      )}
 
       {/* ─────────────────────────────────────────────────────────────────── */}
       {/* 4. ABOUT FOUNDER SECTION                                            */}
       {/* ─────────────────────────────────────────────────────────────────── */}
+      {((founder as any)?.enabled !== false && (industryData as any).founder?.enabled !== false) && (
       <section className="relative overflow-hidden py-16 sm:py-20 lg:py-24 border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/50 dark:bg-white/[0.01]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
@@ -820,10 +827,12 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
           </div>
         </div>
       </section>
+      )}
 
       {/* ─────────────────────────────────────────────────────────────────── */}
       {/* 5. WHY BUSINESSES CHOOSE US SECTION                                 */}
       {/* ─────────────────────────────────────────────────────────────────── */}
+      {((whyChooseUs as any)?.enabled !== false && (industryData as any).whyChooseUs?.enabled !== false) && (
       <section className="relative overflow-hidden py-16 sm:py-20 lg:py-24 border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 space-y-16">
           <div className="text-center flex flex-col items-center max-w-3xl mx-auto space-y-4">
@@ -890,24 +899,27 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
           </div>
         </div>
       </section>
+      )}
 
       {/* ─────────────────────────────────────────────────────────────────── */}
       {/* 6. PAGE INLINE FAQS SECTION                                         */}
       {/* ─────────────────────────────────────────────────────────────────── */}
-
-      <PageInlineFaqs
-        faqs={faqsList}
-        faqSchemaMarkup={pageContent.faqSchemaMarkup || industryData.faqSchemaMarkup}
-        badge={pageContent.faqBadge || industryData.faqBadge || "INDUSTRY FAQS"}
-        title={pageContent.faqTitle || industryData.faqTitle || "Frequently Asked Questions"}
-        description={pageContent.faqDescription || industryData.faqDescription || "Key answers regarding our industry-specific architectural workflows and delivery."}
-        data={pageContent}
-      />
+      {(pageContent?.faqs?.enabled !== false && pageContent?.faqSection?.enabled !== false && industryData?.faqs?.enabled !== false) && (
+        <PageInlineFaqs
+          faqs={faqsList}
+          faqSchemaMarkup={pageContent.faqSchemaMarkup || industryData.faqSchemaMarkup}
+          badge={pageContent.faqBadge || industryData.faqBadge || "INDUSTRY FAQS"}
+          title={pageContent.faqTitle || industryData.faqTitle || "Frequently Asked Questions"}
+          description={pageContent.faqDescription || industryData.faqDescription || "Key answers regarding our industry-specific architectural workflows and delivery."}
+          data={pageContent}
+        />
+      )}
 
 
       {/* ─────────────────────────────────────────────────────────────────── */}
       {/* 7. FINAL HIGH-CONVERSION CTA BANNER SECTION                         */}
       {/* ─────────────────────────────────────────────────────────────────── */}
+      {((ctaBanner as any)?.enabled !== false && (industryData as any).ctaBanner?.enabled !== false) && (
       <section className="relative overflow-hidden py-12 sm:py-16 bg-white dark:bg-[#080710]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
           <div className="cta-banner-card !shadow-[0_16px_40px_-12px_rgba(3,6,172,0.22)] dark:!shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)]">
@@ -966,6 +978,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
           </div>
         </div>
       </section>
+      )}
 
       {/* Cursive Font Style Injector */}
       <style dangerouslySetInnerHTML={{

@@ -12,6 +12,7 @@ import {
 import ImageField from "@/components/admin/ImageField";
 import IconSelector from "@/components/admin/IconSelector";
 import { UI } from "./styles";
+import SectionToggle from "@/components/admin/SectionToggle";
 
 const DEFAULT_LOCATION_DATA = {
   hero: {
@@ -349,9 +350,16 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
           {/* ── TAB 1: HERO BANNER ────────────────────────────────────────── */}
           {activeTab === "hero" && (
             <div className="space-y-6">
-              <div>
-                <h2 className={UI.sectionHeader}>Locations Hero Banner</h2>
-                <p className={UI.helpText}>Configure the top full-bleed intro hero section and headline accents.</p>
+              <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className={UI.sectionHeader}>Locations Hero Banner Visibility</h2>
+                  <p className={UI.helpText}>Enable or disable displaying this section on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={loc.hero?.enabled !== false}
+                  onChange={(v) => updateNested("hero", "enabled", v)}
+                  label="Hero Banner"
+                />
               </div>
 
               <div className={UI.card + " space-y-5"}>
@@ -470,9 +478,16 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
           {/* ── TAB 2: STATS COUNTERS ─────────────────────────────────────── */}
           {activeTab === "stats" && (
             <div className="space-y-6">
-              <div>
-                <h2 className={UI.sectionHeader}>Stats &amp; Metric Roller Counters</h2>
-                <p className={UI.helpText}>Configure the 4 high-impact numerical metric cards with custom icons and 3D spring counters.</p>
+              <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className={UI.sectionHeader}>Stats Counters Visibility</h2>
+                  <p className={UI.helpText}>Enable or disable displaying metric cards on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={loc.stats?.enabled !== false}
+                  onChange={(v) => updateNested("stats", "enabled", v)}
+                  label="Stats Counters"
+                />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -690,9 +705,16 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
           {/* ── TAB 3: BRAND MARQUEE STRIP ────────────────────────────────── */}
           {activeTab === "marquee" && (
             <div className="space-y-6">
-              <div>
-                <h2 className={UI.sectionHeader}>Brand &amp; Ad Platform Marquee Strip</h2>
-                <p className={UI.helpText}>Manage the infinite scrolling banner logos and heading label.</p>
+              <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className={UI.sectionHeader}>Brand Marquee Strip Visibility</h2>
+                  <p className={UI.helpText}>Enable or disable displaying the partner marquee on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={loc.brandsStrip?.enabled !== false}
+                  onChange={(v) => updateNested("brandsStrip", "enabled", v)}
+                  label="Brand Marquee"
+                />
               </div>
 
               <div className={UI.card + " space-y-5"}>
@@ -796,9 +818,16 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
           {/* ── TAB 4: COUNTRIES & STATES ─────────────────────────────────── */}
           {activeTab === "presence" && (
             <div className="space-y-6">
-              <div>
-                <h2 className={UI.sectionHeader}>Countries &amp; State Service Hubs</h2>
-                <p className={UI.helpText}>Manage geographic spotlight cards and their individual state/city destinations connected directly to your CMS pages.</p>
+              <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className={UI.sectionHeader}>Countries &amp; State Hubs Visibility</h2>
+                  <p className={UI.helpText}>Enable or disable displaying geographic hub directories on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={loc.presence?.enabled !== false}
+                  onChange={(v) => updateNested("presence", "enabled", v)}
+                  label="Countries & States"
+                />
               </div>
 
               {/* Section Header Settings */}
@@ -1097,9 +1126,16 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
           {/* ── TAB 5: BOTTOM SIGNATURE CTA BANNER ────────────────────────── */}
           {activeTab === "cta" && (
             <div className="space-y-6">
-              <div>
-                <h2 className={UI.sectionHeader}>Bottom Signature CTA Banner</h2>
-                <p className={UI.helpText}>Configure the bottom high-converting signature banner.</p>
+              <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className={UI.sectionHeader}>Bottom CTA Banner Visibility</h2>
+                  <p className={UI.helpText}>Enable or disable displaying this section on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={loc.ctaBanner?.enabled !== false}
+                  onChange={(v) => updateNested("ctaBanner", "enabled", v)}
+                  label="CTA Banner"
+                />
               </div>
 
               <div className={UI.card + " space-y-5"}>

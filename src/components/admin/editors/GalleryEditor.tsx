@@ -12,6 +12,7 @@ import ContentSelector from "@/components/admin/ContentSelector";
 import IconSelector from "@/components/admin/IconSelector";
 import ImageField from "@/components/admin/ImageField";
 import { UI } from "./styles";
+import SectionToggle from "@/components/admin/SectionToggle";
 
 const DEFAULT_GALLERY_DATA = {
   hero: {
@@ -277,9 +278,16 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
           {/* ── TAB 1: HERO SECTION ──────────────────────────────────────── */}
           {activeTab === "hero" && (
             <div className="space-y-6">
-              <div>
-                <h2 className={UI.sectionHeader}>Gallery Hero Banner</h2>
-                <p className={UI.helpText}>Configure the top full-bleed intro hero section and headline accents.</p>
+              <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className={UI.sectionHeader}>Gallery Hero Banner Visibility</h2>
+                  <p className={UI.helpText}>Enable or disable displaying this section on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={gallery.hero?.enabled !== false}
+                  onChange={(v) => updateNested("hero", "enabled", v)}
+                  label="Gallery Hero"
+                />
               </div>
 
               <div className={UI.card + " space-y-5"}>
@@ -414,9 +422,16 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
           {/* ── TAB 2: PROJECTS SHOWCASE (DUAL SELECTION MODE) ───────────── */}
           {activeTab === "projects" && (
             <div className="space-y-6">
-              <div>
-                <h2 className={UI.sectionHeader}>Project Showcase Grid</h2>
-                <p className={UI.helpText}>Choose between selecting from your existing project catalog or adding custom projects.</p>
+              <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className={UI.sectionHeader}>Project Showcase Visibility</h2>
+                  <p className={UI.helpText}>Enable or disable displaying projects grid on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={gallery.projectsEnabled !== false}
+                  onChange={(v) => updateGallery("projectsEnabled", v)}
+                  label="Projects Showcase"
+                />
               </div>
 
               {/* Selection Mode Toggle */}
@@ -612,9 +627,16 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
           {/* ── TAB 3: CREATIVE PROCESS ──────────────────────────────────── */}
           {activeTab === "process" && (
             <div className="space-y-6">
-              <div>
-                <h2 className={UI.sectionHeader}>4-Step Creative Framework</h2>
-                <p className={UI.helpText}>Configure the 4-phase creative methodology showcase section.</p>
+              <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className={UI.sectionHeader}>Creative Process Visibility</h2>
+                  <p className={UI.helpText}>Enable or disable displaying the process framework on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={gallery.process?.enabled !== false}
+                  onChange={(v) => updateNested("process", "enabled", v)}
+                  label="Creative Process"
+                />
               </div>
 
               <div className={UI.card + " space-y-5"}>
@@ -740,9 +762,16 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
           {/* ── TAB 4: BOTTOM SIGNATURE CTA BANNER ────────────────────────── */}
           {activeTab === "cta" && (
             <div className="space-y-6">
-              <div>
-                <h2 className={UI.sectionHeader}>Bottom Signature CTA Banner</h2>
-                <p className={UI.helpText}>Configure the bottom high-converting signature banner.</p>
+              <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className={UI.sectionHeader}>Bottom CTA Banner Visibility</h2>
+                  <p className={UI.helpText}>Enable or disable displaying this section on the live page.</p>
+                </div>
+                <SectionToggle
+                  enabled={gallery.ctaBanner?.enabled !== false}
+                  onChange={(v) => updateNested("ctaBanner", "enabled", v)}
+                  label="CTA Banner"
+                />
               </div>
 
               <div className={UI.card + " space-y-5"}>

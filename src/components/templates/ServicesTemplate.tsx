@@ -300,43 +300,114 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
       <div className="absolute top-[30%] right-[-10%] w-[45vw] h-[45vw] rounded-full bg-[#e9bd36]/[0.02] dark:bg-[#e9bd36]/[0.05] blur-[150px] pointer-events-none select-none -z-10 animate-float-blob-delayed" />
       <div className="absolute bottom-[20%] left-[-12%] w-[48vw] h-[48vw] rounded-full bg-[#0306ac]/[0.02] dark:bg-[#0306ac]/[0.04] blur-[140px] pointer-events-none select-none -z-10 animate-float-blob" />
 
-      {/* ── 1. HERO ─────────────────────────────────────────────────────────── */}
-      <section className="-mt-[110px] sm:-mt-[125px] lg:-mt-[140px] pt-[175px] sm:pt-[200px] lg:pt-[230px] pb-16 sm:pb-24 relative overflow-hidden border-b border-gray-200 dark:border-white/10">
+      {/* ── 1. HERO ────────────────────────────────────────────────────────── */}
+      {(hero as any)?.enabled !== false && (
+        <section className="-mt-[110px] sm:-mt-[125px] lg:-mt-[140px] pt-[175px] sm:pt-[200px] lg:pt-[230px] pb-16 sm:pb-24 relative overflow-hidden border-b border-gray-200 dark:border-white/10">
 
-        {/* Full background bleed image */}
-        <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
-          <img
-            src={hero.bgImage || "/portfolio_hero_bg.png"}
-            alt="Services Background"
-            className="w-full h-full object-cover object-right opacity-100 dark:opacity-60"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-transparent dark:from-[#080710] dark:via-[#080710]/85 dark:to-transparent pointer-events-none" />
-        </div>
+          {/* Full background bleed image */}
+          <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
+            <img
+              src={hero.bgImage || "/portfolio_hero_bg.png"}
+              alt="Services Background"
+              className="w-full h-full object-cover object-right opacity-100 dark:opacity-60"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-transparent dark:from-[#080710] dark:via-[#080710]/85 dark:to-transparent pointer-events-none" />
+          </div>
 
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 py-6 w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 py-6 w-full">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
 
-            {/* LEFT: Text */}
+              {/* LEFT: Text */}
+              <motion.div
+                initial={{ opacity: 0, y: 25 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] as any }}
+                className="lg:col-span-8 space-y-6 text-left"
+              >
+                {/* Badge */}
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex items-center gap-2 rounded-full bg-[#e9bd36] px-4 py-1.5 text-[10px] font-mono font-black tracking-widest uppercase text-[#080710] shadow-sm">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#080710]" />
+                    {hero.badgeText}
+                  </span>
+                  <div className="h-[1px] w-12 bg-gray-300 dark:bg-zinc-700" />
+                </div>
+
+                {/* Headline */}
+                <h1 className="font-heading text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.12] text-gray-900 dark:text-white max-w-3xl">
+                  {hero.titleIntro}{" "}
+                  <span className="relative inline-block text-[#0306ac] dark:text-[#e9bd36] pb-1 ml-1">
+                    {hero.titleHighlight}
+                    <svg
+                      className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-[#e9bd36] opacity-90"
+                      viewBox="0 0 100 10"
+                      preserveAspectRatio="none"
+                    >
+                      <motion.path
+                        d="M 2 5 Q 50 1.5, 98 3.5 C 99 3.5, 99 4.5, 98 5 Q 50 7, 2 5.5 Z"
+                        fill="currentColor"
+                        custom={{ delay: 0.5, duration: 0.65 }}
+                        variants={drawVariants}
+                        initial="hidden"
+                        animate="visible"
+                      />
+                    </svg>
+                  </span>
+                </h1>
+
+                <p className="text-sm sm:text-base font-sans text-gray-600 dark:text-zinc-300 leading-relaxed max-w-2xl">
+                  {hero.description}
+                </p>
+
+                <div className="flex flex-wrap items-center gap-4 pt-2">
+                  <Link
+                    href={hero.ctaPrimary.href}
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold bg-[#0306ac] text-white hover:bg-[#020485] dark:bg-[#e9bd36] dark:text-[#080710] dark:hover:bg-amber-400 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                  >
+                    <span>{hero.ctaPrimary.label}</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                  <Link
+                    href={hero.ctaSecondary.href}
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold bg-white dark:bg-white/5 border border-gray-300 dark:border-white/15 text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-white/10 transition-all"
+                  >
+                    <span>{hero.ctaSecondary.label}</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              </motion.div>
+
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── 2. SERVICES GRID ────────────────────────────────────────────────── */}
+      {(grid as any)?.enabled !== false && (
+        <section id="services-grid" className="relative overflow-hidden py-16 sm:py-20 md:py-24 border-b border-gray-200 dark:border-white/10">
+
+          {/* Subtle grid background */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808007_1px,transparent_1px),linear-gradient(to_bottom,#80808007_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
+
+            {/* Section header */}
             <motion.div
-              initial={{ opacity: 0, y: 25 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] as any }}
-              className="lg:col-span-8 space-y-6 text-left"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="text-center mb-14 space-y-4"
             >
-              {/* Badge */}
-              <div className="flex items-center gap-3">
-                <span className="inline-flex items-center gap-2 rounded-full bg-[#e9bd36] px-4 py-1.5 text-[10px] font-mono font-black tracking-widest uppercase text-[#080710] shadow-sm">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#080710]" />
-                  {hero.badgeText}
+              <div className="flex justify-center">
+                <span className="inline-flex items-center gap-2 rounded-full bg-[#0306ac]/5 dark:bg-[#e9bd36]/10 border border-[#0306ac]/10 dark:border-[#e9bd36]/20 px-4 py-1.5 text-[10px] font-mono font-bold tracking-widest uppercase text-[#0306ac] dark:text-[#e9bd36]">
+                  {grid.eyebrow}
                 </span>
-                <div className="h-[1px] w-12 bg-gray-300 dark:bg-zinc-700" />
               </div>
-
-              {/* Headline */}
-              <h1 className="font-heading text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.12] text-gray-900 dark:text-white max-w-3xl">
-                {hero.titleIntro}{" "}
+              <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.12] text-gray-900 dark:text-white">
+                {grid.titleIntro}{" "}
                 <span className="relative inline-block text-[#0306ac] dark:text-[#e9bd36] pb-1 ml-1">
-                  {hero.titleHighlight}
+                  {grid.titleHighlight}
                   <svg
                     className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-[#e9bd36] opacity-90"
                     viewBox="0 0 100 10"
@@ -345,196 +416,133 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                     <motion.path
                       d="M 2 5 Q 50 1.5, 98 3.5 C 99 3.5, 99 4.5, 98 5 Q 50 7, 2 5.5 Z"
                       fill="currentColor"
-                      custom={{ delay: 0.5, duration: 0.65 }}
+                      custom={{ delay: 0.3, duration: 0.65 }}
                       variants={drawVariants}
                       initial="hidden"
-                      animate="visible"
+                      whileInView="visible"
+                      viewport={{ once: true }}
                     />
                   </svg>
                 </span>
-              </h1>
-
-              <p className="text-sm sm:text-base font-sans text-gray-600 dark:text-zinc-300 leading-relaxed max-w-2xl">
-                {hero.description}
+              </h2>
+              <p className="text-sm sm:text-base text-gray-600 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed">
+                {grid.subtext}
               </p>
-
-              <div className="flex flex-wrap items-center gap-4 pt-2">
-                <Link
-                  href={hero.ctaPrimary.href}
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold bg-[#0306ac] text-white hover:bg-[#020485] dark:bg-[#e9bd36] dark:text-[#080710] dark:hover:bg-amber-400 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
-                >
-                  <span>{hero.ctaPrimary.label}</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-                <Link
-                  href={hero.ctaSecondary.href}
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold bg-white dark:bg-white/5 border border-gray-300 dark:border-white/15 text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-white/10 transition-all"
-                >
-                  <span>{hero.ctaSecondary.label}</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
             </motion.div>
 
-          </div>
-        </div>
-      </section>
-
-      {/* ── 2. SERVICES GRID ────────────────────────────────────────────────── */}
-      <section id="services-grid" className="relative overflow-hidden py-16 sm:py-20 md:py-24 border-b border-gray-200 dark:border-white/10">
-
-        {/* Subtle grid background */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808007_1px,transparent_1px),linear-gradient(to_bottom,#80808007_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
-
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
-
-          {/* Section header */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="text-center mb-14 space-y-4"
-          >
-            <div className="flex justify-center">
-              <span className="inline-flex items-center gap-2 rounded-full bg-[#0306ac]/5 dark:bg-[#e9bd36]/10 border border-[#0306ac]/10 dark:border-[#e9bd36]/20 px-4 py-1.5 text-[10px] font-mono font-bold tracking-widest uppercase text-[#0306ac] dark:text-[#e9bd36]">
-                {grid.eyebrow}
-              </span>
+            {/* Cards — Responsive 1/2/3/4 col grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {cards.map((card: any, i: number) => (
+                <ServiceCard key={card.id || i} card={card} index={i} ctaText={grid.ctaText} />
+              ))}
             </div>
-            <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.12] text-gray-900 dark:text-white">
-              {grid.titleIntro}{" "}
-              <span className="relative inline-block text-[#0306ac] dark:text-[#e9bd36] pb-1 ml-1">
-                {grid.titleHighlight}
-                <svg
-                  className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-[#e9bd36] opacity-90"
-                  viewBox="0 0 100 10"
-                  preserveAspectRatio="none"
-                >
-                  <motion.path
-                    d="M 2 5 Q 50 1.5, 98 3.5 C 99 3.5, 99 4.5, 98 5 Q 50 7, 2 5.5 Z"
-                    fill="currentColor"
-                    custom={{ delay: 0.3, duration: 0.65 }}
-                    variants={drawVariants}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                  />
-                </svg>
-              </span>
-            </h2>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-              {grid.subtext}
-            </p>
-          </motion.div>
 
-          {/* Cards — Responsive 1/2/3/4 col grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {cards.map((card: any, i: number) => (
-              <ServiceCard key={card.id || i} card={card} index={i} ctaText={grid.ctaText} />
-            ))}
           </div>
-
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── 3. CTA BANNER ──────────────────────────────────────────────────── */}
-      <section className="my-16 relative overflow-hidden">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#0306ac] via-[#020485] to-[#010252] text-white p-8 sm:p-12 lg:p-14 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-8"
-          >
-            {/* Left text column */}
-            <div className="relative z-10 flex flex-col justify-center gap-5 lg:max-w-[62%]">
+      {(ctaBanner as any)?.enabled !== false && (
+        <section className="my-16 relative overflow-hidden">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
+              className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#0306ac] via-[#020485] to-[#010252] text-white p-8 sm:p-12 lg:p-14 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-8"
+            >
+              {/* Left text column */}
+              <div className="relative z-10 flex flex-col justify-center gap-5 lg:max-w-[62%]">
 
-              {/* Eyebrow */}
-              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-4 py-1.5 text-[10px] font-mono tracking-widest text-[#E9BD36] font-extrabold uppercase w-fit">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E9BD36] opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E9BD36]" />
-                </span>
-                {ctaBanner.eyebrow}
-              </div>
-
-              {/* Headline */}
-              <h2 className="font-heading text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.35] tracking-tight text-white">
-                {ctaBanner.titleIntro}{" "}
-                <span className="relative inline-block">
-                  <span className="font-cursive text-[#E9BD36] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
-                    {ctaBanner.titleHighlight}
+                {/* Eyebrow */}
+                <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-4 py-1.5 text-[10px] font-mono tracking-widest text-[#E9BD36] font-extrabold uppercase w-fit">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E9BD36] opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E9BD36]" />
                   </span>
-                  <svg
-                    className="absolute left-0 bottom-[-2px] w-full h-3 text-[#E9BD36]"
-                    viewBox="0 0 100 10"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="3"
-                    strokeLinecap="round"
+                  {ctaBanner.eyebrow}
+                </div>
+
+                {/* Headline */}
+                <h2 className="font-heading text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.35] tracking-tight text-white">
+                  {ctaBanner.titleIntro}{" "}
+                  <span className="relative inline-block">
+                    <span className="font-cursive text-[#E9BD36] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
+                      {ctaBanner.titleHighlight}
+                    </span>
+                    <svg
+                      className="absolute left-0 bottom-[-2px] w-full h-3 text-[#E9BD36]"
+                      viewBox="0 0 100 10"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                    >
+                      <path d="M 5 6 C 30 9, 70 9, 95 4" />
+                    </svg>
+                  </span>{" "}
+                  {ctaBanner.titleLine2}
+                </h2>
+
+                {/* Description */}
+                <p className="text-sm sm:text-base font-sans text-white/90 leading-relaxed max-w-lg">
+                  {ctaBanner.description}
+                </p>
+
+                {/* Buttons */}
+                <div className="flex items-center gap-4 flex-wrap pt-2">
+                  <Link
+                    href={ctaBanner.ctaPrimary.href}
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold bg-[#E9BD36] text-[#080710] hover:bg-amber-400 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
                   >
-                    <path d="M 5 6 C 30 9, 70 9, 95 4" />
-                  </svg>
-                </span>{" "}
-                {ctaBanner.titleLine2}
-              </h2>
-
-              {/* Description */}
-              <p className="text-sm sm:text-base font-sans text-white/90 leading-relaxed max-w-lg">
-                {ctaBanner.description}
-              </p>
-
-              {/* Buttons */}
-              <div className="flex items-center gap-4 flex-wrap pt-2">
-                <Link
-                  href={ctaBanner.ctaPrimary.href}
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold bg-[#E9BD36] text-[#080710] hover:bg-amber-400 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
-                >
-                  <span>{ctaBanner.ctaPrimary.label}</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-                <Link
-                  href={ctaBanner.ctaSecondary.href}
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold bg-white/10 hover:bg-white/20 border border-white/20 text-white transition-all"
-                >
-                  <span>{ctaBanner.ctaSecondary.label}</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
+                    <span>{ctaBanner.ctaPrimary.label}</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                  <Link
+                    href={ctaBanner.ctaSecondary.href}
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold bg-white/10 hover:bg-white/20 border border-white/20 text-white transition-all"
+                  >
+                    <span>{ctaBanner.ctaSecondary.label}</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
               </div>
-            </div>
 
-            {/* Right portrait arch */}
-            <div className="hidden lg:flex flex-1 items-end justify-center relative pr-4">
-              <div className="absolute bottom-0 w-[300px] h-[300px] bg-gradient-to-t from-[#020485] to-[#0408d9] rounded-full opacity-90 border border-white/20 shadow-2xl" />
-              <div className="relative z-10 w-[260px] h-[340px] self-end drop-shadow-2xl overflow-hidden rounded-t-[32px] border-t border-l border-r border-white/25 shadow-2xl bg-[#010252]">
-                <Image
-                  src={ctaBanner.portraitSrc || "/founder.png"}
-                  alt={ctaBanner.portraitAlt || "Lead Architect"}
-                  width={300}
-                  height={380}
-                  className="w-full h-full object-cover object-top filter contrast-[1.05]"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#010356]/80 via-transparent to-transparent pointer-events-none" />
+              {/* Right portrait arch */}
+              <div className="hidden lg:flex flex-1 items-end justify-center relative pr-4">
+                <div className="absolute bottom-0 w-[300px] h-[300px] bg-gradient-to-t from-[#020485] to-[#0408d9] rounded-full opacity-90 border border-white/20 shadow-2xl" />
+                <div className="relative z-10 w-[260px] h-[340px] self-end drop-shadow-2xl overflow-hidden rounded-t-[32px] border-t border-l border-r border-white/25 shadow-2xl bg-[#010252]">
+                  <Image
+                    src={ctaBanner.portraitSrc || "/founder.png"}
+                    alt={ctaBanner.portraitAlt || "Lead Architect"}
+                    width={300}
+                    height={380}
+                    className="w-full h-full object-cover object-top filter contrast-[1.05]"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#010356]/80 via-transparent to-transparent pointer-events-none" />
+                </div>
+                <div className="absolute top-12 right-24 h-3.5 w-3.5 rounded-full bg-[#E9BD36] shadow-[0_0_15px_#E9BD36] z-20" />
               </div>
-              <div className="absolute top-12 right-24 h-3.5 w-3.5 rounded-full bg-[#E9BD36] shadow-[0_0_15px_#E9BD36] z-20" />
-            </div>
-          </motion.div>
-        </div>
-      </section>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       {/* ── 4. FAQS ────────────────────────────────────────────────────────── */}
-      <PageInlineFaqs 
-        faqs={(pageData?.content?.faqs && pageData.content.faqs.length > 0) ? pageData.content.faqs : faq?.items} 
-        faqSchemaMarkup={pageData?.content?.faqSchemaMarkup || pageData?.faqSchemaMarkup} 
-        badge={pageData?.content?.faqBadge}
-        title={pageData?.content?.faqTitleHighlight || pageData?.content?.faqTitle}
-        description={pageData?.content?.faqDescription}
-        data={pageData?.content}
-      />
+      {(pageData?.content?.faqs?.enabled !== false && pageData?.content?.faqSection?.enabled !== false) && (
+        <PageInlineFaqs 
+          faqs={(pageData?.content?.faqs && pageData.content.faqs.length > 0) ? pageData.content.faqs : faq?.items} 
+          faqSchemaMarkup={pageData?.content?.faqSchemaMarkup || pageData?.faqSchemaMarkup} 
+          badge={pageData?.content?.faqBadge}
+          title={pageData?.content?.faqTitleHighlight || pageData?.content?.faqTitle}
+          description={pageData?.content?.faqDescription}
+          data={pageData?.content}
+        />
+      )}
 
       {/* ── 5. BLOG SECTION ────────────────────────────────────────────────── */}
-      {pageData?.content?.blogSection && Array.isArray(pageData.content.blogSection.selectedPosts) && pageData.content.blogSection.selectedPosts.length > 0 && (
+      {pageData?.content?.blogSection?.enabled !== false && pageData?.content?.blogSection && Array.isArray(pageData.content.blogSection.selectedPosts) && pageData.content.blogSection.selectedPosts.length > 0 && (
         <BlogSection
           title={pageData.content.blogSection.title}
           subtitle={pageData.content.blogSection.subtitle}

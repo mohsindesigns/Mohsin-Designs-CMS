@@ -12,6 +12,7 @@ import {
 import dynamic from "next/dynamic";
 import { UI } from "./styles";
 import MediaSelector from "@/components/admin/MediaSelector";
+import SectionToggle from "@/components/admin/SectionToggle";
 
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
   ssr: false,
@@ -222,6 +223,17 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
             {/* INTRO HERO TAB */}
             {activeTab === "intro" && (
               <div className="max-w-3xl space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Hero Banner Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.hero?.enabled !== false}
+                    onChange={(v) => updateField("hero", "enabled", v)}
+                    label="Hero Banner"
+                  />
+                </div>
                 <div className={UI.card + " space-y-5"}>
                   <div className="space-y-1.5">
                     <label className={UI.label}>Hero Headline</label>
@@ -268,6 +280,17 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
             {/* STATISTICS TAB */}
             {activeTab === "stats" && (
               <div className="max-w-3xl space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Statistics Counter Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying statistics on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.statsEnabled !== false}
+                    onChange={(v) => updateField("statsEnabled", null, v)}
+                    label="Statistics Counter"
+                  />
+                </div>
                 <div className={UI.card + " space-y-6"}>
                   <label className={UI.label + " block border-b border-[#f0f0f1] pb-2"}>Statistics Values & Labels</label>
 
@@ -314,6 +337,17 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
             {/* MAP & DISPATCH TAB */}
             {activeTab === "map" && (
               <div className="max-w-3xl space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Map &amp; Dispatch Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying map section on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.map?.enabled !== false}
+                    onChange={(v) => updateField("map", "enabled", v)}
+                    label="Map & Dispatch"
+                  />
+                </div>
                 <div className={UI.card + " space-y-5"}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
@@ -431,6 +465,17 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
             {/* PROCESS ROADMAP TAB */}
             {activeTab === "process" && (
               <div className="max-w-3xl space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Operational Process Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying process steps on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.processSection?.enabled !== false}
+                    onChange={(v) => updateField("processSection", "enabled", v)}
+                    label="Process Roadmap"
+                  />
+                </div>
                 {/* Visual Section Headline/Title Configurator */}
                 <div className={UI.card + " space-y-5"}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -569,6 +614,17 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
             {/* PREMIUM MATERIALS TAB */}
             {activeTab === "materials" && (
               <div className="max-w-3xl space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Premium Materials Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying materials section on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.materials?.enabled !== false}
+                    onChange={(v) => updateField("materials", "enabled", v)}
+                    label="Premium Materials"
+                  />
+                </div>
                 <div className={UI.card + " space-y-5"}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
@@ -707,6 +763,17 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
             {/* SERVICES SHOWCASE CONFIGURATOR TAB */}
             {activeTab === "services" && (
               <div className="max-w-3xl space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Services Showcase Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying services showcase on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.servicesSection?.enabled !== false}
+                    onChange={(v) => updateField("servicesSection", "enabled", v)}
+                    label="Services Showcase"
+                  />
+                </div>
                 <div className={UI.card + " space-y-5"}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
@@ -872,6 +939,17 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
             {/* REGIONS AND CITIES DIRECTORIES */}
             {activeTab === "regions" && (
               <div className="space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Regions &amp; Cities Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying regional county coverage on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.regionsSection?.enabled !== false}
+                    onChange={(v) => updateField("regionsSection", "enabled", v)}
+                    label="Regions & Cities"
+                  />
+                </div>
                 {/* Visual Section Headline/Title Configurator */}
                 <div className={UI.card + " space-y-5"}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -990,6 +1068,17 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
             {/* WHY CHOOSE US TAB */}
             {activeTab === "whyChoose" && (
               <div className="max-w-3xl space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Why Choose Us Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying strengths on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.whyChoose?.enabled !== false}
+                    onChange={(v) => updateField("whyChoose", "enabled", v)}
+                    label="Why Choose Us"
+                  />
+                </div>
                 <div className={UI.card + " space-y-5"}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
@@ -1099,6 +1188,17 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
             {/* DYNAMIC OVERVIEW SECTION TAB */}
             {activeTab === "overview" && (
               <div className="max-w-3xl space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Overview Section Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying community overview on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.overview?.enabled !== false}
+                    onChange={(v) => updateField("overview", "enabled", v)}
+                    label="Overview Section"
+                  />
+                </div>
                 <div className={UI.card + " space-y-5"}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
@@ -1180,6 +1280,17 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
             {/* CALL TO ACTION TAB */}
             {activeTab === "cta" && (
               <div className="max-w-3xl space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Lead Call To Action Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying CTA banner on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.cta?.enabled !== false}
+                    onChange={(v) => updateField("cta", "enabled", v)}
+                    label="Call To Action"
+                  />
+                </div>
                 <div className={UI.card + " space-y-5"}>
                   <div className="space-y-1.5">
                     <label className={UI.label}>CTA Headline</label>

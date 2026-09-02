@@ -1010,6 +1010,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       <div className="absolute bottom-[20%] left-[-12%] w-[48vw] h-[48vw] rounded-full bg-brand-blue/[0.02] dark:bg-brand-blue/[0.04] blur-[140px] pointer-events-none select-none -z-10 animate-float-blob" />
 
       {/* ── 01. SERVICE HERO ── */}
+      {(service as any).hero?.enabled !== false && (
       <section className="-mt-[110px] sm:-mt-[125px] lg:-mt-[140px] pt-[175px] sm:pt-[200px] lg:pt-[230px] pb-16 sm:pb-24 relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10">
         <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
           <img
@@ -1228,8 +1229,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
           </div>
         </div>
       </section>
+      )}
 
       {/* ── 02. CLIENT TRUST MARQUEE ── */}
+      {(service as any).clientTrust?.enabled !== false && (
       <section className="py-7 border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/20 dark:bg-[#0c0b18]/40 select-none overflow-hidden logo-marquee-track-container relative">
         <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-white to-transparent dark:from-[#080710] z-20 pointer-events-none" />
         <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-white to-transparent dark:from-[#080710] z-20 pointer-events-none" />
@@ -1294,8 +1297,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
           }
         `}</style>
       </section>
+      )}
 
       {/* ── 03. WHAT'S INCLUDED (3 Core Pillars) ── */}
+      {(service as any).whatIncluded?.enabled !== false && (
       <section id="what-included" className="relative overflow-hidden py-20 md:py-24 border-b border-brand-zinc-200 dark:border-white/10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
@@ -1369,8 +1374,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
         </div>
       </section>
+      )}
 
       {/* ── 04. SERVICE STRATEGY (Left Sticky Right Scroll) ── */}
+      {((service as any).strategy?.enabled !== false && (service as any).fullScope?.enabled !== false) && (
       <section className="relative overflow-x-clip py-20 md:py-24 bg-zinc-50/15 dark:bg-[#0c0b18]/10 border-b border-brand-zinc-200 dark:border-white/10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
@@ -1417,8 +1424,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
         </div>
       </section>
+      )}
 
       {/* ── 05. BUSINESS BENEFITS (4 Key Benefits) ── */}
+      {(service as any).benefits?.enabled !== false && (
       <section className="relative overflow-hidden py-20 md:py-24 border-b border-brand-zinc-200 dark:border-white/10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
@@ -1496,8 +1505,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
         </div>
       </section>
+      )}
 
       {/* ── 06. OUR PROCESS / ROADMAP (Sticky Left, Scroll Right Editorial Cards) ── */}
+      {(service as any).process?.enabled !== false && (
       <section className="relative overflow-x-clip py-20 md:py-24 bg-zinc-50/15 dark:bg-[#0c0b18]/10 border-b border-brand-zinc-200 dark:border-white/10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
@@ -1597,8 +1608,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
         </div>
       </section>
+      )}
 
       {/* ── 07. RESULTS (Metrics & Dynamic Cases Switcher) ── */}
+      {(service as any).results?.enabled !== false && (
       <section className="relative overflow-hidden py-16 md:py-20 border-b border-brand-zinc-200 dark:border-white/10 bg-[#F9FAFB]/50 dark:bg-[#0c0b18]/15">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
@@ -1750,8 +1763,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
         </div>
       </section>
+      )}
 
       {/* ── 08. INDUSTRIES WE SERVE (Dashed Icon Container Style) ── */}
+      {(service as any).industries?.enabled !== false && (
       <section className="relative overflow-hidden py-20 md:py-24 border-b border-brand-zinc-200 dark:border-white/10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
@@ -1837,8 +1852,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
         </div>
       </section>
+      )}
 
       {/* ── 09. TOOLS & TECHNOLOGY (Console Mockup Style) ── */}
+      {(service as any).tools?.enabled !== false && (
       <section className="relative overflow-hidden py-20 md:py-24 bg-zinc-50/10 dark:bg-[#0c0b18]/10 border-b border-brand-zinc-200 dark:border-white/10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
@@ -1909,8 +1926,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
         </div>
       </section>
+      )}
 
       {/* ── 10. WHY CHOOSE US (Sticky Left, Scroll Right Differentiators) ── */}
+      {(service as any).whyChooseUs?.enabled !== false && (
       <section className="relative overflow-x-clip py-20 md:py-24 border-b border-brand-zinc-200 dark:border-white/10">
         <div className="absolute inset-0 opacity-[0.022] pointer-events-none" style={{ backgroundImage: "radial-gradient(#0306AC 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
         
@@ -2012,9 +2031,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
           </div>
         </div>
       </section>
+      )}
 
       {/* ── 10.5 PRICING PLANS ── */}
-      {service.pricing && service.pricing.plans && (
+      {((service as any).pricing?.enabled !== false && service.pricing && service.pricing.plans) && (
         <section className="relative overflow-hidden py-20 md:py-24 bg-zinc-50/5 dark:bg-[#0c0b18]/5 border-b border-brand-zinc-200 dark:border-white/10">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
             
@@ -2142,7 +2162,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       )}
 
       {/* ── 11. RECOMMENDED SERVICES ── */}
-      {recommendedServices.length > 0 && (
+      {((service as any).recommendedSection?.enabled !== false && recommendedServices.length > 0) && (
         <section className="relative overflow-hidden py-20 md:py-24 bg-zinc-50/10 dark:bg-[#0c0b18]/15 border-b border-brand-zinc-200 dark:border-white/10">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
@@ -2234,7 +2254,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       )}
 
       {/* ── 12. LATEST ARTICLES ── */}
-      {service.blogSection && Array.isArray(service.blogSection.selectedPosts) && service.blogSection.selectedPosts.length > 0 && (
+      {(service.blogSection?.enabled !== false && service.blogSection && Array.isArray(service.blogSection.selectedPosts) && service.blogSection.selectedPosts.length > 0) && (
         <Blog
           data={{
             title: service.blogSection.title,
@@ -2247,9 +2267,12 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       )}
 
       {/* ── 13. SERVICE AREA SECTION ── */}
-      <ServiceArea data={service.serviceArea || content?.serviceArea} />
+      {(service as any).serviceArea?.enabled !== false && (
+        <ServiceArea data={service.serviceArea || content?.serviceArea} />
+      )}
 
       {/* ── 14. FAQ SECTION ── */}
+      {((service as any).faqSection?.enabled !== false && (service as any).faqs?.enabled !== false) && (
       <section id="faq">
         <PageInlineFaqs
           faqs={(Array.isArray(pageData?.content?.faqs) && pageData.content.faqs.length > 0)
@@ -2267,8 +2290,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
           data={pageData?.content || dbService || service}
         />
       </section>
+      )}
 
       {/* ── 14. FINAL CTA BANNER ── */}
+      {(service as any).finalCta?.enabled !== false && (
       <section className="my-10 relative overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12">
           <motion.div
@@ -2341,6 +2366,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
           </motion.div>
         </div>
       </section>
+      )}
 
       <style dangerouslySetInnerHTML={{
         __html: `

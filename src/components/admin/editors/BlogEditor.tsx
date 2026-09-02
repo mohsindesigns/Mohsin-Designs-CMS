@@ -9,6 +9,7 @@ import {
 import ImageField from "@/components/admin/ImageField";
 import BlogSelector from "@/components/admin/BlogSelector";
 import IconSelector from "@/components/admin/IconSelector";
+import SectionToggle from "@/components/admin/SectionToggle";
 
 const DEFAULT_BLOG_DATA = {
   hero: {
@@ -127,6 +128,17 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
         {/* ── TAB 1: HERO BANNER & INTRO ── */}
         {activeTab === "hero" && (
           <div className="space-y-5">
+            <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+              <div>
+                <h2 className="text-base font-bold text-[#1d2327]">Blog Hero Banner Visibility</h2>
+                <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+              </div>
+              <SectionToggle
+                enabled={blog.hero?.enabled !== false}
+                onChange={(v) => updateBlog(prev => ({ ...prev, hero: { ...prev.hero, enabled: v } }))}
+                label="Blog Hero Banner"
+              />
+            </div>
             <div className="bg-[#f8f9fa] border border-[#dcdcde] p-4 rounded-[4px] space-y-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-[#1d2327]">Hero Headline & Narrative</h3>
 
@@ -269,6 +281,17 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
         {/* ── TAB 2: BLOG SELECTION & MODE ── */}
         {activeTab === "feed" && (
           <div className="space-y-5">
+            <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+              <div>
+                <h2 className="text-base font-bold text-[#1d2327]">Blog Feed &amp; Grid Visibility</h2>
+                <p className="text-xs text-[#646970]">Enable or disable displaying blog feed grid on the live page.</p>
+              </div>
+              <SectionToggle
+                enabled={blog.feedEnabled !== false}
+                onChange={(v) => updateBlog(prev => ({ ...prev, feedEnabled: v }))}
+                label="Blog Feed"
+              />
+            </div>
             <div className="bg-[#f8f9fa] border border-[#dcdcde] p-4 rounded-[4px] space-y-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-[#1d2327]">Blog Feed Configuration</h3>
 
@@ -357,6 +380,17 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
         {/* ── TAB 3: BOTTOM CONVERSION CTA BANNER ── */}
         {activeTab === "cta" && (
           <div className="space-y-5">
+            <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+              <div>
+                <h2 className="text-base font-bold text-[#1d2327]">Index CTA Banner Visibility</h2>
+                <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+              </div>
+              <SectionToggle
+                enabled={blog.ctaBanner?.enabled !== false}
+                onChange={(v) => updateBlog(prev => ({ ...prev, ctaBanner: { ...prev.ctaBanner, enabled: v } }))}
+                label="Index CTA Banner"
+              />
+            </div>
             <div className="bg-[#f8f9fa] border border-[#dcdcde] p-4 rounded-[4px] space-y-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-[#1d2327]">Signature Agency CTA Banner</h3>
 
@@ -538,6 +572,17 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
         {/* ── TAB 4: BLOG DETAIL PAGE (SIDEBAR & CTAS) ── */}
         {activeTab === "detail" && (
           <div className="space-y-5">
+            <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+              <div>
+                <h2 className="text-base font-bold text-[#1d2327]">Detail Page CTAs Visibility</h2>
+                <p className="text-xs text-[#646970]">Enable or disable displaying sidebar and bottom CTAs on article detail pages.</p>
+              </div>
+              <SectionToggle
+                enabled={blog.detailCtaBanner?.enabled !== false}
+                onChange={(v) => updateBlog(prev => ({ ...prev, detailCtaBanner: { ...prev.detailCtaBanner, enabled: v } }))}
+                label="Detail Page CTAs"
+              />
+            </div>
             {/* Sidebar Consultation CTA Box */}
             <div className="bg-[#f8f9fa] border border-[#dcdcde] p-4 rounded-[4px] space-y-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-[#1d2327]">Sticky Sidebar Consultation Box</h3>

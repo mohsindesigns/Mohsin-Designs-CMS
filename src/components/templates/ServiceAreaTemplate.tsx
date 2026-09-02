@@ -222,6 +222,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
     <div className="relative bg-slate-50 text-slate-900 min-h-screen font-body overflow-x-hidden">
 
       {/* ================= 1. HERO BANNER - 100% PURE WHITE TEXT OVERRIDES ================= */}
+      {(hero?.enabled !== false && content.hero?.enabled !== false) && (
       <section className="relative pt-36 pb-32 sm:pt-44 sm:pb-36 bg-slate-950 overflow-hidden">
         {/* Background Banner Image */}
         <div className="absolute inset-0 z-0">
@@ -256,8 +257,10 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
           </div>
         </div>
       </section>
+      )}
 
       {/* ================= 2. STATS SECTION ================= */}
+      {(stats?.enabled !== false && content.stats?.enabled !== false) && (
       <section className="relative z-20 -mt-10 px-6 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-0 bg-white border border-slate-200 rounded-3xl p-8 md:p-10 shadow-xl text-center">
           {stats.map((stat: any, idx: number) => (
@@ -275,8 +278,10 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
           ))}
         </div>
       </section>
+      )}
 
       {/* ================= MAP SECTION - macOS BROWSER DEVICE MOCKUP (Fully Dynamic) ================= */}
+      {(mapData?.enabled !== false && content.map?.enabled !== false) && (
       <section className="py-24 px-6 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
 
@@ -362,8 +367,10 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
         </div>
       </section>
+      )}
 
       {/* ================= PROCESS SECTION - DYNAMIC TIMELINE CARDS ================= */}
+      {(processSection?.enabled !== false && content.process?.enabled !== false) && (
       <section className="py-24 bg-white border-y border-slate-200/60">
         <div className="max-w-7xl mx-auto px-6">
 
@@ -418,8 +425,10 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
         </div>
       </section>
+      )}
 
       {/* ================= PREMIUM MATERIALS WE INSTALL (Fully Dynamic) ================= */}
+      {(materialsData?.enabled !== false && content.materials?.enabled !== false) && (
       <section className="py-24 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6">
 
@@ -492,8 +501,10 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
         </div>
       </section>
+      )}
 
       {/* ================= COMMUNITY ACCORDION COUNTY CARD GROUPS ================= */}
+      {(regionsSection?.enabled !== false && content.regions?.enabled !== false) && (
       <section className="py-24 px-6 max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-2xl sm:text-4xl font-heading font-bold text-slate-900 mb-4">
@@ -530,8 +541,10 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
   ))}
 </div>
       </section>
+      )}
 
       {/* ================= 3. ACTIVE SERVICE CARDS ================= */}
+      {(servicesSection?.enabled !== false && content.services?.enabled !== false) && (
       <section className="bg-white py-24 border-y border-slate-200/60">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
@@ -549,8 +562,10 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
           </div>
         </div>
       </section>
+      )}
 
       {/* ================= WHY CHOOSE US - (Middle Card Highlighted in Premium Dark-Slate) (Fully Dynamic) ================= */}
+      {(whyChooseData?.enabled !== false && content.whyChooseUs?.enabled !== false) && (
       <section className="py-24 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
@@ -602,8 +617,10 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
           </div>
         </div>
       </section>
+      )}
 
       {/* ================= DYNAMIC OVERVIEW SECTION (Heading left, Image right) ================= */}
+      {(overviewData?.enabled !== false && content.overview?.enabled !== false) && (
       <section className="py-24 bg-white border-y border-slate-200/60">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -650,8 +667,10 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
           </div>
         </div>
       </section>
+      )}
 
       {/* ================= FAQ SECTION ================= */}
+      {(content.faqs?.enabled !== false && content.faqSection?.enabled !== false) && (
       <section className="bg-white">
         <PageInlineFaqs 
           faqs={(content.faqs && content.faqs.length > 0) ? content.faqs : faq.items} 
@@ -661,8 +680,10 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
           subtitle={content.faqDescription}
         />
       </section>
+      )}
 
       {/* ================= FINAL CTA SECTION ================= */}
+      {(cta?.enabled !== false && content.cta?.enabled !== false) && (
       <section className="py-20 px-6 max-w-5xl mx-auto">
         <div className="relative bg-slate-950 rounded-[2rem] p-10 sm:p-16 text-center border border-slate-800 shadow-xl overflow-hidden">
           <div className="absolute inset-0 z-0">
@@ -685,6 +706,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
           </div>
         </div>
       </section>
+      )}
 
       <QuickQuote />
 

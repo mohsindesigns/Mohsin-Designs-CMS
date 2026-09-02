@@ -12,6 +12,7 @@ const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor")
   loading: () => <div className="h-64 bg-[#f6f7f7] animate-pulse border border-[#c3c4c7] rounded-sm flex items-center justify-center text-[#8c8f94] text-xs">Loading Rich Text Editor...</div>
 });
 import { UI } from "./styles";
+import SectionToggle from "@/components/admin/SectionToggle";
 
 export default function ReviewsEditor({ data, setData }: { pageId: string, data: any, setData: (d: any) => void }) {
   const [activeTab, setActiveTab] = useState("header");
@@ -93,6 +94,17 @@ export default function ReviewsEditor({ data, setData }: { pageId: string, data:
             {/* HEADER SECTION */}
             {activeTab === "header" && (
               <div className="max-w-3xl space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Review Header Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.testimonials?.section?.enabled !== false}
+                    onChange={(v) => updateTestimonials("section", "enabled", v)}
+                    label="Review Header"
+                  />
+                </div>
                  <div className={UI.card + " space-y-5"}>
                     <div className="space-y-1.5">
                        <label className={UI.label}>Section Badge</label>
@@ -132,6 +144,17 @@ export default function ReviewsEditor({ data, setData }: { pageId: string, data:
              {/* TESTIMONIALS SECTION */}
             {activeTab === "items" && (
               <div className="space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Testimonials Grid Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying testimonials grid on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.testimonials?.testimonialsEnabled !== false}
+                    onChange={(v) => updateTestimonials("testimonialsEnabled", null, v)}
+                    label="Testimonials Grid"
+                  />
+                </div>
                  <ContentSelector 
                     type="reviews" 
                     label="Review Repository (Select from Managed Inventory)" 

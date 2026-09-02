@@ -17,6 +17,7 @@ const QuillEditor = dynamic(() => import("@/components/admin/QuillEditor"), {
    loading: () => <div className="h-64 bg-[#f6f7f7] animate-pulse border border-[#c3c4c7] rounded-sm flex items-center justify-center text-[#8c8f94] text-xs">Loading Rich Text Editor...</div>
 });
 import { UI } from "./styles";
+import SectionToggle from "@/components/admin/SectionToggle";
 
 export default function AboutEditor({ pageId, data, setData }: { pageId: string, data: any, setData: (d: any) => void }) {
    const [activeTab, setActiveTab] = useState("hero");
@@ -94,6 +95,17 @@ export default function AboutEditor({ pageId, data, setData }: { pageId: string,
                {/* HERO SECTION */}
                {activeTab === "hero" && (
                   <div className="space-y-10">
+                     <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                        <div>
+                           <h2 className="text-base font-bold text-[#1d2327]">Hero Section Visibility</h2>
+                           <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                        </div>
+                        <SectionToggle
+                           enabled={data.hero?.enabled !== false}
+                           onChange={(v) => updateSection("hero", "enabled", v)}
+                           label="Hero Section"
+                        />
+                     </div>
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>1. Headline</h3>
                         <div className="space-y-2">
@@ -148,6 +160,17 @@ export default function AboutEditor({ pageId, data, setData }: { pageId: string,
                {/* MISSION SECTION */}
                {activeTab === "mission" && (
                   <div className="space-y-10">
+                     <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                        <div>
+                           <h2 className="text-base font-bold text-[#1d2327]">Mission Section Visibility</h2>
+                           <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                        </div>
+                        <SectionToggle
+                           enabled={data.mission?.enabled !== false}
+                           onChange={(v) => updateSection("mission", "enabled", v)}
+                           label="Mission Section"
+                        />
+                     </div>
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>1. Header</h3>
                         <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.mission?.badge || ""} onChange={(e) => updateSection("mission", "badge", e.target.value)} className={UI.input} /></div>
@@ -203,6 +226,17 @@ export default function AboutEditor({ pageId, data, setData }: { pageId: string,
                {/* STORY SECTION */}
                {activeTab === "story" && (
                   <div className="space-y-10">
+                     <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                        <div>
+                           <h2 className="text-base font-bold text-[#1d2327]">Founder Story Visibility</h2>
+                           <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                        </div>
+                        <SectionToggle
+                           enabled={data.story?.enabled !== false}
+                           onChange={(v) => updateSection("story", "enabled", v)}
+                           label="Founder Story"
+                        />
+                     </div>
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>1. Header</h3>
                         <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.story?.badge || ""} onChange={(e) => updateSection("story", "badge", e.target.value)} className={UI.input} /></div>
@@ -264,6 +298,17 @@ export default function AboutEditor({ pageId, data, setData }: { pageId: string,
                {/* VALUES SECTION */}
                {activeTab === "values" && (
                   <div className="space-y-10">
+                     <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                        <div>
+                           <h2 className="text-base font-bold text-[#1d2327]">Core Values Visibility</h2>
+                           <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                        </div>
+                        <SectionToggle
+                           enabled={data.values?.enabled !== false}
+                           onChange={(v) => updateSection("values", "enabled", v)}
+                           label="Core Values"
+                        />
+                     </div>
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>1. Header</h3>
                         <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.values?.badge || ""} onChange={(e) => updateSection("values", "badge", e.target.value)} className={UI.input} /></div>
@@ -310,6 +355,17 @@ export default function AboutEditor({ pageId, data, setData }: { pageId: string,
                {/* CAPABILITIES SECTION */}
                {activeTab === "capabilities" && (
                   <div className="space-y-10">
+                     <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                        <div>
+                           <h2 className="text-base font-bold text-[#1d2327]">Capabilities Visibility</h2>
+                           <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                        </div>
+                        <SectionToggle
+                           enabled={data.capabilities?.enabled !== false}
+                           onChange={(v) => updateSection("capabilities", "enabled", v)}
+                           label="Capabilities"
+                        />
+                     </div>
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>Header</h3>
                         <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.capabilities?.badge || ""} onChange={(e) => updateSection("capabilities", "badge", e.target.value)} className={UI.input} /></div>
@@ -342,6 +398,17 @@ export default function AboutEditor({ pageId, data, setData }: { pageId: string,
                {/* STATS SECTION */}
                {activeTab === "stats" && (
                   <div className="space-y-10">
+                     <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                        <div>
+                           <h2 className="text-base font-bold text-[#1d2327]">Stats & Badges Visibility</h2>
+                           <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                        </div>
+                        <SectionToggle
+                           enabled={data.stats?.enabled !== false}
+                           onChange={(v) => updateSection("stats", "enabled", v)}
+                           label="Stats & Badges"
+                        />
+                     </div>
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>1. Header</h3>
                         <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.stats?.badge || ""} onChange={(e) => updateSection("stats", "badge", e.target.value)} className={UI.input} /></div>
@@ -392,6 +459,17 @@ export default function AboutEditor({ pageId, data, setData }: { pageId: string,
                {/* CTA BANNER SECTION */}
                {activeTab === "ctaBanner" && (
                   <div className="space-y-10">
+                     <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                        <div>
+                           <h2 className="text-base font-bold text-[#1d2327]">CTA Banner Visibility</h2>
+                           <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                        </div>
+                        <SectionToggle
+                           enabled={data.ctaBanner?.enabled !== false}
+                           onChange={(v) => updateSection("ctaBanner", "enabled", v)}
+                           label="CTA Banner"
+                        />
+                     </div>
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>1. Header</h3>
                         <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.ctaBanner?.badge || ""} onChange={(e) => updateSection("ctaBanner", "badge", e.target.value)} className={UI.input} /></div>
@@ -429,6 +507,20 @@ export default function AboutEditor({ pageId, data, setData }: { pageId: string,
                {/* BLOG SECTION */}
                {activeTab === "blog" && (
                   <div className="space-y-12">
+                     <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                        <div>
+                           <h2 className="text-base font-bold text-[#1d2327]">Featured Blog Visibility</h2>
+                           <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                        </div>
+                        <SectionToggle
+                           enabled={data.blogSection?.enabled !== false && data.blog?.enabled !== false}
+                           onChange={(v) => {
+                              updateSection("blogSection", "enabled", v);
+                              updateSection("blog", "enabled", v);
+                           }}
+                           label="Featured Blog"
+                        />
+                     </div>
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>1. Header</h3>
                         <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.blogSection?.subtitle || ""} onChange={(e) => updateSection("blogSection", "subtitle", e.target.value)} className={UI.input} /></div>

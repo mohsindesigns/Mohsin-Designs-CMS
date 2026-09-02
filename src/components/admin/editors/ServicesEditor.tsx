@@ -14,6 +14,7 @@ import ContentSelector from "@/components/admin/ContentSelector";
 import BlogSelector from "@/components/admin/BlogSelector";
 import ImageField from "@/components/admin/ImageField";
 import { UI } from "./styles";
+import SectionToggle from "@/components/admin/SectionToggle";
 
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), { 
   ssr: false,
@@ -114,6 +115,17 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
             {/* TAB 1: HERO */}
             {activeTab === "hero" && (
               <div className="space-y-8">
+                <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Hero Banner Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.hero?.enabled !== false}
+                    onChange={(v) => updateSection("hero", "enabled", v)}
+                    label="Hero Banner"
+                  />
+                </div>
                 <div className="space-y-6">
                   <h3 className={UI.sectionHeader}>1. Hero Branding & Tagline</h3>
                   <div className="space-y-1.5">
@@ -234,6 +246,17 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
             {/* TAB 2: GRID SECTION */}
             {activeTab === "grid" && (
               <div className="space-y-8">
+                <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Services Grid Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.grid?.enabled !== false}
+                    onChange={(v) => updateSection("grid", "enabled", v)}
+                    label="Services Grid"
+                  />
+                </div>
                 <div className="space-y-6">
                   <h3 className={UI.sectionHeader}>1. Section Headings</h3>
                   <div className="space-y-4">
@@ -303,6 +326,17 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
             {/* TAB 3: CTA BANNER */}
             {activeTab === "cta" && (
               <div className="space-y-8">
+                <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">CTA Banner Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.ctaBanner?.enabled !== false}
+                    onChange={(v) => updateSection("ctaBanner", "enabled", v)}
+                    label="CTA Banner"
+                  />
+                </div>
                 <div className="space-y-6">
                   <h3 className={UI.sectionHeader}>1. Banner Headlines</h3>
                   <div className="space-y-4">
@@ -430,6 +464,20 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
             {/* TAB 4: BLOG */}
             {activeTab === "blog" && (
               <div className="space-y-8">
+                <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Featured Blog Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.blogSection?.enabled !== false && data.blog?.enabled !== false}
+                    onChange={(v) => {
+                      updateSection("blogSection", "enabled", v);
+                      updateSection("blog", "enabled", v);
+                    }}
+                    label="Featured Blog"
+                  />
+                </div>
                 <div className="space-y-6">
                   <h3 className={UI.sectionHeader}>1. Section Heading</h3>
                   <div className="space-y-4">

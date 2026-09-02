@@ -15,6 +15,7 @@ const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor")
   loading: () => <div className="h-64 bg-[#f6f7f7] animate-pulse border border-[#c3c4c7] rounded-sm flex items-center justify-center text-[#8c8f94] text-xs">Loading Rich Text Editor...</div>
 });
 import { UI } from "./styles";
+import SectionToggle from "@/components/admin/SectionToggle";
 
 export default function FAQEditor({ pageId, data, setData }: { pageId: string, data: any, setData: (d: any) => void }) {
   const [activeTab, setActiveTab] = useState("header");
@@ -105,6 +106,17 @@ export default function FAQEditor({ pageId, data, setData }: { pageId: string, d
             {/* HEADER SECTION */}
             {activeTab === "header" && (
               <div className="max-w-3xl space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">FAQ Header Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.faq?.section?.enabled !== false}
+                    onChange={(v) => updateFAQ("section", "enabled", v)}
+                    label="FAQ Header"
+                  />
+                </div>
                  <div className={UI.card + " space-y-5"}>
                     <div className="space-y-1.5">
                        <label className={UI.label}>Main Headline</label>
@@ -122,6 +134,17 @@ export default function FAQEditor({ pageId, data, setData }: { pageId: string, d
             {/* CATEGORIES SECTION */}
             {activeTab === "categories" && (
               <div className="space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Filter Taxonomy Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying category filters on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.faq?.categoriesEnabled !== false}
+                    onChange={(v) => updateFAQ("categoriesEnabled", null, v)}
+                    label="Filter Taxonomy"
+                  />
+                </div>
                  <label className={UI.label}>Filtering Taxonomy</label>
                   <div className="space-y-4">
                      {(data.faq?.categories || []).map((cat: any, i: number) => (
@@ -160,6 +183,17 @@ export default function FAQEditor({ pageId, data, setData }: { pageId: string, d
              {/* ITEMS SECTION */}
             {activeTab === "items" && (
               <div className="space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Q&A Database Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying the FAQ accordion database on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.faq?.itemsEnabled !== false}
+                    onChange={(v) => updateFAQ("itemsEnabled", null, v)}
+                    label="Q&A Database"
+                  />
+                </div>
                  <ContentSelector 
                     type="faq" 
                     label="Knowledge Inventory (Select from Global Library)" 
