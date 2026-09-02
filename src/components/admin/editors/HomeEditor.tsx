@@ -25,7 +25,7 @@ const QuillEditor = dynamic(() => import("@/components/admin/QuillEditor"), {
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
 
-export default function HomeEditor({ pageId, data, setData }: { pageId: string, data: any, setData: (d: any) => void }) {
+export default function HomeEditor({ pageId, data, setData, aboutClean = false }: { pageId: string, data: any, setData: (d: any) => void, aboutClean?: boolean }) {
    const [activeTab, setActiveTab] = useState("hero");
 
    useEffect(() => {
@@ -522,6 +522,7 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                         />
 
                      </div>
+                     {!aboutClean && (
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>3. Action Buttons</h3>
                         <div className="space-y-4">
@@ -540,6 +541,8 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                            <button onClick={() => updateSection("about", "buttons", [...(data.about?.buttons || []), { text: "", href: "", primary: false, icon: "ArrowRight" }])} className={UI.buttonAdd}>+ Add Button</button>
                         </div>
                      </div>
+                     )}
+                     {!aboutClean && (
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>4. Stats</h3>
                         <div className="space-y-4">
@@ -557,6 +560,7 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                            <button onClick={() => updateSection("about", "stats", [...(data.about?.stats || []), { value: 0, suffix: "+", label: "" }])} className={UI.buttonAdd}>+ Add Stat</button>
                         </div>
                      </div>
+                     )}
 
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>5. Media</h3>
