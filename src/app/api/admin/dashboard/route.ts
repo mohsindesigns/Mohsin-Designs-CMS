@@ -4,12 +4,12 @@ import Page from '@/models/Page';
 import User from '@/models/User';
 import ActivityLog from '@/models/ActivityLog';
 import Submission from '@/models/Submission';
-import { hasPermission } from '@/lib/rbac';
-import mongoose from 'mongoose';
+import { getSessionUser } from '@/lib/rbac';
 
 export async function GET(req: NextRequest) {
-  if (!(await hasPermission(req, 'pages', 'read'))) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+  const session = await getSessionUser(req);
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {

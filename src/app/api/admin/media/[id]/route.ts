@@ -1,13 +1,20 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import Media from '@/models/Media';
 import { unlink } from 'fs/promises';
 import path from 'path';
+import { hasPermission, getSessionUser } from '@/lib/rbac';
+import { recordActivity } from '@/lib/logger';
 
 export async function PATCH(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await getSessionUser(req);
+  if (!(await hasPermission(req, 'media', 'update'))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+  }
+
   try {
     const { id } = await params;
     await connectToDatabase();
@@ -24,6 +31,16 @@ export async function PATCH(
       return NextResponse.json({ error: 'Media not found' }, { status: 404 });
     }
 
+    await recordActivity({
+      user: (session as any)?.userId,
+      userName: (session as any)?.username,
+      action: 'UPDATE_MEDIA',
+      entity: 'Media',
+      entityId: id,
+      details: { title: updatedMedia.title, name: updatedMedia.name },
+      ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
+    });
+
     return NextResponse.json(updatedMedia);
   } catch (error: any) {
     console.error('Media update error:', error);
@@ -32,9 +49,14 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await getSessionUser(req);
+  if (!(await hasPermission(req, 'media', 'delete'))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+  }
+
   try {
     const { id } = await params;
     await connectToDatabase();
@@ -54,10 +76,20 @@ export async function DELETE(
       }
     } catch (err) {
       console.warn('Physical file deletion failed or file already gone:', err);
-      // We continue anyway to clean up the DB record
     }
 
     await Media.findByIdAndDelete(id);
+
+    await recordActivity({
+      user: (session as any)?.userId,
+      userName: (session as any)?.username,
+      action: 'DELETE_MEDIA',
+      entity: 'Media',
+      entityId: id,
+      details: { name: media.name, url: media.url },
+      ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
+    });
+
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error('Media delete error:', error);

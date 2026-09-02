@@ -104,7 +104,7 @@ const QuickQuote = () => {
     const projectTypes = (() => {
         const servicesList = Array.isArray(services) ? services : (services as any)?.services || [];
         const publishedServices = servicesList.filter((s: any) => s.status === 'published' || s.status === undefined);
-        
+
         return publishedServices.map((service: any) => ({
             value: service.slug || service.title.toLowerCase().replace(/ /g, '-'),
             label: service.title
@@ -509,7 +509,7 @@ ${formData.message}
                                                         {quickQuote.title || "Quick Quote"}
                                                     </h2>
                                                     <div className="text-sm text-muted-foreground">
-                                                         <RichTextRenderer content={quickQuote.description || "Get your free estimate in minutes"} stripParagraphs={true} />
+                                                        <RichTextRenderer content={quickQuote.description || "Get your free estimate in minutes"} stripParagraphs={true} />
                                                     </div>
                                                 </div>
                                             </div>

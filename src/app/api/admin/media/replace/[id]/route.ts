@@ -1,14 +1,21 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import Media from '@/models/Media';
 import SiteContent from '@/models/Content';
 import { unlink, writeFile } from 'fs/promises';
 import path from 'path';
+import { hasPermission, getSessionUser } from '@/lib/rbac';
+import { recordActivity } from '@/lib/logger';
 
 export async function POST(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await getSessionUser(req);
+  if (!(await hasPermission(req, 'media', 'update'))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+  }
+
   try {
     const { id } = await params;
     await connectToDatabase();
@@ -85,6 +92,16 @@ export async function POST(
     } catch (err) {
       console.warn('Old file deletion failed:', err);
     }
+
+    await recordActivity({
+      user: (session as any)?.userId,
+      userName: (session as any)?.username,
+      action: 'REPLACE_MEDIA',
+      entity: 'Media',
+      entityId: id,
+      details: { oldUrl, newUrl, filename },
+      ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
+    });
 
     return NextResponse.json(updatedMedia);
   } catch (error: any) {

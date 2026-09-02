@@ -57,7 +57,8 @@ const TestimonialCard = ({ testimonial, index, onPlay }: any) => {
 };
 
 export default function ReviewsTemplate({ pageData, params }: { pageData?: any, params?: any }) {
-    const { testimonials: data } = useContent();
+    const { testimonials: globalData } = useContent();
+    const data = pageData?.content?.testimonials || pageData?.content || globalData;
     const { section, testimonials = [], videos = [], stats = {} as any } = data || {};
     const [selectedVideo, setSelectedVideo] = useState<{ id: string; title: string } | null>(null);
 

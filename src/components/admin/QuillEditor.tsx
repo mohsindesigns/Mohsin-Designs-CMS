@@ -105,7 +105,7 @@ export default function QuillEditor({ content, onChange, label, placeholder }: Q
         quillRef.current = null;
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line
   }, []); // Only run ONCE on mount
 
   // Sync content dynamically if updated externally and editor is not focused
