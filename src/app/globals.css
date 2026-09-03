@@ -1101,6 +1101,44 @@
   .rich-text-link:hover {
     @apply opacity-80;
   }
+
+  /* Dark mode rich text fixes - override any hardcoded inline black text */
+  .dark .rich-text-content,
+  .dark .rich-text-content p,
+  .dark .rich-text-content span,
+  .dark .rich-text-content li {
+    color: #d4d4d8; /* zinc-300 */
+  }
+
+  .dark .rich-text-content strong,
+  .dark .rich-text-content b {
+    color: #ffffff;
+  }
+
+  .dark .rich-text-content h1,
+  .dark .rich-text-content h2,
+  .dark .rich-text-content h3,
+  .dark .rich-text-content h4,
+  .dark .rich-text-content h5,
+  .dark .rich-text-content h6,
+  .dark .rich-text-content h1 *,
+  .dark .rich-text-content h2 *,
+  .dark .rich-text-content h3 *,
+  .dark .rich-text-content h4 * {
+    color: #ffffff !important;
+  }
+
+  .dark .rich-text-content [style*="color: rgb(0, 0, 0)"],
+  .dark .rich-text-content [style*="color: rgb(0,0,0)"],
+  .dark .rich-text-content [style*="color: #000"],
+  .dark .rich-text-content [style*="color: #000000"],
+  .dark .rich-text-content [style*="color: black"],
+  .dark .rich-text-content [style*="color:#000000"],
+  .dark .rich-text-content [style*="color:#000"],
+  .dark .rich-text-content [style*="color:black"] {
+    color: inherit !important;
+  }
+
   .prose a {
     @apply text-primary dark:text-brand-yellow font-medium transition-colors cursor-pointer !important;
     pointer-events: auto !important;

@@ -63,7 +63,15 @@ export default function RichTextRenderer({ content, className = "", stripParagra
       .replace(/&lt;\/strong&gt;/gi, '</strong>');
   };
 
-  sanitizedHtml = makeLinksDoFollow(unescapeLiteralTags(sanitizedHtml));
+  // Helper to normalize and strip harmful hardcoded inline black colors
+  const stripInlineColors = (html: string) => {
+    if (!html || typeof html !== "string") return html;
+    return html
+      .replace(/color:\s*(?:rgb\(\s*0\s*,\s*0\s*,\s*0\s*\)|#000000|#000|black);?/gi, '')
+      .replace(/background-color:\s*transparent;?/gi, '');
+  };
+
+  sanitizedHtml = makeLinksDoFollow(unescapeLiteralTags(stripInlineColors(sanitizedHtml)));
 
   // If stripParagraphs is true, remove all P tags (real or just unescaped)
   if (stripParagraphs) {

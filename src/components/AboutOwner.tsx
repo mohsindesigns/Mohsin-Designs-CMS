@@ -182,7 +182,7 @@ export default function AboutOwner() {
                 <defs>
                   <path id="aboutCirclePath" d="M 50, 50 m -30, 0 a 30,30 0 1,1 60,0 a 30,30 0 1,1 -60,0" />
                 </defs>
-                <text className="text-[7.5px] font-black uppercase tracking-wider fill-brand-zinc-400 font-sans">
+                <text className="text-[7.5px] font-black uppercase tracking-wider fill-brand-zinc-400 dark:fill-zinc-300 font-sans">
                   <textPath href="#aboutCirclePath" startOffset="0%">
                     {circleText}
                   </textPath>
@@ -194,6 +194,9 @@ export default function AboutOwner() {
                 </div>
               </div>
             </motion.div>
+
+            {/* Ambient Dark Mode Glow */}
+            <div className="absolute -inset-4 bg-gradient-to-tr from-brand-blue/20 to-brand-yellow/15 rounded-3xl blur-2xl opacity-0 dark:opacity-50 pointer-events-none transition-opacity duration-500" />
 
             {/* Portrait Image Container */}
             <div className="relative aspect-[3/4] w-full max-w-[420px] overflow-hidden rounded-2xl border border-brand-zinc-200 dark:border-white/10 shadow-md bg-brand-zinc-50 dark:bg-zinc-900 z-10 group cursor-pointer">
@@ -242,7 +245,7 @@ export default function AboutOwner() {
             </div>
 
             {/* Narrative biography */}
-            <div className="space-y-5 font-sans prose prose-sm sm:prose-base max-w-none prose-p:text-brand-zinc-600 dark:prose-p:text-zinc-400 prose-p:leading-relaxed prose-strong:text-brand-dark dark:prose-strong:text-zinc-100 prose-strong:text-lg md:prose-strong:text-xl prose-strong:leading-relaxed prose-strong:font-semibold">
+            <div className="space-y-5 font-sans prose dark:prose-invert prose-sm sm:prose-base max-w-none prose-p:text-brand-zinc-600 dark:prose-p:text-zinc-300 prose-p:leading-relaxed prose-strong:text-brand-dark dark:prose-strong:text-white prose-strong:text-lg md:prose-strong:text-xl prose-strong:leading-relaxed prose-strong:font-semibold prose-headings:text-brand-dark dark:prose-headings:text-white">
               <RichTextRenderer content={bioContent} />
             </div>
 

@@ -136,7 +136,7 @@ export default function AboutOwnerClean({ data: propData }: { data?: any }) {
             </div>
 
             {/* Narrative biography */}
-            <div className="space-y-5 font-sans prose prose-sm sm:prose-base max-w-none prose-p:text-brand-zinc-600 dark:prose-p:text-zinc-400 prose-p:leading-relaxed prose-strong:text-brand-dark dark:prose-strong:text-zinc-100 prose-strong:text-lg md:prose-strong:text-xl prose-strong:leading-relaxed prose-strong:font-semibold">
+            <div className="space-y-5 font-sans prose dark:prose-invert prose-sm sm:prose-base max-w-none prose-p:text-brand-zinc-600 dark:prose-p:text-zinc-300 prose-p:leading-relaxed prose-strong:text-brand-dark dark:prose-strong:text-white prose-strong:text-lg md:prose-strong:text-xl prose-strong:leading-relaxed prose-strong:font-semibold prose-headings:text-brand-dark dark:prose-headings:text-white">
               <RichTextRenderer content={bioContent} />
             </div>
 
