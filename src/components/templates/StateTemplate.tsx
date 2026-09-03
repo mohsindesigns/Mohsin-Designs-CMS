@@ -36,7 +36,7 @@ export default function StateTemplate({ pageData, params }: { pageData?: any; pa
   return (
     <div className="relative">
       {/* 1. Hero Section */}
-      {content.hero?.enabled !== false && hasContent(content.hero) && <Hero />}
+      {content.hero?.enabled !== false && hasContent(content.hero) && <Hero data={content.hero} />}
 
       {/* 1.5 Trusted Brands */}
       {(content.trustedBrands?.enabled !== false && content.clientTrust?.enabled !== false && content.trustedBy?.enabled !== false) && 
@@ -62,26 +62,28 @@ export default function StateTemplate({ pageData, params }: { pageData?: any; pa
       {/* 3. Selected Portfolio Projects */}
       {content.portfolio?.enabled !== false && hasContent(content.portfolio) && (
         <section id="portfolio">
-          <Portfolio />
+          <Portfolio data={content.portfolio} />
         </section>
       )}
 
       {/* 4. Reviews / Testimonials */}
       {(content.testimonials?.enabled !== false && content.reviews?.enabled !== false) && 
-        (hasContent(content.testimonials) || hasContent(content.reviews)) && <Testimonials />}
+        (hasContent(content.testimonials) || hasContent(content.reviews)) && (
+        <Testimonials data={content.testimonials || content.reviews} />
+      )}
 
       {/* 5. How We Work / Value Props */}
       {(content.whyChooseUs?.enabled !== false && content.howWeWork?.enabled !== false) && 
         (hasContent(content.whyChooseUs || content.howWeWork)) && (
         <section id="how-we-work">
-          <HowWeWork />
+          <HowWeWork data={content.whyChooseUs || content.howWeWork} />
         </section>
       )}
 
       {/* 6. Service Area (State & Metro cities) */}
       {content.serviceArea?.enabled !== false && hasContent(content.serviceArea) && (
         <section id="service-area">
-          <ServiceArea />
+          <ServiceArea data={content.serviceArea} />
         </section>
       )}
 

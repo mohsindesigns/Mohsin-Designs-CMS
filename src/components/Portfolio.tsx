@@ -340,12 +340,17 @@ export default function Portfolio({ data }: { data?: any }) {
   const [activeCategory, setActiveCategory] = useState("all");
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
 
-  const { portfolio: cmsPortfolio } = useContent();
-  const rawProjects = cmsPortfolio?.projects || [];
+  const { portfolio: globalPortfolio } = useContent();
+  const cmsPortfolio = data || globalPortfolio;
+  const rawProjects = cmsPortfolio?.projects || cmsPortfolio?.caseStudies || [];
 
   const portfolio = {
     ...DEFAULT_PORTFOLIO,
     ...cmsPortfolio,
+    sectionTag: cmsPortfolio?.sectionTag || DEFAULT_PORTFOLIO.sectionTag,
+    titleIntro: cmsPortfolio?.titleIntro || DEFAULT_PORTFOLIO.titleIntro,
+    titleHighlight: cmsPortfolio?.titleHighlight || DEFAULT_PORTFOLIO.titleHighlight,
+    description: cmsPortfolio?.description || DEFAULT_PORTFOLIO.description,
     categories: cmsPortfolio?.categories && cmsPortfolio.categories.length > 0
       ? cmsPortfolio.categories
       : DEFAULT_PORTFOLIO.categories,

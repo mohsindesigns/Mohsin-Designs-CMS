@@ -20,16 +20,16 @@ const clipVariants = {
   })
 };
 
-export default function Hero() {
+export default function Hero({ data, content: overrideContent }: { data?: any; content?: any } = {}) {
   const content = useContent();
-  const { hero } = content;
+  const hero = data || overrideContent || content.hero;
 
   // Extract variables with proper default fallbacks for CMS dynamicity
-  const badgeText = hero?.badge ?? hero?.badgeText ?? "Premium Exterior Solutions";
-  const titleLine1 = hero?.titleLine1 !== undefined ? hero.titleLine1 : (hero?.headline || "Exterior Remodeling");
+  const badgeText = hero?.badge ?? hero?.badgeText ?? "Trusted by 3,000+ US Businesses";
+  const titleLine1 = hero?.titleLine1 !== undefined ? hero.titleLine1 : (hero?.headline || "Digital Marketing & Design");
   const titleConnector = hero?.titleConnector !== undefined ? hero.titleConnector : "";
-  const titleLine2 = hero?.titleLine2 !== undefined ? hero.titleLine2 : (hero?.headlineHighlight || "Honor & Precision");
-  const description = hero?.description !== undefined ? hero.description : "Veteran-owned roofing & home improvement in St. Louis, MO.";
+  const titleLine2 = hero?.titleLine2 !== undefined ? hero.titleLine2 : (hero?.headlineHighlight || "Built to Grow Your Brand");
+  const description = hero?.description !== undefined ? hero.description : "High-performance digital engineering, branding, SEO, and web design.";
   
   // Resolve buttons dynamically from CMS array or fallback to defaults
   const buttonsList = (Array.isArray(hero?.buttons) && hero.buttons.length > 0)
