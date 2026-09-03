@@ -1194,17 +1194,17 @@
             {
                 "platform": "Instagram",
                 "icon": "Instagram",
-                "href": "https://www.instagram.com/eagle_revolutionllc"
+                "href": "https://www.instagram.com/mohsindesigns"
             },
             {
                 "platform": "LinkedIn",
                 "icon": "Linkedin",
-                "href": "https://www.linkedin.com/company/eagle-revolution/people/"
+                "href": "https://www.linkedin.com/company/mohsindesigns"
             },
             {
                 "platform": "X (Twitter)",
                 "icon": "Twitter",
-                "href": "https://x.com/Eagle_Rev_LLC"
+                "href": "https://x.com/MohsinDesigns"
             }
         ],
         "bottom": {
@@ -1250,7 +1250,7 @@
         "hero": "/src/assets/bgfair.jpg",
         "about": "/src/assets/fairabout.png",
         "services": "/src/assets/fairservice.png",
-        "ceo": "/src/assets/eagleowner.jpeg",
+        "ceo": "/src/assets/ownerupdatedimage.jpeg",
         "portfolio": {
             "home1": "/src/assets/portfolio1.png",
             "home2": "/src/assets/portfolio2.jpg",
@@ -1430,8 +1430,8 @@
                 "Our systems are built for precision, but our strength is our people—driven professionals who take ownership, communicate clearly, and treat every home like their own."
             ],
             "social": {
-                "linkedin": "https://www.linkedin.com/company/eagle-revolution/people/",
-                "email": "banderson@mohsindesigns.com"
+                "linkedin": "https://www.linkedin.com/company/mohsindesigns",
+                "email": "info@mohsindesigns.com"
             },
             "imageBadges": {
                 "top": "VETERAN OWNED",
