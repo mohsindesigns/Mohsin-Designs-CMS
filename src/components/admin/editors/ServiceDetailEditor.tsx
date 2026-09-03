@@ -2015,6 +2015,17 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
             {/* 11. PRICING PLANS */}
             {activeTab === "pricing" && (
               <div className="space-y-6">
+                <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">Pricing Plans Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live service page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.pricing?.enabled !== false}
+                    onChange={(v) => updateSection("pricing", "enabled", v)}
+                    label="Pricing Plans"
+                  />
+                </div>
                 <h3 className={UI.sectionHeader}>Pricing Plans & Sprint Packages</h3>
                 <div className="space-y-1.5">
                   <label className={UI.label}>Badge / Eyebrow</label>

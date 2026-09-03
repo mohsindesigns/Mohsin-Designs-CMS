@@ -430,6 +430,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
     slug: dbService?.slug || resolvedSlug,
     tag: dbService?.tag || "Premium Solution",
     hero: {
+      enabled: dbService?.hero?.enabled,
       titleIntro: dbService?.hero?.titleIntro || dbService?.heroTitleIntro || dbService?.title || "Transform Your Business With",
       titleHighlight: dbService?.hero?.titleHighlight || dbService?.heroTitleHighlight || "Expert Solutions",
       description: dbService?.hero?.description || dbService?.heroDescription || dbService?.description || "High-performance digital engineering and growth architecture tailored to maximize brand equity.",
@@ -458,6 +459,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       formButtonText: dbService?.hero?.formButtonText || dbService?.hero?.btnSubmit || "Request Free Proposal"
     },
     clientTrust: {
+      enabled: dbService?.clientTrust?.enabled,
       heading: dbService?.clientTrust?.heading || "ENTERPRISE PLATFORMS WE INTEGRATE & ACCELERATE",
       logos: (Array.isArray(dbService?.clientTrust?.logos) && dbService.clientTrust.logos.length > 0)
         ? dbService.clientTrust.logos
@@ -472,6 +474,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               ])
     },
     whatIncluded: {
+      enabled: dbService?.whatIncluded?.enabled,
       eyebrow: dbService?.whatIncluded?.eyebrow || "03 // CORE CAPABILITIES",
       titleIntro: dbService?.whatIncluded?.titleIntro || "What's Included in",
       titleHighlight: dbService?.whatIncluded?.titleHighlight || "Our Delivery",
@@ -503,6 +506,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
           ]
     },
     strategy: {
+      enabled: dbService?.strategy?.enabled,
       eyebrow: dbService?.strategy?.eyebrow || "04 // STRATEGIC APPROACH",
       titleIntro: dbService?.strategy?.titleIntro || "Engineered For",
       titleHighlight: dbService?.strategy?.titleHighlight || "Compounding Impact",
@@ -520,6 +524,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
           ]
     },
     benefits: {
+      enabled: dbService?.benefits?.enabled,
       eyebrow: dbService?.benefits?.eyebrow || "05 // MEASURABLE OUTCOMES",
       titleIntro: dbService?.benefits?.titleIntro || "Key Business",
       titleHighlight: dbService?.benefits?.titleHighlight || "Advantages",
@@ -560,6 +565,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                   ]))
     },
     process: {
+      enabled: dbService?.process?.enabled,
       eyebrow: dbService?.process?.eyebrow || "06 // IMPLEMENTATION ROADMAP",
       titleIntro: dbService?.process?.titleIntro || "Our Step-by-Step",
       titleHighlight: dbService?.process?.titleHighlight || "Roadmap",
@@ -624,6 +630,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               ])
     },
     results: {
+      enabled: dbService?.results?.enabled,
       eyebrow: dbService?.results?.eyebrow || "07 // PROVEN PERFORMANCE",
       titleIntro: dbService?.results?.titleIntro || "Real-World",
       titleHighlight: dbService?.results?.titleHighlight || "Impact & ROI",
@@ -689,6 +696,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
           ]
     },
     industries: {
+      enabled: dbService?.industries?.enabled,
       eyebrow: dbService?.industries?.eyebrow || "08 // SECTORS WE ACCELERATE",
       titleIntro: dbService?.industries?.titleIntro || "Industries",
       titleHighlight: dbService?.industries?.titleHighlight || "We Specialize In",
@@ -731,6 +739,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       })()
     },
     tools: {
+      enabled: dbService?.tools?.enabled,
       eyebrow: dbService?.tools?.eyebrow || "09 // TECH STACK",
       titleIntro: dbService?.tools?.titleIntro || "Modern",
       titleHighlight: dbService?.tools?.titleHighlight || "Frameworks & Tools",
@@ -787,6 +796,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       })()
     },
     whyChooseUs: {
+      enabled: dbService?.whyChooseUs?.enabled,
       eyebrow: dbService?.whyChooseUs?.eyebrow || "10 // OUR ADVANTAGE",
       titleIntro: dbService?.whyChooseUs?.titleIntro || "Why Leaders Choose",
       titleHighlight: dbService?.whyChooseUs?.titleHighlight || "Mohsin Designs",
@@ -833,6 +843,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       })()
     },
     pricing: {
+      enabled: dbService?.pricing?.enabled,
       eyebrow: dbService?.pricing?.eyebrow || "11 // TRANSPARENT TIERS",
       titleIntro: dbService?.pricing?.titleIntro || "Scalable Growth",
       titleHighlight: dbService?.pricing?.titleHighlight || "Investment Packages",
@@ -899,6 +910,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               { question: "Will I have complete ownership of all assets?", answer: "100%. You retain full ownership of all code, design files, domains, and analytics accounts upon project completion." }
             ]),
     faqSection: {
+      enabled: dbService?.faqSection?.enabled,
       sectionTag: dbService?.faqBadge || dbService?.faqSection?.sectionTag || "14 // FREQUENTLY ASKED",
       titleIntro: dbService?.faqTitleIntro !== undefined ? dbService?.faqTitleIntro : (dbService?.faqSection?.titleIntro ?? "Service "),
       titleHighlight: dbService?.faqTitleHighlight || dbService?.faqSection?.titleHighlight || dbService?.faqTitle || "Frequently Asked Questions",
@@ -910,6 +922,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       ctaBtnLink: dbService?.faqSection?.ctaBtnLink || "#contact"
     },
     finalCta: {
+      enabled: dbService?.finalCta?.enabled,
       eyebrow: dbService?.finalCta?.eyebrow ?? dbService?.finalCta?.badge ?? "READY TO ACCELERATE?",
       titleIntro: dbService?.finalCta?.titleIntro || "Let's Build Your Next",
       titleHighlight: dbService?.finalCta?.titleHighlight || "Competitive Edge",
@@ -924,6 +937,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
     blogSection: dbService?.blogSection,
     serviceArea: dbService?.serviceArea,
     recommendedSection: {
+      enabled: dbService?.recommendedSection?.enabled,
       eyebrow: dbService?.recommendedSection?.eyebrow || "11 // RECOMMENDATION",
       titleIntro: dbService?.recommendedSection?.titleIntro || "Services That Pair",
       titleHighlight: dbService?.recommendedSection?.titleHighlight || "Perfect Together",
