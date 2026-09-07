@@ -57,7 +57,7 @@ export async function PATCH(
       updateData.trashedAt = body.isTrashed ? new Date() : null;
     }
 
-    const updatedPage = await Page.findByIdAndUpdate(id, updateData, { new: true });
+    const updatedPage = await Page.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
 
     await recordActivity({
       user: (session as any).userId,

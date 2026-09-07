@@ -124,6 +124,9 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
       if (res.ok) {
         setMessage("Page updated.");
         setTimeout(() => setMessage(""), 3000);
+      } else {
+        const err = await res.json().catch(() => ({}));
+        setMessage(`Error: ${err.error || "Failed to save changes."}`);
       }
     } catch (err) {
       setMessage("Error saving changes.");
@@ -505,7 +508,6 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
                 >
                   <option value="published">Published</option>
                   <option value="draft">Draft</option>
-                  <option value="pending">Pending Review</option>
                 </select>
               </div>
               <div className="flex items-center justify-between">

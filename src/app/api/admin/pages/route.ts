@@ -74,7 +74,7 @@ export async function PATCH(req: NextRequest) {
           template: source.template,
           content: source.content,
           seo: source.seo,
-          status: 'draft'
+          status: source.status
         });
         newPages.push(duplicate);
 
@@ -92,9 +92,11 @@ export async function PATCH(req: NextRequest) {
     }
 
     if (action === 'status' && ids && Array.isArray(ids)) {
+      const affectedPages = await Page.find({ _id: { $in: ids } }, 'slug');
       await Page.updateMany(
         { _id: { $in: ids } },
-        { $set: { status: status || 'draft' } }
+        { $set: { status: status || 'draft' } },
+        { runValidators: true }
       );
 
       await recordActivity({
@@ -105,6 +107,16 @@ export async function PATCH(req: NextRequest) {
         details: { ids, status: status || 'draft', message: `Bulk updated ${ids.length} pages to ${status || 'draft'}` },
         ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
       });
+
+      try {
+        const { revalidatePath } = await import('next/cache');
+        for (const p of affectedPages) {
+          revalidatePath(p.slug.startsWith('/') ? p.slug : `/${p.slug}`);
+        }
+        revalidatePath('/');
+      } catch (err) {
+        console.error('Failed to revalidate path:', err);
+      }
 
       return NextResponse.json({ success: true });
     } else if (action === 'trash' && ids && Array.isArray(ids)) {

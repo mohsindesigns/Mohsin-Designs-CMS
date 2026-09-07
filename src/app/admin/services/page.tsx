@@ -670,7 +670,6 @@ export default function ServicesAdminPage() {
       id: Date.now().toString(),
       title: `${service.title} (Copy)`,
       slug: `${service.slug}-copy`,
-      status: 'draft',
       createdAt: new Date().toISOString()
     };
     const newServices = [...services, duplicated];
