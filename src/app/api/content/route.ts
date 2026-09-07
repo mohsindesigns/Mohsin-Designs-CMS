@@ -41,12 +41,61 @@ export async function PUT(req: NextRequest) {
     const sanitizedBody = sanitizeEncoding(body);
 
     const oldContent = await SiteContent.findOne({ key: 'complete_data' });
+    const existingData = oldContent?.data || {};
+
+    let finalData: any;
+
+    if (sanitizedBody.section === 'services') {
+      // Granular update exclusively for services
+      const servicesList = Array.isArray(sanitizedBody.services?.services) 
+        ? sanitizedBody.services.services 
+        : (Array.isArray(sanitizedBody.services) ? sanitizedBody.services : (sanitizedBody.globalServices || []));
+      
+      const prevServicesObj = (typeof existingData.services === 'object' && !Array.isArray(existingData.services)) 
+        ? existingData.services 
+        : {};
+      
+      finalData = {
+        ...existingData,
+        services: {
+          ...prevServicesObj,
+          services: servicesList
+        },
+        globalServices: servicesList
+      };
+    } else if (sanitizedBody.section && sanitizedBody.section !== 'complete_data') {
+      // Granular section update
+      finalData = {
+        ...existingData,
+        [sanitizedBody.section]: sanitizedBody[sanitizedBody.section] ?? sanitizedBody
+      };
+    } else {
+      // Full payload update: merge on top of existingData
+      finalData = {
+        ...existingData,
+        ...sanitizedBody
+      };
+
+      // CRITICAL RACE-CONDITION SHIELD:
+      // Never let an editor that does not manage services (like Home, Settings, About)
+      // overwrite newer services in the database with its stale in-memory services array.
+      if (existingData.services?.services && Array.isArray(existingData.services.services)) {
+        const incomingSvcs = Array.isArray(sanitizedBody.services?.services) 
+          ? sanitizedBody.services.services 
+          : (Array.isArray(sanitizedBody.services) ? sanitizedBody.services : null);
+        
+        if (!incomingSvcs || incomingSvcs.length < existingData.services.services.length) {
+          finalData.services = existingData.services;
+          finalData.globalServices = existingData.globalServices || existingData.services.services;
+        }
+      }
+    }
 
     const result = await SiteContent.updateOne(
       { key: 'complete_data' },
       { 
         $set: { 
-          data: sanitizedBody,
+          data: finalData,
           lastUpdated: new Date()
         } 
       },

@@ -443,6 +443,7 @@ export default function ServicesAdminPage() {
     const prevServicesObj = (typeof data?.services === 'object' && !Array.isArray(data?.services)) ? data.services : {};
     const updatedData = {
       ...data,
+      section: "services",
       services: {
         ...prevServicesObj,
         services: newServices
