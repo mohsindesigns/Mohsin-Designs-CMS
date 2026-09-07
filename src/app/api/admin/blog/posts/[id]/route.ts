@@ -46,7 +46,7 @@ export async function PATCH(
       updateData.trashedAt = body.isTrashed ? new Date() : null;
     }
 
-    const post = await Post.findByIdAndUpdate(id, updateData, { new: true });
+    const post = await Post.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
 
     await recordActivity({
       user: (session as any).userId,
@@ -57,6 +57,18 @@ export async function PATCH(
       details: { before: oldPost.title, after: post.title },
       ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
     });
+
+    if (post?.slug) {
+      try {
+        const { revalidatePath } = await import('next/cache');
+        revalidatePath(`/blogs/${post.slug}`);
+        revalidatePath(`/blog/${post.slug}`);
+        revalidatePath('/blogs');
+        revalidatePath('/blog');
+      } catch (err) {
+        console.error('Failed to revalidate path:', err);
+      }
+    }
 
     return NextResponse.json(post);
   } catch (error: any) {

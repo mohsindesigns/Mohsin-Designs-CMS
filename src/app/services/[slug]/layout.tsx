@@ -664,7 +664,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   await connectToDatabase();
   const content = await SiteContent.findOne({ key: "complete_data" }).lean() as any;
   const services = content?.data?.services?.services || [];
-  const service = services.find((s: any) => s.slug === slug);
+  const service = services.find((s: any) => s.slug === slug && s.status !== 'draft' && !s.isTrashed);
 
   if (!service) {
     return {

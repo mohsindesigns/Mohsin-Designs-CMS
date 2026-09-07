@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const content = await SiteContent.findOne({ key: "complete_data" }).lean() as any;
   const isGlobalNoIndex = !!content?.data?.settings?.globalNoIndex;
   const services = content?.data?.services?.services || [];
-  const service = services.find((s: any) => s.slug === slug);
+  const service = services.find((s: any) => s.slug === slug && s.status !== 'draft' && !s.isTrashed);
 
   if (!service) return {};
 
@@ -58,7 +58,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   const serviceDoc = services.find((s: any) => {
     const isMatch = s.slug === resolvedParams.slug;
     if (isMatch) console.log(`[Service Debug] MATCH FOUND! Status: ${s.status}`);
-    return isMatch && (s.status !== 'draft');
+    return isMatch && s.status !== 'draft' && !s.isTrashed;
   });
 
   if (!serviceDoc) {

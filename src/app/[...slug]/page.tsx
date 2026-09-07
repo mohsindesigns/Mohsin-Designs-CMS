@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   await connectToDatabase();
   const [page, content] = await Promise.all([
-    Page.findOne({ slug, status: 'published' }).lean(),
+    Page.findOne({ slug, status: 'published', isTrashed: { $ne: true } }).lean(),
     SiteContent.findOne({ key: 'complete_data' }).lean() as any
   ]);
 
@@ -85,7 +85,8 @@ export default async function DynamicPage({ params }: PageProps) {
   // Find the page in MongoDB
   const pageDoc = await Page.findOne({
     slug: slug,
-    status: 'published'
+    status: 'published',
+    isTrashed: { $ne: true }
   }).lean();
 
   if (!pageDoc) {

@@ -120,6 +120,7 @@ export async function PATCH(req: NextRequest) {
 
       return NextResponse.json({ success: true });
     } else if (action === 'trash' && ids && Array.isArray(ids)) {
+      const affectedPages = await Page.find({ _id: { $in: ids } }, 'slug');
       await Page.updateMany(
         { _id: { $in: ids } },
         { $set: { isTrashed: true, trashedAt: new Date() } }
@@ -134,8 +135,19 @@ export async function PATCH(req: NextRequest) {
         ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
       });
 
+      try {
+        const { revalidatePath } = await import('next/cache');
+        for (const p of affectedPages) {
+          revalidatePath(p.slug.startsWith('/') ? p.slug : `/${p.slug}`);
+        }
+        revalidatePath('/');
+      } catch (err) {
+        console.error('Failed to revalidate path:', err);
+      }
+
       return NextResponse.json({ success: true });
     } else if (action === 'restore' && ids && Array.isArray(ids)) {
+      const affectedPages = await Page.find({ _id: { $in: ids } }, 'slug');
       await Page.updateMany(
         { _id: { $in: ids } },
         { $set: { isTrashed: false, trashedAt: null } }
@@ -149,6 +161,16 @@ export async function PATCH(req: NextRequest) {
         details: { message: `Bulk restored ${ids.length} pages from trash` },
         ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
       });
+
+      try {
+        const { revalidatePath } = await import('next/cache');
+        for (const p of affectedPages) {
+          revalidatePath(p.slug.startsWith('/') ? p.slug : `/${p.slug}`);
+        }
+        revalidatePath('/');
+      } catch (err) {
+        console.error('Failed to revalidate path:', err);
+      }
 
       return NextResponse.json({ success: true });
     }

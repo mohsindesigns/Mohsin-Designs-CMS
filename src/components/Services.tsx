@@ -24,7 +24,7 @@ export default function Services({ data: propData }: { data?: any }) {
     ariaPrev:      raw?.ariaPrev      || "Previous service",
     ariaNext:      raw?.ariaNext      || "Next service",
     serviceLabel:  raw?.serviceLabel  || "SERVICE",
-    list:          (raw?.list || raw?.services || []) as any[],
+    list:          ((raw?.list || raw?.services || []) as any[]).filter((s: any) => s?.status !== 'draft' && !s?.isTrashed),
     ctaHeading:    raw?.ctaHeading    || raw?.cta?.heading          || "Need a Custom Architecture or Specialized Solution?",
     ctaDescription:raw?.ctaDescription|| raw?.cta?.description      || "Discuss your technical requirements directly with our principal engineer. We map out full-funnel architectures and execute with pixel perfection.",
     ctaButtonText: raw?.ctaButtonText || raw?.cta?.buttonText       || "Schedule Technical Consultation",

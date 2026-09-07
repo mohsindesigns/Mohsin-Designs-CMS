@@ -55,7 +55,7 @@ export default async function BlogIndexPage() {
   const [pageDoc, contentDoc, posts, categories] = await Promise.all([
     Page.findOne({ slug: { $in: ['blog', '/blog'] } }).lean() as any,
     SiteContent.findOne({ key: 'complete_data' }).lean() as any,
-    Post.find({ status: 'published' })
+    Post.find({ status: 'published', isTrashed: { $ne: true } })
       .populate('categories')
       .sort({ publishedAt: -1 })
       .lean(),

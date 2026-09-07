@@ -279,7 +279,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
     ? content.globalServices
     : (Array.isArray(content?.services) && content.services.length > 0 ? content.services : []);
 
-  const activeServices = rawServices.filter((s: any) => s.status !== "draft");
+  const activeServices = rawServices.filter((s: any) => s.status !== "draft" && !s.isTrashed);
 
   // Map each service to cards format
   const cards = activeServices.map((s: any, idx: number) => ({

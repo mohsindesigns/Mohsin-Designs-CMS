@@ -143,6 +143,25 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
     setPost({ ...post, slug });
   };
 
+  const handleTrash = async () => {
+    if (!id) return;
+    if (!confirm("Are you sure you want to move this post to Trash?")) return;
+    try {
+      const res = await fetch(`/api/admin/blogs/posts/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isTrashed: true }),
+      });
+      if (res.ok) {
+        router.push("/admin/blogs");
+      } else {
+        setMessage("Failed to move post to Trash.");
+      }
+    } catch (err) {
+      setMessage("Failed to move post to Trash.");
+    }
+  };
+
   if (loading) return <div className="p-10 text-center text-[#646970]">Loading editor...</div>;
 
   return (
@@ -402,7 +421,9 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
               </div>
             </div>
             <div className="bg-[#f6f7f7] border-t border-[#c3c4c7] px-3 py-2 flex items-center justify-between">
-              <button className="text-[#d63638] underline text-[12px] hover:text-[#b32d2e]">Move to Trash</button>
+              {id ? (
+                <button onClick={handleTrash} className="text-[#d63638] underline text-[12px] hover:text-[#b32d2e]">Move to Trash</button>
+              ) : <span />}
               <button
                 onClick={handleSave}
                 disabled={saving}

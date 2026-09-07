@@ -20,7 +20,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const content = await SiteContent.findOne({ key: 'complete_data' });
     if (content?.data?.services) {
       const sData = content.data.services;
-      dynamicServices = Array.isArray(sData) ? sData : (sData.services || []);
+      const allServices = Array.isArray(sData) ? sData : (sData.services || []);
+      dynamicServices = allServices.filter((s: any) => s.status !== 'draft' && !s.isTrashed);
     }
 
     // Fetch dynamic Pages

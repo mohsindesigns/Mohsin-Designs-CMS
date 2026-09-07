@@ -29,7 +29,8 @@ export async function POST(req: NextRequest) {
     } else if (action === 'status') {
       await Post.updateMany(
         { _id: { $in: ids } },
-        { $set: { status: value, updatedAt: new Date() } }
+        { $set: { status: value, updatedAt: new Date() } },
+        { runValidators: true }
       );
       await recordActivity({
         user: user.userId,
@@ -65,6 +66,21 @@ export async function POST(req: NextRequest) {
         details: { ids, message: `Bulk restored ${ids.length} posts from trash` },
         ip: req.headers.get('x-forwarded-for') || 'unknown'
       });
+    }
+
+    if (['status', 'trash', 'restore'].includes(action)) {
+      try {
+        const affectedPosts = await Post.find({ _id: { $in: ids } }, 'slug');
+        const { revalidatePath } = await import('next/cache');
+        for (const p of affectedPosts) {
+          revalidatePath(`/blogs/${p.slug}`);
+          revalidatePath(`/blog/${p.slug}`);
+        }
+        revalidatePath('/blogs');
+        revalidatePath('/blog');
+      } catch (err) {
+        console.error('Failed to revalidate path:', err);
+      }
     }
 
     return NextResponse.json({ success: true });

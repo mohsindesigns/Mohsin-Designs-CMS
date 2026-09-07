@@ -41,7 +41,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const [post, contentDoc] = await Promise.all([
     Post.findOne({
       $or: [{ slug }, { _id: slug.match(/^[0-9a-fA-F]{24}$/) ? slug : null }],
-      status: "published"
+      status: "published",
+      isTrashed: { $ne: true }
     }).populate("categories"),
     SiteContent.findOne({ key: 'complete_data' }).lean() as any
   ]);
@@ -95,7 +96,8 @@ export default async function BlogPostPage({ params }: Props) {
   // 1. Fetch Post from MongoDB
   const post = await Post.findOne({
     $or: [{ slug }, { _id: slug.match(/^[0-9a-fA-F]{24}$/) ? slug : null }],
-    status: "published"
+    status: "published",
+    isTrashed: { $ne: true }
   })
     .populate("categories tags")
     .lean();
@@ -147,7 +149,8 @@ export default async function BlogPostPage({ params }: Props) {
   // 3. Fetch 3 Related Articles (excluding current post)
   const relatedPostsRaw = await Post.find({
     _id: { $ne: post._id },
-    status: "published"
+    status: "published",
+    isTrashed: { $ne: true }
   })
     .populate("categories")
     .sort({ publishedAt: -1, createdAt: -1 })

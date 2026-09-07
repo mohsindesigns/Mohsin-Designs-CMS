@@ -138,7 +138,11 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to move this page to Trash?")) return;
     try {
-      const res = await fetch(`/api/admin/pages/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/pages/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isTrashed: true }),
+      });
       if (res.ok) router.push("/admin/pages");
     } catch (err) {
       alert("Delete failed.");

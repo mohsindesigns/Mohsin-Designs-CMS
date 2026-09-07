@@ -1010,7 +1010,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
   };
 
   // Recommended services list from CMS or fallback
-  const recommendedServices = rawServices.filter((s: any) => s.slug !== service.slug && s.status !== 'draft');
+  const recommendedServices = rawServices.filter((s: any) => s.slug !== service.slug && s.status !== 'draft' && !s.isTrashed);
 
   return (
     <main className="flex-1 w-full bg-white dark:bg-[#080710] text-brand-dark dark:text-white transition-colors duration-300 relative overflow-x-clip font-sans">
