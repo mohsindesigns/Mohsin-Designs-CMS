@@ -18,13 +18,13 @@ export default function FAQTemplate({ pageData, params }: { pageData?: any, para
     return (
         <main>
             {(pageData?.content?.faqs?.enabled !== false && pageData?.content?.faqSection?.enabled !== false && section?.enabled !== false) && (
-                <PageInlineFaqs 
-                    faqs={items} 
-                    faqSchemaMarkup={bulkSchema} 
-                    title={title} 
+                <PageInlineFaqs
+                    faqs={faq?.itemsEnabled !== false ? items : []}
+                    faqSchemaMarkup={bulkSchema}
+                    title={title}
                     subtitle={subtitle}
                     badge={badge}
-                    showFilters={false}
+                    showFilters={faq?.categoriesEnabled !== false}
                 />
             )}
         </main>

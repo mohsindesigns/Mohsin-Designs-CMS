@@ -428,8 +428,8 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
                   <p className={UI.helpText}>Enable or disable displaying projects grid on the live page.</p>
                 </div>
                 <SectionToggle
-                  enabled={gallery.projectsEnabled !== false}
-                  onChange={(v) => updateGallery("projectsEnabled", v)}
+                  enabled={gallery.projects?.enabled !== false}
+                  onChange={(v) => updateNested("projects", "enabled", v)}
                   label="Projects Showcase"
                 />
               </div>

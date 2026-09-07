@@ -777,7 +777,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
         )}
 
         {/* ── 5. OUR SERVICES SECTION ──────── */}
-        {stagesList.length > 0 && (
+        {(servicesDirectory.enabled !== false && stagesList.length > 0) && (
           <section id="services-directory" className="relative overflow-x-clip py-12 sm:py-16 md:py-20 border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710]">
             {/* Mobile Pills */}
             <div className="sticky top-14 sm:top-16 z-30 flex lg:hidden overflow-x-auto no-scrollbar py-3 px-4 gap-2 bg-white/95 dark:bg-[#080710]/95 backdrop-blur-xl border-b border-brand-zinc-200 dark:border-white/10 shadow-sm mb-8 select-none">

@@ -111,6 +111,9 @@ export default async function BlogPostPage({ params }: Props) {
 
   const blogPageData = (blogPageDoc as any)?.content?.blogPage || (blogPageDoc as any)?.content || {};
 
+  // Detail Page CTAs Visibility (controlled from Blog Editor > Detail Page tab)
+  const detailCtaEnabled = blogPageData.detailCtaBanner?.enabled !== false;
+
   // Resolve Sidebar Consultation CTA
   const sidebarCta = {
     badge: blogPageData.detailSidebarCta?.badge || "EXPERT CONSULTATION",
@@ -518,6 +521,7 @@ export default async function BlogPostPage({ params }: Props) {
               </div>
 
               {/* Sidebar Agency CTA Box */}
+              {detailCtaEnabled && (
               <div className="bg-gradient-to-br from-[#0306AC] via-[#020485] to-[#010356] dark:from-[#12121e] dark:via-[#161628] dark:to-[#0d0c18] border border-white/10 dark:border-white/10 rounded-[2rem] p-7 text-white relative overflow-hidden group shadow-2xl dark:shadow-[0_15px_40px_rgba(0,0,0,0.5)] space-y-4">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-brand-yellow/15 dark:bg-brand-yellow/10 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2 group-hover:bg-brand-yellow/25 transition-colors duration-700 pointer-events-none" />
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9.5px] font-mono font-black uppercase bg-white/10 dark:bg-brand-yellow/15 text-brand-yellow border border-white/20 dark:border-brand-yellow/30">
@@ -539,6 +543,7 @@ export default async function BlogPostPage({ params }: Props) {
                   </span>
                 </Link>
               </div>
+              )}
 
             </div>
           </aside>
@@ -613,6 +618,7 @@ export default async function BlogPostPage({ params }: Props) {
       )}
 
       {/* ── 5. SIGNATURE AGENCY CTA BANNER ─────────────────────────── */}
+      {detailCtaEnabled && (
       <section id="contact" className="container mx-auto px-4 my-8 relative overflow-hidden max-w-6xl">
         <div className="cta-banner-card !shadow-[0_16px_40px_-12px_rgba(3,6,172,0.22)] dark:!shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)]">
           <div className="relative z-10 flex flex-col justify-center gap-6 p-8 sm:p-12 lg:p-14 lg:max-w-[62%]">
@@ -675,6 +681,7 @@ export default async function BlogPostPage({ params }: Props) {
           </div>
         </div>
       </section>
+      )}
     </article>
   );
 }

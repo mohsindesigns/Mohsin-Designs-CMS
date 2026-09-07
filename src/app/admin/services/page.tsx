@@ -14,6 +14,7 @@ import Link from "next/link";
 import ImageField from "@/components/admin/ImageField";
 import IconSelector from "@/components/admin/IconSelector";
 import SeoEditor from "@/components/admin/SeoEditor";
+import SectionToggle from "@/components/admin/SectionToggle";
 import MediaSelector from "@/components/admin/MediaSelector";
 import { BASE_URL } from "@/lib/constants";
 import { UI } from "@/components/admin/editors/styles";
@@ -901,6 +902,17 @@ export default function ServicesAdminPage() {
                             {/* SUBTAB: HERO */}
                             {activeSubTab === "hero" && (
                               <div className="space-y-12">
+                                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                                  <div>
+                                    <h2 className="text-base font-bold text-[#1d2327]">Section Visibility</h2>
+                                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                                  </div>
+                                  <SectionToggle
+                                    enabled={form.hero?.enabled !== false}
+                                    onChange={(v) => setForm({ ...form, hero: { ...form.hero, enabled: v } })}
+                                    label="Hero Section"
+                                  />
+                                </div>
                                 <div className="space-y-6">
                                   <h3 className={UI.sectionHeader}>1. Branding & Icon</h3>
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1089,6 +1101,17 @@ export default function ServicesAdminPage() {
                             {/* SUBTAB: TRUST */}
                             {activeSubTab === "trust" && (
                               <div className="space-y-12">
+                                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                                  <div>
+                                    <h2 className="text-base font-bold text-[#1d2327]">Section Visibility</h2>
+                                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                                  </div>
+                                  <SectionToggle
+                                    enabled={form.clientTrust?.enabled !== false}
+                                    onChange={(v) => setForm({ ...form, clientTrust: { ...form.clientTrust, enabled: v } })}
+                                    label="Trust Bar Section"
+                                  />
+                                </div>
                                 <div className="space-y-6">
                                   <h3 className={UI.sectionHeader}>1. Section Heading</h3>
                                   <div className="space-y-1.5">
@@ -1178,6 +1201,17 @@ export default function ServicesAdminPage() {
                             {/* SUBTAB: WHAT'S INCLUDED */}
                             {activeSubTab === "what-included" && (
                               <div className="space-y-12">
+                                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                                  <div>
+                                    <h2 className="text-base font-bold text-[#1d2327]">Section Visibility</h2>
+                                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                                  </div>
+                                  <SectionToggle
+                                    enabled={form.whatIncluded?.enabled !== false}
+                                    onChange={(v) => setForm({ ...form, whatIncluded: { ...form.whatIncluded, enabled: v } })}
+                                    label="Deliverables Section"
+                                  />
+                                </div>
                                 <div className="space-y-6">
                                   <h3 className={UI.sectionHeader}>1. Section Header</h3>
                                   <div className="space-y-4">
@@ -1302,6 +1336,17 @@ export default function ServicesAdminPage() {
                             {/* SUBTAB: STRATEGY */}
                             {activeSubTab === "strategy" && (
                               <div className="space-y-12">
+                                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                                  <div>
+                                    <h2 className="text-base font-bold text-[#1d2327]">Section Visibility</h2>
+                                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                                  </div>
+                                  <SectionToggle
+                                    enabled={form.strategy?.enabled !== false}
+                                    onChange={(v) => setForm({ ...form, strategy: { ...form.strategy, enabled: v } })}
+                                    label="Strategy Roadmap Section"
+                                  />
+                                </div>
                                 <div className="space-y-6">
                                   <h3 className={UI.sectionHeader}>1. Section Header</h3>
                                   <div className="space-y-4">
@@ -1430,6 +1475,17 @@ export default function ServicesAdminPage() {
                             {/* SUBTAB: OUTCOMES / BENEFITS */}
                             {activeSubTab === "benefits" && (
                               <div className="space-y-12">
+                                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                                  <div>
+                                    <h2 className="text-base font-bold text-[#1d2327]">Section Visibility</h2>
+                                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                                  </div>
+                                  <SectionToggle
+                                    enabled={form.benefits?.enabled !== false}
+                                    onChange={(v) => setForm({ ...form, benefits: { ...form.benefits, enabled: v } })}
+                                    label="Outcomes Section"
+                                  />
+                                </div>
                                 <div className="space-y-6">
                                   <h3 className={UI.sectionHeader}>1. Section Header</h3>
                                   <div className="space-y-4">
@@ -1565,6 +1621,17 @@ export default function ServicesAdminPage() {
                             {/* SUBTAB: PROCESS */}
                             {activeSubTab === "process" && (
                               <div className="space-y-12">
+                                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                                  <div>
+                                    <h2 className="text-base font-bold text-[#1d2327]">Section Visibility</h2>
+                                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                                  </div>
+                                  <SectionToggle
+                                    enabled={form.process?.enabled !== false}
+                                    onChange={(v) => setForm({ ...form, process: { ...form.process, enabled: v } })}
+                                    label="Execution Process Section"
+                                  />
+                                </div>
                                 <div className="space-y-6">
                                   <h3 className={UI.sectionHeader}>1. Section Header</h3>
                                   <div className="space-y-4">
@@ -1735,6 +1802,17 @@ export default function ServicesAdminPage() {
                             {/* SUBTAB: RESULTS */}
                             {activeSubTab === "results" && (
                               <div className="space-y-12">
+                                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                                  <div>
+                                    <h2 className="text-base font-bold text-[#1d2327]">Section Visibility</h2>
+                                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                                  </div>
+                                  <SectionToggle
+                                    enabled={form.results?.enabled !== false}
+                                    onChange={(v) => setForm({ ...form, results: { ...form.results, enabled: v } })}
+                                    label="Case Studies Section"
+                                  />
+                                </div>
                                 <div className="space-y-6">
                                   <h3 className={UI.sectionHeader}>1. Section Header</h3>
                                   <div className="space-y-4">
@@ -2047,6 +2125,17 @@ export default function ServicesAdminPage() {
                             {/* SUBTAB: INDUSTRIES */}
                             {activeSubTab === "industries" && (
                               <div className="space-y-12">
+                                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                                  <div>
+                                    <h2 className="text-base font-bold text-[#1d2327]">Section Visibility</h2>
+                                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                                  </div>
+                                  <SectionToggle
+                                    enabled={form.industries?.enabled !== false}
+                                    onChange={(v) => setForm({ ...form, industries: { ...form.industries, enabled: v } })}
+                                    label="Target Industries Section"
+                                  />
+                                </div>
                                 <div className="space-y-6">
                                   <h3 className={UI.sectionHeader}>1. Section Header</h3>
                                   <div className="space-y-4">
@@ -2173,6 +2262,17 @@ export default function ServicesAdminPage() {
                             {/* SUBTAB: TECH STACK */}
                             {activeSubTab === "tools" && (
                               <div className="space-y-12">
+                                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                                  <div>
+                                    <h2 className="text-base font-bold text-[#1d2327]">Section Visibility</h2>
+                                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                                  </div>
+                                  <SectionToggle
+                                    enabled={form.tools?.enabled !== false}
+                                    onChange={(v) => setForm({ ...form, tools: { ...form.tools, enabled: v } })}
+                                    label="Tech Stack Section"
+                                  />
+                                </div>
                                 <div className="space-y-6">
                                   <h3 className={UI.sectionHeader}>1. Section Header</h3>
                                   <div className="space-y-4">
@@ -2376,6 +2476,17 @@ export default function ServicesAdminPage() {
                             {/* SUBTAB: WHY PARTNER */}
                             {activeSubTab === "why-us" && (
                               <div className="space-y-12">
+                                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                                  <div>
+                                    <h2 className="text-base font-bold text-[#1d2327]">Section Visibility</h2>
+                                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                                  </div>
+                                  <SectionToggle
+                                    enabled={form.whyChooseUs?.enabled !== false}
+                                    onChange={(v) => setForm({ ...form, whyChooseUs: { ...form.whyChooseUs, enabled: v } })}
+                                    label="Why Partner Section"
+                                  />
+                                </div>
                                 <div className="space-y-6">
                                   <h3 className={UI.sectionHeader}>1. Section Header</h3>
                                   <div className="space-y-4">
@@ -2597,6 +2708,17 @@ export default function ServicesAdminPage() {
                             {/* SUBTAB: PRICING */}
                             {activeSubTab === "pricing" && (
                               <div className="space-y-12">
+                                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                                  <div>
+                                    <h2 className="text-base font-bold text-[#1d2327]">Section Visibility</h2>
+                                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                                  </div>
+                                  <SectionToggle
+                                    enabled={form.pricing?.enabled !== false}
+                                    onChange={(v) => setForm({ ...form, pricing: { ...form.pricing, enabled: v } })}
+                                    label="Pricing Packages Section"
+                                  />
+                                </div>
                                 <div className="space-y-6">
                                   <h3 className={UI.sectionHeader}>1. Section Header</h3>
                                   <div className="space-y-4">
@@ -2814,6 +2936,17 @@ export default function ServicesAdminPage() {
                             {/* SUBTAB: RECOMMENDED SERVICES */}
                             {activeSubTab === "recommendedSection" && (
                               <div className="space-y-12">
+                                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                                  <div>
+                                    <h2 className="text-base font-bold text-[#1d2327]">Section Visibility</h2>
+                                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                                  </div>
+                                  <SectionToggle
+                                    enabled={form.recommendedSection?.enabled !== false}
+                                    onChange={(v) => setForm({ ...form, recommendedSection: { ...form.recommendedSection, enabled: v } })}
+                                    label="Recommended Services Section"
+                                  />
+                                </div>
                                 <div className="space-y-6">
                                   <h3 className={UI.sectionHeader}>1. Section Header & Narrative</h3>
                                   <div className="space-y-4">
@@ -2867,6 +3000,17 @@ export default function ServicesAdminPage() {
                             {/* SUBTAB: GLOBAL COVERAGE / SERVICE AREA */}
                             {activeSubTab === "serviceArea" && (
                               <div className="space-y-12">
+                                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                                  <div>
+                                    <h2 className="text-base font-bold text-[#1d2327]">Section Visibility</h2>
+                                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                                  </div>
+                                  <SectionToggle
+                                    enabled={form.serviceArea?.enabled !== false}
+                                    onChange={(v) => setForm({ ...form, serviceArea: { ...(form.serviceArea || {}), enabled: v } })}
+                                    label="Global Coverage Section"
+                                  />
+                                </div>
                                 <div className="space-y-6">
                                   <h3 className={UI.sectionHeader}>1. Section Header & Narrative</h3>
                                   <div className="space-y-1.5">
@@ -3105,6 +3249,17 @@ export default function ServicesAdminPage() {
                             {/* SUBTAB: CTA BANNER */}
                             {activeSubTab === "final-cta" && (
                               <div className="space-y-12">
+                                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                                  <div>
+                                    <h2 className="text-base font-bold text-[#1d2327]">Section Visibility</h2>
+                                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                                  </div>
+                                  <SectionToggle
+                                    enabled={form.finalCta?.enabled !== false}
+                                    onChange={(v) => setForm({ ...form, finalCta: { ...form.finalCta, enabled: v } })}
+                                    label="CTA Banner Section"
+                                  />
+                                </div>
                                 <div className="space-y-6">
                                   <h3 className={UI.sectionHeader}>1. Banner Content</h3>
                                   <div className="space-y-4">
@@ -3235,6 +3390,17 @@ export default function ServicesAdminPage() {
                   {/* TAB 3: SERVICE FAQS */}
                   {mainTab === 'faqs' && (
                     <div className="p-5 sm:p-6 space-y-8">
+                      <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                        <div>
+                          <h2 className="text-base font-bold text-[#1d2327]">Section Visibility</h2>
+                          <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                        </div>
+                        <SectionToggle
+                          enabled={form.faqSection?.enabled !== false}
+                          onChange={(v) => setForm({ ...form, faqSection: { ...form.faqSection, enabled: v } })}
+                          label="FAQ Section"
+                        />
+                      </div>
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#f0f0f1] pb-4">
                         <div>
                           <h3 className="text-base font-bold text-[#1d2327]">Service-Specific FAQs & Accordions</h3>
