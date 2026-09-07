@@ -3,6 +3,7 @@ import connectToDatabase from '@/lib/mongodb';
 import Page from '@/models/Page';
 import { hasPermission, getSessionUser } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
+import { normalizePageSlug } from '@/lib/utils';
 
 export async function GET(
   req: NextRequest,
@@ -55,6 +56,20 @@ export async function PATCH(
     if (body.isTrashed !== undefined) {
       updateData.isTrashed = body.isTrashed;
       updateData.trashedAt = body.isTrashed ? new Date() : null;
+    }
+
+    if (body.slug !== undefined) {
+      const normalizedSlug = normalizePageSlug(body.slug);
+      if (!normalizedSlug) {
+        return NextResponse.json({ error: 'A valid slug is required.' }, { status: 400 });
+      }
+      if (normalizedSlug !== oldPage.slug) {
+        const collision = await Page.findOne({ slug: normalizedSlug, _id: { $ne: id } }).select('_id title').lean();
+        if (collision) {
+          return NextResponse.json({ error: `The slug "${normalizedSlug}" is already used by "${(collision as any).title}". Please choose a different slug.` }, { status: 409 });
+        }
+      }
+      updateData.slug = normalizedSlug;
     }
 
     const updatedPage = await Page.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });

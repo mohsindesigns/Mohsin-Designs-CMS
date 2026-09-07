@@ -55,6 +55,9 @@ export default function PagesDashboard() {
       if (res.ok) {
         const created = await res.json();
         window.location.href = `/admin/pages/${created._id}`;
+      } else {
+        const error = await res.json().catch(() => ({}));
+        alert("Failed to create page: " + (error.error || "Unknown error"));
       }
     } catch (err) {
       alert("Failed to create page.");
@@ -148,7 +151,12 @@ export default function PagesDashboard() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ action: 'duplicate', ids: [id] })
         });
-        if (res.ok) fetchPages();
+        if (res.ok) {
+          fetchPages();
+        } else {
+          const error = await res.json().catch(() => ({}));
+          alert("Duplication failed: " + (error.error || "Unknown error"));
+        }
       } catch (err) { alert("Duplication failed."); }
     }
 

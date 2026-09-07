@@ -3,6 +3,7 @@ import connectToDatabase from '@/lib/mongodb';
 import Page from '@/models/Page';
 import { hasPermission, getSessionUser } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
+import { normalizePageSlug } from '@/lib/utils';
 
 export async function GET(req: NextRequest) {
   if (!(await hasPermission(req, 'pages', 'read'))) {
@@ -26,7 +27,16 @@ export async function POST(req: NextRequest) {
   try {
     await connectToDatabase();
     const body = await req.json();
-    const { title, slug, template } = body;
+    const { title, template } = body;
+    const slug = normalizePageSlug(body.slug || "");
+    if (!slug) {
+      return NextResponse.json({ error: 'A valid slug is required.' }, { status: 400 });
+    }
+
+    const existing = await Page.findOne({ slug }).select('_id title').lean();
+    if (existing) {
+      return NextResponse.json({ error: `The slug "${slug}" is already used by "${(existing as any).title}". Please choose a different slug.` }, { status: 409 });
+    }
 
     const newPage = await Page.create({
       title,
@@ -67,10 +77,16 @@ export async function PATCH(req: NextRequest) {
       const newPages = [];
       
       for (const source of sourcePages) {
-        const timestamp = Date.now();
+        const baseSlug = normalizePageSlug(source.slug) || 'page';
+        let candidateSlug = `${baseSlug}-copy-${Date.now()}`;
+        // Extremely unlikely to collide (timestamp-suffixed), but guarantee it rather than assume it.
+        while (await Page.findOne({ slug: candidateSlug }).select('_id').lean()) {
+          candidateSlug = `${baseSlug}-copy-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+        }
+
         const duplicate = await Page.create({
           title: `${source.title} (Copy)`,
-          slug: `${source.slug}-copy-${timestamp}`,
+          slug: candidateSlug,
           template: source.template,
           content: source.content,
           seo: source.seo,

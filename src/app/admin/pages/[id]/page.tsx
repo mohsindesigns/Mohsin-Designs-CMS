@@ -199,9 +199,34 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
               {BASE_URL}/{page.slug}
             </span>
             <button
-              onClick={() => {
+              onClick={async () => {
                 const ns = prompt("Enter new slug:", page.slug);
-                if (ns) setPage({ ...page, slug: ns });
+                if (!ns || ns === page.slug) return;
+
+                // Save immediately so the new URL goes live right away — leaving this only in
+                // local state (until the main Update button is clicked) is what caused pages to
+                // 404 after "changing" the slug here.
+                setSaving(true);
+                try {
+                  const res = await fetch(`/api/admin/pages/${id}`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ slug: ns }),
+                  });
+                  if (res.ok) {
+                    const updated = await res.json();
+                    setPage({ ...page, slug: updated.slug });
+                    setMessage("Slug updated.");
+                    setTimeout(() => setMessage(""), 3000);
+                  } else {
+                    const err = await res.json().catch(() => ({}));
+                    alert("Failed to update slug: " + (err.error || "Unknown error"));
+                  }
+                } catch (err) {
+                  alert("Failed to update slug.");
+                } finally {
+                  setSaving(false);
+                }
               }}
               className="bg-white border border-[#c3c4c7] px-1.5 py-0.5 rounded-[3px] text-[#2c3338] hover:bg-[#f6f7f7]"
             >

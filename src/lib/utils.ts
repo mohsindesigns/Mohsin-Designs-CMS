@@ -6,6 +6,23 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
+ * Normalizes a Page slug: lowercases, strips leading/trailing slashes, and cleans each
+ * "/"-separated segment (stray characters, spaces, trailing slashes) so the stored slug
+ * always matches the clean URL path Next.js resolves at request time.
+ */
+export function normalizePageSlug(raw: string): string {
+  if (!raw) return "";
+  return raw
+    .trim()
+    .toLowerCase()
+    .replace(/^\/+|\/+$/g, "")
+    .split("/")
+    .map((seg) => seg.trim().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, ""))
+    .filter(Boolean)
+    .join("/");
+}
+
+/**
  * Ensures all external/internal links in HTML string are "dofollow" by stripping "nofollow" from rel attribute.
  */
 export function makeLinksDoFollow(html: string): string {
