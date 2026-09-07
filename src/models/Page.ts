@@ -25,6 +25,7 @@ const PageSchema = new mongoose.Schema({
       'blog',
       'country',
       'state',
+      'city',
       'industry',
       'industries'
     ]

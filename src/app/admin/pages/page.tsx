@@ -435,6 +435,7 @@ export default function PagesDashboard() {
                     <option value="blog">Blog Template</option>
                     <option value="country">Country Template</option>
                     <option value="state">State Template</option>
+                    <option value="city">City Template</option>
                   </select>
                 </div>
               </div>
@@ -512,6 +513,7 @@ export default function PagesDashboard() {
                         <option value="blog">Blog Template</option>
                         <option value="country">Country Template</option>
                         <option value="state">State Template</option>
+                        <option value="city">City Template</option>
                       </select>
                     </div>
                     <div>

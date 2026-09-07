@@ -15,6 +15,7 @@ const QAForm = dynamic(() => import("@/components/QAForm"), { ssr: false });
 const BlogSection = dynamic(() => import("@/components/sections/BlogSection"), { ssr: false });
 const HowWeWork = dynamic(() => import("@/components/HowWeWork"), { ssr: false });
 const ServiceArea = dynamic(() => import("@/components/ServiceArea"), { ssr: false });
+const IndustriesSection = dynamic(() => import("@/components/IndustriesSection"), { ssr: false });
 
 function hasContent(obj: any): boolean {
   if (!obj) return false;
@@ -56,6 +57,13 @@ export default function StateTemplate({ pageData, params }: { pageData?: any; pa
       {content.services?.enabled !== false && hasContent(content.services) && (
         <section id="services">
           <Services data={content.services} />
+        </section>
+      )}
+
+      {/* 3.5 Industries We Serve */}
+      {content.industries?.enabled !== false && hasContent(content.industries) && (
+        <section id="industries">
+          <IndustriesSection data={content.industries} />
         </section>
       )}
 

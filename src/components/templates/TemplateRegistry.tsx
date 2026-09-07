@@ -15,6 +15,7 @@ import LocationTemplate from './LocationTemplate';
 import BlogTemplate from './BlogTemplate';
 import CountryTemplate from './CountryTemplate';
 import StateTemplate from './StateTemplate';
+import CityTemplate from './CityTemplate';
 import IndustryTemplate from './IndustryTemplate';
 import PageInlineFaqs from '../PageInlineFaqs';
 
@@ -40,6 +41,7 @@ export const TEMPLATE_MAP: Record<string, React.ComponentType<any>> = {
   'blog': BlogTemplate,
   'country': CountryTemplate,
   'state': StateTemplate,
+  'city': CityTemplate,
   'industry': IndustryTemplate,
   'industries': IndustryTemplate,
 };
@@ -51,12 +53,12 @@ export const getTemplate = (name: string) => {
 export const TemplateWrapper = ({ templateName, pageData, globalData, initialBlogs, params }: any) => {
   const Template = getTemplate(templateName);
 
-  const hasInlineFaqs = !['home', 'faq', 'service-detail', 'about', 'service-area', 'location', 'locations', 'services', 'contact', 'blogs', 'blog', 'country', 'state', 'industry', 'industries'].includes(templateName) &&
+  const hasInlineFaqs = !['home', 'faq', 'service-detail', 'about', 'service-area', 'location', 'locations', 'services', 'contact', 'blogs', 'blog', 'country', 'state', 'city', 'industry', 'industries'].includes(templateName) &&
     ((pageData?.content?.faqs && Array.isArray(pageData.content.faqs) && pageData.content.faqs.length > 0) ||
       (pageData?.content?.faqSchemaMarkup && typeof pageData.content.faqSchemaMarkup === 'string' && pageData.content.faqSchemaMarkup.trim()));
 
-  // For country and state templates, isolate content completely to prevent any homepage data leakage
-  const isIsolatedTemplate = ['country', 'state'].includes(templateName);
+  // For country, state and city templates, isolate content completely to prevent any homepage data leakage
+  const isIsolatedTemplate = ['country', 'state', 'city'].includes(templateName);
 
   const providerData = isIsolatedTemplate
     ? {

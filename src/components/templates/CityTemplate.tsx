@@ -30,7 +30,7 @@ function hasContent(obj: any): boolean {
   return false;
 }
 
-export default function CountryTemplate({ pageData, params }: { pageData?: any; params?: any }) {
+export default function CityTemplate({ pageData, params }: { pageData?: any; params?: any }) {
   const { allBlogs } = useContent();
   const content = pageData?.content || {};
 
@@ -40,13 +40,13 @@ export default function CountryTemplate({ pageData, params }: { pageData?: any; 
       {content.hero?.enabled !== false && hasContent(content.hero) && <Hero data={content.hero} />}
 
       {/* 1.5 Trusted Brands */}
-      {(content.trustedBrands?.enabled !== false && content.clientTrust?.enabled !== false && content.trustedBy?.enabled !== false) && 
+      {(content.trustedBrands?.enabled !== false && content.clientTrust?.enabled !== false && content.trustedBy?.enabled !== false) &&
         (hasContent(content.trustedBrands) || hasContent(content.clientTrust) || hasContent(content.trustedBy)) && (
         <TrustedBrandsSection data={content.trustedBrands || content.clientTrust || content.trustedBy} />
       )}
 
       {/* 2. About The Owner (Clean - No stats, No CTA button) */}
-      {(content.about?.enabled !== false && content.aboutOwner?.enabled !== false) && 
+      {(content.about?.enabled !== false && content.aboutOwner?.enabled !== false) &&
         (hasContent(content.about || content.aboutOwner)) && (
         <section id="about">
           <AboutOwnerClean data={content.about || content.aboutOwner} />
@@ -75,20 +75,20 @@ export default function CountryTemplate({ pageData, params }: { pageData?: any; 
       )}
 
       {/* 5. Reviews / Testimonials */}
-      {(content.testimonials?.enabled !== false && content.reviews?.enabled !== false) && 
+      {(content.testimonials?.enabled !== false && content.reviews?.enabled !== false) &&
         (hasContent(content.testimonials) || hasContent(content.reviews)) && (
         <Testimonials data={content.testimonials || content.reviews} />
       )}
 
       {/* 6. How We Work / Value Props */}
-      {(content.whyChooseUs?.enabled !== false && content.howWeWork?.enabled !== false) && 
+      {(content.whyChooseUs?.enabled !== false && content.howWeWork?.enabled !== false) &&
         (hasContent(content.whyChooseUs || content.howWeWork)) && (
         <section id="how-we-work">
           <HowWeWork data={content.whyChooseUs || content.howWeWork} />
         </section>
       )}
 
-      {/* 7. Service Area (Country coverage & regional hubs) */}
+      {/* 7. Service Area (City & Metro coverage) */}
       {content.serviceArea?.enabled !== false && hasContent(content.serviceArea) && (
         <section id="service-area">
           <ServiceArea data={content.serviceArea} />
@@ -121,7 +121,7 @@ export default function CountryTemplate({ pageData, params }: { pageData?: any; 
       )}
 
       {/* 10. CTA Contact Form */}
-      {(content.contact?.enabled !== false && content.quote?.enabled !== false) && 
+      {(content.contact?.enabled !== false && content.quote?.enabled !== false) &&
         (hasContent(content.contact) || hasContent(content.quote)) && (
         <section id="contact">
           <ContactForm data={content.contact} />

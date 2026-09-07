@@ -38,6 +38,7 @@ const EDITOR_TEMPLATES = [
   { id: 'blog', label: 'Blog Index', icon: BookOpen },
   { id: 'country', label: 'Country Page', icon: Globe },
   { id: 'state', label: 'State Page', icon: Globe },
+  { id: 'city', label: 'City Page', icon: Globe },
   { id: 'industry', label: 'Industry Page', icon: Globe },
   { id: 'industries', label: 'Industries Hub', icon: Globe },
 ];
