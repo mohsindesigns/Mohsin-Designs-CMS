@@ -476,8 +476,18 @@ export default function ServicesAdminPage() {
     } finally { setSaving(false); }
   };
 
+  const normalizeSlug = (s: string) => s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
+  // Finds another (non-trashed) service already using `slug`, ignoring the service at `excludeIndex` (its own current slot).
+  const findSlugCollision = (slug: string, excludeIndex?: number) => {
+    return services.find((s: any, idx: number) => idx !== excludeIndex && s.slug === slug && !s.isTrashed);
+  };
+
   const handleSaveService = () => {
     if (!form.title || !form.slug) return alert("Title and slug are required.");
+
+    const collision = findSlugCollision(form.slug, isEditing !== null ? isEditing : undefined);
+    if (collision) return alert(`The URL slug "${form.slug}" is already used by "${collision.title}". Please choose a different slug — otherwise one of the two pages won't be reachable.`);
 
     const newServices = [...services];
     const serviceData = {
@@ -589,6 +599,9 @@ export default function ServicesAdminPage() {
   const handleCreateNewService = () => {
     if (!newService.title || !newService.slug) return alert("Title and Slug are required.");
 
+    const createCollision = findSlugCollision(newService.slug);
+    if (createCollision) return alert(`The URL slug "${newService.slug}" is already used by "${createCollision.title}". Please choose a different slug.`);
+
     const created = {
       ...DEFAULT_SERVICE_TEMPLATE,
       id: Date.now().toString(),
@@ -608,13 +621,18 @@ export default function ServicesAdminPage() {
     e.preventDefault();
     if (!editingService) return;
 
-    const originalIdx = services.findIndex(orig => (orig.id && orig.id === editingService.id) || orig.slug === editingService.slug);
+    const originalIdx = services.findIndex(orig => (orig.id && orig.id === editingService.id) || orig.slug === editingService._originalSlug);
     if (originalIdx !== -1) {
+      const ns = normalizeSlug(editingService.slug || "");
+      if (!ns) return alert("Slug cannot be empty.");
+      const collision = findSlugCollision(ns, originalIdx);
+      if (collision) return alert(`The URL slug "${ns}" is already used by "${collision.title}". Please choose a different slug.`);
+
       const newServices = [...services];
       newServices[originalIdx] = {
         ...newServices[originalIdx],
         title: editingService.title,
-        slug: editingService.slug,
+        slug: ns,
         tag: editingService.tag,
         status: editingService.status
       };
@@ -666,11 +684,22 @@ export default function ServicesAdminPage() {
   };
 
   const handleDuplicate = (service: any) => {
+    // Guarantee a unique slug even when duplicating the same service more than once,
+    // or duplicating an already-duplicated one — a plain "-copy" suffix collides in both
+    // cases and silently makes the newer duplicate unreachable (shadowed by the older one).
+    const baseSlug = `${service.slug}-copy`;
+    let candidateSlug = baseSlug;
+    let suffix = 2;
+    while (findSlugCollision(candidateSlug)) {
+      candidateSlug = `${baseSlug}-${suffix}`;
+      suffix++;
+    }
+
     const duplicated = {
       ...service,
       id: Date.now().toString(),
       title: `${service.title} (Copy)`,
-      slug: `${service.slug}-copy`,
+      slug: candidateSlug,
       createdAt: new Date().toISOString()
     };
     const newServices = [...services, duplicated];
@@ -827,8 +856,36 @@ export default function ServicesAdminPage() {
                 </span>
                 <button
                   onClick={() => {
-                    const ns = prompt("Enter new slug:", form.slug);
-                    if (ns) setForm({ ...form, slug: ns });
+                    const raw = prompt("Enter new slug:", form.slug);
+                    if (!raw) return;
+                    const ns = normalizeSlug(raw);
+                    if (!ns) return alert("Slug cannot be empty.");
+                    if (ns === form.slug) return;
+
+                    const collision = findSlugCollision(ns, isEditing !== null ? isEditing : undefined);
+                    if (collision) return alert(`The URL slug "${ns}" is already used by "${collision.title}". Please choose a different slug.`);
+
+                    // Save immediately so the new URL goes live right away — leaving this only in
+                    // local state (until the main Update button is clicked) is what caused pages to
+                    // 404 after "changing" the slug here.
+                    const updatedForm = { ...form, slug: ns };
+                    setForm(updatedForm);
+                    const newServices = [...services];
+                    const serviceData = {
+                      ...DEFAULT_SERVICE_TEMPLATE,
+                      ...updatedForm,
+                      seo,
+                      id: updatedForm.id || Date.now().toString(),
+                      number: updatedForm.number || (services.length + 1).toString().padStart(2, '0')
+                    };
+                    let targetIdx = isEditing;
+                    if (isEditing !== null && isEditing < services.length) {
+                      newServices[isEditing] = serviceData;
+                    } else {
+                      targetIdx = services.length;
+                      newServices.push(serviceData);
+                    }
+                    saveToDb(newServices, targetIdx !== null ? targetIdx : undefined, serviceData);
                   }}
                   className="bg-white border border-[#c3c4c7] px-1.5 py-0.5 rounded-[3px] text-[#2c3338] hover:bg-[#f6f7f7]"
                 >
@@ -3810,7 +3867,7 @@ export default function ServicesAdminPage() {
                         <div className="flex items-center gap-2 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button onClick={() => handleEdit(service)} className="text-[#2271b1] hover:underline text-[12px]">Edit</button>
                           <span className="text-[#a7aaad]">|</span>
-                          <button onClick={() => setEditingService(service)} className="text-[#2271b1] hover:underline text-[12px]">Quick Edit</button>
+                          <button onClick={() => setEditingService({ ...service, _originalSlug: service.slug })} className="text-[#2271b1] hover:underline text-[12px]">Quick Edit</button>
                           <span className="text-[#a7aaad]">|</span>
                           <button onClick={() => handleDuplicate(service)} className="text-[#2271b1] hover:underline text-[12px]">Duplicate</button>
                           <span className="text-[#a7aaad]">|</span>
