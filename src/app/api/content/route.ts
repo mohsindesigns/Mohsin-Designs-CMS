@@ -42,15 +42,28 @@ export async function PUT(req: NextRequest) {
 
     const oldContent = await SiteContent.findOne({ key: 'complete_data' });
     const existingData = oldContent?.data || {};
+    const existingServicesList = Array.isArray(existingData.services?.services)
+      ? existingData.services.services
+      : (Array.isArray(existingData.services) ? existingData.services : (existingData.globalServices || []));
 
     let finalData: any;
 
     if (sanitizedBody.section === 'services') {
-      // Granular update exclusively for services
-      const servicesList = Array.isArray(sanitizedBody.services?.services) 
+      // Granular update EXCLUSIVELY from the Dedicated Services Manager (/admin/services)
+      const incomingList = Array.isArray(sanitizedBody.services?.services) 
         ? sanitizedBody.services.services 
         : (Array.isArray(sanitizedBody.services) ? sanitizedBody.services : (sanitizedBody.globalServices || []));
       
+      // CRITICAL ACCIDENTAL-WIPEOUT SHIELD:
+      // If incoming array is empty but DB has existing services, reject unless explicitly confirmed
+      if (incomingList.length === 0 && existingServicesList.length > 0 && !sanitizedBody.confirmWipeAllServices) {
+        console.warn('[Safety Shield] Blocked attempt to wipe all services with empty array!');
+        return NextResponse.json({ 
+          error: 'Safety shield blocked empty services list. Existing services preserved.',
+          preservedCount: existingServicesList.length
+        }, { status: 400 });
+      }
+
       const prevServicesObj = (typeof existingData.services === 'object' && !Array.isArray(existingData.services)) 
         ? existingData.services 
         : {};
@@ -59,36 +72,73 @@ export async function PUT(req: NextRequest) {
         ...existingData,
         services: {
           ...prevServicesObj,
-          services: servicesList
+          services: incomingList
         },
-        globalServices: servicesList
+        globalServices: incomingList
       };
+
+      // AUTOMATIC VERSIONED SNAPSHOT:
+      // Save an atomic backup in site_contents with key 'services_backup'
+      try {
+        await SiteContent.updateOne(
+          { key: 'services_backup' },
+          {
+            $set: {
+              lastBackup: new Date(),
+              count: incomingList.length,
+              services: incomingList
+            },
+            $push: {
+              history: {
+                $each: [{ timestamp: new Date(), count: incomingList.length, user: (session as any)?.username || 'admin' }],
+                $slice: -20 // keep last 20 snapshots
+              }
+            }
+          },
+          { upsert: true }
+        );
+      } catch (backupErr) {
+        console.warn('Could not write services backup:', backupErr);
+      }
+
     } else if (sanitizedBody.section && sanitizedBody.section !== 'complete_data') {
-      // Granular section update
+      // Granular section update for other editors (e.g. 'settings', 'portfolio', 'faq', 'testimonials')
       finalData = {
         ...existingData,
         [sanitizedBody.section]: sanitizedBody[sanitizedBody.section] ?? sanitizedBody
       };
+
+      // Ensure services are NEVER touched by any other section update
+      finalData.services = existingData.services;
+      finalData.globalServices = existingServicesList;
+
     } else {
-      // Full payload update: merge on top of existingData
+      // Full payload update (from editors like Home, Settings, About, Pages/Services that send full JSON state)
+      // We merge incoming updates on top of existingData BUT with strict immutable preservation for services:
       finalData = {
         ...existingData,
         ...sanitizedBody
       };
 
-      // CRITICAL RACE-CONDITION SHIELD:
-      // Never let an editor that does not manage services (like Home, Settings, About)
-      // overwrite newer services in the database with its stale in-memory services array.
-      if (existingData.services?.services && Array.isArray(existingData.services.services)) {
-        const incomingSvcs = Array.isArray(sanitizedBody.services?.services) 
-          ? sanitizedBody.services.services 
-          : (Array.isArray(sanitizedBody.services) ? sanitizedBody.services : null);
-        
-        if (!incomingSvcs || incomingSvcs.length < existingData.services.services.length) {
-          finalData.services = existingData.services;
-          finalData.globalServices = existingData.globalServices || existingData.services.services;
-        }
-      }
+      // IMMUTABLE SERVICE SHIELD:
+      // An editor that does not have section === 'services' MUST NEVER modify existing services.
+      // If the incoming payload has services metadata (e.g. hero, intro for /services archive page),
+      // we preserve the metadata while strictly locking the services array to the database truth.
+      const prevServicesObj = (typeof existingData.services === 'object' && !Array.isArray(existingData.services))
+        ? existingData.services
+        : {};
+
+      const incomingServicesObj = (typeof sanitizedBody.services === 'object' && !Array.isArray(sanitizedBody.services))
+        ? sanitizedBody.services
+        : {};
+
+      finalData.services = {
+        ...prevServicesObj,
+        ...incomingServicesObj,
+        // Always lock the services array to the live database
+        services: existingServicesList
+      };
+      finalData.globalServices = existingServicesList;
     }
 
     const result = await SiteContent.updateOne(

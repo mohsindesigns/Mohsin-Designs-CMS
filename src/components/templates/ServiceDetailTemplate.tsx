@@ -2048,7 +2048,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       )}
 
       {/* ── 10.5 PRICING PLANS ── */}
-      {((service as any).pricing?.enabled !== false && service.pricing && service.pricing.plans) && (
+      {((service as any).pricing?.enabled === true && service.pricing && Array.isArray(service.pricing.plans) && service.pricing.plans.length > 0) && (
         <section className="relative overflow-hidden py-20 md:py-24 bg-zinc-50/5 dark:bg-[#0c0b18]/5 border-b border-brand-zinc-200 dark:border-white/10">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
             
