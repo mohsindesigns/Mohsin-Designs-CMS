@@ -52,6 +52,20 @@ export async function PATCH(
       isTrashed: oldPage.isTrashed
     };
 
+    // ATOMIC PAGE SNAPSHOT:
+    // Create an atomic backup of this page before applying any updates
+    try {
+      const { createPageBackup } = await import('@/lib/backup');
+      await createPageBackup({
+        pageId: id,
+        user: (session as any)?.username || 'admin',
+        label: `Pre-update backup for page: ${oldPage.title}`,
+        pageDoc: oldPage
+      });
+    } catch (pBkErr) {
+      console.warn('[Backup Engine] Page backup failed:', pBkErr);
+    }
+
     const updateData = { ...body };
     if (body.isTrashed !== undefined) {
       updateData.isTrashed = body.isTrashed;

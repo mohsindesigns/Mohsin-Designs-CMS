@@ -141,6 +141,20 @@ export async function PUT(req: NextRequest) {
       finalData.globalServices = existingServicesList;
     }
 
+    // COMPLETE ATOMIC DATABASE SNAPSHOT (PRE-UPDATE):
+    // Snapshots the complete existing database state before mutation
+    try {
+      const { createCompleteDbBackup } = await import('@/lib/backup');
+      await createCompleteDbBackup({
+        user: (session as any)?.username || 'admin',
+        label: `Pre-update complete snapshot (${sanitizedBody.section || 'complete_data'})`,
+        section: sanitizedBody.section || 'complete_data',
+        data: existingData
+      });
+    } catch (bkErr) {
+      console.warn('[Backup Engine] Pre-update complete DB snapshot failed:', bkErr);
+    }
+
     const result = await SiteContent.updateOne(
       { key: 'complete_data' },
       { 
@@ -151,6 +165,20 @@ export async function PUT(req: NextRequest) {
       },
       { upsert: true }
     );
+
+    // COMPLETE ATOMIC DATABASE SNAPSHOT (POST-UPDATE):
+    // Snapshots the newly active complete database state
+    try {
+      const { createCompleteDbBackup } = await import('@/lib/backup');
+      await createCompleteDbBackup({
+        user: (session as any)?.username || 'admin',
+        label: `Post-update complete snapshot (${sanitizedBody.section || 'complete_data'})`,
+        section: sanitizedBody.section || 'complete_data',
+        data: finalData
+      });
+    } catch (postBkErr) {
+      console.warn('[Backup Engine] Post-update complete DB snapshot failed:', postBkErr);
+    }
 
     // Sync portfolio to Home Page document in MongoDB so it never gets overridden by stale page data
     if (sanitizedBody?.portfolio) {
