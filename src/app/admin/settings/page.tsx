@@ -250,7 +250,19 @@ export default function SettingsEditor() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const res = await fetch("/api/content", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+      const payload = {
+        section: "settings",
+        settings: data.settings,
+        navbar: data.navbar,
+        footer: data.footer,
+        loader: data.loader,
+        hours: data.hours
+      };
+      const res = await fetch("/api/content", { 
+        method: "PUT", 
+        headers: { "Content-Type": "application/json" }, 
+        body: JSON.stringify(payload) 
+      });
       if (res.ok) {
         setToast({ type: "ok", msg: "Settings saved." });
         setTimeout(() => setToast(null), 3000);

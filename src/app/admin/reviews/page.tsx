@@ -56,11 +56,12 @@ export default function ReviewsAdminPage() {
 
   const saveToDb = async (newTestimonials: any[]) => {
     setSaving(true);
-    const updatedData = { ...data, testimonials: { ...data.testimonials, testimonials: newTestimonials } };
+    const updatedTestimonials = { ...(data?.testimonials || {}), testimonials: newTestimonials };
+    const payload = { section: "testimonials", testimonials: updatedTestimonials };
     try {
-      const res = await fetch("/api/content", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(updatedData) });
+      const res = await fetch("/api/content", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       if (res.ok) {
-        setData(updatedData);
+        setData((prev: any) => ({ ...prev, testimonials: updatedTestimonials }));
         setTestimonials(newTestimonials);
         setToast({ type: "ok", msg: "Reviews updated." });
         setTimeout(() => setToast(null), 3000);

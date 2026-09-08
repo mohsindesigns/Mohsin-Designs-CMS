@@ -75,11 +75,12 @@ export default function FAQAdminPage() {
 
   const saveToDb = async (updatedFaqs: any[], updatedCategories: string[]) => {
     setSaving(true);
-    const updatedData = { ...data, faq: { ...data.faq, items: updatedFaqs, categories: updatedCategories } };
+    const updatedFaq = { ...(data?.faq || {}), items: updatedFaqs, categories: updatedCategories };
+    const payload = { section: "faq", faq: updatedFaq };
     try {
-      const res = await fetch("/api/content", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(updatedData) });
+      const res = await fetch("/api/content", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       if (res.ok) {
-        setData(updatedData);
+        setData((prev: any) => ({ ...prev, faq: updatedFaq }));
         setFaqs(updatedFaqs);
         setCategories(updatedCategories);
         setToast({ type: "ok", msg: "FAQ updated." });

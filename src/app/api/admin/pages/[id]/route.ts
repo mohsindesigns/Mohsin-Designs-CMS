@@ -101,7 +101,13 @@ export async function PATCH(
         const SiteContent = (await import('@/models/Content')).default;
         const currentDoc = await SiteContent.findOne({ key: 'complete_data' });
         if (currentDoc) {
-          const mergedData = { ...currentDoc.data, ...content };
+          const cleanContent = { ...content };
+          // Strict protection: home page sync must NEVER touch services
+          delete cleanContent.services;
+          delete cleanContent.globalServices;
+          const mergedData = { ...currentDoc.data, ...cleanContent };
+          mergedData.services = currentDoc.data?.services;
+          mergedData.globalServices = currentDoc.data?.globalServices || currentDoc.data?.services?.services;
           if (content.portfolio) {
             mergedData.portfolio = { ...(currentDoc.data?.portfolio || {}), ...content.portfolio };
           }

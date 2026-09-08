@@ -241,22 +241,22 @@ function AnimatedStat({
       const DELAY = 150;
       const startTime = performance.now() + DELAY;
       let rafId: number;
-      
+
       const tick = (now: number) => {
         const elapsed = Math.max(0, now - startTime);
         const raw = Math.min(elapsed / DURATION, 1);
         const eased = 1 - Math.pow(1 - raw, 4);
-        
+
         setDisplayed((isFloat ? (eased * numeric).toFixed(1) : Math.round(eased * numeric).toString()) + suffix);
         setDotProgress(eased * percentage);
-        
+
         if (raw < 1) {
           rafId = requestAnimationFrame(tick);
         } else {
           setDotProgress(percentage);
         }
       };
-      
+
       rafId = requestAnimationFrame(tick);
       return () => cancelAnimationFrame(rafId);
     } else {
@@ -447,13 +447,13 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       benefits: (Array.isArray(dbService?.hero?.benefits) && dbService.hero.benefits.length > 0)
         ? dbService.hero.benefits.filter((b: any) => typeof b === 'string' && b.trim().length > 0)
         : (Array.isArray(dbService?.features) && dbService.features.length > 0
-            ? dbService.features.filter((b: any) => typeof b === 'string' && b.trim().length > 0)
-            : [
-                "Data-Driven Growth Strategies",
-                "Next.js Speed & Performance",
-                "Conversion-Focused Architecture",
-                "Dedicated Support & Real-Time Sync"
-              ]),
+          ? dbService.features.filter((b: any) => typeof b === 'string' && b.trim().length > 0)
+          : [
+            "Data-Driven Growth Strategies",
+            "Next.js Speed & Performance",
+            "Conversion-Focused Architecture",
+            "Dedicated Support & Real-Time Sync"
+          ]),
       formHeading: dbService?.hero?.formHeading || dbService?.hero?.formTitle || "Request a Free Audit",
       formSubheading: dbService?.hero?.formSubheading || dbService?.hero?.formSubtitle || "Direct architect consultation and custom scope estimation within 24 hours.",
       formButtonText: dbService?.hero?.formButtonText || dbService?.hero?.btnSubmit || "Request Free Proposal"
@@ -464,14 +464,14 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       logos: (Array.isArray(dbService?.clientTrust?.logos) && dbService.clientTrust.logos.length > 0)
         ? dbService.clientTrust.logos
         : (Array.isArray(dbService?.clientTrust) && dbService.clientTrust.length > 0
-            ? dbService.clientTrust
-            : [
-                { name: "Google Ads" },
-                { name: "Meta Business" },
-                { name: "Amazon Ads" },
-                { name: "Bing Ads" },
-                { name: "Apple Search" }
-              ])
+          ? dbService.clientTrust
+          : [
+            { name: "Google Ads" },
+            { name: "Meta Business" },
+            { name: "Amazon Ads" },
+            { name: "Bing Ads" },
+            { name: "Apple Search" }
+          ])
     },
     whatIncluded: {
       enabled: dbService?.whatIncluded?.enabled,
@@ -481,29 +481,29 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       description: dbService?.whatIncluded?.description || "",
       pillars: (Array.isArray(dbService?.whatIncluded?.pillars) && dbService.whatIncluded.pillars.length > 0)
         ? dbService.whatIncluded.pillars.map((p: any) => ({
-            title: p.title || p.name || "",
-            desc: p.desc || p.description || "",
-            features: Array.isArray(p.features)
-              ? p.features.filter((f: any) => typeof f === 'string' && f.trim().length > 0)
-              : []
-          }))
+          title: p.title || p.name || "",
+          desc: p.desc || p.description || "",
+          features: Array.isArray(p.features)
+            ? p.features.filter((f: any) => typeof f === 'string' && f.trim().length > 0)
+            : []
+        }))
         : [
-            {
-              title: "Strategic Discovery & Architecture",
-              desc: "Deep analysis of existing infrastructure, competitor positioning, and high-impact revenue paths.",
-              features: ["Technical Infrastructure Audit", "Competitor Matrix Analysis", "Custom Scope Blueprint"]
-            },
-            {
-              title: "High-Performance Execution",
-              desc: "Implementation powered by clean modular code, fast edge rendering, and conversion-optimized UI/UX.",
-              features: ["Precision Development", "Conversion Rate Optimization", "Automated QA Protocols"]
-            },
-            {
-              title: "Attribution & Scalable Growth",
-              desc: "Continuous monitoring, live telemetry tracking, and iterative growth loops to ensure positive ROI.",
-              features: ["Real-time Data Dashboards", "A/B Multivariate Testing", "Ongoing Growth Support"]
-            }
-          ]
+          {
+            title: "Strategic Discovery & Architecture",
+            desc: "Deep analysis of existing infrastructure, competitor positioning, and high-impact revenue paths.",
+            features: ["Technical Infrastructure Audit", "Competitor Matrix Analysis", "Custom Scope Blueprint"]
+          },
+          {
+            title: "High-Performance Execution",
+            desc: "Implementation powered by clean modular code, fast edge rendering, and conversion-optimized UI/UX.",
+            features: ["Precision Development", "Conversion Rate Optimization", "Automated QA Protocols"]
+          },
+          {
+            title: "Attribution & Scalable Growth",
+            desc: "Continuous monitoring, live telemetry tracking, and iterative growth loops to ensure positive ROI.",
+            features: ["Real-time Data Dashboards", "A/B Multivariate Testing", "Ongoing Growth Support"]
+          }
+        ]
     },
     strategy: {
       enabled: dbService?.strategy?.enabled,
@@ -513,15 +513,15 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       description: dbService?.strategy?.description || "A custom implementation plan targeting bottlenecks and compounding acquisition flows.",
       components: (Array.isArray(dbService?.strategy?.components) && dbService.strategy.components.length > 0)
         ? dbService.strategy.components.map((c: any, idx: number) => ({
-            num: c.num || `0${idx + 1}`,
-            title: c.title || "",
-            desc: c.desc || c.description || ""
-          }))
+          num: c.num || `0${idx + 1}`,
+          title: c.title || "",
+          desc: c.desc || c.description || ""
+        }))
         : [
-            { num: "01", title: "Diagnostic Audit & Benchmark", desc: "We isolate inefficiencies, crawl errors, and technical bottlenecks before deploying capital." },
-            { num: "02", title: "High-Intent Positioning Map", desc: "Prioritizing high-margin conversions and capturing immediate commercial purchase intent." },
-            { num: "03", title: "Systemic Deployment & Scale", desc: "Launching verified updates across digital touchpoints to capture maximum market share." }
-          ]
+          { num: "01", title: "Diagnostic Audit & Benchmark", desc: "We isolate inefficiencies, crawl errors, and technical bottlenecks before deploying capital." },
+          { num: "02", title: "High-Intent Positioning Map", desc: "Prioritizing high-margin conversions and capturing immediate commercial purchase intent." },
+          { num: "03", title: "Systemic Deployment & Scale", desc: "Launching verified updates across digital touchpoints to capture maximum market share." }
+        ]
     },
     benefits: {
       enabled: dbService?.benefits?.enabled,
@@ -532,6 +532,15 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       outcomeText: dbService?.benefits?.outcomeText || "Guaranteed Outcome",
       list: (Array.isArray(dbService?.benefits?.list) && dbService.benefits.list.length > 0)
         ? dbService.benefits.list.map((b: any) => ({
+          metric: b.metric || "",
+          title: b.title || "",
+          desc: b.desc || b.description || "",
+          tag: b.tag || b.num || "",
+          iconName: b.iconName || b.icon || "TrendingUp",
+          outcomeText: b.outcomeText || dbService?.benefits?.outcomeText || ""
+        }))
+        : (Array.isArray(dbService?.benefits?.items) && dbService.benefits.items.length > 0
+          ? dbService.benefits.items.map((b: any) => ({
             metric: b.metric || "",
             title: b.title || "",
             desc: b.desc || b.description || "",
@@ -539,30 +548,21 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             iconName: b.iconName || b.icon || "TrendingUp",
             outcomeText: b.outcomeText || dbService?.benefits?.outcomeText || ""
           }))
-        : (Array.isArray(dbService?.benefits?.items) && dbService.benefits.items.length > 0
-            ? dbService.benefits.items.map((b: any) => ({
-                metric: b.metric || "",
-                title: b.title || "",
-                desc: b.desc || b.description || "",
-                tag: b.tag || b.num || "",
-                iconName: b.iconName || b.icon || "TrendingUp",
-                outcomeText: b.outcomeText || dbService?.benefits?.outcomeText || ""
-              }))
-            : (Array.isArray(dbService?.benefits) && dbService.benefits.length > 0 && typeof dbService.benefits[0] === 'object'
-                ? dbService.benefits.map((b: any) => ({
-                    metric: b.metric || "",
-                    title: b.title || "",
-                    desc: b.desc || b.description || "",
-                    tag: b.tag || b.num || "",
-                    iconName: b.iconName || b.icon || "TrendingUp",
-                    outcomeText: b.outcomeText || ""
-                  }))
-                : [
-                    { title: "Organic Visibility", desc: "Accelerating discovery on top search engines through clean structured code.", iconName: "TrendingUp", outcomeText: "Guaranteed Outcome" },
-                    { title: "Conversion Yield", desc: "Frictionless UX funnels designed specifically to capture and convert leads.", iconName: "Target", outcomeText: "Guaranteed Outcome" },
-                    { title: "Reliability & Uptime", desc: "Enterprise infrastructure built on modern serverless edge architecture.", iconName: "ShieldCheck", outcomeText: "Guaranteed Outcome" },
-                    { title: "Load Performance", desc: "Lightning fast asset delivery boosting Core Web Vitals and SEO rankings.", iconName: "Zap", outcomeText: "Guaranteed Outcome" }
-                  ]))
+          : (Array.isArray(dbService?.benefits) && dbService.benefits.length > 0 && typeof dbService.benefits[0] === 'object'
+            ? dbService.benefits.map((b: any) => ({
+              metric: b.metric || "",
+              title: b.title || "",
+              desc: b.desc || b.description || "",
+              tag: b.tag || b.num || "",
+              iconName: b.iconName || b.icon || "TrendingUp",
+              outcomeText: b.outcomeText || ""
+            }))
+            : [
+              { title: "Organic Visibility", desc: "Accelerating discovery on top search engines through clean structured code.", iconName: "TrendingUp", outcomeText: "Guaranteed Outcome" },
+              { title: "Conversion Yield", desc: "Frictionless UX funnels designed specifically to capture and convert leads.", iconName: "Target", outcomeText: "Guaranteed Outcome" },
+              { title: "Reliability & Uptime", desc: "Enterprise infrastructure built on modern serverless edge architecture.", iconName: "ShieldCheck", outcomeText: "Guaranteed Outcome" },
+              { title: "Load Performance", desc: "Lightning fast asset delivery boosting Core Web Vitals and SEO rankings.", iconName: "Zap", outcomeText: "Guaranteed Outcome" }
+            ]))
     },
     process: {
       enabled: dbService?.process?.enabled,
@@ -574,60 +574,60 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       calloutText: dbService?.process?.calloutText || "",
       steps: (Array.isArray(dbService?.process?.steps) && dbService.process.steps.length > 0)
         ? dbService.process.steps.map((p: any, idx: number) => ({
-            title: p.title || p.name || `Sprint 0${idx + 1}`,
-            desc: p.desc || p.description || "",
-            phaseTag: p.phaseTag || p.badge || p.tag || `PHASE 0${idx + 1} // SPRINT`,
+          title: p.title || p.name || `Sprint 0${idx + 1}`,
+          desc: p.desc || p.description || "",
+          phaseTag: p.phaseTag || p.badge || p.tag || `PHASE 0${idx + 1} // SPRINT`,
+          deliverables: Array.isArray(p.deliverables)
+            ? p.deliverables.filter((d: any) => typeof d === 'string' && d.trim().length > 0)
+            : [],
+          footerLeft: p.footerLeft || "",
+          footerRight: p.footerRight || ""
+        }))
+        : (Array.isArray(dbService?.process) && dbService.process.length > 0
+          ? dbService.process.map((p: any, idx: number) => ({
+            title: p.title || p.name || "Milestone",
+            desc: p.desc || p.description || "Structured sprint execution.",
+            phaseTag: p.phaseTag || p.badge || `PHASE 0${idx + 1} // SPRINT`,
             deliverables: Array.isArray(p.deliverables)
               ? p.deliverables.filter((d: any) => typeof d === 'string' && d.trim().length > 0)
               : [],
             footerLeft: p.footerLeft || "",
             footerRight: p.footerRight || ""
           }))
-        : (Array.isArray(dbService?.process) && dbService.process.length > 0
-            ? dbService.process.map((p: any, idx: number) => ({
-                title: p.title || p.name || "Milestone",
-                desc: p.desc || p.description || "Structured sprint execution.",
-                phaseTag: p.phaseTag || p.badge || `PHASE 0${idx + 1} // SPRINT`,
-                deliverables: Array.isArray(p.deliverables)
-                  ? p.deliverables.filter((d: any) => typeof d === 'string' && d.trim().length > 0)
-                  : [],
-                footerLeft: p.footerLeft || "",
-                footerRight: p.footerRight || ""
-              }))
-            : [
-                {
-                  title: "Discovery & Technical Diagnostics",
-                  desc: "Full audit of your digital ecosystem, tech stack, and user funnels.",
-                  phaseTag: "PHASE 01 // SPRINT",
-                  deliverables: ["Technical Stack Audit", "Competitor Benchmark"],
-                  footerLeft: "Architecture Discovery",
-                  footerRight: "Verified Milestone"
-                },
-                {
-                  title: "Architecture & Production Build",
-                  desc: "Structuring high-converting user flows and component hierarchies.",
-                  phaseTag: "PHASE 02 // SPRINT",
-                  deliverables: ["Modular Component Hierarchy", "Responsive Interface"],
-                  footerLeft: "Core Development",
-                  footerRight: "Verified Milestone"
-                },
-                {
-                  title: "Verification & Quality Assurance",
-                  desc: "Multi-device cross-browser testing and performance stress audits.",
-                  phaseTag: "PHASE 03 // SPRINT",
-                  deliverables: ["Performance Stress Audit", "Cross-Device Validation"],
-                  footerLeft: "Quality Assurance",
-                  footerRight: "Verified Milestone"
-                },
-                {
-                  title: "Deployment & Growth Scaling",
-                  desc: "Live rollout with custom telemetry and continuous optimizations.",
-                  phaseTag: "PHASE 04 // SPRINT",
-                  deliverables: ["Edge CDN Deployment", "Live Telemetry Setup"],
-                  footerLeft: "Production Launch",
-                  footerRight: "Verified Milestone"
-                }
-              ])
+          : [
+            {
+              title: "Discovery & Technical Diagnostics",
+              desc: "Full audit of your digital ecosystem, tech stack, and user funnels.",
+              phaseTag: "PHASE 01 // SPRINT",
+              deliverables: ["Technical Stack Audit", "Competitor Benchmark"],
+              footerLeft: "Architecture Discovery",
+              footerRight: "Verified Milestone"
+            },
+            {
+              title: "Architecture & Production Build",
+              desc: "Structuring high-converting user flows and component hierarchies.",
+              phaseTag: "PHASE 02 // SPRINT",
+              deliverables: ["Modular Component Hierarchy", "Responsive Interface"],
+              footerLeft: "Core Development",
+              footerRight: "Verified Milestone"
+            },
+            {
+              title: "Verification & Quality Assurance",
+              desc: "Multi-device cross-browser testing and performance stress audits.",
+              phaseTag: "PHASE 03 // SPRINT",
+              deliverables: ["Performance Stress Audit", "Cross-Device Validation"],
+              footerLeft: "Quality Assurance",
+              footerRight: "Verified Milestone"
+            },
+            {
+              title: "Deployment & Growth Scaling",
+              desc: "Live rollout with custom telemetry and continuous optimizations.",
+              phaseTag: "PHASE 04 // SPRINT",
+              deliverables: ["Edge CDN Deployment", "Live Telemetry Setup"],
+              footerLeft: "Production Launch",
+              footerRight: "Verified Milestone"
+            }
+          ])
     },
     results: {
       enabled: dbService?.results?.enabled,
@@ -682,18 +682,18 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       })(),
       metrics: (Array.isArray(dbService?.results?.metrics) && dbService.results.metrics.length > 0)
         ? dbService.results.metrics.map((m: any, idx: number) => ({
-            value: m.value || "",
-            label: m.label || "",
-            desc: m.desc || m.subtext || "",
-            tag: m.tag || `M0${idx + 1}`,
-            iconName: m.iconName || m.icon || "Trophy"
-          }))
+          value: m.value || "",
+          label: m.label || "",
+          desc: m.desc || m.subtext || "",
+          tag: m.tag || `M0${idx + 1}`,
+          iconName: m.iconName || m.icon || "Trophy"
+        }))
         : [
-            { value: "450%", label: "TRAFFIC GROWTH", desc: "Average organic session boost across 12-month engagements.", tag: "M01", iconName: "TrendingUp" },
-            { value: "3.8x", label: "ROI MULTIPLIER", desc: "Documented revenue acceleration from attributed funnels.", tag: "M02", iconName: "Target" },
-            { value: "99%", label: "CLIENT RETENTION", desc: "Long-term client partnerships built on consistent delivery.", tag: "M03", iconName: "ShieldCheck" },
-            { value: "24/7", label: "SUPPORT SYNC", desc: "Continuous uptime and real-time response capability.", tag: "M04", iconName: "Zap" }
-          ]
+          { value: "450%", label: "TRAFFIC GROWTH", desc: "Average organic session boost across 12-month engagements.", tag: "M01", iconName: "TrendingUp" },
+          { value: "3.8x", label: "ROI MULTIPLIER", desc: "Documented revenue acceleration from attributed funnels.", tag: "M02", iconName: "Target" },
+          { value: "99%", label: "CLIENT RETENTION", desc: "Long-term client partnerships built on consistent delivery.", tag: "M03", iconName: "ShieldCheck" },
+          { value: "24/7", label: "SUPPORT SYNC", desc: "Continuous uptime and real-time response capability.", tag: "M04", iconName: "Zap" }
+        ]
     },
     industries: {
       enabled: dbService?.industries?.enabled,
@@ -803,16 +803,16 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       description: dbService?.whyChooseUs?.description || "We design fully custom solutions engineered around revenue metrics, performance, and transparency.",
       stats: (Array.isArray(dbService?.whyChooseUs?.stats) && dbService.whyChooseUs.stats.length > 0)
         ? dbService.whyChooseUs.stats.map((st: any) => ({
-            value: st.value || "",
-            label: st.label || "",
-            sublabel: st.sublabel || "",
-            percentage: typeof st.percentage === "number" ? st.percentage : undefined
-          }))
+          value: st.value || "",
+          label: st.label || "",
+          sublabel: st.sublabel || "",
+          percentage: typeof st.percentage === "number" ? st.percentage : undefined
+        }))
         : [
-            { value: "100%", label: "PERFORMANCE", sublabel: "Next.js Headless\nSpeed Optimization", percentage: 1.0 },
-            { value: "4.5x", label: "AVERAGE ROI", sublabel: "Attributed Leads\nGrowth Scaling", percentage: 0.9 },
-            { value: "24/7", label: "DATA SYNC", sublabel: "Live Tracking\nReal-time Reports", percentage: 0.85 }
-          ],
+          { value: "100%", label: "PERFORMANCE", sublabel: "Next.js Headless\nSpeed Optimization", percentage: 1.0 },
+          { value: "4.5x", label: "AVERAGE ROI", sublabel: "Attributed Leads\nGrowth Scaling", percentage: 0.9 },
+          { value: "24/7", label: "DATA SYNC", sublabel: "Live Tracking\nReal-time Reports", percentage: 0.85 }
+        ],
       list: (() => {
         const rawList = Array.isArray(dbService?.whyChooseUs?.list) && dbService.whyChooseUs.list.length > 0
           ? dbService.whyChooseUs.list
@@ -850,65 +850,65 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       description: dbService?.pricing?.description || "",
       plans: (Array.isArray(dbService?.pricing?.plans) && dbService.pricing.plans.length > 0)
         ? dbService.pricing.plans.map((p: any) => ({
-            name: p.name || "",
-            tag: p.tag || "",
-            desc: p.desc || p.description || "",
-            price: p.price || "",
-            period: p.period || "",
-            isPopular: !!(p.isPopular || p.popular),
-            isCustom: !!(p.isCustom || p.custom),
-            badgeText: p.badgeText || (p.isPopular || p.popular ? "Most Popular" : p.isCustom || p.custom ? "Custom Scoped" : ""),
-            ctaText: p.ctaText || "Select Plan",
-            ctaLink: p.ctaLink || "",
-            features: Array.isArray(p.features)
-              ? p.features.filter((f: any) => typeof f === 'string' && f.trim().length > 0)
-              : []
-          }))
+          name: p.name || "",
+          tag: p.tag || "",
+          desc: p.desc || p.description || "",
+          price: p.price || "",
+          period: p.period || "",
+          isPopular: !!(p.isPopular || p.popular),
+          isCustom: !!(p.isCustom || p.custom),
+          badgeText: p.badgeText || (p.isPopular || p.popular ? "Most Popular" : p.isCustom || p.custom ? "Custom Scoped" : ""),
+          ctaText: p.ctaText || "Select Plan",
+          ctaLink: p.ctaLink || "",
+          features: Array.isArray(p.features)
+            ? p.features.filter((f: any) => typeof f === 'string' && f.trim().length > 0)
+            : []
+        }))
         : [
-            {
-              name: "Sprint Tier",
-              desc: "Targeted execution for focused optimization and rapid turnaround.",
-              price: "$2,450",
-              period: "sprint",
-              isPopular: false,
-              isCustom: false,
-              badgeText: "",
-              ctaText: "Select Sprint",
-              features: ["Full Technical Diagnostic", "Core Feature Implementation", "Speed & Security Hardening", "2 Weeks Dedicated Support"]
-            },
-            {
-              name: "Growth Tier",
-              desc: "Complete comprehensive solution built to dominate competitive markets.",
-              price: "$4,850",
-              period: "project",
-              isPopular: true,
-              isCustom: false,
-              badgeText: "Most Popular",
-              ctaText: "Start Growth Plan",
-              features: ["End-to-End Custom Build", "Conversion Rate Optimization", "Custom Analytics & Tracking", "SEO & Speed Maxima", "30 Days Hypercare Support"]
-            },
-            {
-              name: "Enterprise Tier",
-              desc: "Custom architected multi-location and enterprise-grade infrastructure.",
-              price: "Custom",
-              period: "custom scope",
-              isPopular: false,
-              isCustom: true,
-              badgeText: "Custom Scoped",
-              ctaText: "Request Scope",
-              features: ["Unlimited Dynamic Architecture", "Headless CMS Integration", "Dedicated Lead Engineering", "Priority SLA & SLA Support"]
-            }
-          ]
+          {
+            name: "Sprint Tier",
+            desc: "Targeted execution for focused optimization and rapid turnaround.",
+            price: "$2,450",
+            period: "sprint",
+            isPopular: false,
+            isCustom: false,
+            badgeText: "",
+            ctaText: "Select Sprint",
+            features: ["Full Technical Diagnostic", "Core Feature Implementation", "Speed & Security Hardening", "2 Weeks Dedicated Support"]
+          },
+          {
+            name: "Growth Tier",
+            desc: "Complete comprehensive solution built to dominate competitive markets.",
+            price: "$4,850",
+            period: "project",
+            isPopular: true,
+            isCustom: false,
+            badgeText: "Most Popular",
+            ctaText: "Start Growth Plan",
+            features: ["End-to-End Custom Build", "Conversion Rate Optimization", "Custom Analytics & Tracking", "SEO & Speed Maxima", "30 Days Hypercare Support"]
+          },
+          {
+            name: "Enterprise Tier",
+            desc: "Custom architected multi-location and enterprise-grade infrastructure.",
+            price: "Custom",
+            period: "custom scope",
+            isPopular: false,
+            isCustom: true,
+            badgeText: "Custom Scoped",
+            ctaText: "Request Scope",
+            features: ["Unlimited Dynamic Architecture", "Headless CMS Integration", "Dedicated Lead Engineering", "Priority SLA & SLA Support"]
+          }
+        ]
     },
     faqs: (Array.isArray(dbService?.faqs) && dbService.faqs.length > 0)
       ? dbService.faqs.map((f: any) => ({ question: f.question || f.q || "", answer: f.answer || f.a || "", category: f.category || "" }))
       : (Array.isArray(dbService?.faq) && dbService.faq.length > 0
-          ? dbService.faq.map((f: any) => ({ question: f.question || f.q || "", answer: f.answer || f.a || "", category: f.category || "" }))
-          : [
-              { question: "How quickly can we get started?", answer: "We typically onboard new projects within 3-5 business days following the initial strategy discovery call." },
-              { question: "Do you offer ongoing support and updates?", answer: "Yes, we provide flexible retainer and maintenance support options to ensure your platform remains fast, secure, and continuously optimized." },
-              { question: "Will I have complete ownership of all assets?", answer: "100%. You retain full ownership of all code, design files, domains, and analytics accounts upon project completion." }
-            ]),
+        ? dbService.faq.map((f: any) => ({ question: f.question || f.q || "", answer: f.answer || f.a || "", category: f.category || "" }))
+        : [
+          { question: "How quickly can we get started?", answer: "We typically onboard new projects within 3-5 business days following the initial strategy discovery call." },
+          { question: "Do you offer ongoing support and updates?", answer: "Yes, we provide flexible retainer and maintenance support options to ensure your platform remains fast, secure, and continuously optimized." },
+          { question: "Will I have complete ownership of all assets?", answer: "100%. You retain full ownership of all code, design files, domains, and analytics accounts upon project completion." }
+        ]),
     faqSection: {
       enabled: dbService?.faqSection?.enabled,
       sectionTag: dbService?.faqBadge || dbService?.faqSection?.sectionTag || "14 // FREQUENTLY ASKED",
@@ -1014,7 +1014,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
   return (
     <main className="flex-1 w-full bg-white dark:bg-[#080710] text-brand-dark dark:text-white transition-colors duration-300 relative overflow-x-clip font-sans">
-      
+
       {/* ── Background Grid Pattern ── */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808007_1px,transparent_1px),linear-gradient(to_bottom,#80808007_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none -z-10" />
 
@@ -1025,277 +1025,277 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
       {/* ── 01. SERVICE HERO ── */}
       {(service as any).hero?.enabled !== false && (
-      <section className="-mt-[110px] sm:-mt-[125px] lg:-mt-[140px] pt-[175px] sm:pt-[200px] lg:pt-[230px] pb-16 sm:pb-24 relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10">
-        <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
-          <img
-            src={service.hero?.backgroundImage || service.hero?.bgImage || "/portfolio_hero_bg.png"}
-            alt="Hero Background"
-            className="w-full h-full object-cover object-right opacity-100 dark:opacity-60"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-transparent dark:from-[#080710] dark:via-[#080710]/85 dark:to-transparent pointer-events-none" />
-        </div>
-
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 py-6 w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
-
-            {/* LEFT: Text & Benefits */}
-            <motion.div
-              initial={{ opacity: 0, y: 25 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="lg:col-span-7 space-y-6 text-left"
-            >
-              {/* Breadcrumbs */}
-              <nav className="flex items-center gap-2 text-[10px] sm:text-xs font-mono tracking-wider uppercase text-brand-zinc-400 dark:text-zinc-550 select-none">
-                <Link href="/" className="hover:text-brand-blue dark:hover:text-brand-yellow transition-colors">
-                  Home
-                </Link>
-                <span className="text-brand-zinc-300 dark:text-zinc-700">/</span>
-                <Link href="/services" className="hover:text-brand-blue dark:hover:text-brand-yellow transition-colors">
-                  Services
-                </Link>
-                <span className="text-brand-zinc-300 dark:text-zinc-700">/</span>
-                <span className="text-brand-blue dark:text-brand-yellow font-black">
-                  {service.title}
-                </span>
-              </nav>
-
-              <h1 className="font-heading text-3xl xs:text-4xl sm:text-5xl lg:text-[56px] font-black tracking-tight leading-[1.12] text-brand-dark dark:text-white max-w-2xl">
-                {service.hero.titleIntro}{" "}
-                <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
-                  {service.hero.titleHighlight}
-                  <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-yellow opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
-                    <motion.path
-                      d="M 2 5 Q 50 1.5, 98 3.5 C 99 3.5, 99 4.5, 98 5 Q 50 7, 2 5.5 Z"
-                      fill="currentColor"
-                      custom={{ delay: 0.5, duration: 0.65 }}
-                      variants={drawVariants}
-                      initial="hidden"
-                      animate="visible"
-                    />
-                  </svg>
-                </span>
-              </h1>
-
-              <p className="text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line">
-                {service.hero.description}
-              </p>
-
-              {/* Benefits Checklist */}
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
-                {service.hero.benefits.map((b: string, i: number) => (
-                  <li key={i} className="flex items-start gap-2.5 text-xs font-semibold text-brand-zinc-700 dark:text-zinc-355 group/item">
-                    <span className="h-4.5 w-4.5 rounded-full bg-brand-blue/10 dark:bg-brand-yellow/10 flex items-center justify-center shrink-0 mt-0.5 text-brand-blue dark:text-brand-yellow border border-brand-blue/15 dark:border-brand-yellow/15 shadow-sm group-hover/item:scale-105 transition-transform duration-300">
-                      <Check className="h-3 w-3 stroke-[2.5]" />
-                    </span>
-                    <span className="leading-snug">{b}</span>
-                  </li>
-                ))}
-              </ul>
-
-              {/* CTA Buttons */}
-              <div className="flex flex-wrap items-center gap-4 pt-4">
-                <a href={service.hero.primaryCta?.link || "#contact-form"} className="btn-primary-cta">
-                  <span>{service.hero.primaryCta?.text || "Start Your Project"}</span>
-                  <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
-                </a>
-                <a href={service.hero.secondaryCta?.link || "#what-included"} className="btn-secondary-cta">
-                  <span>{service.hero.secondaryCta?.text || "Explore Inclusions"}</span>
-                  <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
-                </a>
-              </div>
-            </motion.div>
-
-            {/* RIGHT: Contact Form Card (Compact & Balanced Width) */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-              className="lg:col-span-5 flex justify-center lg:justify-end w-full"
-            >
-              <div id="contact-form" className="contact-card-glass p-4.5 xs:p-6 sm:p-7 rounded-[24px] xs:rounded-[30px] shadow-2xl relative border border-brand-zinc-200/95 dark:border-white/10 overflow-hidden w-full max-w-[390px]">
-                <div className="mb-4 text-left">
-                  <h2 className="font-heading text-xl sm:text-2xl font-extrabold text-brand-dark dark:text-white leading-tight">
-                    {service.hero.formHeading || "Request a Free Audit"}
-                  </h2>
-                  {service.hero.formSubheading && (
-                    <p className="text-xs font-sans text-brand-zinc-500 dark:text-zinc-400 mt-1 leading-snug">
-                      {service.hero.formSubheading}
-                    </p>
-                  )}
-                </div>
-
-                <AnimatePresence>
-                  {submitted && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.96 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.96 }}
-                      className="absolute inset-0 bg-white/98 dark:bg-[#12121e]/98 backdrop-blur-md rounded-[30px] p-6 sm:p-8 flex flex-col items-center justify-center text-center z-30 space-y-3"
-                    >
-                      <div className="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto border border-emerald-500/20 shadow-md animate-pulse">
-                        <Check className="w-6 h-6" />
-                      </div>
-                      <h3 className="font-heading text-lg font-bold text-brand-dark dark:text-white">
-                        Consultation Booked!
-                      </h3>
-                      <p className="text-xs font-sans text-brand-zinc-655 dark:text-zinc-355 max-w-xs mx-auto leading-relaxed">
-                        Thanks for reaching out! We'll audit your project requirements and email you a customized growth strategy within 24 hours.
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                <form onSubmit={handleSubmit} className="space-y-3">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <input
-                      type="text"
-                      required
-                      placeholder="Full Name *"
-                      value={formData.fullName}
-                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                      className="contact-input text-xs sm:text-sm"
-                    />
-                    <input
-                      type="email"
-                      required
-                      placeholder="Email Address *"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="contact-input text-xs sm:text-sm"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <input
-                      type="tel"
-                      placeholder="Phone Number"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="contact-input text-xs sm:text-sm"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Company Name (Optional)"
-                      value={formData.company}
-                      onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                      className="contact-input text-xs sm:text-sm"
-                    />
-                  </div>
-
-                  <div className="relative">
-                    <select
-                      value={formData.service}
-                      onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                      className="contact-input appearance-none cursor-pointer pr-10 text-xs sm:text-sm bg-transparent"
-                    >
-                      <option value={service.title}>{service.title}</option>
-                      {rawServices.filter((s: any) => s.title !== service.title).map((srv: any, idx: number) => (
-                        <option key={idx} value={srv.title} className="bg-white dark:bg-[#12121e]">
-                          {srv.title}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="w-4 h-4 text-brand-zinc-400 pointer-events-none absolute right-4 top-1/2 -translate-y-1/2" />
-                  </div>
-
-                  <textarea
-                    required
-                    rows={3}
-                    placeholder="Tell us about your business goals *"
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="contact-input resize-none text-xs sm:text-sm"
-                  />
-
-                  <div className="flex items-center gap-2.5 pt-0.5">
-                    <input
-                      type="checkbox"
-                      id="privacy"
-                      required
-                      checked={formData.agreePrivacy}
-                      onChange={(e) => setFormData({ ...formData, agreePrivacy: e.target.checked })}
-                      className="w-4 h-4 rounded border-brand-zinc-300 text-brand-blue focus:ring-brand-blue cursor-pointer"
-                    />
-                    <label htmlFor="privacy" className="text-[11px] font-sans text-brand-zinc-655 dark:text-zinc-400 cursor-pointer select-none">
-                      I agree to the <Link href="/privacy" className="text-brand-blue dark:text-brand-yellow font-bold underline">Privacy Policy</Link>
-                    </label>
-                  </div>
-
-                  <TurnstileCaptcha
-                    onVerify={(token) => setCaptchaToken(token)}
-                    onExpire={() => setCaptchaToken("")}
-                    size="flexible"
-                    theme="auto"
-                  />
-
-                  <button
-                    type="submit"
-                    className="w-full py-3.5 px-6 rounded-2xl bg-brand-yellow hover:bg-amber-400 text-[#080710] font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-brand-yellow/15 hover:shadow-brand-yellow/30 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 cursor-pointer mt-1"
-                  >
-                    <Send className="w-3.5 h-3.5" />
-                    <span>{service.hero.formButtonText || "Request Free Proposal"}</span>
-                  </button>
-                </form>
-              </div>
-            </motion.div>
-
+        <section className="-mt-[110px] sm:-mt-[125px] lg:-mt-[140px] pt-[175px] sm:pt-[200px] lg:pt-[230px] pb-16 sm:pb-24 relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10">
+          <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
+            <img
+              src={service.hero?.backgroundImage || service.hero?.bgImage || "/portfolio_hero_bg.png"}
+              alt="Hero Background"
+              className="w-full h-full object-cover object-right opacity-100 dark:opacity-60"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-transparent dark:from-[#080710] dark:via-[#080710]/85 dark:to-transparent pointer-events-none" />
           </div>
-        </div>
-      </section>
+
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 py-6 w-full">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
+
+              {/* LEFT: Text & Benefits */}
+              <motion.div
+                initial={{ opacity: 0, y: 25 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                className="lg:col-span-7 space-y-6 text-left"
+              >
+                {/* Breadcrumbs */}
+                <nav className="flex items-center gap-2 text-[10px] sm:text-xs font-mono tracking-wider uppercase text-brand-zinc-400 dark:text-zinc-550 select-none">
+                  <Link href="/" className="hover:text-brand-blue dark:hover:text-brand-yellow transition-colors">
+                    Home
+                  </Link>
+                  <span className="text-brand-zinc-300 dark:text-zinc-700">/</span>
+                  <Link href="/services" className="hover:text-brand-blue dark:hover:text-brand-yellow transition-colors">
+                    Services
+                  </Link>
+                  <span className="text-brand-zinc-300 dark:text-zinc-700">/</span>
+                  <span className="text-brand-blue dark:text-brand-yellow font-black">
+                    {service.title}
+                  </span>
+                </nav>
+
+                <h1 className="font-heading text-3xl xs:text-4xl sm:text-5xl lg:text-[56px] font-black tracking-tight leading-[1.12] text-brand-dark dark:text-white max-w-2xl">
+                  {service.hero.titleIntro}{" "}
+                  <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
+                    {service.hero.titleHighlight}
+                    <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-yellow opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
+                      <motion.path
+                        d="M 2 5 Q 50 1.5, 98 3.5 C 99 3.5, 99 4.5, 98 5 Q 50 7, 2 5.5 Z"
+                        fill="currentColor"
+                        custom={{ delay: 0.5, duration: 0.65 }}
+                        variants={drawVariants}
+                        initial="hidden"
+                        animate="visible"
+                      />
+                    </svg>
+                  </span>
+                </h1>
+
+                <p className="text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line">
+                  {service.hero.description}
+                </p>
+
+                {/* Benefits Checklist */}
+                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
+                  {service.hero.benefits.map((b: string, i: number) => (
+                    <li key={i} className="flex items-start gap-2.5 text-xs font-semibold text-brand-zinc-700 dark:text-zinc-355 group/item">
+                      <span className="h-4.5 w-4.5 rounded-full bg-brand-blue/10 dark:bg-brand-yellow/10 flex items-center justify-center shrink-0 mt-0.5 text-brand-blue dark:text-brand-yellow border border-brand-blue/15 dark:border-brand-yellow/15 shadow-sm group-hover/item:scale-105 transition-transform duration-300">
+                        <Check className="h-3 w-3 stroke-[2.5]" />
+                      </span>
+                      <span className="leading-snug">{b}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* CTA Buttons */}
+                <div className="flex flex-wrap items-center gap-4 pt-4">
+                  <a href={service.hero.primaryCta?.link || "#contact-form"} className="btn-primary-cta">
+                    <span>{service.hero.primaryCta?.text || "Start Your Project"}</span>
+                    <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
+                  </a>
+                  <a href={service.hero.secondaryCta?.link || "#what-included"} className="btn-secondary-cta">
+                    <span>{service.hero.secondaryCta?.text || "Explore Inclusions"}</span>
+                    <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
+                  </a>
+                </div>
+              </motion.div>
+
+              {/* RIGHT: Contact Form Card (Compact & Balanced Width) */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                className="lg:col-span-5 flex justify-center lg:justify-end w-full"
+              >
+                <div id="contact-form" className="contact-card-glass p-4.5 xs:p-6 sm:p-7 rounded-[24px] xs:rounded-[30px] shadow-2xl relative border border-brand-zinc-200/95 dark:border-white/10 overflow-hidden w-full max-w-[390px]">
+                  <div className="mb-4 text-left">
+                    <h2 className="font-heading text-xl sm:text-2xl font-extrabold text-brand-dark dark:text-white leading-tight">
+                      {service.hero.formHeading || "Request a Free Audit"}
+                    </h2>
+                    {service.hero.formSubheading && (
+                      <p className="text-xs font-sans text-brand-zinc-500 dark:text-zinc-400 mt-1 leading-snug">
+                        {service.hero.formSubheading}
+                      </p>
+                    )}
+                  </div>
+
+                  <AnimatePresence>
+                    {submitted && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.96 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.96 }}
+                        className="absolute inset-0 bg-white/98 dark:bg-[#12121e]/98 backdrop-blur-md rounded-[30px] p-6 sm:p-8 flex flex-col items-center justify-center text-center z-30 space-y-3"
+                      >
+                        <div className="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto border border-emerald-500/20 shadow-md animate-pulse">
+                          <Check className="w-6 h-6" />
+                        </div>
+                        <h3 className="font-heading text-lg font-bold text-brand-dark dark:text-white">
+                          Consultation Booked!
+                        </h3>
+                        <p className="text-xs font-sans text-brand-zinc-655 dark:text-zinc-355 max-w-xs mx-auto leading-relaxed">
+                          Thanks for reaching out! We'll audit your project requirements and email you a customized growth strategy within 24 hours.
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  <form onSubmit={handleSubmit} className="space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <input
+                        type="text"
+                        required
+                        placeholder="Full Name *"
+                        value={formData.fullName}
+                        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                        className="contact-input text-xs sm:text-sm"
+                      />
+                      <input
+                        type="email"
+                        required
+                        placeholder="Email Address *"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        className="contact-input text-xs sm:text-sm"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <input
+                        type="tel"
+                        placeholder="Phone Number"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        className="contact-input text-xs sm:text-sm"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Company Name (Optional)"
+                        value={formData.company}
+                        onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                        className="contact-input text-xs sm:text-sm"
+                      />
+                    </div>
+
+                    <div className="relative">
+                      <select
+                        value={formData.service}
+                        onChange={(e) => setFormData({ ...formData, service: e.target.value })}
+                        className="contact-input appearance-none cursor-pointer pr-10 text-xs sm:text-sm bg-transparent"
+                      >
+                        <option value={service.title}>{service.title}</option>
+                        {rawServices.filter((s: any) => s.title !== service.title).map((srv: any, idx: number) => (
+                          <option key={idx} value={srv.title} className="bg-white dark:bg-[#12121e]">
+                            {srv.title}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="w-4 h-4 text-brand-zinc-400 pointer-events-none absolute right-4 top-1/2 -translate-y-1/2" />
+                    </div>
+
+                    <textarea
+                      required
+                      rows={3}
+                      placeholder="Tell us about your business goals *"
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      className="contact-input resize-none text-xs sm:text-sm"
+                    />
+
+                    <div className="flex items-center gap-2.5 pt-0.5">
+                      <input
+                        type="checkbox"
+                        id="privacy"
+                        required
+                        checked={formData.agreePrivacy}
+                        onChange={(e) => setFormData({ ...formData, agreePrivacy: e.target.checked })}
+                        className="w-4 h-4 rounded border-brand-zinc-300 text-brand-blue focus:ring-brand-blue cursor-pointer"
+                      />
+                      <label htmlFor="privacy" className="text-[11px] font-sans text-brand-zinc-655 dark:text-zinc-400 cursor-pointer select-none">
+                        I agree to the <Link href="/privacy" className="text-brand-blue dark:text-brand-yellow font-bold underline">Privacy Policy</Link>
+                      </label>
+                    </div>
+
+                    <TurnstileCaptcha
+                      onVerify={(token) => setCaptchaToken(token)}
+                      onExpire={() => setCaptchaToken("")}
+                      size="flexible"
+                      theme="auto"
+                    />
+
+                    <button
+                      type="submit"
+                      className="w-full py-3.5 px-6 rounded-2xl bg-brand-yellow hover:bg-amber-400 text-[#080710] font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-brand-yellow/15 hover:shadow-brand-yellow/30 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 cursor-pointer mt-1"
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                      <span>{service.hero.formButtonText || "Request Free Proposal"}</span>
+                    </button>
+                  </form>
+                </div>
+              </motion.div>
+
+            </div>
+          </div>
+        </section>
       )}
 
       {/* ── 02. CLIENT TRUST MARQUEE ── */}
       {(service as any).clientTrust?.enabled !== false && (
-      <section className="py-7 border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/20 dark:bg-[#0c0b18]/40 select-none overflow-hidden logo-marquee-track-container relative">
-        <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-white to-transparent dark:from-[#080710] z-20 pointer-events-none" />
-        <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-white to-transparent dark:from-[#080710] z-20 pointer-events-none" />
+        <section className="py-7 border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/20 dark:bg-[#0c0b18]/40 select-none overflow-hidden logo-marquee-track-container relative">
+          <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-white to-transparent dark:from-[#080710] z-20 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-white to-transparent dark:from-[#080710] z-20 pointer-events-none" />
 
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 flex flex-col md:flex-row items-center gap-6">
-          <span className="text-[11px] font-mono font-black text-brand-blue dark:text-brand-yellow uppercase tracking-widest text-center md:text-left shrink-0">
-            {service.clientTrust.heading}
-          </span>
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 flex flex-col md:flex-row items-center gap-6">
+            <span className="text-[11px] font-mono font-black text-brand-blue dark:text-brand-yellow uppercase tracking-widest text-center md:text-left shrink-0">
+              {service.clientTrust.heading}
+            </span>
 
-          <div className="flex-1 overflow-hidden relative">
-            <div className="logo-marquee-track gap-12 md:gap-16 items-center">
-              {[...Array(3)].map((_, outerIdx) => (
-                <div key={outerIdx} className="flex gap-12 md:gap-16 items-center">
-                  {service.clientTrust.logos.map((logoItem: any, lIdx: number) => {
-                    const logoName = String(logoItem.name || "");
-                    const CustomIcon = logoItem.icon && iconMap[logoItem.icon] ? iconMap[logoItem.icon] : null;
+            <div className="flex-1 overflow-hidden relative">
+              <div className="logo-marquee-track gap-12 md:gap-16 items-center">
+                {[...Array(3)].map((_, outerIdx) => (
+                  <div key={outerIdx} className="flex gap-12 md:gap-16 items-center">
+                    {service.clientTrust.logos.map((logoItem: any, lIdx: number) => {
+                      const logoName = String(logoItem.name || "");
+                      const CustomIcon = logoItem.icon && iconMap[logoItem.icon] ? iconMap[logoItem.icon] : null;
 
-                    return (
-                      <div key={lIdx} className="flex items-center gap-2.5 font-sans text-xs font-black uppercase text-brand-dark dark:text-white tracking-wider whitespace-nowrap">
-                        {logoItem.image ? (
-                          <img
-                            src={logoItem.image}
-                            alt={logoItem.name || "Logo"}
-                            className="h-5 w-auto object-contain shrink-0 filter drop-shadow-sm max-w-[120px]"
-                          />
-                        ) : CustomIcon ? (
-                          <CustomIcon className="h-4.5 w-4.5 text-brand-blue dark:text-brand-yellow shrink-0" />
-                        ) : logoName.includes("Google Ads") || logoName.includes("Google Search") ? (
-                          <GoogleAdsLogo />
-                        ) : logoName.includes("Meta") ? (
-                          <MetaLogo />
-                        ) : logoName.includes("Amazon") ? (
-                          <AmazonLogo />
-                        ) : logoName.includes("Bing") ? (
-                          <BingLogo />
-                        ) : (
-                          <Globe className="h-4.5 w-4.5 text-brand-blue dark:text-brand-yellow shrink-0" />
-                        )}
-                        {logoItem.name && <span>{logoItem.name}</span>}
-                      </div>
-                    );
-                  })}
-                </div>
-              ))}
+                      return (
+                        <div key={lIdx} className="flex items-center gap-2.5 font-sans text-xs font-black uppercase text-brand-dark dark:text-white tracking-wider whitespace-nowrap">
+                          {logoItem.image ? (
+                            <img
+                              src={logoItem.image}
+                              alt={logoItem.name || "Logo"}
+                              className="h-5 w-auto object-contain shrink-0 filter drop-shadow-sm max-w-[120px]"
+                            />
+                          ) : CustomIcon ? (
+                            <CustomIcon className="h-4.5 w-4.5 text-brand-blue dark:text-brand-yellow shrink-0" />
+                          ) : logoName.includes("Google Ads") || logoName.includes("Google Search") ? (
+                            <GoogleAdsLogo />
+                          ) : logoName.includes("Meta") ? (
+                            <MetaLogo />
+                          ) : logoName.includes("Amazon") ? (
+                            <AmazonLogo />
+                          ) : logoName.includes("Bing") ? (
+                            <BingLogo />
+                          ) : (
+                            <Globe className="h-4.5 w-4.5 text-brand-blue dark:text-brand-yellow shrink-0" />
+                          )}
+                          {logoItem.name && <span>{logoItem.name}</span>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
 
-        <style>{`
+          <style>{`
           @keyframes marqueeLogos {
             0% { transform: translate3d(0, 0, 0); }
             100% { transform: translate3d(-33.33%, 0, 0); }
@@ -1310,307 +1310,206 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             animation-play-state: paused;
           }
         `}</style>
-      </section>
+        </section>
       )}
 
       {/* ── 03. WHAT'S INCLUDED (3 Core Pillars) ── */}
       {(service as any).whatIncluded?.enabled !== false && (
-      <section id="what-included" className="relative overflow-hidden py-20 md:py-24 border-b border-brand-zinc-200 dark:border-white/10">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
+        <section id="what-included" className="relative overflow-hidden py-20 md:py-24 border-b border-brand-zinc-200 dark:border-white/10">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-14 space-y-4"
-          >
-            {service.whatIncluded.eyebrow && (
-              <div className="flex justify-center">
-                <span className="eyebrow-pill">{service.whatIncluded.eyebrow}</span>
-              </div>
-            )}
-            <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
-              {service.whatIncluded.titleIntro}{" "}
-              <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
-                {service.whatIncluded.titleHighlight}
-                <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-yellow opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
-                  <motion.path
-                    d="M 2 5 Q 50 1.5, 98 3.5 C 99 3.5, 99 4.5, 98 5 Q 50 7, 2 5.5 Z"
-                    fill="currentColor"
-                    custom={{ delay: 0.3, duration: 0.65 }}
-                    variants={drawVariants}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                  />
-                </svg>
-              </span>
-            </h2>
-            {service.whatIncluded.description && (
-              <p className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
-                {service.whatIncluded.description}
-              </p>
-            )}
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 text-left">
-            {service.whatIncluded.pillars.map((pillar: any, idx: number) => (
-              <SpotlightCard key={idx} className="bg-zinc-50/80 dark:bg-[#0c0b18] border border-brand-zinc-200/80 dark:border-white/10 p-5 xs:p-7 sm:p-8 flex flex-col justify-between h-full min-h-[260px] sm:min-h-[300px] hover:shadow-2xl hover:border-brand-blue/60 dark:hover:border-brand-yellow/60 transition-all duration-300 relative overflow-hidden group">
-                <div className="space-y-4">
-                  <span className="font-serif italic text-4xl sm:text-5xl font-black text-brand-zinc-200 dark:text-white/10 group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-500 leading-none select-none">
-                    0{idx + 1}
-                  </span>
-                  <div className="space-y-2 text-left">
-                    <h3 className="font-heading text-lg sm:text-xl font-extrabold text-brand-dark dark:text-white leading-tight">
-                      {pillar.title}
-                    </h3>
-                    <p className="text-[13px] font-sans text-brand-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
-                      {pillar.desc}
-                    </p>
-                  </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-14 space-y-4"
+            >
+              {service.whatIncluded.eyebrow && (
+                <div className="flex justify-center">
+                  <span className="eyebrow-pill">{service.whatIncluded.eyebrow}</span>
                 </div>
-
-                {Array.isArray(pillar.features) && pillar.features.filter((f: any) => f && typeof f === 'string' && f.trim().length > 0).length > 0 && (
-                  <ul className="space-y-2.5 pt-5 mt-5 border-t border-brand-zinc-150 dark:border-white/5 text-left">
-                    {pillar.features.filter((f: any) => f && typeof f === 'string' && f.trim().length > 0).map((feature: string, fIdx: number) => (
-                      <li key={fIdx} className="flex items-center gap-2.5 text-xs text-brand-zinc-655 dark:text-zinc-355 font-bold group/item">
-                        <span className="w-5 h-5 rounded-full bg-brand-blue/10 dark:bg-brand-yellow/10 text-brand-blue dark:text-brand-yellow flex items-center justify-center shrink-0 border border-brand-blue/15 dark:border-brand-yellow/15 group-hover/item:scale-105 transition-transform duration-300">
-                          <Check className="w-3 h-3 stroke-[2.5]" />
-                        </span>
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </SpotlightCard>
-            ))}
-          </div>
-
-        </div>
-      </section>
-      )}
-
-      {/* ── 04. SERVICE STRATEGY (Left Sticky Right Scroll) ── */}
-      {((service as any).strategy?.enabled !== false && (service as any).fullScope?.enabled !== false) && (
-      <section className="relative overflow-x-clip py-20 md:py-24 bg-zinc-50/15 dark:bg-[#0c0b18]/10 border-b border-brand-zinc-200 dark:border-white/10">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-
-            {/* Left Column Sticky info */}
-            <div className="lg:col-span-5 lg:sticky lg:top-28 self-start space-y-4 text-left">
-              <span className="eyebrow-pill">{service.strategy.eyebrow}</span>
-              <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12] max-w-sm">
-                {service.strategy.titleIntro}{" "}
-                <span className="text-brand-blue dark:text-brand-yellow font-serif font-normal italic">
-                  {service.strategy.titleHighlight}
+              )}
+              <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
+                {service.whatIncluded.titleIntro}{" "}
+                <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
+                  {service.whatIncluded.titleHighlight}
+                  <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-yellow opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
+                    <motion.path
+                      d="M 2 5 Q 50 1.5, 98 3.5 C 99 3.5, 99 4.5, 98 5 Q 50 7, 2 5.5 Z"
+                      fill="currentColor"
+                      custom={{ delay: 0.3, duration: 0.65 }}
+                      variants={drawVariants}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true }}
+                    />
+                  </svg>
                 </span>
               </h2>
-              <p className="text-sm sm:text-base font-sans text-brand-zinc-605 dark:text-zinc-350 font-normal leading-relaxed max-w-sm">
-                {service.strategy.description}
-              </p>
-            </div>
+              {service.whatIncluded.description && (
+                <p className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
+                  {service.whatIncluded.description}
+                </p>
+              )}
+            </motion.div>
 
-            {/* Right Column Staggered List (Scrollable) */}
-            <div className="lg:col-span-7 space-y-8 text-left">
-              {service.strategy.components.map((comp: any, idx: number) => (
-                <div
-                  key={idx}
-                  className="flex gap-6 sm:gap-8 items-start border-b border-brand-zinc-200/80 dark:border-white/5 pb-8 last:border-none last:pb-0 group"
-                >
-                  <span className="font-serif italic text-4xl sm:text-5xl font-black text-brand-zinc-200 dark:text-white/10 group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-500 leading-none select-none">
-                    {comp.num || `0${idx + 1}`}
-                  </span>
-                  
-                  <div className="space-y-2 flex-1">
-                    <h3 className="font-heading text-lg sm:text-xl font-extrabold text-brand-dark dark:text-white group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-300 leading-tight">
-                      {comp.title}
-                    </h3>
-                    <p className="text-xs sm:text-[13.5px] font-sans text-brand-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
-                      {comp.desc}
-                    </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 text-left">
+              {service.whatIncluded.pillars.map((pillar: any, idx: number) => (
+                <SpotlightCard key={idx} className="bg-zinc-50/80 dark:bg-[#0c0b18] border border-brand-zinc-200/80 dark:border-white/10 p-5 xs:p-7 sm:p-8 flex flex-col justify-between h-full min-h-[260px] sm:min-h-[300px] hover:shadow-2xl hover:border-brand-blue/60 dark:hover:border-brand-yellow/60 transition-all duration-300 relative overflow-hidden group">
+                  <div className="space-y-4">
+                    <span className="font-serif italic text-4xl sm:text-5xl font-black text-brand-zinc-200 dark:text-white/10 group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-500 leading-none select-none">
+                      0{idx + 1}
+                    </span>
+                    <div className="space-y-2 text-left">
+                      <h3 className="font-heading text-lg sm:text-xl font-extrabold text-brand-dark dark:text-white leading-tight">
+                        {pillar.title}
+                      </h3>
+                      <p className="text-[13px] font-sans text-brand-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
+                        {pillar.desc}
+                      </p>
+                    </div>
                   </div>
-                </div>
+
+                  {Array.isArray(pillar.features) && pillar.features.filter((f: any) => f && typeof f === 'string' && f.trim().length > 0).length > 0 && (
+                    <ul className="space-y-2.5 pt-5 mt-5 border-t border-brand-zinc-150 dark:border-white/5 text-left">
+                      {pillar.features.filter((f: any) => f && typeof f === 'string' && f.trim().length > 0).map((feature: string, fIdx: number) => (
+                        <li key={fIdx} className="flex items-center gap-2.5 text-xs text-brand-zinc-655 dark:text-zinc-355 font-bold group/item">
+                          <span className="w-5 h-5 rounded-full bg-brand-blue/10 dark:bg-brand-yellow/10 text-brand-blue dark:text-brand-yellow flex items-center justify-center shrink-0 border border-brand-blue/15 dark:border-brand-yellow/15 group-hover/item:scale-105 transition-transform duration-300">
+                            <Check className="w-3 h-3 stroke-[2.5]" />
+                          </span>
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </SpotlightCard>
               ))}
             </div>
 
           </div>
+        </section>
+      )}
 
-        </div>
-      </section>
+      {/* ── 04. SERVICE STRATEGY (Left Sticky Right Scroll) ── */}
+      {((service as any).strategy?.enabled !== false && (service as any).fullScope?.enabled !== false) && (
+        <section className="relative overflow-x-clip py-20 md:py-24 bg-zinc-50/15 dark:bg-[#0c0b18]/10 border-b border-brand-zinc-200 dark:border-white/10">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+
+              {/* Left Column Sticky info */}
+              <div className="lg:col-span-5 lg:sticky lg:top-28 self-start space-y-4 text-left">
+                <span className="eyebrow-pill">{service.strategy.eyebrow}</span>
+                <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12] max-w-sm">
+                  {service.strategy.titleIntro}{" "}
+                  <span className="text-brand-blue dark:text-brand-yellow font-serif font-normal italic">
+                    {service.strategy.titleHighlight}
+                  </span>
+                </h2>
+                <p className="text-sm sm:text-base font-sans text-brand-zinc-605 dark:text-zinc-350 font-normal leading-relaxed max-w-sm">
+                  {service.strategy.description}
+                </p>
+              </div>
+
+              {/* Right Column Staggered List (Scrollable) */}
+              <div className="lg:col-span-7 space-y-8 text-left">
+                {service.strategy.components.map((comp: any, idx: number) => (
+                  <div
+                    key={idx}
+                    className="flex gap-6 sm:gap-8 items-start border-b border-brand-zinc-200/80 dark:border-white/5 pb-8 last:border-none last:pb-0 group"
+                  >
+                    <span className="font-serif italic text-4xl sm:text-5xl font-black text-brand-zinc-200 dark:text-white/10 group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-500 leading-none select-none">
+                      {comp.num || `0${idx + 1}`}
+                    </span>
+
+                    <div className="space-y-2 flex-1">
+                      <h3 className="font-heading text-lg sm:text-xl font-extrabold text-brand-dark dark:text-white group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-300 leading-tight">
+                        {comp.title}
+                      </h3>
+                      <p className="text-xs sm:text-[13.5px] font-sans text-brand-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
+                        {comp.desc}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+
+          </div>
+        </section>
       )}
 
       {/* ── 05. BUSINESS BENEFITS (4 Key Benefits) ── */}
       {(service as any).benefits?.enabled !== false && (
-      <section className="relative overflow-hidden py-20 md:py-24 border-b border-brand-zinc-200 dark:border-white/10">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
+        <section className="relative overflow-hidden py-20 md:py-24 border-b border-brand-zinc-200 dark:border-white/10">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-14 space-y-4"
-          >
-            {service.benefits.eyebrow && (
-              <div className="flex justify-center">
-                <span className="eyebrow-pill">{service.benefits.eyebrow}</span>
-              </div>
-            )}
-            <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
-              {service.benefits.titleIntro}{" "}
-              <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
-                {service.benefits.titleHighlight}
-                <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-yellow opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
-                  <motion.path
-                    d="M 2 5 Q 50 1.5, 98 3.5 C 99 3.5, 99 4.5, 98 5 Q 50 7, 2 5.5 Z"
-                    fill="currentColor"
-                    custom={{ delay: 0.3, duration: 0.65 }}
-                    variants={drawVariants}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                  />
-                </svg>
-              </span>
-            </h2>
-            {service.benefits.description && (
-              <p className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
-                {service.benefits.description}
-              </p>
-            )}
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {service.benefits.list.map((b: any, idx: number) => {
-              const defaultIcons = [TrendingUp, Target, ShieldCheck, Zap];
-              const BenefitIcon = (b.iconName && iconMap[b.iconName]) || (b.icon && iconMap[b.icon]) || defaultIcons[idx % defaultIcons.length] || TrendingUp;
-
-              return (
-                <SpotlightCard key={idx} className="bg-white dark:bg-[#121124] border border-zinc-200/80 dark:border-white/10 p-6 sm:p-7 rounded-[26px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:shadow-[0_16px_40px_-8px_rgba(3,6,172,0.12)] dark:hover:shadow-[0_16px_40px_-8px_rgba(233,189,54,0.08)] hover:border-brand-blue/40 dark:hover:border-brand-yellow/40 transition-all duration-300 flex flex-col justify-between min-h-[220px] group">
-                  <div className="space-y-4">
-                    <div className="w-11 h-11 rounded-2xl bg-brand-blue/10 dark:bg-brand-yellow/10 border border-brand-blue/20 dark:border-brand-yellow/20 flex items-center justify-center text-brand-blue dark:text-brand-yellow shadow-sm group-hover:scale-110 group-hover:rotate-2 transition-transform duration-300 shrink-0">
-                      <BenefitIcon className="w-5 h-5 stroke-[2.2]" />
-                    </div>
-
-                    <div className="space-y-2 text-left">
-                      {b.title && (
-                        <h3 className="font-heading text-base sm:text-lg font-extrabold text-brand-dark dark:text-white transition-colors duration-300 group-hover:text-brand-blue dark:group-hover:text-brand-yellow">
-                          {b.title}
-                        </h3>
-                      )}
-                      {b.desc && (
-                        <p className="text-[13px] font-sans text-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
-                          {b.desc}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {b.outcomeText && (
-                    <div className="pt-3.5 border-t border-zinc-100 dark:border-white/5 flex items-center justify-between text-brand-blue dark:text-brand-yellow font-mono text-[9.5px] font-black uppercase tracking-wider mt-5">
-                      <span>{b.outcomeText}</span>
-                      <Sparkles className="w-3.5 h-3.5 animate-pulse shrink-0" />
-                    </div>
-                  )}
-                </SpotlightCard>
-              );
-            })}
-          </div>
-
-        </div>
-      </section>
-      )}
-
-      {/* ── 06. OUR PROCESS / ROADMAP (Sticky Left, Scroll Right Editorial Cards) ── */}
-      {(service as any).process?.enabled !== false && (
-      <section className="relative overflow-x-clip py-20 md:py-24 bg-zinc-50/15 dark:bg-[#0c0b18]/10 border-b border-brand-zinc-200 dark:border-white/10">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-            
-            {/* Left Sticky Panel */}
-            <div className="lg:col-span-5 lg:sticky lg:top-28 self-start space-y-4 text-left">
-              {service.process.eyebrow && <span className="eyebrow-pill">{service.process.eyebrow}</span>}
-              <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12] max-w-sm">
-                {service.process.titleIntro}{" "}
-                <span className="text-brand-blue dark:text-brand-yellow font-serif font-normal italic">
-                  {service.process.titleHighlight}
-                </span>
-              </h2>
-              <p className="text-sm font-sans text-brand-zinc-605 dark:text-zinc-355 font-normal leading-relaxed max-w-sm">
-                {service.process.description}
-              </p>
-              
-              {/* Premium Callout Box */}
-              {(service.process.calloutTag || service.process.calloutText) && (
-                <div className="hidden lg:block border border-brand-zinc-200 dark:border-white/10 bg-white/40 dark:bg-[#12121e]/20 p-5 rounded-2xl text-xs space-y-2.5 max-w-sm">
-                  <p className="font-mono text-[9px] uppercase tracking-wider text-[#0306AC] dark:text-[#E9BD36] font-extrabold">
-                    {service.process.calloutTag}
-                  </p>
-                  <p className="text-brand-zinc-500 dark:text-zinc-400 font-normal leading-relaxed">
-                    {service.process.calloutText}
-                  </p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-14 space-y-4"
+            >
+              {service.benefits.eyebrow && (
+                <div className="flex justify-center">
+                  <span className="eyebrow-pill">{service.benefits.eyebrow}</span>
                 </div>
               )}
-            </div>
+              <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
+                {service.benefits.titleIntro}{" "}
+                <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
+                  {service.benefits.titleHighlight}
+                  <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-yellow opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
+                    <motion.path
+                      d="M 2 5 Q 50 1.5, 98 3.5 C 99 3.5, 99 4.5, 98 5 Q 50 7, 2 5.5 Z"
+                      fill="currentColor"
+                      custom={{ delay: 0.3, duration: 0.65 }}
+                      variants={drawVariants}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true }}
+                    />
+                  </svg>
+                </span>
+              </h2>
+              {service.benefits.description && (
+                <p className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
+                  {service.benefits.description}
+                </p>
+              )}
+            </motion.div>
 
-            {/* Right Column: Process Cards */}
-            <div className="lg:col-span-7 space-y-6 text-left relative pl-1">
-              {service.process.steps.map((step: any, idx: number) => {
-                const deliverables = Array.isArray(step.deliverables)
-                  ? step.deliverables.filter((d: any) => typeof d === 'string' && d.trim().length > 0)
-                  : [];
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {service.benefits.list.map((b: any, idx: number) => {
+                const defaultIcons = [TrendingUp, Target, ShieldCheck, Zap];
+                const BenefitIcon = (b.iconName && iconMap[b.iconName]) || (b.icon && iconMap[b.icon]) || defaultIcons[idx % defaultIcons.length] || TrendingUp;
 
                 return (
-                  <SpotlightCard
-                    key={idx}
-                    className="bg-white dark:bg-[#0c0b18] border border-brand-zinc-200 dark:border-white/10 p-4.5 xs:p-6 sm:p-8 rounded-[22px] xs:rounded-[30px] hover:shadow-2xl hover:border-brand-blue/30 dark:hover:border-brand-yellow/30 transition-all duration-300 flex flex-col justify-between group min-h-[220px]"
-                  >
+                  <SpotlightCard key={idx} className="bg-white dark:bg-[#121124] border border-zinc-200/80 dark:border-white/10 p-6 sm:p-7 rounded-[26px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:shadow-[0_16px_40px_-8px_rgba(3,6,172,0.12)] dark:hover:shadow-[0_16px_40px_-8px_rgba(233,189,54,0.08)] hover:border-brand-blue/40 dark:hover:border-brand-yellow/40 transition-all duration-300 flex flex-col justify-between min-h-[220px] group">
                     <div className="space-y-4">
-                      {/* Top Header */}
-                      <div className="flex items-center justify-between pb-3.5 border-b border-brand-zinc-150 dark:border-white/5">
-                        <span className="font-serif italic text-3xl font-black text-brand-zinc-200 dark:text-white/10 group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-300 leading-none select-none">
-                          0{idx + 1}
-                        </span>
-                        <span className="font-mono text-[8.5px] font-black tracking-widest text-[#0306AC] dark:text-[#E9BD36] bg-brand-blue/5 dark:bg-[#E9BD36]/10 px-3 py-1 rounded-full uppercase">
-                          {step.phaseTag || step.phase || step.badge || step.tag || `PHASE 0${idx + 1}`}
-                        </span>
+                      <div className="w-11 h-11 rounded-2xl bg-brand-blue/10 dark:bg-brand-yellow/10 border border-brand-blue/20 dark:border-brand-yellow/20 flex items-center justify-center text-brand-blue dark:text-brand-yellow shadow-sm group-hover:scale-110 group-hover:rotate-2 transition-transform duration-300 shrink-0">
+                        <BenefitIcon className="w-5 h-5 stroke-[2.2]" />
                       </div>
 
-                      <div className="space-y-2">
-                        <h3 className="font-heading text-lg font-black text-brand-dark dark:text-white group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-300">
-                          {step.title}
-                        </h3>
-                        <p className="text-xs sm:text-[13px] font-sans text-brand-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
-                          {step.desc}
-                        </p>
+                      <div className="space-y-2 text-left">
+                        {b.title && (
+                          <h3 className="font-heading text-base sm:text-lg font-extrabold text-brand-dark dark:text-white transition-colors duration-300 group-hover:text-brand-blue dark:group-hover:text-brand-yellow">
+                            {b.title}
+                          </h3>
+                        )}
+                        {b.desc && (
+                          <p className="text-[13px] font-sans text-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
+                            {b.desc}
+                          </p>
+                        )}
                       </div>
-
-                      {step.image && (
-                        <div className="w-full h-40 sm:h-48 rounded-2xl overflow-hidden border border-brand-zinc-200 dark:border-white/10 my-3">
-                          <img src={step.image} alt={step.title || ""} className="w-full h-full object-cover" />
-                        </div>
-                      )}
-
-                      {/* Technical Deliverables Checklist */}
-                      {deliverables.length > 0 && (
-                        <ul className="space-y-2 pt-3 border-t border-brand-zinc-150 dark:border-white/5">
-                          {deliverables.map((item: string, dIdx: number) => (
-                            <li key={dIdx} className="flex items-start gap-2 text-xs text-brand-zinc-550 dark:text-zinc-350 font-bold group/item">
-                              <span className="h-4 w-4 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0 mt-0.5 border border-emerald-500/15">
-                                <Check className="w-2.5 h-2.5 stroke-[3]" />
-                              </span>
-                              <span className="leading-snug">{item}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
                     </div>
 
-                    {(step.footerLeft || step.footerRight) && (
-                      <div className="pt-4 mt-5 border-t border-brand-zinc-150 dark:border-white/5 flex items-center justify-between text-brand-zinc-400 dark:text-zinc-555 font-mono text-[8px] font-bold uppercase tracking-widest">
-                        <span>{step.footerLeft || ""}</span>
-                        <span>{step.footerRight || ""}</span>
+                    {b.outcomeText && (
+                      <div className="pt-3.5 border-t border-zinc-100 dark:border-white/5 flex items-center justify-between text-brand-blue dark:text-brand-yellow font-mono text-[9.5px] font-black uppercase tracking-wider mt-5">
+                        <span>{b.outcomeText}</span>
+                        <Sparkles className="w-3.5 h-3.5 animate-pulse shrink-0" />
                       </div>
                     )}
                   </SpotlightCard>
@@ -1619,439 +1518,539 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             </div>
 
           </div>
+        </section>
+      )}
 
-        </div>
-      </section>
+      {/* ── 06. OUR PROCESS / ROADMAP (Sticky Left, Scroll Right Editorial Cards) ── */}
+      {(service as any).process?.enabled !== false && (
+        <section className="relative overflow-x-clip py-20 md:py-24 bg-zinc-50/15 dark:bg-[#0c0b18]/10 border-b border-brand-zinc-200 dark:border-white/10">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+
+              {/* Left Sticky Panel */}
+              <div className="lg:col-span-5 lg:sticky lg:top-28 self-start space-y-4 text-left">
+                {service.process.eyebrow && <span className="eyebrow-pill">{service.process.eyebrow}</span>}
+                <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12] max-w-sm">
+                  {service.process.titleIntro}{" "}
+                  <span className="text-brand-blue dark:text-brand-yellow font-serif font-normal italic">
+                    {service.process.titleHighlight}
+                  </span>
+                </h2>
+                <p className="text-sm font-sans text-brand-zinc-605 dark:text-zinc-355 font-normal leading-relaxed max-w-sm">
+                  {service.process.description}
+                </p>
+
+                {/* Premium Callout Box */}
+                {(service.process.calloutTag || service.process.calloutText) && (
+                  <div className="hidden lg:block border border-brand-zinc-200 dark:border-white/10 bg-white/40 dark:bg-[#12121e]/20 p-5 rounded-2xl text-xs space-y-2.5 max-w-sm">
+                    <p className="font-mono text-[9px] uppercase tracking-wider text-[#0306AC] dark:text-[#E9BD36] font-extrabold">
+                      {service.process.calloutTag}
+                    </p>
+                    <p className="text-brand-zinc-500 dark:text-zinc-400 font-normal leading-relaxed">
+                      {service.process.calloutText}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Right Column: Process Cards */}
+              <div className="lg:col-span-7 space-y-6 text-left relative pl-1">
+                {service.process.steps.map((step: any, idx: number) => {
+                  const deliverables = Array.isArray(step.deliverables)
+                    ? step.deliverables.filter((d: any) => typeof d === 'string' && d.trim().length > 0)
+                    : [];
+
+                  return (
+                    <SpotlightCard
+                      key={idx}
+                      className="bg-white dark:bg-[#0c0b18] border border-brand-zinc-200 dark:border-white/10 p-4.5 xs:p-6 sm:p-8 rounded-[22px] xs:rounded-[30px] hover:shadow-2xl hover:border-brand-blue/30 dark:hover:border-brand-yellow/30 transition-all duration-300 flex flex-col justify-between group min-h-[220px]"
+                    >
+                      <div className="space-y-4">
+                        {/* Top Header */}
+                        <div className="flex items-center justify-between pb-3.5 border-b border-brand-zinc-150 dark:border-white/5">
+                          <span className="font-serif italic text-3xl font-black text-brand-zinc-200 dark:text-white/10 group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-300 leading-none select-none">
+                            0{idx + 1}
+                          </span>
+                          <span className="font-mono text-[8.5px] font-black tracking-widest text-[#0306AC] dark:text-[#E9BD36] bg-brand-blue/5 dark:bg-[#E9BD36]/10 px-3 py-1 rounded-full uppercase">
+                            {step.phaseTag || step.phase || step.badge || step.tag || `PHASE 0${idx + 1}`}
+                          </span>
+                        </div>
+
+                        <div className="space-y-2">
+                          <h3 className="font-heading text-lg font-black text-brand-dark dark:text-white group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-300">
+                            {step.title}
+                          </h3>
+                          <p className="text-xs sm:text-[13px] font-sans text-brand-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
+                            {step.desc}
+                          </p>
+                        </div>
+
+                        {step.image && (
+                          <div className="w-full h-40 sm:h-48 rounded-2xl overflow-hidden border border-brand-zinc-200 dark:border-white/10 my-3">
+                            <img src={step.image} alt={step.title || ""} className="w-full h-full object-cover" />
+                          </div>
+                        )}
+
+                        {/* Technical Deliverables Checklist */}
+                        {deliverables.length > 0 && (
+                          <ul className="space-y-2 pt-3 border-t border-brand-zinc-150 dark:border-white/5">
+                            {deliverables.map((item: string, dIdx: number) => (
+                              <li key={dIdx} className="flex items-start gap-2 text-xs text-brand-zinc-550 dark:text-zinc-350 font-bold group/item">
+                                <span className="h-4 w-4 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0 mt-0.5 border border-emerald-500/15">
+                                  <Check className="w-2.5 h-2.5 stroke-[3]" />
+                                </span>
+                                <span className="leading-snug">{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+
+                      {(step.footerLeft || step.footerRight) && (
+                        <div className="pt-4 mt-5 border-t border-brand-zinc-150 dark:border-white/5 flex items-center justify-between text-brand-zinc-400 dark:text-zinc-555 font-mono text-[8px] font-bold uppercase tracking-widest">
+                          <span>{step.footerLeft || ""}</span>
+                          <span>{step.footerRight || ""}</span>
+                        </div>
+                      )}
+                    </SpotlightCard>
+                  );
+                })}
+              </div>
+
+            </div>
+
+          </div>
+        </section>
       )}
 
       {/* ── 07. RESULTS (Metrics & Dynamic Cases Switcher) ── */}
       {(service as any).results?.enabled !== false && (
-      <section className="relative overflow-hidden py-16 md:py-20 border-b border-brand-zinc-200 dark:border-white/10 bg-[#F9FAFB]/50 dark:bg-[#0c0b18]/15">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
+        <section className="relative overflow-hidden py-16 md:py-20 border-b border-brand-zinc-200 dark:border-white/10 bg-[#F9FAFB]/50 dark:bg-[#0c0b18]/15">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
 
-            {/* Left side text & Dynamic Case switcher */}
-            <div className="lg:col-span-5 text-left space-y-6 lg:sticky lg:top-28">
-              <div className="space-y-4">
-                {service.results.eyebrow && <span className="eyebrow-pill">{service.results.eyebrow}</span>}
-                <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl font-black text-brand-dark dark:text-white leading-[1.15]">
-                  {service.results.titleIntro}
-                  <span className="text-brand-blue dark:text-brand-yellow font-serif font-normal italic block mt-1">
-                    {service.results.titleHighlight}
-                  </span>
-                </h2>
-                <p className="text-xs sm:text-sm font-sans text-brand-zinc-655 dark:text-zinc-355 leading-relaxed font-normal">
-                  {service.results.description}
-                </p>
-              </div>
-
-              {/* Dynamic Case Studies Switcher */}
-              <div className="space-y-4 pt-4 border-t border-brand-zinc-200 dark:border-white/15 w-full">
-                <div className="flex items-center justify-between gap-4">
-                  <h4 className="font-mono text-[9px] font-black uppercase text-brand-zinc-400 tracking-widest">
-                    {service.results.caseStudiesEyebrow || "Featured Case Studies"}
-                  </h4>
+              {/* Left side text & Dynamic Case switcher */}
+              <div className="lg:col-span-5 text-left space-y-6 lg:sticky lg:top-28">
+                <div className="space-y-4">
+                  {service.results.eyebrow && <span className="eyebrow-pill">{service.results.eyebrow}</span>}
+                  <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl font-black text-brand-dark dark:text-white leading-[1.15]">
+                    {service.results.titleIntro}
+                    <span className="text-brand-blue dark:text-brand-yellow font-serif font-normal italic block mt-1">
+                      {service.results.titleHighlight}
+                    </span>
+                  </h2>
+                  <p className="text-xs sm:text-sm font-sans text-brand-zinc-655 dark:text-zinc-355 leading-relaxed font-normal">
+                    {service.results.description}
+                  </p>
                 </div>
 
-                {/* Case Selector Tabs */}
-                <div className="flex flex-wrap gap-2">
-                  {service.results.caseStudies.map((cs: any, idx: number) => (
-                    <button
-                      key={idx}
-                      onClick={() => setActiveCaseIdx(idx)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                        activeCaseIdx === idx
-                          ? "bg-brand-blue dark:bg-brand-yellow text-white dark:text-[#080710] shadow-sm scale-[1.02]"
-                          : "bg-white dark:bg-[#12121e] border border-brand-zinc-200 dark:border-white/10 text-brand-zinc-600 dark:text-zinc-400 hover:border-brand-blue/30 hover:text-brand-blue dark:hover:text-brand-yellow"
-                      }`}
-                    >
-                      {cs.title || `Case 0${idx + 1}`}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="w-full pt-1">
-                  <AnimatePresence mode="wait">
-                    {service.results.caseStudies.map((cs: any, idx: number) => {
-                      if (activeCaseIdx !== idx) return null;
-                      return (
-                        <motion.div
-                          key={idx}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          transition={{ duration: 0.25 }}
-                          className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#12121e] border border-brand-zinc-200/90 dark:border-white/10 text-xs text-left space-y-3.5 shadow-sm"
-                        >
-                          <div className="space-y-2">
-                            <div className="flex items-center gap-2">
-                              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                              <span className="font-heading font-extrabold text-sm sm:text-base text-brand-dark dark:text-white leading-tight">
-                                {cs.title}
-                              </span>
-                            </div>
-                            {cs.desc && (
-                              <p className="text-brand-zinc-600 dark:text-zinc-350 font-normal leading-relaxed text-xs">
-                                {cs.desc}
-                              </p>
-                            )}
-                          </div>
-
-                          {cs.challenge && (
-                            <div className="space-y-1 bg-zinc-50 dark:bg-white/[0.02] p-3 rounded-xl border border-zinc-100 dark:border-white/5">
-                              <span className="text-[9px] font-mono font-bold text-brand-zinc-400 uppercase tracking-wider block">The Challenge</span>
-                              <p className="text-brand-zinc-700 dark:text-zinc-300 text-xs leading-relaxed">{cs.challenge}</p>
-                            </div>
-                          )}
-
-                          {cs.strategy && (
-                            <div className="space-y-1 bg-zinc-50 dark:bg-white/[0.02] p-3 rounded-xl border border-zinc-100 dark:border-white/5">
-                              <span className="text-[9px] font-mono font-bold text-brand-blue dark:text-brand-yellow uppercase tracking-wider block">Engineered Strategy</span>
-                              <p className="text-brand-zinc-700 dark:text-zinc-300 text-xs leading-relaxed">{cs.strategy}</p>
-                            </div>
-                          )}
-                          
-                          {(cs.outcome || cs.outcomeLabel) && (
-                            <div className="flex items-center justify-between pt-3 border-t border-brand-zinc-150 dark:border-white/5">
-                              <span className="font-mono text-[9px] uppercase tracking-wider text-brand-zinc-400">
-                                {cs.outcomeLabel || "Verified Outcome"}
-                              </span>
-                              <span className="font-mono text-xs font-black text-brand-blue dark:text-brand-yellow">
-                                {cs.outcome}
-                              </span>
-                            </div>
-                          )}
-                        </motion.div>
-                      );
-                    })}
-                  </AnimatePresence>
-                </div>
-              </div>
-            </div>
-
-            {/* Right side stats counters */}
-            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
-              {service.results.metrics.map((metric: any, idx: number) => {
-                const MetricIcon = (metric.iconName && iconMap[metric.iconName]) || (metric.icon && iconMap[metric.icon]) || Trophy;
-                return (
-                  <SpotlightCard
-                    key={idx}
-                    className="bg-white dark:bg-[#121124] border border-zinc-200/80 dark:border-white/10 p-6 sm:p-7 rounded-[26px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:shadow-[0_16px_40px_-8px_rgba(3,6,172,0.12)] dark:hover:shadow-[0_16px_40px_-8px_rgba(233,189,54,0.08)] hover:border-brand-blue/40 dark:hover:border-brand-yellow/40 transition-all duration-300 flex flex-col justify-between group min-h-[200px]"
-                  >
-                    <div className="space-y-4">
-                      {/* Header with Icon Badge & Tag */}
-                      <div className="flex items-center justify-between pb-3.5 border-b border-zinc-100 dark:border-white/5">
-                        <div className="w-11 h-11 rounded-2xl bg-brand-blue/10 dark:bg-brand-yellow/10 border border-brand-blue/20 dark:border-brand-yellow/20 flex items-center justify-center text-brand-blue dark:text-brand-yellow shadow-sm group-hover:scale-110 group-hover:rotate-2 transition-transform duration-300 shrink-0">
-                          <MetricIcon className="w-5 h-5 stroke-[2.2]" />
-                        </div>
-                        <span className="text-[9px] font-mono font-black tracking-widest text-zinc-500 dark:text-zinc-400 bg-zinc-100/90 dark:bg-white/[0.06] border border-zinc-200/60 dark:border-white/5 px-3 py-1 rounded-full uppercase select-none">
-                          {metric.tag || `M0${idx + 1}`}
-                        </span>
-                      </div>
-
-                    {/* Metric Content */}
-                    <div className="text-left space-y-1.5">
-                      <div className="font-heading font-black text-3xl sm:text-4xl text-[#0306AC] dark:text-[#E9BD36] leading-none tracking-tight break-words">
-                        <DigitTicker value={metric.value} />
-                      </div>
-                      <div className="flex items-center gap-1.5 pt-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-brand-blue dark:bg-brand-yellow shrink-0" />
-                        <span className="font-mono text-[10px] font-black uppercase text-zinc-800 dark:text-zinc-200 tracking-wider">
-                          {metric.label}
-                        </span>
-                      </div>
-                      {metric.desc && (
-                        <p className="text-[12px] font-sans text-zinc-600 dark:text-zinc-400 pt-1 leading-relaxed font-normal">
-                          {metric.desc}
-                        </p>
-                      )}
-                    </div>
+                {/* Dynamic Case Studies Switcher */}
+                <div className="space-y-4 pt-4 border-t border-brand-zinc-200 dark:border-white/15 w-full">
+                  <div className="flex items-center justify-between gap-4">
+                    <h4 className="font-mono text-[9px] font-black uppercase text-brand-zinc-400 tracking-widest">
+                      {service.results.caseStudiesEyebrow || "Featured Case Studies"}
+                    </h4>
                   </div>
-                </SpotlightCard>
-                );
-              })}
+
+                  {/* Case Selector Tabs */}
+                  <div className="flex flex-wrap gap-2">
+                    {service.results.caseStudies.map((cs: any, idx: number) => (
+                      <button
+                        key={idx}
+                        onClick={() => setActiveCaseIdx(idx)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${activeCaseIdx === idx
+                            ? "bg-brand-blue dark:bg-brand-yellow text-white dark:text-[#080710] shadow-sm scale-[1.02]"
+                            : "bg-white dark:bg-[#12121e] border border-brand-zinc-200 dark:border-white/10 text-brand-zinc-600 dark:text-zinc-400 hover:border-brand-blue/30 hover:text-brand-blue dark:hover:text-brand-yellow"
+                          }`}
+                      >
+                        {cs.title || `Case 0${idx + 1}`}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="w-full pt-1">
+                    <AnimatePresence mode="wait">
+                      {service.results.caseStudies.map((cs: any, idx: number) => {
+                        if (activeCaseIdx !== idx) return null;
+                        return (
+                          <motion.div
+                            key={idx}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.25 }}
+                            className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#12121e] border border-brand-zinc-200/90 dark:border-white/10 text-xs text-left space-y-3.5 shadow-sm"
+                          >
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-2">
+                                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                                <span className="font-heading font-extrabold text-sm sm:text-base text-brand-dark dark:text-white leading-tight">
+                                  {cs.title}
+                                </span>
+                              </div>
+                              {cs.desc && (
+                                <p className="text-brand-zinc-600 dark:text-zinc-350 font-normal leading-relaxed text-xs">
+                                  {cs.desc}
+                                </p>
+                              )}
+                            </div>
+
+                            {cs.challenge && (
+                              <div className="space-y-1 bg-zinc-50 dark:bg-white/[0.02] p-3 rounded-xl border border-zinc-100 dark:border-white/5">
+                                <span className="text-[9px] font-mono font-bold text-brand-zinc-400 uppercase tracking-wider block">The Challenge</span>
+                                <p className="text-brand-zinc-700 dark:text-zinc-300 text-xs leading-relaxed">{cs.challenge}</p>
+                              </div>
+                            )}
+
+                            {cs.strategy && (
+                              <div className="space-y-1 bg-zinc-50 dark:bg-white/[0.02] p-3 rounded-xl border border-zinc-100 dark:border-white/5">
+                                <span className="text-[9px] font-mono font-bold text-brand-blue dark:text-brand-yellow uppercase tracking-wider block">Engineered Strategy</span>
+                                <p className="text-brand-zinc-700 dark:text-zinc-300 text-xs leading-relaxed">{cs.strategy}</p>
+                              </div>
+                            )}
+
+                            {(cs.outcome || cs.outcomeLabel) && (
+                              <div className="flex items-center justify-between pt-3 border-t border-brand-zinc-150 dark:border-white/5">
+                                <span className="font-mono text-[9px] uppercase tracking-wider text-brand-zinc-400">
+                                  {cs.outcomeLabel || "Verified Outcome"}
+                                </span>
+                                <span className="font-mono text-xs font-black text-brand-blue dark:text-brand-yellow">
+                                  {cs.outcome}
+                                </span>
+                              </div>
+                            )}
+                          </motion.div>
+                        );
+                      })}
+                    </AnimatePresence>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right side stats counters */}
+              <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
+                {service.results.metrics.map((metric: any, idx: number) => {
+                  const MetricIcon = (metric.iconName && iconMap[metric.iconName]) || (metric.icon && iconMap[metric.icon]) || Trophy;
+                  return (
+                    <SpotlightCard
+                      key={idx}
+                      className="bg-white dark:bg-[#121124] border border-zinc-200/80 dark:border-white/10 p-6 sm:p-7 rounded-[26px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:shadow-[0_16px_40px_-8px_rgba(3,6,172,0.12)] dark:hover:shadow-[0_16px_40px_-8px_rgba(233,189,54,0.08)] hover:border-brand-blue/40 dark:hover:border-brand-yellow/40 transition-all duration-300 flex flex-col justify-between group min-h-[200px]"
+                    >
+                      <div className="space-y-4">
+                        {/* Header with Icon Badge & Tag */}
+                        <div className="flex items-center justify-between pb-3.5 border-b border-zinc-100 dark:border-white/5">
+                          <div className="w-11 h-11 rounded-2xl bg-brand-blue/10 dark:bg-brand-yellow/10 border border-brand-blue/20 dark:border-brand-yellow/20 flex items-center justify-center text-brand-blue dark:text-brand-yellow shadow-sm group-hover:scale-110 group-hover:rotate-2 transition-transform duration-300 shrink-0">
+                            <MetricIcon className="w-5 h-5 stroke-[2.2]" />
+                          </div>
+                          <span className="text-[9px] font-mono font-black tracking-widest text-zinc-500 dark:text-zinc-400 bg-zinc-100/90 dark:bg-white/[0.06] border border-zinc-200/60 dark:border-white/5 px-3 py-1 rounded-full uppercase select-none">
+                            {metric.tag || `M0${idx + 1}`}
+                          </span>
+                        </div>
+
+                        {/* Metric Content */}
+                        <div className="text-left space-y-1.5">
+                          <div className="font-heading font-black text-3xl sm:text-4xl text-[#0306AC] dark:text-[#E9BD36] leading-none tracking-tight break-words">
+                            <DigitTicker value={metric.value} />
+                          </div>
+                          <div className="flex items-center gap-1.5 pt-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-brand-blue dark:bg-brand-yellow shrink-0" />
+                            <span className="font-mono text-[10px] font-black uppercase text-zinc-800 dark:text-zinc-200 tracking-wider">
+                              {metric.label}
+                            </span>
+                          </div>
+                          {metric.desc && (
+                            <p className="text-[12px] font-sans text-zinc-600 dark:text-zinc-400 pt-1 leading-relaxed font-normal">
+                              {metric.desc}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </SpotlightCard>
+                  );
+                })}
+              </div>
+
             </div>
 
           </div>
-
-        </div>
-      </section>
+        </section>
       )}
 
       {/* ── 08. INDUSTRIES WE SERVE (Dashed Icon Container Style) ── */}
       {(service as any).industries?.enabled !== false && (
-      <section className="relative overflow-hidden py-20 md:py-24 border-b border-brand-zinc-200 dark:border-white/10">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
+        <section className="relative overflow-hidden py-20 md:py-24 border-b border-brand-zinc-200 dark:border-white/10">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-14 space-y-4"
-          >
-            {service.industries.eyebrow && (
-              <div className="flex justify-center">
-                <span className="eyebrow-pill">{service.industries.eyebrow}</span>
-              </div>
-            )}
-            <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
-              {service.industries.titleIntro}{" "}
-              <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
-                {service.industries.titleHighlight}
-                <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-yellow opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
-                  <motion.path
-                    d="M 2 5 Q 50 1.5, 98 3.5 C 99 3.5, 99 4.5, 98 5 Q 50 7, 2 5.5 Z"
-                    fill="currentColor"
-                    custom={{ delay: 0.3, duration: 0.65 }}
-                    variants={drawVariants}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                  />
-                </svg>
-              </span>
-            </h2>
-            {service.industries.description && (
-              <p className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
-                {service.industries.description}
-              </p>
-            )}
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {service.industries.list.map((ind: any, idx: number) => {
-              const defaultIcons = [Building2, Cpu, Building2, ShoppingCart, Briefcase, Star];
-              const IndustryIcon = (ind.iconName && iconMap[ind.iconName]) || defaultIcons[idx % defaultIcons.length] || Building2;
-              
-              const words = String(ind.title || "").split(" ");
-              const abbreviation = ind.watermark || words.map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
-
-              return (
-                <SpotlightCard
-                  key={idx}
-                  className="bg-white dark:bg-[#0c0b18] border border-slate-200/80 dark:border-white/10 p-6 sm:p-8 rounded-[28px] hover:shadow-2xl hover:border-blue-600/30 dark:hover:border-yellow-400/30 transition-all duration-500 flex flex-col justify-between min-h-[250px] relative group text-left overflow-hidden"
-                >
-                  {/* Floating Watermark */}
-                  <span className="absolute top-5 right-7 font-serif italic text-6xl sm:text-7xl font-black text-slate-100 dark:text-white/[0.04] select-none pointer-events-none transition-transform duration-500 group-hover:scale-110">
-                    {abbreviation}
-                  </span>
-
-                  <div className="space-y-5 relative z-10">
-                    {/* Icon Container with subtle shadow and hover transition */}
-                    <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 dark:bg-[#1e1e2e] border border-slate-200/90 dark:border-white/10 shadow-[0_2px_8px_rgba(0,0,0,0.03)] group-hover:bg-[#0306AC] dark:group-hover:bg-[#E9BD36] group-hover:border-transparent transition-all duration-500 ease-out shrink-0">
-                      <IndustryIcon className="h-6 w-6 text-[#0306AC] dark:text-[#E9BD36] group-hover:text-white dark:group-hover:text-[#080710] transition-all duration-300 stroke-[1.75]" />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <h3 className="font-heading text-lg sm:text-xl font-bold text-slate-900 dark:text-white group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors duration-300 leading-snug">
-                        {ind.title}
-                      </h3>
-                      <p className="text-xs sm:text-[13.5px] font-sans text-slate-600 dark:text-zinc-400 leading-relaxed font-normal">
-                        {ind.desc || ind.description}
-                      </p>
-                    </div>
-                  </div>
-
-                  {(ind.footerLeft || ind.footerRight || service.industries.footerLeft || service.industries.footerRight) && (
-                    <div className="pt-4 mt-6 border-t border-[#0306AC]/25 dark:border-white/10 flex items-center justify-between text-[#0306AC]/80 dark:text-yellow-400/80 font-mono text-[9px] font-bold uppercase tracking-widest relative z-10">
-                      <span>{ind.footerLeft || service.industries.footerLeft || ""}</span>
-                      <span>{ind.footerRight || service.industries.footerRight || ""}</span>
-                    </div>
-                  )}
-                </SpotlightCard>
-              );
-            })}
-          </div>
-
-        </div>
-      </section>
-      )}
-
-      {/* ── 09. TOOLS & TECHNOLOGY (Console Mockup Style) ── */}
-      {(service as any).tools?.enabled !== false && (
-      <section className="relative overflow-hidden py-20 md:py-24 bg-zinc-50/10 dark:bg-[#0c0b18]/10 border-b border-brand-zinc-200 dark:border-white/10">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
-
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-14 text-left">
-            <div className="space-y-3">
-              {service.tools.eyebrow && <span className="eyebrow-pill">{service.tools.eyebrow}</span>}
-              <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl font-black text-brand-dark dark:text-white tracking-tight leading-tight">
-                {service.tools.titleIntro}{" "}
-                <span className="text-brand-blue dark:text-brand-yellow ml-1 font-black">
-                  {service.tools.titleHighlight}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-14 space-y-4"
+            >
+              {service.industries.eyebrow && (
+                <div className="flex justify-center">
+                  <span className="eyebrow-pill">{service.industries.eyebrow}</span>
+                </div>
+              )}
+              <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
+                {service.industries.titleIntro}{" "}
+                <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
+                  {service.industries.titleHighlight}
+                  <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-yellow opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
+                    <motion.path
+                      d="M 2 5 Q 50 1.5, 98 3.5 C 99 3.5, 99 4.5, 98 5 Q 50 7, 2 5.5 Z"
+                      fill="currentColor"
+                      custom={{ delay: 0.3, duration: 0.65 }}
+                      variants={drawVariants}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true }}
+                    />
+                  </svg>
                 </span>
               </h2>
-            </div>
-            <p className="text-xs sm:text-sm font-sans text-brand-zinc-655 dark:text-zinc-355 max-w-sm leading-relaxed font-normal">
-              {service.tools.description}
-            </p>
-          </div>
-
-          {/* Console Card Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {service.tools.list.map((tool: any, idx: number) => {
-              const ToolIcon = iconMap[tool.iconName] || Search;
-
-              return (
-                <SpotlightCard
-                  key={idx}
-                  className="bg-white dark:bg-[#0c0b18] border border-brand-zinc-200 dark:border-white/10 rounded-[20px] xs:rounded-[28px] hover:shadow-2xl transition-all duration-300 flex flex-col justify-between min-h-[220px] relative text-left group"
-                >
-                  {/* Console Header Bar */}
-                  <div className="flex items-center justify-between px-6 pt-4 pb-3 border-b border-brand-zinc-150 dark:border-white/5 select-none bg-zinc-50/50 dark:bg-white/[0.01]">
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-full bg-red-400/80" />
-                      <span className="w-2.5 h-2.5 rounded-full bg-yellow-400/80" />
-                      <span className="w-2.5 h-2.5 rounded-full bg-green-400/80" />
-                    </div>
-                    <span className="font-mono text-[8px] tracking-widest text-brand-zinc-400 dark:text-zinc-550 font-bold uppercase">
-                      {tool.tag}
-                    </span>
-                  </div>
-
-                  {/* Console Body */}
-                  <div className="p-6 flex-1 flex flex-col justify-between">
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-brand-blue/5 dark:bg-brand-yellow/5 flex items-center justify-center shrink-0 border border-brand-blue/10 dark:border-brand-yellow/10">
-                          <ToolIcon className="w-4.5 h-4.5 text-brand-blue dark:text-brand-yellow" />
-                        </div>
-                        <h3 className="font-heading text-base font-extrabold text-brand-dark dark:text-white group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-300">
-                          {tool.name}
-                        </h3>
-                      </div>
-                      <p className="text-xs sm:text-[13px] font-sans text-brand-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
-                        {tool.desc || tool.description}
-                      </p>
-                    </div>
-
-                    {/* Progress Gauge */}
-                    <div className="pt-4 mt-4 border-t border-brand-zinc-150 dark:border-white/5 space-y-1">
-                      <div className="h-1 w-full bg-brand-zinc-100 dark:bg-white/5 rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-brand-blue to-[#10b981] dark:from-[#E9BD36] dark:to-emerald-400 w-[90%] rounded-full group-hover:w-full transition-all duration-700 ease-out" />
-                      </div>
-                    </div>
-                  </div>
-                </SpotlightCard>
-              );
-            })}
-          </div>
-
-        </div>
-      </section>
-      )}
-
-      {/* ── 10. WHY CHOOSE US (Sticky Left, Scroll Right Differentiators) ── */}
-      {(service as any).whyChooseUs?.enabled !== false && (
-      <section className="relative overflow-x-clip py-20 md:py-24 border-b border-brand-zinc-200 dark:border-white/10">
-        <div className="absolute inset-0 opacity-[0.022] pointer-events-none" style={{ backgroundImage: "radial-gradient(#0306AC 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
-        
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
-          <div className="flex flex-col lg:flex-row lg:items-start gap-12 lg:gap-0">
-
-            {/* Left Sticky Column with Stat Rings */}
-            <div className="lg:w-[42%] lg:shrink-0 lg:sticky lg:top-28 self-start flex flex-col justify-start lg:pr-16 lg:border-r border-brand-zinc-200 dark:border-white/10 text-left space-y-7">
-              <div className="space-y-4">
-                {service.whyChooseUs.eyebrow && <span className="eyebrow-pill">{service.whyChooseUs.eyebrow}</span>}
-                <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white leading-[1.15] tracking-tight">
-                  {service.whyChooseUs.titleIntro}{" "}
-                  <span className="text-brand-blue dark:text-brand-yellow font-serif font-normal italic">
-                    {service.whyChooseUs.titleHighlight}
-                  </span>
-                </h2>
-                <p className="text-sm font-sans text-brand-zinc-655 dark:text-zinc-355 leading-relaxed font-normal">
-                  {service.whyChooseUs.description}
+              {service.industries.description && (
+                <p className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
+                  {service.industries.description}
                 </p>
-              </div>
+              )}
+            </motion.div>
 
-              {/* 3 Circular Stat Rings */}
-              <div className="flex items-center justify-between gap-2 pt-6 w-full select-none">
-                {service.whyChooseUs.stats.map((st: any, sIdx: number) => (
-                  <React.Fragment key={sIdx}>
-                    <AnimatedStat
-                      value={st.value}
-                      label={st.label}
-                      sublabel={st.sublabel}
-                      percentage={(() => {
-                        if (typeof st.percentage === "number") return st.percentage;
-                        // Auto-derive percentage from value string
-                        const raw = String(st.value || "0").replace(/[^0-9.]/g, "");
-                        const num = parseFloat(raw);
-                        if (isNaN(num) || num === 0) return 0.85;
-                        // If value ends with %, use it directly (e.g. "11%" → 0.11)
-                        if (String(st.value).includes("%")) return Math.min(num / 100, 1);
-                        // Otherwise cap to 0.9 as a visual fallback
-                        return Math.min(num / 100, 0.95);
-                      })()}
-                    />
-                    {sIdx < service.whyChooseUs.stats.length - 1 && (
-                      <div className="w-px h-12 bg-brand-zinc-200 dark:bg-white/10 shrink-0" />
-                    )}
-                  </React.Fragment>
-                ))}
-              </div>
-            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+              {service.industries.list.map((ind: any, idx: number) => {
+                const defaultIcons = [Building2, Cpu, Building2, ShoppingCart, Briefcase, Star];
+                const IndustryIcon = (ind.iconName && iconMap[ind.iconName]) || defaultIcons[idx % defaultIcons.length] || Building2;
 
-            {/* Right Column: Differentiators Rows with custom inline vector illustrations or images */}
-            <div className="lg:flex-1 lg:pl-14 flex flex-col text-left">
-              {service.whyChooseUs.list.map((item: any, idx: number) => {
-                const DiffIcon = (item.icon && iconMap[item.icon]) || (item.iconName && iconMap[item.iconName]) || Check;
+                const words = String(ind.title || "").split(" ");
+                const abbreviation = ind.watermark || words.map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
+
                 return (
-                  <div
+                  <SpotlightCard
                     key={idx}
-                    className="group border-b border-brand-zinc-200 dark:border-white/10 last:border-b-0 py-8 first:pt-0 last:pb-0"
+                    className="bg-white dark:bg-[#0c0b18] border border-slate-200/80 dark:border-white/10 p-6 sm:p-8 rounded-[28px] hover:shadow-2xl hover:border-blue-600/30 dark:hover:border-yellow-400/30 transition-all duration-500 flex flex-col justify-between min-h-[250px] relative group text-left overflow-hidden"
                   >
-                    <div className="flex items-center gap-6">
-                      
-                      {/* Left details */}
-                      <div className="flex items-start gap-4 flex-1 min-w-0">
-                        <div className="shrink-0 flex h-11 w-11 items-center justify-center rounded-xl bg-brand-blue/8 border border-brand-blue/15 text-brand-blue dark:text-brand-yellow dark:bg-brand-yellow/10 dark:border-brand-yellow/20 group-hover:bg-[#0306AC] group-hover:text-white dark:group-hover:bg-[#E9BD36] dark:group-hover:text-brand-dark group-hover:border-none transition-all duration-300 mt-0.5 shadow-sm">
-                          <DiffIcon className="h-[18px] w-[18px] stroke-[2.5]" />
-                        </div>
-                        
-                        <div className="flex-1 min-w-0 space-y-1.5">
-                          <span className="font-mono text-[9px] font-black text-brand-blue/60 dark:text-brand-yellow/60 tracking-widest uppercase">
-                            {item.tag || `Differentiator 0${idx + 1}`}
-                          </span>
-                          <h3 className="font-heading font-extrabold text-[1.1rem] text-brand-dark dark:text-white group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-300 leading-snug">
-                            {item.title}
-                          </h3>
-                          <p className="text-[13px] text-brand-zinc-500 dark:text-zinc-400 leading-relaxed font-normal">
-                            {item.desc}
-                          </p>
-                        </div>
+                    {/* Floating Watermark */}
+                    <span className="absolute top-5 right-7 font-serif italic text-6xl sm:text-7xl font-black text-slate-100 dark:text-white/[0.04] select-none pointer-events-none transition-transform duration-500 group-hover:scale-110">
+                      {abbreviation}
+                    </span>
+
+                    <div className="space-y-5 relative z-10">
+                      {/* Icon Container with subtle shadow and hover transition */}
+                      <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 dark:bg-[#1e1e2e] border border-slate-200/90 dark:border-white/10 shadow-[0_2px_8px_rgba(0,0,0,0.03)] group-hover:bg-[#0306AC] dark:group-hover:bg-[#E9BD36] group-hover:border-transparent transition-all duration-500 ease-out shrink-0">
+                        <IndustryIcon className="h-6 w-6 text-[#0306AC] dark:text-[#E9BD36] group-hover:text-white dark:group-hover:text-[#080710] transition-all duration-300 stroke-[1.75]" />
                       </div>
 
-                      {/* Right Illustration container - dynamic image or SVG fallback */}
-                      <div className="hidden md:block shrink-0 w-[140px] h-[88px] rounded-2xl border border-brand-blue/10 bg-gradient-to-br from-brand-blue/4 to-transparent overflow-hidden group-hover:border-brand-blue/20 group-hover:from-brand-blue/8 transition-all duration-400">
-                        <div className="w-full h-full group-hover:scale-[1.03] transition-transform duration-400 origin-center flex items-center justify-center">
-                          {item.image ? (
-                            <img src={item.image} alt={item.title || ""} className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="w-full h-full p-2">
-                              {differentiatorsIllustrations[idx % differentiatorsIllustrations.length]}
-                            </div>
-                          )}
-                        </div>
+                      <div className="space-y-2">
+                        <h3 className="font-heading text-lg sm:text-xl font-bold text-slate-900 dark:text-white group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors duration-300 leading-snug">
+                          {ind.title}
+                        </h3>
+                        <p className="text-xs sm:text-[13.5px] font-sans text-slate-600 dark:text-zinc-400 leading-relaxed font-normal">
+                          {ind.desc || ind.description}
+                        </p>
                       </div>
-
                     </div>
-                  </div>
+
+                    {(ind.footerLeft || ind.footerRight || service.industries.footerLeft || service.industries.footerRight) && (
+                      <div className="pt-4 mt-6 border-t border-[#0306AC]/25 dark:border-white/10 flex items-center justify-between text-[#0306AC]/80 dark:text-yellow-400/80 font-mono text-[9px] font-bold uppercase tracking-widest relative z-10">
+                        <span>{ind.footerLeft || service.industries.footerLeft || ""}</span>
+                        <span>{ind.footerRight || service.industries.footerRight || ""}</span>
+                      </div>
+                    )}
+                  </SpotlightCard>
                 );
               })}
             </div>
 
           </div>
-        </div>
-      </section>
+        </section>
+      )}
+
+      {/* ── 09. TOOLS & TECHNOLOGY (Console Mockup Style) ── */}
+      {(service as any).tools?.enabled !== false && (
+        <section className="relative overflow-hidden py-20 md:py-24 bg-zinc-50/10 dark:bg-[#0c0b18]/10 border-b border-brand-zinc-200 dark:border-white/10">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
+
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-14 text-left">
+              <div className="space-y-3">
+                {service.tools.eyebrow && <span className="eyebrow-pill">{service.tools.eyebrow}</span>}
+                <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl font-black text-brand-dark dark:text-white tracking-tight leading-tight">
+                  {service.tools.titleIntro}{" "}
+                  <span className="text-brand-blue dark:text-brand-yellow ml-1 font-black">
+                    {service.tools.titleHighlight}
+                  </span>
+                </h2>
+              </div>
+              <p className="text-xs sm:text-sm font-sans text-brand-zinc-655 dark:text-zinc-355 max-w-sm leading-relaxed font-normal">
+                {service.tools.description}
+              </p>
+            </div>
+
+            {/* Console Card Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+              {service.tools.list.map((tool: any, idx: number) => {
+                const ToolIcon = iconMap[tool.iconName] || Search;
+
+                return (
+                  <SpotlightCard
+                    key={idx}
+                    className="bg-white dark:bg-[#0c0b18] border border-brand-zinc-200 dark:border-white/10 rounded-[20px] xs:rounded-[28px] hover:shadow-2xl transition-all duration-300 flex flex-col justify-between min-h-[220px] relative text-left group"
+                  >
+                    {/* Console Header Bar */}
+                    <div className="flex items-center justify-between px-6 pt-4 pb-3 border-b border-brand-zinc-150 dark:border-white/5 select-none bg-zinc-50/50 dark:bg-white/[0.01]">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2.5 h-2.5 rounded-full bg-red-400/80" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-yellow-400/80" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-green-400/80" />
+                      </div>
+                      <span className="font-mono text-[8px] tracking-widest text-brand-zinc-400 dark:text-zinc-550 font-bold uppercase">
+                        {tool.tag}
+                      </span>
+                    </div>
+
+                    {/* Console Body */}
+                    <div className="p-6 flex-1 flex flex-col justify-between">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-lg bg-brand-blue/5 dark:bg-brand-yellow/5 flex items-center justify-center shrink-0 border border-brand-blue/10 dark:border-brand-yellow/10">
+                            <ToolIcon className="w-4.5 h-4.5 text-brand-blue dark:text-brand-yellow" />
+                          </div>
+                          <h3 className="font-heading text-base font-extrabold text-brand-dark dark:text-white group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-300">
+                            {tool.name}
+                          </h3>
+                        </div>
+                        <p className="text-xs sm:text-[13px] font-sans text-brand-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
+                          {tool.desc || tool.description}
+                        </p>
+                      </div>
+
+                      {/* Progress Gauge */}
+                      <div className="pt-4 mt-4 border-t border-brand-zinc-150 dark:border-white/5 space-y-1">
+                        <div className="h-1 w-full bg-brand-zinc-100 dark:bg-white/5 rounded-full overflow-hidden">
+                          <div className="h-full bg-gradient-to-r from-brand-blue to-[#10b981] dark:from-[#E9BD36] dark:to-emerald-400 w-[90%] rounded-full group-hover:w-full transition-all duration-700 ease-out" />
+                        </div>
+                      </div>
+                    </div>
+                  </SpotlightCard>
+                );
+              })}
+            </div>
+
+          </div>
+        </section>
+      )}
+
+      {/* ── 10. WHY CHOOSE US (Sticky Left, Scroll Right Differentiators) ── */}
+      {(service as any).whyChooseUs?.enabled !== false && (
+        <section className="relative overflow-x-clip py-20 md:py-24 border-b border-brand-zinc-200 dark:border-white/10">
+          <div className="absolute inset-0 opacity-[0.022] pointer-events-none" style={{ backgroundImage: "radial-gradient(#0306AC 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
+
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
+            <div className="flex flex-col lg:flex-row lg:items-start gap-12 lg:gap-0">
+
+              {/* Left Sticky Column with Stat Rings */}
+              <div className="lg:w-[42%] lg:shrink-0 lg:sticky lg:top-28 self-start flex flex-col justify-start lg:pr-16 lg:border-r border-brand-zinc-200 dark:border-white/10 text-left space-y-7">
+                <div className="space-y-4">
+                  {service.whyChooseUs.eyebrow && <span className="eyebrow-pill">{service.whyChooseUs.eyebrow}</span>}
+                  <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white leading-[1.15] tracking-tight">
+                    {service.whyChooseUs.titleIntro}{" "}
+                    <span className="text-brand-blue dark:text-brand-yellow font-serif font-normal italic">
+                      {service.whyChooseUs.titleHighlight}
+                    </span>
+                  </h2>
+                  <p className="text-sm font-sans text-brand-zinc-655 dark:text-zinc-355 leading-relaxed font-normal">
+                    {service.whyChooseUs.description}
+                  </p>
+                </div>
+
+                {/* 3 Circular Stat Rings */}
+                <div className="flex items-center justify-between gap-2 pt-6 w-full select-none">
+                  {service.whyChooseUs.stats.map((st: any, sIdx: number) => (
+                    <React.Fragment key={sIdx}>
+                      <AnimatedStat
+                        value={st.value}
+                        label={st.label}
+                        sublabel={st.sublabel}
+                        percentage={(() => {
+                          if (typeof st.percentage === "number") return st.percentage;
+                          // Auto-derive percentage from value string
+                          const raw = String(st.value || "0").replace(/[^0-9.]/g, "");
+                          const num = parseFloat(raw);
+                          if (isNaN(num) || num === 0) return 0.85;
+                          // If value ends with %, use it directly (e.g. "11%" → 0.11)
+                          if (String(st.value).includes("%")) return Math.min(num / 100, 1);
+                          // Otherwise cap to 0.9 as a visual fallback
+                          return Math.min(num / 100, 0.95);
+                        })()}
+                      />
+                      {sIdx < service.whyChooseUs.stats.length - 1 && (
+                        <div className="w-px h-12 bg-brand-zinc-200 dark:bg-white/10 shrink-0" />
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right Column: Differentiators Rows with custom inline vector illustrations or images */}
+              <div className="lg:flex-1 lg:pl-14 flex flex-col text-left">
+                {service.whyChooseUs.list.map((item: any, idx: number) => {
+                  const DiffIcon = (item.icon && iconMap[item.icon]) || (item.iconName && iconMap[item.iconName]) || Check;
+                  return (
+                    <div
+                      key={idx}
+                      className="group border-b border-brand-zinc-200 dark:border-white/10 last:border-b-0 py-8 first:pt-0 last:pb-0"
+                    >
+                      <div className="flex items-center gap-6">
+
+                        {/* Left details */}
+                        <div className="flex items-start gap-4 flex-1 min-w-0">
+                          <div className="shrink-0 flex h-11 w-11 items-center justify-center rounded-xl bg-brand-blue/8 border border-brand-blue/15 text-brand-blue dark:text-brand-yellow dark:bg-brand-yellow/10 dark:border-brand-yellow/20 group-hover:bg-[#0306AC] group-hover:text-white dark:group-hover:bg-[#E9BD36] dark:group-hover:text-brand-dark group-hover:border-none transition-all duration-300 mt-0.5 shadow-sm">
+                            <DiffIcon className="h-[18px] w-[18px] stroke-[2.5]" />
+                          </div>
+
+                          <div className="flex-1 min-w-0 space-y-1.5">
+                            <span className="font-mono text-[9px] font-black text-brand-blue/60 dark:text-brand-yellow/60 tracking-widest uppercase">
+                              {item.tag || `Differentiator 0${idx + 1}`}
+                            </span>
+                            <h3 className="font-heading font-extrabold text-[1.1rem] text-brand-dark dark:text-white group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-300 leading-snug">
+                              {item.title}
+                            </h3>
+                            <p className="text-[13px] text-brand-zinc-500 dark:text-zinc-400 leading-relaxed font-normal">
+                              {item.desc}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Right Illustration container - dynamic image or SVG fallback */}
+                        <div className="hidden md:block shrink-0 w-[140px] h-[88px] rounded-2xl border border-brand-blue/10 bg-gradient-to-br from-brand-blue/4 to-transparent overflow-hidden group-hover:border-brand-blue/20 group-hover:from-brand-blue/8 transition-all duration-400">
+                          <div className="w-full h-full group-hover:scale-[1.03] transition-transform duration-400 origin-center flex items-center justify-center">
+                            {item.image ? (
+                              <img src={item.image} alt={item.title || ""} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full p-2">
+                                {differentiatorsIllustrations[idx % differentiatorsIllustrations.length]}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+            </div>
+          </div>
+        </section>
       )}
 
       {/* ── 10.5 PRICING PLANS ── */}
       {((service as any).pricing?.enabled === true && service.pricing && Array.isArray(service.pricing.plans) && service.pricing.plans.length > 0) && (
         <section className="relative overflow-hidden py-20 md:py-24 bg-zinc-50/5 dark:bg-[#0c0b18]/5 border-b border-brand-zinc-200 dark:border-white/10">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
-            
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -2059,10 +2058,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               className="text-center mb-14 space-y-4"
             >
               {service.pricing.eyebrow && (
-              <div className="flex justify-center">
-                <span className="eyebrow-pill">{service.pricing.eyebrow}</span>
-              </div>
-            )}
+                <div className="flex justify-center">
+                  <span className="eyebrow-pill">{service.pricing.eyebrow}</span>
+                </div>
+              )}
               <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
                 {service.pricing.titleIntro}{" "}
                 <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
@@ -2095,26 +2094,23 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 return (
                   <SpotlightCard
                     key={idx}
-                    className={`bg-white/45 dark:bg-[#0c0b18]/45 backdrop-blur-xl border transition-all duration-500 flex flex-col justify-between h-full p-6 xs:p-7 sm:p-8 rounded-[28px] group relative overflow-hidden ${
-                      isPopular
+                    className={`bg-white/45 dark:bg-[#0c0b18]/45 backdrop-blur-xl border transition-all duration-500 flex flex-col justify-between h-full p-6 xs:p-7 sm:p-8 rounded-[28px] group relative overflow-hidden ${isPopular
                         ? "border-brand-blue/70 dark:border-brand-yellow/70 shadow-[0_20px_50px_rgba(3,6,172,0.08)] dark:shadow-[0_20px_50px_rgba(233,189,54,0.06)] scale-[1.01] lg:scale-[1.03] z-20"
                         : "border-brand-zinc-200/90 dark:border-white/5 shadow-md hover:border-brand-blue/30 dark:hover:border-brand-yellow/30"
-                    }`}
+                      }`}
                   >
                     {(plan.badgeText || isPopular || isCustom) && (
-                      <div className={`absolute top-0 right-0 font-mono text-[8px] font-black uppercase tracking-widest px-3 py-1.5 rounded-bl-2xl shadow-sm z-20 ${
-                        isCustom
+                      <div className={`absolute top-0 right-0 font-mono text-[8px] font-black uppercase tracking-widest px-3 py-1.5 rounded-bl-2xl shadow-sm z-20 ${isCustom
                           ? "bg-emerald-500 text-white"
                           : "bg-brand-blue dark:bg-brand-yellow text-white dark:text-brand-dark"
-                      }`}>
+                        }`}>
                         {plan.badgeText || (isPopular ? "Most Popular" : isCustom ? "Custom Scoped" : "")}
                       </div>
                     )}
 
                     {/* Dynamic Ambient Glow inside the card */}
-                    <div className={`absolute -bottom-16 -right-16 w-32 h-32 rounded-full blur-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none -z-10 ${
-                      isPopular ? "bg-brand-blue dark:bg-brand-yellow" : "bg-blue-400 dark:bg-amber-400"
-                    }`} />
+                    <div className={`absolute -bottom-16 -right-16 w-32 h-32 rounded-full blur-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none -z-10 ${isPopular ? "bg-brand-blue dark:bg-brand-yellow" : "bg-blue-400 dark:bg-amber-400"
+                      }`} />
 
                     <div className="space-y-6 text-left relative z-10">
                       <div className="space-y-2">
@@ -2155,11 +2151,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                     <div className="pt-6 mt-8 border-t border-brand-zinc-200/80 dark:border-white/5 w-full relative z-10">
                       <Link
                         href={plan.ctaLink || `/contact?service=${service.slug}&plan=${encodeURIComponent(plan.name || "")}`}
-                        className={`w-full py-3.5 px-4 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all duration-300 shadow-sm ${
-                          isPopular
+                        className={`w-full py-3.5 px-4 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all duration-300 shadow-sm ${isPopular
                             ? "bg-brand-blue dark:bg-brand-yellow text-white dark:text-brand-dark hover:shadow-[0_8px_25px_rgba(3,6,172,0.25)] dark:hover:shadow-[0_8px_25px_rgba(233,189,54,0.3)] hover:-translate-y-0.5"
                             : "bg-brand-zinc-100 hover:bg-brand-blue dark:bg-white/5 dark:hover:bg-brand-yellow text-brand-dark dark:text-white hover:text-white dark:hover:text-brand-dark hover:-translate-y-0.5 hover:shadow-md"
-                        }`}
+                          }`}
                       >
                         <span>{plan.ctaText || "Select Plan"}</span>
                         <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" />
@@ -2231,7 +2226,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                   className="snap-start shrink-0 w-[290px] xs:w-[325px] sm:w-[360px] flex flex-col group/rec cursor-pointer no-underline"
                 >
                   <SpotlightCard className="bg-white/45 dark:bg-[#0c0b18]/45 border border-brand-zinc-200/90 dark:border-white/5 p-6 xs:p-7 rounded-[28px] hover:shadow-[0_20px_40px_-15px_rgba(3,6,172,0.06)] dark:hover:shadow-[0_20px_40px_-15px_rgba(233,189,54,0.04)] group-hover/rec:-translate-y-1.5 transition-all duration-500 flex flex-col justify-between h-full min-h-[220px] relative overflow-hidden">
-                    
+
                     <div className="absolute top-0 right-0 w-32 h-32 bg-[radial-gradient(circle_at_center,rgba(3,6,172,0.02),transparent_70%)] dark:bg-[radial-gradient(circle_at_center,rgba(233,189,54,0.015),transparent_70%)] pointer-events-none -z-10" />
 
                     <div className="flex items-center justify-between w-full relative z-10">
@@ -2287,99 +2282,99 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
       {/* ── 14. FAQ SECTION ── */}
       {((service as any).faqSection?.enabled !== false && (service as any).faqs?.enabled !== false) && (
-      <section id="faq">
-        <PageInlineFaqs
-          faqs={(Array.isArray(pageData?.content?.faqs) && pageData.content.faqs.length > 0)
-            ? pageData.content.faqs
-            : (Array.isArray(service.faqs) && service.faqs.length > 0)
-              ? service.faqs
-              : (Array.isArray(dbService?.faq) && dbService.faq.length > 0)
-                ? dbService.faq
-                : (service.faqs || [])}
-          faqSchemaMarkup={pageData?.content?.faqSchemaMarkup || dbService?.faqSchemaMarkup}
-          badge={dbService?.faqBadge || service.faqSection?.sectionTag || "14 // FREQUENTLY ASKED"}
-          titleIntro={dbService?.faqTitleIntro !== undefined ? dbService?.faqTitleIntro : service.faqSection?.titleIntro}
-          titleHighlight={dbService?.faqTitleHighlight || service.faqSection?.titleHighlight || "Frequently Asked Questions"}
-          description={dbService?.faqDescription || service.faqSection?.description || ""}
-          data={pageData?.content || dbService || service}
-        />
-      </section>
+        <section id="faq">
+          <PageInlineFaqs
+            faqs={(Array.isArray(pageData?.content?.faqs) && pageData.content.faqs.length > 0)
+              ? pageData.content.faqs
+              : (Array.isArray(service.faqs) && service.faqs.length > 0)
+                ? service.faqs
+                : (Array.isArray(dbService?.faq) && dbService.faq.length > 0)
+                  ? dbService.faq
+                  : (service.faqs || [])}
+            faqSchemaMarkup={pageData?.content?.faqSchemaMarkup || dbService?.faqSchemaMarkup}
+            badge={dbService?.faqBadge || service.faqSection?.sectionTag || "14 // FREQUENTLY ASKED"}
+            titleIntro={dbService?.faqTitleIntro !== undefined ? dbService?.faqTitleIntro : service.faqSection?.titleIntro}
+            titleHighlight={dbService?.faqTitleHighlight || service.faqSection?.titleHighlight || "Frequently Asked Questions"}
+            description={dbService?.faqDescription || service.faqSection?.description || ""}
+            data={pageData?.content || dbService || service}
+          />
+        </section>
       )}
 
       {/* ── 14. FINAL CTA BANNER ── */}
       {(service as any).finalCta?.enabled !== false && (
-      <section className="my-10 relative overflow-hidden">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="cta-banner-card !shadow-[0_16px_40px_-12px_rgba(3,6,172,0.22)] dark:!shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)]"
-          >
-            <div className="relative z-10 flex flex-col justify-center gap-5 p-5 xs:p-7 sm:p-11 lg:p-14 lg:max-w-[62%] text-left">
-              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-4 py-1.5 text-[10px] font-mono tracking-widest text-[#E9BD36] font-extrabold uppercase w-fit">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E9BD36] opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E9BD36]" />
-                </span>
-                {service.finalCta.eyebrow}
-              </div>
-
-              <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-[46px] font-black leading-[1.25] tracking-tight text-white">
-                {service.finalCta.titleIntro}{" "}
-                <span className="relative inline-block">
-                  <span className="font-cursive text-[#E9BD36] text-3xl sm:text-4xl lg:text-[46px] font-normal pl-1">
-                    {service.finalCta.titleHighlight}
+        <section className="my-10 relative overflow-hidden">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="cta-banner-card !shadow-[0_16px_40px_-12px_rgba(3,6,172,0.22)] dark:!shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)]"
+            >
+              <div className="relative z-10 flex flex-col justify-center gap-5 p-5 xs:p-7 sm:p-11 lg:p-14 lg:max-w-[62%] text-left">
+                <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-4 py-1.5 text-[10px] font-mono tracking-widest text-[#E9BD36] font-extrabold uppercase w-fit">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E9BD36] opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E9BD36]" />
                   </span>
-                  <svg className="absolute left-0 bottom-[-2px] w-full h-3 text-[#E9BD36]" viewBox="0 0 100 10" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
-                    <path d="M 5 6 C 30 9, 70 9, 95 4" />
-                  </svg>
-                </span>
-                {service.finalCta.titleLine2 ? (
-                  <>
-                    <br />
-                    <span>{service.finalCta.titleLine2}</span>
-                  </>
-                ) : null}
-              </h2>
+                  {service.finalCta.eyebrow}
+                </div>
 
-              {service.finalCta.description && (
-                <p className="text-xs sm:text-sm font-sans text-white/90 leading-relaxed max-w-lg font-normal">
-                  {service.finalCta.description}
-                </p>
-              )}
+                <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-[46px] font-black leading-[1.25] tracking-tight text-white">
+                  {service.finalCta.titleIntro}{" "}
+                  <span className="relative inline-block">
+                    <span className="font-cursive text-[#E9BD36] text-3xl sm:text-4xl lg:text-[46px] font-normal pl-1">
+                      {service.finalCta.titleHighlight}
+                    </span>
+                    <svg className="absolute left-0 bottom-[-2px] w-full h-3 text-[#E9BD36]" viewBox="0 0 100 10" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+                      <path d="M 5 6 C 30 9, 70 9, 95 4" />
+                    </svg>
+                  </span>
+                  {service.finalCta.titleLine2 ? (
+                    <>
+                      <br />
+                      <span>{service.finalCta.titleLine2}</span>
+                    </>
+                  ) : null}
+                </h2>
 
-              <div className="flex flex-wrap items-center gap-4 pt-2">
-                {service.finalCta.primaryCtaText && (
-                  <a href={service.finalCta.primaryCtaLink || "#contact-form"} className="btn-primary-cta">
-                    <span>{service.finalCta.primaryCtaText}</span>
-                    <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
-                  </a>
+                {service.finalCta.description && (
+                  <p className="text-xs sm:text-sm font-sans text-white/90 leading-relaxed max-w-lg font-normal">
+                    {service.finalCta.description}
+                  </p>
                 )}
-                {service.finalCta.secondaryCtaText && (
-                  <a href={service.finalCta.secondaryCtaLink || "/contact"} className="btn-secondary-cta">
-                    <span>{service.finalCta.secondaryCtaText}</span>
-                    <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
-                  </a>
-                )}
-              </div>
-            </div>
 
-            <div className="hidden lg:flex flex-1 items-end justify-center relative pr-8">
-              <div className="absolute bottom-0 w-[320px] h-[320px] bg-gradient-to-t from-[#020485] to-[#0408d9] rounded-full opacity-90 border border-white/20 shadow-2xl" />
-              <div className="relative z-10 w-[280px] h-[370px] self-end drop-shadow-2xl overflow-hidden rounded-t-[32px] border-t border-l border-r border-white/25 shadow-2xl">
-                <img
-                  src={service.finalCta.founderImage || "/founder_portrait_nobg.png"}
-                  alt="Founder Strategy Session"
-                  className="w-full h-full object-cover object-top filter contrast-[1.05]"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#010356]/80 via-transparent to-transparent pointer-events-none" />
+                <div className="flex flex-wrap items-center gap-4 pt-2">
+                  {service.finalCta.primaryCtaText && (
+                    <a href={service.finalCta.primaryCtaLink || "#contact-form"} className="btn-primary-cta">
+                      <span>{service.finalCta.primaryCtaText}</span>
+                      <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
+                    </a>
+                  )}
+                  {service.finalCta.secondaryCtaText && (
+                    <a href={service.finalCta.secondaryCtaLink || "/contact"} className="btn-secondary-cta">
+                      <span>{service.finalCta.secondaryCtaText}</span>
+                      <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
+                    </a>
+                  )}
+                </div>
               </div>
-              <div className="absolute top-16 right-28 h-3.5 w-3.5 rounded-full bg-[#E9BD36] shadow-[0_0_15px_#E9BD36] z-20" />
-            </div>
-          </motion.div>
-        </div>
-      </section>
+
+              <div className="hidden lg:flex flex-1 items-end justify-center relative pr-8">
+                <div className="absolute bottom-0 w-[320px] h-[320px] bg-gradient-to-t from-[#020485] to-[#0408d9] rounded-full opacity-90 border border-white/20 shadow-2xl" />
+                <div className="relative z-10 w-[280px] h-[370px] self-end drop-shadow-2xl overflow-hidden rounded-t-[32px] border-t border-l border-r border-white/25 shadow-2xl">
+                  <img
+                    src={service.finalCta.founderImage || "/founder_portrait_nobg.png"}
+                    alt="Founder Strategy Session"
+                    className="w-full h-full object-cover object-top filter contrast-[1.05]"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#010356]/80 via-transparent to-transparent pointer-events-none" />
+                </div>
+                <div className="absolute top-16 right-28 h-3.5 w-3.5 rounded-full bg-[#E9BD36] shadow-[0_0_15px_#E9BD36] z-20" />
+              </div>
+            </motion.div>
+          </div>
+        </section>
       )}
 
       <style dangerouslySetInnerHTML={{

@@ -32,10 +32,14 @@ export default function HomeEditor() {
     setSaving(true);
     setMessage("");
     try {
+      const payload = {
+        ...data,
+        section: "home"
+      };
       const res = await fetch("/api/content", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
       if (res.ok) {
         setMessage("Homepage content saved successfully!");

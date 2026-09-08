@@ -78,21 +78,19 @@ export default function ProjectsAdminPage() {
 
   const saveToDb = async (newProjects: any[]) => {
     setSaving(true);
-    const updatedData = { 
-      ...(data || {}), 
-      portfolio: { 
-        ...(data?.portfolio || {}), 
-        projects: newProjects 
-      } 
+    const updatedPortfolio = { 
+      ...(data?.portfolio || {}), 
+      projects: newProjects 
     };
+    const payload = { section: "portfolio", portfolio: updatedPortfolio };
     try {
       const res = await fetch("/api/content", { 
         method: "PUT", 
         headers: { "Content-Type": "application/json" }, 
-        body: JSON.stringify(updatedData) 
+        body: JSON.stringify(payload) 
       });
       if (res.ok) {
-        setData(updatedData);
+        setData((prev: any) => ({ ...prev, portfolio: updatedPortfolio }));
         setProjects(newProjects);
         setToast({ type: "ok", msg: "Projects saved successfully." });
         setTimeout(() => setToast(null), 3000);
