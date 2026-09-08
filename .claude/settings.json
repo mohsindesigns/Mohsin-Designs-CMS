@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -m 60 -o api_content.json -w \"%{http_code} %{time_total}s\" http://localhost:3000/api/content)",
+      "Bash(wc -c)",
+      "Bash(node -e ' *)",
+      "Bash(powershell -NoProfile -Command 'Get-CimInstance Win32_Process -Filter '\\\\''ProcessId=7204'\\\\'' | Select-Object ProcessId,ParentProcessId,CreationDate,CommandLine | Format-List; $p=\\(Get-CimInstance Win32_Process -Filter '\\\\''ProcessId=7204'\\\\''\\).ParentProcessId; Get-CimInstance Win32_Process -Filter \"ProcessId=$p\" | Select-Object ProcessId,Name,CommandLine | Format-List')",
+      "Bash(bash \"C:/Users/dell/AppData/Local/Temp/claude/c--Users-dell-Desktop-Mohsin-Designs-CMS/490c311b-5b58-4786-bd48-be1864891462/scratchpad/render_check.sh\")"
+    ]
+  }
+}
