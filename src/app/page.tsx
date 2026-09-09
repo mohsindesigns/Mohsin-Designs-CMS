@@ -12,6 +12,12 @@ import { BASE_URL } from "@/lib/constants";
 import { resolveRobotsMetadata } from "@/lib/seo";
 import { getCachedSiteContent } from "@/lib/content";
 
+function getAbsoluteUrl(path: string | undefined) {
+  if (!path) return undefined;
+  if (path.startsWith('http')) return path;
+  return `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const globalData = await getCachedSiteContent();
   const settings = globalData?.settings;
@@ -20,88 +26,101 @@ export async function generateMetadata(): Promise<Metadata> {
 
   const pageUrl = BASE_URL;
 
-  let metadata: Metadata = {
-    metadataBase: new URL(BASE_URL),
-    alternates: {
-      canonical: pageUrl,
-    },
-    openGraph: {
-      url: pageUrl,
-      siteName: "Mohsin Designs",
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      site: "@MohsinDesigns",
-      creator: "@MohsinDesigns",
-    }
-  };
+  let targetSeo: any = {};
+  let fallbackTitle = settings?.siteTitle || "Mohsin Designs";
+  let fallbackDesc = "High-performance web architecture, modern software engineering, and digital growth systems.";
 
   if (homepageId) {
-    // Check if it's a page
-    const page = await Page.findById(homepageId).lean();
-    if (page) {
-      const seo = page.seo || {};
-      return {
-        ...metadata,
-        title: { absolute: seo.metaTitle || page.title },
-        description: seo.metaDescription,
-        openGraph: {
-          ...metadata.openGraph,
-          title: seo.ogTitle || seo.metaTitle || page.title,
-          description: seo.ogDescription || seo.metaDescription,
-          images: seo.featuredImage ? [{ url: seo.featuredImage }] : [],
-        },
-        twitter: {
-          ...metadata.twitter,
-          title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || page.title,
-          description: seo.twitterDescription || seo.ogDescription || seo.metaDescription,
-          images: [seo.featuredImage || seo.twitterImage || seo.ogImage].filter(Boolean) as string[],
-        },
-        robots: resolveRobotsMetadata(seo, isGlobalNoIndex)
-      };
+    // 1. Check if assigned homepage is a Page
+    const isObjectId = /^[0-9a-fA-F]{24}$/.test(homepageId);
+    if (isObjectId) {
+      const page = await Page.findOne({
+        _id: homepageId,
+        status: 'published',
+        isTrashed: { $ne: true }
+      }).lean() as any;
+
+      if (page) {
+        targetSeo = page.seo || {};
+        fallbackTitle = page.title || fallbackTitle;
+        fallbackDesc = page.seo?.metaDescription || fallbackDesc;
+      }
     }
-    // Check if it's a service
-    const service = globalData?.services?.services?.find((s: any) => s._id === homepageId || s.slug === homepageId);
-    if (service) {
-      const seo = service.seo || {};
-      return {
-        ...metadata,
-        title: { absolute: seo.metaTitle || service.title },
-        description: seo.metaDescription || service.description,
-        openGraph: {
-          ...metadata.openGraph,
-          title: seo.ogTitle || seo.metaTitle || service.title,
-          description: seo.ogDescription || seo.metaDescription || service.description,
-          images: seo.featuredImage ? [{ url: seo.featuredImage }] : [],
-        },
-        twitter: {
-          ...metadata.twitter,
-          title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || service.title,
-          description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || service.description,
-          images: [seo.featuredImage || seo.twitterImage || seo.ogImage].filter(Boolean) as string[],
-        },
-        robots: resolveRobotsMetadata(seo, isGlobalNoIndex)
-      };
+
+    // 2. Check if assigned homepage is a Service
+    if (!targetSeo.metaTitle) {
+      const service = globalData?.services?.services?.find((s: any) =>
+        (s._id === homepageId || s.slug === homepageId) && s.status !== 'draft' && !s.isTrashed
+      );
+      if (service) {
+        targetSeo = service.seo || {};
+        fallbackTitle = service.title || fallbackTitle;
+        fallbackDesc = service.description || fallbackDesc;
+      }
     }
   }
 
-  // Default to Home data
-  const homeData = globalData?.home;
-  const seo = homeData?.seo || {};
+  // 3. If no homepageId or not found, check the default Home Page in Page collection
+  if (!targetSeo.metaTitle) {
+    const defaultHomePageDoc = await Page.findOne({
+      $or: [{ slug: 'home' }, { template: 'home' }],
+      status: 'published',
+      isTrashed: { $ne: true }
+    }).lean() as any;
+
+    if (defaultHomePageDoc?.seo) {
+      targetSeo = defaultHomePageDoc.seo;
+      fallbackTitle = defaultHomePageDoc.title || fallbackTitle;
+      fallbackDesc = defaultHomePageDoc.seo.metaDescription || fallbackDesc;
+    }
+  }
+
+  // 4. Fallback to globalData.home if still not set
+  if (!targetSeo.metaTitle && globalData?.home) {
+    const homeData = globalData.home;
+    targetSeo = homeData.seo || {};
+    fallbackTitle = homeData.hero?.headline || fallbackTitle;
+    fallbackDesc = homeData.hero?.subheadline || fallbackDesc;
+  }
+
+  const finalTitle = targetSeo.metaTitle || fallbackTitle;
+  const finalDesc = targetSeo.metaDescription || fallbackDesc;
+  const rawImage = targetSeo.featuredImage || targetSeo.ogImage || targetSeo.twitterImage;
+  const finalImage = getAbsoluteUrl(rawImage) || `${BASE_URL}/portfolio_hero_bg.png`;
+
   return {
-    ...metadata,
+    metadataBase: new URL(BASE_URL),
     title: {
-      absolute: seo.metaTitle || homeData?.hero?.headline || settings?.siteTitle
+      absolute: finalTitle
     },
-    description: seo.metaDescription || homeData?.hero?.subheadline,
+    description: finalDesc,
+    alternates: {
+      canonical: targetSeo.canonicalUrl || pageUrl,
+    },
     openGraph: {
-      ...metadata.openGraph,
-      title: seo.ogTitle || seo.metaTitle || homeData?.hero?.headline || settings?.siteTitle,
-      description: seo.ogDescription || seo.metaDescription || homeData?.hero?.subheadline,
-      images: [seo.featuredImage || `${BASE_URL}/portfolio_hero_bg.png`].filter(Boolean) as string[],
+      title: targetSeo.ogTitle || finalTitle,
+      description: targetSeo.ogDescription || finalDesc,
+      url: pageUrl,
+      siteName: settings?.siteTitle || "Mohsin Designs",
+      type: "website",
+      images: [
+        {
+          url: finalImage,
+          width: 1200,
+          height: 630,
+          alt: finalTitle,
+        }
+      ],
     },
-    robots: resolveRobotsMetadata(seo, isGlobalNoIndex)
+    twitter: {
+      card: "summary_large_image",
+      title: targetSeo.twitterTitle || targetSeo.ogTitle || finalTitle,
+      description: targetSeo.twitterDescription || targetSeo.ogDescription || finalDesc,
+      images: [finalImage],
+      site: "@MohsinDesigns",
+      creator: "@MohsinDesigns",
+    },
+    robots: resolveRobotsMetadata(targetSeo, isGlobalNoIndex)
   };
 }
 
