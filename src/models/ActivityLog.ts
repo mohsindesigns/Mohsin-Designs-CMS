@@ -23,4 +23,8 @@ ActivityLogSchema.pre('save', async function() {
   }
 });
 
+ActivityLogSchema.index({ timestamp: -1 });
+ActivityLogSchema.index({ action: 1, timestamp: -1 });
+ActivityLogSchema.index({ user: 1, timestamp: -1 });
+
 export default mongoose.models.ActivityLog || mongoose.model('ActivityLog', ActivityLogSchema);

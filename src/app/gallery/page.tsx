@@ -3,8 +3,7 @@ export const revalidate = 60; // Cache for 1 minute
 import { Metadata } from "next";
 import connectToDatabase from "@/lib/mongodb";
 import SiteContent from "@/models/Content";
-import Script from "next/script";
-import { generateSchema } from "@/lib/schema-generator";
+import CustomSchemaMarkup from "@/components/CustomSchemaMarkup";
 import { BASE_URL } from "@/lib/constants";
 import { resolveRobotsMetadata } from "@/lib/seo";
 
@@ -31,11 +30,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const seo = page?.seo || galleryData?.seo || {};
   const pageUrl = `${BASE_URL}/gallery`;
 
-  const metaTitle = seo.metaTitle || 
-                    galleryData?.hero?.titlePrefix ? [galleryData.hero.titlePrefix, galleryData.hero.titleHighlight].filter(Boolean).join(" ") :
+  const heroTitle = (galleryData?.hero?.titlePrefix ? [galleryData.hero.titlePrefix, galleryData.hero.titleHighlight].filter(Boolean).join(" ") : null) ||
                     galleryData?.header?.title || 
-                    [galleryData?.header?.titlePrefix, galleryData?.header?.titleHighlight, galleryData?.header?.titleSuffix].filter(Boolean).join(" ") || 
-                    "Creative Work. Real Results. | Our Portfolio";
+                    [galleryData?.header?.titlePrefix, galleryData?.header?.titleHighlight, galleryData?.header?.titleSuffix].filter(Boolean).join(" ");
+
+  const metaTitle = seo.metaTitle || heroTitle || "Creative Work. Real Results. | Our Portfolio";
 
   const metaDescription = seo.metaDescription || galleryData?.hero?.subtitle || galleryData?.header?.description?.replace(/<[^>]*>/g, '') || "";
 
@@ -97,22 +96,13 @@ export default async function GalleryPage() {
                       portfolioData?.section?.description || 
                       "";
 
-  const schema = generateSchema({
-    title,
-    description,
-    slug: "/gallery",
-    type: "CollectionPage"
-  });
+  const customSchema = page?.seo?.schemaData || page?.content?.schemaMarkup || galleryData?.seo?.schemaData || galleryData?.schemaMarkup;
 
   const { TemplateWrapper } = await import('@/components/templates/TemplateRegistry');
 
   return (
     <>
-      <Script
-        id="json-ld-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-      />
+      <CustomSchemaMarkup schema={customSchema} />
       <TemplateWrapper
         templateName="gallery"
         pageData={{

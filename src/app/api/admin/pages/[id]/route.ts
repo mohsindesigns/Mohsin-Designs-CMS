@@ -15,7 +15,7 @@ export async function GET(
   try {
     const { id } = await params;
     await connectToDatabase();
-    const page = await Page.findById(id);
+    const page = await Page.findById(id).lean();
     if (!page) return NextResponse.json({ error: 'Page not found' }, { status: 404 });
     return NextResponse.json(page);
   } catch (error) {
@@ -52,19 +52,15 @@ export async function PATCH(
       isTrashed: oldPage.isTrashed
     };
 
-    // ATOMIC PAGE SNAPSHOT:
-    // Create an atomic backup of this page before applying any updates
-    try {
-      const { createPageBackup } = await import('@/lib/backup');
-      await createPageBackup({
+    // ATOMIC PAGE SNAPSHOT (Async / Non-blocking):
+    import('@/lib/backup').then(({ createPageBackup }) => {
+      createPageBackup({
         pageId: id,
         user: (session as any)?.username || 'admin',
         label: `Pre-update backup for page: ${oldPage.title}`,
         pageDoc: oldPage
-      });
-    } catch (pBkErr) {
-      console.warn('[Backup Engine] Page backup failed:', pBkErr);
-    }
+      }).catch((pBkErr) => console.warn('[Backup Engine] Page backup failed:', pBkErr));
+    }).catch((pBkErr) => console.warn('[Backup Engine] Backup import failed:', pBkErr));
 
     const updateData = { ...body };
     if (body.isTrashed !== undefined) {

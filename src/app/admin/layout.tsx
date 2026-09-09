@@ -48,6 +48,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       return;
     }
 
+    // If user session is already loaded in React state, avoid re-fetching on sub-route transitions
+    if (user) {
+      setLoading(false);
+      return;
+    }
+
     let isMounted = true;
 
     fetch("/api/admin/me", { credentials: "include", cache: "no-store" })

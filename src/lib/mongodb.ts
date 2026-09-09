@@ -29,8 +29,11 @@ async function connectToDatabase() {
     const opts = {
       bufferCommands: true,
       dbName: process.env.MONGODB_DB || MONGODB_DB,
-      serverSelectionTimeoutMS: 15000,
-      connectTimeoutMS: 15000,
+      maxPoolSize: 10,
+      minPoolSize: 2,
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 10000,
+      socketTimeoutMS: 45000,
     };
 
     cached.promise = mongoose.connect(uri, opts).then((mongooseInstance) => {

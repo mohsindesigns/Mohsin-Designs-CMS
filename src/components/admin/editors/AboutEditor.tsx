@@ -18,6 +18,7 @@ const QuillEditor = dynamic(() => import("@/components/admin/QuillEditor"), {
 });
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
+import SchemaEditor from "@/components/admin/SchemaEditor";
 
 export default function AboutEditor({ pageId, data, setData }: { pageId: string, data: any, setData: (d: any) => void }) {
    const [activeTab, setActiveTab] = useState("hero");
@@ -66,7 +67,8 @@ export default function AboutEditor({ pageId, data, setData }: { pageId: string,
       { id: "capabilities", label: "5. Capabilities & Service Selection" },
       { id: "stats", label: "6. Impact Stats & Trust Badges" },
       { id: "blog", label: "7. Featured Blog Posts" },
-      { id: "ctaBanner", label: "8. Call to Action Banner (Bottom)" }
+      { id: "ctaBanner", label: "8. Call to Action Banner (Bottom)" },
+      { id: "schema", label: "9. Schema Markup" }
    ];
 
    return (
@@ -538,6 +540,29 @@ export default function AboutEditor({ pageId, data, setData }: { pageId: string,
                            onChange={(ids) => updateSection("blogSection", "selectedPosts", ids)}
                         />
                      </div>
+                  </div>
+               )}
+
+               {activeTab === "schema" && (
+                  <div className="space-y-6">
+                     <SchemaEditor
+                        value={data.schemaMarkup || data.seo?.schemaData || ""}
+                        onChange={(val) => {
+                           updateSection("schemaMarkup", null, val);
+                           setData((prev: any) => ({
+                              ...(prev || {}),
+                              schemaMarkup: val,
+                              seo: {
+                                 ...(prev?.seo || {}),
+                                 schemaData: val
+                              }
+                           }));
+                        }}
+                        pageTitle="About Page"
+                        pageSlug="about"
+                        title="About Page Schema Markup (JSON-LD)"
+                        description="Configure custom Schema.org structured data for this page."
+                     />
                   </div>
                )}
             </motion.div>

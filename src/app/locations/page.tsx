@@ -3,8 +3,7 @@ export const revalidate = 60; // Cache for 1 minute
 import { Metadata } from "next";
 import connectToDatabase from "@/lib/mongodb";
 import SiteContent from "@/models/Content";
-import Script from "next/script";
-import { generateSchema } from "@/lib/schema-generator";
+import CustomSchemaMarkup from "@/components/CustomSchemaMarkup";
 import { BASE_URL } from "@/lib/constants";
 import { resolveRobotsMetadata } from "@/lib/seo";
 
@@ -86,22 +85,13 @@ export default async function LocationsPage() {
                       locationData?.hero?.description || 
                       "Explore our international locations and regional service areas.";
 
-  const schema = generateSchema({
-    title,
-    description,
-    slug: "/locations",
-    type: "CollectionPage"
-  });
+  const customSchema = page?.seo?.schemaData || page?.content?.schemaMarkup || locationData?.seo?.schemaData || locationData?.schemaMarkup;
 
   const { TemplateWrapper } = await import('@/components/templates/TemplateRegistry');
 
   return (
     <>
-      <Script
-        id="json-ld-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-      />
+      <CustomSchemaMarkup schema={customSchema} />
       <TemplateWrapper
         templateName="location"
         pageData={{

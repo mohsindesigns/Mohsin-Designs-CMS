@@ -42,7 +42,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
     });
 
-    return NextResponse.json(user);
+    const userResponse = user.toObject();
+    delete userResponse.password;
+
+    return NextResponse.json(userResponse);
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

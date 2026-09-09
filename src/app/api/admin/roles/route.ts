@@ -5,10 +5,14 @@ import { getAuthSession } from '@/lib/auth';
 import { hasPermission } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  if (!(await hasPermission(req, 'users', 'read'))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+  }
+
   try {
     await connectToDatabase();
-    const roles = await Role.find().sort({ name: 1 });
+    const roles = await Role.find().sort({ name: 1 }).lean();
     return NextResponse.json(roles);
   } catch (err) {
     return NextResponse.json({ error: 'Failed to fetch roles' }, { status: 500 });

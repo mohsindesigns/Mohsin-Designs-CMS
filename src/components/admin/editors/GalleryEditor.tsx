@@ -13,6 +13,7 @@ import IconSelector from "@/components/admin/IconSelector";
 import ImageField from "@/components/admin/ImageField";
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
+import SchemaEditor from "@/components/admin/SchemaEditor";
 
 const DEFAULT_GALLERY_DATA = {
   hero: {
@@ -241,7 +242,8 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
     { id: "hero", label: "Gallery Hero" },
     { id: "projects", label: "Project Showcase" },
     { id: "process", label: "Creative Process" },
-    { id: "cta", label: "Bottom CTA Banner" }
+    { id: "cta", label: "Bottom CTA Banner" },
+    { id: "schema", label: "Schema Markup" }
   ];
 
   return (
@@ -911,6 +913,25 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
                   />
                 </div>
               </div>
+            </div>
+          )}
+
+          {activeTab === "schema" && (
+            <div className="space-y-4">
+              <SchemaEditor
+                value={data.schemaMarkup || data.seo?.schemaData || ""}
+                onChange={(val) => {
+                  setData((prev: any) => ({
+                    ...(prev || {}),
+                    schemaMarkup: val,
+                    seo: {
+                      ...(prev?.seo || {}),
+                      schemaData: val
+                    }
+                  }));
+                }}
+                pageTitle="Gallery Page"
+              />
             </div>
           )}
 

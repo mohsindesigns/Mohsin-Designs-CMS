@@ -24,6 +24,7 @@ const QuillEditor = dynamic(() => import("@/components/admin/QuillEditor"), {
 });
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
+import SchemaEditor from "@/components/admin/SchemaEditor";
 
 export default function HomeEditor({ pageId, data, setData, aboutClean = false }: { pageId: string, data: any, setData: (d: any) => void, aboutClean?: boolean }) {
    const [activeTab, setActiveTab] = useState("hero");
@@ -106,6 +107,7 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
       { id: "serviceArea", label: "Global Coverage" },
       { id: "blog", label: "Blog" },
       { id: "quote", label: "Contact Form" },
+      { id: "schema", label: "Schema Markup" },
    ];
 
    return (
@@ -2238,6 +2240,30 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                             />
                          </div>
                       </div>
+                   </div>
+                 )}
+
+                {/* SCHEMA MARKUP SECTION */}
+                {activeTab === "schema" && (
+                   <div className="space-y-6">
+                      <SchemaEditor
+                         value={data.schemaMarkup || data.seo?.schemaData || ""}
+                         onChange={(val) => {
+                            updateSection(null, "schemaMarkup", val);
+                            setData((prev: any) => ({
+                               ...(prev || {}),
+                               schemaMarkup: val,
+                               seo: {
+                                  ...(prev?.seo || {}),
+                                  schemaData: val
+                               }
+                            }));
+                         }}
+                         pageTitle="Home Page"
+                         pageSlug="home"
+                         title="Home Page Schema Markup (JSON-LD)"
+                         description="Configure custom Schema.org structured data for your homepage. You can paste custom Organization, LocalBusiness, WebSite, or Service JSON-LD schema."
+                      />
                    </div>
                 )}
             </motion.div>

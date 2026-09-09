@@ -3,6 +3,7 @@ import connectToDatabase from '@/lib/mongodb';
 import Redirect from '@/models/Redirect';
 import { hasPermission, getSessionUser } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
+import { invalidateRedirectCache } from '@/app/api/redirects/match/route';
 
 // Helper to normalize path for loop checking
 function normalizePathForLoopCheck(urlStr: string) {
@@ -164,6 +165,7 @@ export async function POST(req: NextRequest) {
       ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
     });
 
+    invalidateRedirectCache();
     return NextResponse.json(newRedirect);
   } catch (error: any) {
     console.error('Redirect CRUD create error:', error);
@@ -229,6 +231,7 @@ export async function PUT(req: NextRequest) {
       ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
     });
 
+    invalidateRedirectCache();
     return NextResponse.json(existingRedirect);
   } catch (error: any) {
     console.error('Redirect CRUD update error:', error);
@@ -260,6 +263,7 @@ export async function DELETE(req: NextRequest) {
       ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
     });
 
+    invalidateRedirectCache();
     return NextResponse.json({ success: true, count: deleted.deletedCount });
   } catch (error: any) {
     console.error('Redirect CRUD delete error:', error);

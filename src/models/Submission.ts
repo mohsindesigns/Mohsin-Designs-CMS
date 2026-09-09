@@ -28,6 +28,9 @@ const SubmissionSchema = new Schema<ISubmission>(
   { timestamps: true }
 );
 
+SubmissionSchema.index({ createdAt: -1 });
+SubmissionSchema.index({ type: 1, createdAt: -1 });
+
 // Delete the model if it exists to ensure schema updates are applied in development
 if (mongoose.models.Submission) {
   delete mongoose.models.Submission;

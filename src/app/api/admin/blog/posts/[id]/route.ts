@@ -15,7 +15,7 @@ export async function GET(
   try {
     const { id } = await params;
     await connectToDatabase();
-    const post = await Post.findById(id).populate('categories tags');
+    const post = await Post.findById(id).populate('categories tags').lean();
     if (!post) return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     return NextResponse.json(post);
   } catch (error: any) {

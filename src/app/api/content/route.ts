@@ -141,19 +141,15 @@ export async function PUT(req: NextRequest) {
       finalData.globalServices = existingServicesList;
     }
 
-    // COMPLETE ATOMIC DATABASE SNAPSHOT (PRE-UPDATE):
-    // Snapshots the complete existing database state before mutation
-    try {
-      const { createCompleteDbBackup } = await import('@/lib/backup');
-      await createCompleteDbBackup({
+    // COMPLETE ATOMIC DATABASE SNAPSHOT (Async / Non-blocking):
+    import('@/lib/backup').then(({ createCompleteDbBackup }) => {
+      createCompleteDbBackup({
         user: (session as any)?.username || 'admin',
-        label: `Pre-update complete snapshot (${sanitizedBody.section || 'complete_data'})`,
+        label: `Snapshot before update (${sanitizedBody.section || 'complete_data'})`,
         section: sanitizedBody.section || 'complete_data',
         data: existingData
-      });
-    } catch (bkErr) {
-      console.warn('[Backup Engine] Pre-update complete DB snapshot failed:', bkErr);
-    }
+      }).catch((bkErr) => console.warn('[Backup Engine] Complete DB snapshot failed:', bkErr));
+    }).catch((bkErr) => console.warn('[Backup Engine] Backup import failed:', bkErr));
 
     const result = await SiteContent.updateOne(
       { key: 'complete_data' },
@@ -166,44 +162,24 @@ export async function PUT(req: NextRequest) {
       { upsert: true }
     );
 
-    // COMPLETE ATOMIC DATABASE SNAPSHOT (POST-UPDATE):
-    // Snapshots the newly active complete database state
-    try {
-      const { createCompleteDbBackup } = await import('@/lib/backup');
-      await createCompleteDbBackup({
-        user: (session as any)?.username || 'admin',
-        label: `Post-update complete snapshot (${sanitizedBody.section || 'complete_data'})`,
-        section: sanitizedBody.section || 'complete_data',
-        data: finalData
-      });
-    } catch (postBkErr) {
-      console.warn('[Backup Engine] Post-update complete DB snapshot failed:', postBkErr);
-    }
-
     // Sync portfolio to Home Page document in MongoDB so it never gets overridden by stale page data
     if (sanitizedBody?.portfolio) {
-      try {
-        const Page = (await import('@/models/Page')).default;
-        await Page.updateMany(
+      import('@/models/Page').then(({ default: PageModel }) => {
+        PageModel.updateMany(
           { $or: [{ slug: 'home' }, { template: 'home' }, { slug: '/' }] },
           { $set: { "content.portfolio": sanitizedBody.portfolio } }
-        );
-      } catch (syncErr) {
-        console.warn('Could not sync portfolio to Home Page doc:', syncErr);
-      }
+        ).catch((syncErr) => console.warn('Could not sync portfolio to Home Page doc:', syncErr));
+      }).catch(() => {});
     }
 
     // Sync galleryPage to Gallery Page document in MongoDB
     if (sanitizedBody?.galleryPage) {
-      try {
-        const Page = (await import('@/models/Page')).default;
-        await Page.updateMany(
+      import('@/models/Page').then(({ default: PageModel }) => {
+        PageModel.updateMany(
           { $or: [{ slug: 'gallery' }, { template: 'gallery' }] },
           { $set: { "content.galleryPage": sanitizedBody.galleryPage } }
-        );
-      } catch (syncErr) {
-        console.warn('Could not sync galleryPage to Gallery Page doc:', syncErr);
-      }
+        ).catch((syncErr) => console.warn('Could not sync galleryPage to Gallery Page doc:', syncErr));
+      }).catch(() => {});
     }
 
     await recordActivity({
@@ -219,20 +195,13 @@ export async function PUT(req: NextRequest) {
       ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
     });
 
-    const { revalidatePath } = await import('next/cache');
-    revalidatePath('/', 'layout');
-    revalidatePath('/');
-    revalidatePath('/services');
-    revalidatePath('/blogs');
-    revalidatePath('/blog');
-    revalidatePath('/locations');
-    revalidatePath('/gallery');
-    revalidatePath('/privacy');
-    revalidatePath('/terms');
-    revalidatePath('/services/[slug]', 'page');
-    revalidatePath('/blogs/[slug]', 'page');
-    revalidatePath('/blog/[slug]', 'page');
-    revalidatePath('/[...slug]', 'page');
+    try {
+      const { revalidatePath } = await import('next/cache');
+      revalidatePath('/', 'layout');
+      revalidatePath('/');
+    } catch (revalErr) {
+      console.warn('Revalidation warning:', revalErr);
+    }
 
     return NextResponse.json({ success: true, result });
   } catch (error: any) {

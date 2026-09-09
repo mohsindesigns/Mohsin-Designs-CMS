@@ -15,6 +15,7 @@ const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor")
 });
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
+import SchemaEditor from "@/components/admin/SchemaEditor";
 
 export default function CareersEditor({ pageId, data, setData }: { pageId: string, data: any, setData: (d: any) => void }) {
   const [activeTab, setActiveTab] = useState("header");
@@ -64,6 +65,7 @@ export default function CareersEditor({ pageId, data, setData }: { pageId: strin
     { id: "header", label: "Recruitment Intro", icon: Type, title: "Careers Page Introduction" },
     { id: "roles", label: "Position Catalog", icon: Briefcase, title: "Available Career Opportunities" },
     { id: "form", label: "Submission Flow", icon: Send, title: "Application Form & Feedback" },
+    { id: "schema", label: "Schema Markup", icon: Briefcase, title: "Careers Schema Markup" },
   ];
 
   const activeTabTitle = tabs.find(t => t.id === activeTab)?.title;
@@ -244,6 +246,25 @@ export default function CareersEditor({ pageId, data, setData }: { pageId: strin
                        ))}
                     </div>
                  </div>
+              </div>
+            )}
+
+            {activeTab === "schema" && (
+              <div className="space-y-4">
+                <SchemaEditor
+                  value={data.schemaMarkup || data.seo?.schemaData || ""}
+                  onChange={(val) => {
+                    setData({
+                      ...data,
+                      schemaMarkup: val,
+                      seo: {
+                        ...(data.seo || {}),
+                        schemaData: val
+                      }
+                    });
+                  }}
+                  pageTitle="Careers"
+                />
               </div>
             )}
 

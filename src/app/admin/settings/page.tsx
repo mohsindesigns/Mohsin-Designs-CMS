@@ -221,24 +221,23 @@ export default function SettingsEditor() {
   };
 
   useEffect(() => {
-    fetch("/api/content").then((res) => res.json()).then((json) => {
-        const d = { ...json };
-        if (!d.settings) d.settings = { siteTitle: "Mohsin Designs", siteTemplate: "%s | Mohsin Designs", favicon: "/portfolio_hero_bg.png", globalNoIndex: false };
-        if (!d.navbar) d.navbar = { companyLinks: [], ctaText: "Book Now", ctaLink: "/contact-us", logo: "/portfolio_hero_bg.png" };
-        setData(d);
-      });
     Promise.all([
-      fetch("/api/admin/pages").then(res => res.json()),
-      fetch("/api/content").then(res => res.json())
-    ]).then(([pagesJson, contentJson]) => {
+      fetch("/api/content").then(res => res.json()),
+      fetch("/api/admin/pages").then(res => res.json())
+    ]).then(([contentJson, pagesJson]) => {
+      const d = { ...(contentJson || {}) };
+      if (!d.settings) d.settings = { siteTitle: "Mohsin Designs", siteTemplate: "%s | Mohsin Designs", favicon: "/portfolio_hero_bg.png", globalNoIndex: false };
+      if (!d.navbar) d.navbar = { companyLinks: [], ctaText: "Book Now", ctaLink: "/contact-us", logo: "/portfolio_hero_bg.png" };
+      setData(d);
+
       const pageList = (pagesJson || [])
         .filter((p: any) => p.status === 'published')
         .map((p: any) => ({ ...p, type: 'page' }));
-      const serviceList = (contentJson.services?.services || contentJson.services || [])
+      const serviceList = (contentJson?.services?.services || contentJson?.services || [])
         .filter((s: any) => s.status === 'published' || s.status === undefined)
         .map((s: any) => ({ ...s, _id: s._id || s.slug, type: 'service', title: s.title, slug: `services/${s.slug}` }));
       setPages([...pageList, ...serviceList]);
-    });
+    }).catch(err => console.error("Settings load error:", err));
   }, []);
 
   useEffect(() => {

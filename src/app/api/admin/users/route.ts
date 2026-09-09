@@ -64,7 +64,10 @@ export async function POST(req: NextRequest) {
       ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
     });
 
-    return NextResponse.json(newUser);
+    const userResponse = newUser.toObject();
+    delete userResponse.password;
+
+    return NextResponse.json(userResponse);
   } catch (err: any) {
     console.error("User creation error:", err);
     return NextResponse.json({ error: err.message }, { status: 500 });

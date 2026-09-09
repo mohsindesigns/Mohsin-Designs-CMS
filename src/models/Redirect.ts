@@ -11,8 +11,9 @@ const RedirectSchema = new mongoose.Schema({
   status: { type: String, required: true, enum: ['active', 'disabled'], default: 'active' },
   notes: { type: String, default: '' },
   hits: { type: Number, default: 0 },
-  lastAccessed: { type: Date, default: null }
 }, { timestamps: true });
+
+RedirectSchema.index({ status: 1 });
 
 // Clear cache in development to prevent HMR mongoose model reuse mismatch
 if (process.env.NODE_ENV === 'development') {

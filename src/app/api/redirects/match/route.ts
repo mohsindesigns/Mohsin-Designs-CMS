@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import Redirect from '@/models/Redirect';
 
+let cachedRedirects: { list: any[]; expiresAt: number } | null = null;
+const REDIRECT_CACHE_TTL_MS = 10000; // 10 seconds
+
+export function invalidateRedirectCache() {
+  cachedRedirects = null;
+}
+
 export async function GET(req: NextRequest) {
   try {
     const urlParam = req.nextUrl.searchParams.get('url');
@@ -9,8 +16,26 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Missing url parameter' }, { status: 400 });
     }
 
-    await connectToDatabase();
-    const redirects = await Redirect.find({ status: 'active' }).lean();
+    let redirects: any[] = [];
+    const now = Date.now();
+    if (cachedRedirects && cachedRedirects.expiresAt > now) {
+      redirects = cachedRedirects.list;
+    } else {
+      await connectToDatabase();
+      redirects = await Redirect.find({ status: 'active' }).lean();
+      cachedRedirects = {
+        list: redirects,
+        expiresAt: now + REDIRECT_CACHE_TTL_MS
+      };
+    }
+
+    if (urlParam === '__rules__') {
+      return NextResponse.json({ rules: redirects });
+    }
+
+    if (!redirects || redirects.length === 0) {
+      return NextResponse.json({ status: 'no_match' });
+    }
 
     // Parse the requested URL (the path and search query to match)
     let requestPath = '';

@@ -13,6 +13,7 @@ import dynamic from "next/dynamic";
 import { UI } from "./styles";
 import MediaSelector from "@/components/admin/MediaSelector";
 import SectionToggle from "@/components/admin/SectionToggle";
+import SchemaEditor from "@/components/admin/SchemaEditor";
 
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
   ssr: false,
@@ -185,6 +186,7 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
     { id: "whyChoose", label: "Why Choose Us", icon: Star, title: "Core Strengths Showcase" },
     { id: "overview", label: "Overview Section", icon: ShieldAlert, title: "Overview Content Configurator" },
     { id: "cta", label: "Lead Call To Action", icon: ShieldCheck, title: "Final CTA Configurator" },
+    { id: "schema", label: "Schema Markup", icon: Settings, title: "Schema Markup Configurator" },
   ];
 
   const activeTabTitle = tabs.find(t => t.id === activeTab)?.title;
@@ -1329,6 +1331,25 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                     />
                   </div>
                 </div>
+              </div>
+            )}
+
+            {activeTab === "schema" && (
+              <div className="space-y-4">
+                <SchemaEditor
+                  value={data.schemaMarkup || data.seo?.schemaData || ""}
+                  onChange={(val) => {
+                    setData((prev: any) => ({
+                      ...(prev || {}),
+                      schemaMarkup: val,
+                      seo: {
+                        ...(prev?.seo || {}),
+                        schemaData: val
+                      }
+                    }));
+                  }}
+                  pageTitle={data.title || "Service Area"}
+                />
               </div>
             )}
           </motion.div>

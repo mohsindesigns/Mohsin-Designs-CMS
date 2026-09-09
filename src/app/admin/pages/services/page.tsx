@@ -384,15 +384,15 @@ export default function ServicesPageEditor() {
   const cta = data.services?.cta || {
     ratingText: "500+ 5-Star Reviews",
     title: "Ready for Your Free Estimate?",
-    description: "Transform your home with St. Louis's expert builders. Contact us today for quality craftsmanship and unparalleled service.",
+    description: "Scale your brand with expert digital architects. Contact us today for quality engineering and unparalleled service.",
     buttonText: "Get Free Estimate",
-    buttonLink: "/contact-us"
+    buttonLink: "/contact"
   };
 
   const blogSection = data.services?.blogSection || {
     title: "Latest from the Blog",
     subtitle: "Insights & News",
-    description: "Stay updated with the latest trends, tips, and news from the roofing and construction industry.",
+    description: "Stay updated with the latest trends, tips, and news from our digital design and engineering experts.",
     selectedPosts: []
   };
 

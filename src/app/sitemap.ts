@@ -98,15 +98,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Dynamic custom pages
   // Filter out slugs that are already in staticRoutes to avoid duplicates
-  const staticSlugs = staticRoutes.map(r => r.url.replace(BASE_URL, '').replace(/^\//, ''));
+  const staticSlugs = new Set(staticRoutes.map(r => r.url.replace(BASE_URL, '').replace(/^\/+|\/+$/g, '')));
   const customPageRoutes: MetadataRoute.Sitemap = dynamicPages
+    .map((page: any) => ({
+      ...page,
+      cleanSlug: String(page.slug || '').replace(/^\/+|\/+$/g, '')
+    }))
     .filter((page: any) =>
-      !staticSlugs.includes(page.slug) &&
-      page.slug !== '' &&
-      page.slug !== 'home'
+      page.cleanSlug !== '' &&
+      page.cleanSlug !== 'home' &&
+      !staticSlugs.has(page.cleanSlug)
     )
     .map((page: any) => ({
-      url: `${BASE_URL}/${page.slug}`,
+      url: `${BASE_URL}/${page.cleanSlug}`,
       lastModified: page.updatedAt ? new Date(page.updatedAt).toISOString() : now,
       changeFrequency: 'weekly' as const,
       priority: 0.8,

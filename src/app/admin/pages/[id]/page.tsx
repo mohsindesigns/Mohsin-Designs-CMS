@@ -12,6 +12,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { TemplateEditors } from "@/components/admin/editors";
 import SeoEditor from "@/components/admin/SeoEditor";
+import SchemaEditor from "@/components/admin/SchemaEditor";
 import MediaSelector from "@/components/admin/MediaSelector";
 import { BASE_URL } from "@/lib/constants";
 import dynamic from "next/dynamic";
@@ -50,7 +51,7 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
   const [page, setPage] = useState<any>(null);
   const [content, setContent] = useState<any>(null);
   const [seo, setSeo] = useState<any>({});
-  const [activeTab, setActiveTab] = useState<'content' | 'seo' | 'faqs'>('content');
+  const [activeTab, setActiveTab] = useState<'content' | 'seo' | 'schema' | 'faqs'>('content');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -118,8 +119,14 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
           slug: page.slug,
           template: page.template,
           status: page.status,
-          seo: seo,
-          content: content
+          seo: {
+            ...(seo || {}),
+            schemaData: seo?.schemaData ?? content?.schemaMarkup ?? ""
+          },
+          content: {
+            ...(content || {}),
+            schemaMarkup: seo?.schemaData ?? content?.schemaMarkup ?? ""
+          }
         }),
       });
       if (res.ok) {
@@ -254,6 +261,13 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
                 SEO Settings
               </button>
               <button
+                onClick={() => setActiveTab('schema')}
+                className={`px-3 py-2 text-[12px] font-semibold border-r border-[#c3c4c7] transition-all ${activeTab === 'schema' ? "bg-white text-[#1d2327]" : "text-[#2271b1] hover:text-[#135e96]"
+                  }`}
+              >
+                Schema Markup
+              </button>
+              <button
                 onClick={() => setActiveTab('faqs')}
                 className={`px-3 py-2 text-[12px] font-semibold border-r border-[#c3c4c7] transition-all ${activeTab === 'faqs' ? "bg-white text-[#1d2327]" : "text-[#2271b1] hover:text-[#135e96]"
                   }`}
@@ -284,6 +298,18 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
                   pageTitle={page.title}
                   pageContent={content}
                 />
+              ) : activeTab === 'schema' ? (
+                <div className="p-4 sm:p-5">
+                  <SchemaEditor
+                    value={seo.schemaData || content?.schemaMarkup || ""}
+                    onChange={(val) => {
+                      setSeo({ ...seo, schemaData: val });
+                      setContent({ ...content, schemaMarkup: val });
+                    }}
+                    pageTitle={page.title}
+                    pageSlug={page.slug}
+                  />
+                </div>
               ) : (
                 <div className="p-5 sm:p-6 space-y-8">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#f0f0f1] pb-4">

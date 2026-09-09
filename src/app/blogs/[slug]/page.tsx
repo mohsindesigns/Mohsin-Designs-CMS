@@ -2,7 +2,6 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import Script from "next/script";
 import {
   Calendar,
   User,
@@ -27,6 +26,9 @@ import PageInlineFaqs from "@/components/PageInlineFaqs";
 import { BASE_URL } from "@/lib/constants";
 import { makeLinksDoFollow } from "@/lib/utils";
 import { resolveRobotsMetadata } from "@/lib/seo";
+import CustomSchemaMarkup from "@/components/CustomSchemaMarkup";
+
+import { getCachedPost, getCachedSiteContent } from "@/lib/content";
 
 export const revalidate = 60; // Revalidate every 60s
 
@@ -36,20 +38,14 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  await connectToDatabase();
-
-  const [post, contentDoc] = await Promise.all([
-    Post.findOne({
-      $or: [{ slug }, { _id: slug.match(/^[0-9a-fA-F]{24}$/) ? slug : null }],
-      status: "published",
-      isTrashed: { $ne: true }
-    }).populate("categories"),
-    SiteContent.findOne({ key: 'complete_data' }).lean() as any
+  const [post, contentData] = await Promise.all([
+    getCachedPost(slug),
+    getCachedSiteContent()
   ]);
 
   if (!post) return { title: "Article Not Found | Mohsin Designs" };
 
-  const isGlobalNoIndex = !!contentDoc?.data?.settings?.globalNoIndex;
+  const isGlobalNoIndex = !!contentData?.settings?.globalNoIndex;
   const pageTitle = post.seo?.metaTitle || `${post.title} | Mohsin Designs`;
   const pageDesc = post.seo?.metaDescription || post.excerpt || `${post.title} - Strategic insights and architectural blueprints from Mohsin Designs.`;
   const pageImage = post.seo?.ogImage || post.featuredImage || "/portfolio_hero_bg.png";
@@ -91,23 +87,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
-  await connectToDatabase();
-
-  // 1. Fetch Post from MongoDB
-  const post = await Post.findOne({
-    $or: [{ slug }, { _id: slug.match(/^[0-9a-fA-F]{24}$/) ? slug : null }],
-    status: "published",
-    isTrashed: { $ne: true }
-  })
-    .populate("categories tags")
-    .lean();
+  // 1. Fetch Post (cached, safe query)
+  const [post, globalContentData, blogPageDoc] = await Promise.all([
+    getCachedPost(slug),
+    getCachedSiteContent(),
+    Page.findOne({
+      $or: [{ slug: "blog" }, { template: "blog" }, { slug: "blogs" }, { template: "blogs" }]
+    }).lean()
+  ]);
 
   if (!post) notFound();
 
-  // 2. Fetch Blog Page Settings for CMS-managed CTAs and Global Defaults
-  const blogPageDoc = await Page.findOne({
-    $or: [{ slug: { $in: ["blogs", "/blogs", "blog", "/blog"] } }, { template: { $in: ["blogs", "blog"] } }]
-  }).lean();
+  const siteSettings = globalContentData?.settings || {};
+  const siteBrandName = siteSettings.siteTitle || "Mohsin Designs";
 
   const blogPageData = (blogPageDoc as any)?.content?.blogPage || (blogPageDoc as any)?.content || {};
 
@@ -256,34 +248,7 @@ export default async function BlogPostPage({ params }: Props) {
     avatar: String(cleanAvatar)
   };
 
-  // 5. Schema.org Article Graph JSON-LD
-  const schemaGraph = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Article",
-        "headline": post.title,
-        "description": post.excerpt || post.title,
-        "datePublished": post.publishedAt || post.createdAt,
-        "dateModified": post.updatedAt || post.publishedAt || post.createdAt,
-        "author": {
-          "@type": "Person",
-          "name": authorInfo.name,
-          "jobTitle": authorInfo.role
-        },
-        "publisher": {
-          "@type": "Organization",
-          "name": "Mohsin Designs",
-          "url": BASE_URL
-        },
-        "image": featuredImage,
-        "wordCount": wordCount,
-        "inLanguage": "en-US"
-      }
-    ]
-  };
-
-  // 6. Automated Table of Contents Logic
+  // 5. Automated Table of Contents Logic
   let tableOfContents: { id: string; text: string; level: number }[] = [];
   let processedContent = rawHtmlContent;
 
@@ -316,11 +281,10 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <article className="min-h-screen bg-white dark:bg-[#080710] text-brand-dark dark:text-white transition-colors duration-300 pb-24 relative overflow-x-clip font-sans">
-      <Script
-        id="blog-post-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
-      />
+      <CustomSchemaMarkup schema={post.schemaMarkup || post.seo?.schemaData} />
+      {post.faqSchemaMarkup && (
+        <CustomSchemaMarkup schema={post.faqSchemaMarkup} />
+      )}
       <ReadingProgress />
 
       {/* ── 1. HERO SECTION WITH FULL BLEED BACKGROUND ────────────────── */}

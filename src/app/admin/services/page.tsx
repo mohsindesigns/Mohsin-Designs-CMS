@@ -16,6 +16,7 @@ import IconSelector from "@/components/admin/IconSelector";
 import SeoEditor from "@/components/admin/SeoEditor";
 import SectionToggle from "@/components/admin/SectionToggle";
 import MediaSelector from "@/components/admin/MediaSelector";
+import SchemaEditor from "@/components/admin/SchemaEditor";
 import { BASE_URL } from "@/lib/constants";
 import { UI } from "@/components/admin/editors/styles";
 import { AVAILABLE_COUNTRIES, resolveCountryLocation, COUNTRIES_DATABASE } from "@/lib/countryLocations";
@@ -382,7 +383,7 @@ export default function ServicesAdminPage() {
   const [services, setServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState<number | null>(null);
-  const [mainTab, setMainTab] = useState<'content' | 'seo' | 'faqs'>('content');
+  const [mainTab, setMainTab] = useState<'content' | 'seo' | 'schema' | 'faqs'>('content');
   const [activeSubTab, setActiveSubTab] = useState("hero");
   const [seo, setSeo] = useState<any>({});
   const [saving, setSaving] = useState(false);
@@ -491,10 +492,15 @@ export default function ServicesAdminPage() {
     if (collision) return alert(`The URL slug "${form.slug}" is already used by "${collision.title}". Please choose a different slug — otherwise one of the two pages won't be reachable.`);
 
     const newServices = [...services];
+    const schemaVal = form.schemaMarkup || seo?.schemaData || form.faqSchemaMarkup || "";
     const serviceData = {
       ...DEFAULT_SERVICE_TEMPLATE,
       ...form,
-      seo: seo,
+      schemaMarkup: schemaVal,
+      seo: {
+        ...(seo || {}),
+        schemaData: schemaVal
+      },
       id: form.id || Date.now().toString(),
       number: form.number || (services.length + 1).toString().padStart(2, '0')
     };
@@ -584,14 +590,18 @@ export default function ServicesAdminPage() {
       faqTitleIntro: service.faqTitleIntro || DEFAULT_SERVICE_TEMPLATE.faqTitleIntro,
       faqTitleHighlight: service.faqTitleHighlight || DEFAULT_SERVICE_TEMPLATE.faqTitleHighlight,
       faqDescription: service.faqDescription || DEFAULT_SERVICE_TEMPLATE.faqDescription,
-      faqSchemaMarkup: service.faqSchemaMarkup || "",
+      faqSchemaMarkup: service.faqSchemaMarkup || service.schemaMarkup || service.seo?.schemaData || "",
+      schemaMarkup: service.schemaMarkup || service.seo?.schemaData || service.faqSchemaMarkup || "",
       faqs: service.faqs || service.faq || DEFAULT_SERVICE_TEMPLATE.faqs,
       finalCta: {
         ...DEFAULT_SERVICE_TEMPLATE.finalCta,
         ...(service.finalCta || {})
       }
     });
-    setSeo(service.seo || {});
+    setSeo({
+      ...(service.seo || {}),
+      schemaData: service.schemaMarkup || service.seo?.schemaData || service.faqSchemaMarkup || ""
+    });
     setIsEditing(originalIdx !== -1 ? originalIdx : 0);
     setMainTab("content");
     setActiveSubTab("hero");
@@ -912,6 +922,14 @@ export default function ServicesAdminPage() {
                     }`}
                   >
                     SEO Settings
+                  </button>
+                  <button
+                    onClick={() => setMainTab('schema')}
+                    className={`px-3 py-2 text-[12px] font-semibold border-r border-[#c3c4c7] transition-all ${
+                      mainTab === 'schema' ? "bg-white text-[#1d2327]" : "text-[#2271b1] hover:text-[#135e96]"
+                    }`}
+                  >
+                    Schema Markup
                   </button>
                   <button
                     onClick={() => setMainTab('faqs')}
@@ -3603,6 +3621,20 @@ export default function ServicesAdminPage() {
                           placeholder='e.g. {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [...]}'
                         />
                       </div>
+                    </div>
+                  )}
+
+                  {/* TAB 4: SCHEMA MARKUP */}
+                  {mainTab === 'schema' && (
+                    <div className="p-5 sm:p-6 space-y-6">
+                      <SchemaEditor
+                        value={form.schemaMarkup || seo?.schemaData || form.faqSchemaMarkup || ""}
+                        onChange={(val) => {
+                          setSeo((prev: any) => ({ ...(prev || {}), schemaData: val }));
+                          setForm((prev: any) => ({ ...(prev || {}), schemaMarkup: val, faqSchemaMarkup: val }));
+                        }}
+                        pageTitle={form.title || "Service"}
+                      />
                     </div>
                   )}
                 </div>

@@ -13,6 +13,7 @@ const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor")
 });
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
+import SchemaEditor from "@/components/admin/SchemaEditor";
 
 export default function ReviewsEditor({ data, setData }: { pageId: string, data: any, setData: (d: any) => void }) {
   const [activeTab, setActiveTab] = useState("header");
@@ -55,6 +56,7 @@ export default function ReviewsEditor({ data, setData }: { pageId: string, data:
   const tabs = [
     { id: "header", label: "Review Header", icon: Type, title: "Social Proof Introduction" },
     { id: "items", label: "Testimonials", icon: Quote, title: "Individual Review Management" },
+    { id: "schema", label: "Schema Markup", icon: Quote, title: "Reviews Schema Markup" },
   ];
 
   const activeTabTitle = tabs.find(t => t.id === activeTab)?.title;
@@ -163,6 +165,25 @@ export default function ReviewsEditor({ data, setData }: { pageId: string, data:
                  />
               </div>
             )}
+
+             {activeTab === "schema" && (
+               <div className="space-y-4">
+                 <SchemaEditor
+                   value={data.schemaMarkup || data.seo?.schemaData || ""}
+                   onChange={(val) => {
+                     setData({
+                       ...data,
+                       schemaMarkup: val,
+                       seo: {
+                         ...(data.seo || {}),
+                         schemaData: val
+                       }
+                     });
+                   }}
+                   pageTitle="Client Reviews"
+                 />
+               </div>
+             )}
 
           </motion.div>
         </AnimatePresence>

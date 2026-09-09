@@ -36,20 +36,40 @@ export async function POST(request: Request) {
       // Handle file attachment
       const file = formData.get('attachment') as File;
       if (file && file.size > 0) {
+        const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+        if (file.size > MAX_FILE_SIZE) {
+          return NextResponse.json({ error: 'Attached file exceeds the 10MB limit.' }, { status: 400 });
+        }
+
+        const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.png', '.jpg', '.jpeg', '.webp', '.txt', '.csv'];
+        const dotIdx = file.name.lastIndexOf('.');
+        const ext = dotIdx !== -1 ? file.name.substring(dotIdx).toLowerCase() : '';
+
+        if (!ALLOWED_EXTENSIONS.includes(ext)) {
+          return NextResponse.json({
+            error: 'Invalid file extension. Only PDF, Word (.doc, .docx), images (.png, .jpg, .webp), and text/CSV documents are allowed.'
+          }, { status: 400 });
+        }
+
         const buffer = Buffer.from(await file.arrayBuffer());
 
-        // Save file to public/uploads
-        const filename = Date.now() + "_" + file.name.replace(/[^a-zA-Z0-9.]/g, "_");
-        const uploadDir = path.join(process.cwd(), "public", "uploads");
-        if (!existsSync(uploadDir)) {
-          await mkdir(uploadDir, { recursive: true });
-        }
-        const filePath = path.join(uploadDir, filename);
-        await writeFile(filePath, buffer);
+        // Clean filename and save file to public/uploads
+        const rawBase = dotIdx !== -1 ? file.name.substring(0, dotIdx) : file.name;
+        const cleanBase = rawBase.replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 50);
+        const filename = `${Date.now()}_${cleanBase}${ext}`;
 
-        attachmentUrl = `/uploads/${filename}`;
-        console.log('File saved to:', filePath);
-        console.log('Attachment URL set to:', attachmentUrl);
+        try {
+          const uploadDir = path.join(process.cwd(), "public", "uploads");
+          if (!existsSync(uploadDir)) {
+            await mkdir(uploadDir, { recursive: true });
+          }
+          const filePath = path.join(uploadDir, filename);
+          await writeFile(filePath, buffer);
+          attachmentUrl = `/uploads/${filename}`;
+          console.log('File saved to:', filePath);
+        } catch (fsErr: any) {
+          console.warn('Filesystem write not available or failed:', fsErr.message);
+        }
 
         attachments.push({
           filename: file.name,

@@ -7,15 +7,14 @@ import Page from '@/models/Page';
 import SiteContent from '@/models/Content';
 import { getTemplate } from '@/components/templates/TemplateRegistry';
 import { Metadata } from 'next';
-import Script from 'next/script';
-import { generateSchema } from '@/lib/schema-generator';
+import CustomSchemaMarkup from '@/components/CustomSchemaMarkup';
 import { BASE_URL } from '@/lib/constants';
 import { resolveRobotsMetadata } from '@/lib/seo';
+import { getCachedPage, getCachedSiteContent } from '@/lib/content';
 
 interface PageProps {
   params: Promise<{ slug: string[] }>;
 }
-
 
 function getAbsoluteUrl(path: string | undefined) {
   if (!path) return undefined;
@@ -23,21 +22,18 @@ function getAbsoluteUrl(path: string | undefined) {
   return `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
 }
 
-// Auto-schema logic moved to centralized generator
-
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const resolvedParams = await params;
   const slug = resolvedParams.slug.join('/');
 
-  await connectToDatabase();
-  const [page, content] = await Promise.all([
-    Page.findOne({ slug, status: 'published', isTrashed: { $ne: true } }).lean(),
-    SiteContent.findOne({ key: 'complete_data' }).lean() as any
+  const [page, globalData] = await Promise.all([
+    getCachedPage(slug),
+    getCachedSiteContent()
   ]);
 
   if (!page) return {};
 
-  const isGlobalNoIndex = !!content?.data?.settings?.globalNoIndex;
+  const isGlobalNoIndex = !!globalData?.settings?.globalNoIndex;
   const seo = page.seo || {};
   const pageUrl = `${BASE_URL}/${slug}`;
 
@@ -80,14 +76,10 @@ export default async function DynamicPage({ params }: PageProps) {
   const resolvedParams = await params;
   const slug = resolvedParams.slug.join('/');
 
-  await connectToDatabase();
-
-  // Find the page in MongoDB
-  const pageDoc = await Page.findOne({
-    slug: slug,
-    status: 'published',
-    isTrashed: { $ne: true }
-  }).lean();
+  const [pageDoc, globalDataRaw] = await Promise.all([
+    getCachedPage(slug),
+    getCachedSiteContent()
+  ]);
 
   if (!pageDoc) {
     notFound();
@@ -96,9 +88,7 @@ export default async function DynamicPage({ params }: PageProps) {
   // Convert to plain object to avoid Mongoose serialization issues in Client Components
   const page = JSON.parse(JSON.stringify(pageDoc));
 
-  // Fetch global content for FAQ detection and settings
-  const globalContent = await SiteContent.findOne({ key: 'complete_data' }).lean() as any;
-  const globalData = globalContent?.data || {};
+  const globalData = globalDataRaw || {};
   const settings = globalData.settings || {};
 
   // If this page is set as the homepage, redirect slug to root /
@@ -123,35 +113,15 @@ export default async function DynamicPage({ params }: PageProps) {
     }
   }
 
-  // Determine page type for schema
-  let pageType: any = "WebPage";
-  if (page.template === 'about') pageType = "AboutPage";
-  if (page.template === 'contact') pageType = "ContactPage";
-  if (page.template === 'gallery') pageType = "CollectionPage";
-
-  // Determine featured image for schema (Manual SEO Featured Image > OG Image > Hero Image)
-  const featuredImage = getAbsoluteUrl(page.seo?.featuredImage || page.seo?.ogImage || page.seo?.twitterImage || page.content?.hero?.image);
-
-  const schema = generateSchema({
-    title: page.seo?.metaTitle || page.title,
-    description: page.seo?.metaDescription || "",
-    slug: page.slug,
-    type: pageType,
-    faqs: page.faqs,
-    breadcrumbTitle: page.seo?.breadcrumbTitle,
-    image: featuredImage
-  });
+  // Resolve custom schema configured in Page SEO or Content
+  const customSchema = page.seo?.schemaData || page.content?.schemaMarkup || page.content?.customSchema || page.content?.faqSchemaMarkup;
 
   // Use TemplateWrapper to handle local content context overrides
   const { TemplateWrapper } = await import('@/components/templates/TemplateRegistry');
 
   return (
     <main>
-      <Script
-        id="json-ld-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-      />
+      <CustomSchemaMarkup schema={customSchema} />
       <TemplateWrapper
         templateName={page.template}
         pageData={{

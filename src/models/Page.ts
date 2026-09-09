@@ -56,6 +56,9 @@ const PageSchema = new mongoose.Schema({
   trashedAt: { type: Date, default: null },
 }, { timestamps: true });
 
+PageSchema.index({ isTrashed: 1, status: 1 });
+PageSchema.index({ template: 1, status: 1, isTrashed: 1 });
+
 // Clear cache in development to prevent HMR mongoose enum mismatch
 if (process.env.NODE_ENV === 'development') {
   delete (mongoose.models as any).Page;

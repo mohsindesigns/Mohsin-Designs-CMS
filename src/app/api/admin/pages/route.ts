@@ -11,7 +11,10 @@ export async function GET(req: NextRequest) {
   }
   try {
     await connectToDatabase();
-    const pages = await Page.find({}).sort({ createdAt: -1 });
+    const pages = await Page.find({})
+      .select('_id title slug template status isTrashed createdAt updatedAt')
+      .sort({ createdAt: -1 })
+      .lean();
     return NextResponse.json(pages);
   } catch (error: any) {
     console.error('Pages fetch error:', error);

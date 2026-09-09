@@ -38,15 +38,21 @@ function timeAgo(dateStr: string) {
   return `${d}d ago`;
 }
 
-export default function AdminDashboard() {
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+let memoryDashboardCache: any = null;
 
-  const fetchDashboard = async () => {
-    setLoading(true);
+export default function AdminDashboard() {
+  const [data, setData] = useState<any>(() => memoryDashboardCache);
+  const [loading, setLoading] = useState(!memoryDashboardCache);
+
+  const fetchDashboard = async (isManual = false) => {
+    if (isManual || !memoryDashboardCache) setLoading(true);
     try {
       const res = await fetch("/api/admin/dashboard");
-      if (res.ok) setData(await res.json());
+      if (res.ok) {
+        const json = await res.json();
+        memoryDashboardCache = json;
+        setData(json);
+      }
     } catch (e) {
       console.error(e);
     } finally {
@@ -77,7 +83,7 @@ export default function AdminDashboard() {
           <p className="text-[13px] text-[#646970] mt-0.5">Welcome back. Here's what's happening on your site.</p>
         </div>
         <button
-          onClick={fetchDashboard}
+          onClick={() => fetchDashboard(true)}
           className="flex items-center gap-1.5 bg-white border border-[#c3c4c7] px-3 py-1.5 rounded-[3px] text-[13px] text-[#2c3338] hover:bg-[#f6f7f7] shadow-sm"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />

@@ -8,6 +8,7 @@ import ImageField from "@/components/admin/ImageField";
 import ContentSelector from "@/components/admin/ContentSelector";
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
+import SchemaEditor from "@/components/admin/SchemaEditor";
 
 /**
  * Resilient Comma-Separated Input that buffers local string state
@@ -108,7 +109,8 @@ export default function IndustryEditor({
     { id: "sectors", label: "3. Industry Sectors" },
     { id: "founder", label: "4. About Founder" },
     { id: "whyChooseUs", label: "5. Why Choose Us" },
-    { id: "cta", label: "6. Final CTA Banner" }
+    { id: "cta", label: "6. Final CTA Banner" },
+    { id: "schema", label: "7. Schema Markup" }
   ];
 
   return (
@@ -1171,6 +1173,29 @@ export default function IndustryEditor({
                   />
                 </div>
               </div>
+            </div>
+          )}
+
+          {activeTab === "schema" && (
+            <div className="space-y-4">
+              <SchemaEditor
+                value={data.schemaMarkup || data.industryPage?.schemaMarkup || data.seo?.schemaData || ""}
+                onChange={(val) => {
+                  setData((prev: any) => ({
+                    ...(prev || {}),
+                    schemaMarkup: val,
+                    industryPage: {
+                      ...(prev?.industryPage || {}),
+                      schemaMarkup: val
+                    },
+                    seo: {
+                      ...(prev?.seo || {}),
+                      schemaData: val
+                    }
+                  }));
+                }}
+                pageTitle="Industry Page"
+              />
             </div>
           )}
         </motion.div>

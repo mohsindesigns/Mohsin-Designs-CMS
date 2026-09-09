@@ -16,6 +16,7 @@ const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor")
 });
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
+import SchemaEditor from "@/components/admin/SchemaEditor";
 
 export default function FAQEditor({ pageId, data, setData }: { pageId: string, data: any, setData: (d: any) => void }) {
   const [activeTab, setActiveTab] = useState("header");
@@ -67,6 +68,7 @@ export default function FAQEditor({ pageId, data, setData }: { pageId: string, d
     { id: "header", label: "Support Header", icon: Type, title: "Support Knowledge Base Introduction" },
     { id: "categories", label: "Filter Taxonomy", icon: Filter, title: "Filtering Categories" },
     { id: "items", label: "Q&A Database", icon: CircleHelp, title: "Comprehensive Q&A Database" },
+    { id: "schema", label: "Schema Markup", icon: CircleHelp, title: "FAQ Schema Markup" },
   ];
 
   const activeTabTitle = tabs.find(t => t.id === activeTab)?.title;
@@ -202,6 +204,25 @@ export default function FAQEditor({ pageId, data, setData }: { pageId: string, d
                  />
               </div>
             )}
+
+            {activeTab === "schema" && (
+               <div className="space-y-4">
+                 <SchemaEditor
+                   value={data.schemaMarkup || data.seo?.schemaData || ""}
+                   onChange={(val) => {
+                     setData((prev: any) => ({
+                       ...(prev || {}),
+                       schemaMarkup: val,
+                       seo: {
+                         ...(prev?.seo || {}),
+                         schemaData: val
+                       }
+                     }));
+                   }}
+                   pageTitle="Frequently Asked Questions"
+                 />
+               </div>
+             )}
 
           </motion.div>
         </AnimatePresence>

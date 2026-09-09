@@ -4,10 +4,11 @@ import { useState, useEffect } from "react";
 import {
   Search, Globe, Share2, Twitter, Info, CheckCircle, AlertCircle,
   ChevronDown, ChevronUp, Eye, Layout, Type, Image as ImageIcon,
-  MousePointer2, ExternalLink, Link2, FileJson, MessageSquare
+  MousePointer2, ExternalLink, Link2, FileJson, MessageSquare, Code2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ImageField from "./ImageField";
+import SchemaEditor from "./SchemaEditor";
 import { BASE_URL } from "@/lib/constants";
 
 interface SeoData {
@@ -97,6 +98,7 @@ export default function SeoEditor({ data, setData, pageSlug, pageTitle, pageCont
         {[
           { id: 'general', label: 'General', icon: Search },
           { id: 'social', label: 'Social', icon: Share2 },
+          { id: 'schema', label: 'Schema Markup', icon: Code2 },
           { id: 'analysis', label: 'Analysis', icon: CheckCircle },
         ].map((tab) => (
           <button
@@ -229,6 +231,17 @@ export default function SeoEditor({ data, setData, pageSlug, pageTitle, pageCont
                     <ImageField label="Twitter Image" value={data.twitterImage || ""} onChange={(url) => updateField('twitterImage', url)} />
                   </div>
                 </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'schema' && (
+              <motion.div key="schema" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+                <SchemaEditor
+                  value={data.schemaData || ""}
+                  onChange={(val) => updateField('schemaData', val)}
+                  pageTitle={pageTitle}
+                  pageSlug={pageSlug}
+                />
               </motion.div>
             )}
 

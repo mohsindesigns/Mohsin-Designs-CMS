@@ -15,6 +15,7 @@ import BlogSelector from "@/components/admin/BlogSelector";
 import ImageField from "@/components/admin/ImageField";
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
+import SchemaEditor from "@/components/admin/SchemaEditor";
 
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), { 
   ssr: false,
@@ -74,6 +75,7 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
     { id: "grid", label: "Services Grid Header", title: "2. Services Grid Intro Header", desc: "Introductory eyebrow, title, description, and card action button labels for the catalog." },
     { id: "cta", label: "Bottom CTA Banner", title: "3. Bottom Conversion Banner", desc: "High-converting strategy session CTA banner with portrait photo and action links." },
     { id: "blog", label: "Featured Blog Posts", title: "4. Curated Insights & Articles", desc: "Featured blog articles shown below the services listing." },
+    { id: "schema", label: "Schema Markup", title: "5. Schema Markup", desc: "Structured data JSON-LD configuration for the services listing page." },
   ];
 
   const currentTabInfo = tabs.find(t => t.id === activeTab) || tabs[0];
@@ -516,6 +518,25 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
                     onChange={(ids) => setData({ ...data, blogSection: { ...(data.blogSection || {}), selectedPosts: ids } })} 
                   />
                 </div>
+              </div>
+            )}
+
+            {activeTab === "schema" && (
+              <div className="space-y-4">
+                <SchemaEditor
+                  value={data.schemaMarkup || data.seo?.schemaData || ""}
+                  onChange={(val) => {
+                    setData({
+                      ...data,
+                      schemaMarkup: val,
+                      seo: {
+                        ...(data.seo || {}),
+                        schemaData: val
+                      }
+                    });
+                  }}
+                  pageTitle={data.title || "Services Overview"}
+                />
               </div>
             )}
           </motion.div>

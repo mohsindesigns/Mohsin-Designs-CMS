@@ -8,6 +8,7 @@ import SiteContent from "@/models/Content";
 import { BASE_URL } from "@/lib/constants";
 import InteractiveBackground from "@/components/InteractiveBackground";
 import { resolveRobotsMetadata } from "@/lib/seo";
+import { getCachedSiteContent, getCachedSiteScripts } from "@/lib/content";
 
 
 const lora = Lora({
@@ -33,11 +34,8 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 
   try {
-    const conn = await connectToDatabase();
-    if (conn) {
-      const content = await SiteContent.findOne({ key: 'complete_data' });
-      if (content?.data?.settings) settings = content.data.settings;
-    }
+    const data = await getCachedSiteContent();
+    if (data?.settings) settings = data.settings;
   } catch (e) {
     console.error("Failed to fetch settings for metadata", e);
   }
@@ -109,40 +107,37 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // ── Fetch CMS-managed tracking scripts from MongoDB ──
+  // ── Fetch CMS tracking scripts, Global Content & Blog posts in parallel ──
   interface SiteScript { id: string; name: string; location: string; code: string; active: boolean; }
   let siteScripts: SiteScript[] = [];
+  let initialGlobalData: any = null;
+  let initialBlogs: any[] = [];
+
   try {
-    const conn = await connectToDatabase();
-    if (conn) {
-      const doc = await SiteContent.findOne({ key: 'site_scripts_v2' });
-      if (Array.isArray(doc?.data)) siteScripts = doc.data;
-    }
+    const [globalData, scriptsData, blogPosts] = await Promise.all([
+      getCachedSiteContent(),
+      getCachedSiteScripts(),
+      import('@/models/Post').then(m =>
+        m.default
+          .find({ status: 'published', isTrashed: { $ne: true } })
+          .select('_id title slug excerpt featuredImage publishedAt date categories')
+          .sort({ date: -1 })
+          .limit(10)
+          .lean()
+      )
+    ]);
+
+    if (globalData) initialGlobalData = globalData;
+    if (Array.isArray(scriptsData)) siteScripts = scriptsData;
+    if (blogPosts) initialBlogs = JSON.parse(JSON.stringify(blogPosts));
   } catch (e) {
-    // Non-fatal — site renders fine without CMS scripts
+    console.error("Failed to fetch initial data for provider", e);
   }
+
   const activeScripts = siteScripts.filter((s) => s.active);
   const headScripts = activeScripts.filter((s) => s.location === 'head');
   const bodyStartScripts = activeScripts.filter((s) => s.location === 'body_start');
   const bodyEndScripts = activeScripts.filter((s) => s.location === 'body_end');
-
-  // ── Fetch Global Content & Blogs for the Provider ──
-  let initialGlobalData = null;
-  let initialBlogs = [];
-  try {
-    const conn = await connectToDatabase();
-    if (conn) {
-      const [globalContent, blogPosts] = await Promise.all([
-        SiteContent.findOne({ key: 'complete_data' }),
-        import('@/models/Post').then(m => m.default.find({ status: 'published', isTrashed: { $ne: true } }).sort({ date: -1 }).limit(10).lean())
-      ]);
-
-      if (globalContent?.data) initialGlobalData = globalContent.data;
-      if (blogPosts) initialBlogs = JSON.parse(JSON.stringify(blogPosts));
-    }
-  } catch (e) {
-    console.error("Failed to fetch initial data for provider", e);
-  }
 
   return (
     <html

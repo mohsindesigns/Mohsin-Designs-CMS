@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
+import SchemaEditor from "@/components/admin/SchemaEditor";
 import dynamic from "next/dynamic";
 import ImageField from "@/components/admin/ImageField";
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), { 
@@ -78,6 +79,7 @@ export default function TeamEditor({ pageId, data, setData }: { pageId: string, 
   const tabs = [
     { id: "header", label: "Team Intro", icon: Type, title: "Leadership Roster Introduction" },
     { id: "members", label: "Roster Management", icon: Users, title: "Individual Team Member Profiles" },
+    { id: "schema", label: "Schema Markup", icon: Users, title: "Team Schema Markup" },
   ];
 
   const activeTabTitle = tabs.find(t => t.id === activeTab)?.title;
@@ -240,6 +242,25 @@ export default function TeamEditor({ pageId, data, setData }: { pageId: string, 
                     >
                       + Recruit New Team Leader
                     </button>
+              </div>
+            )}
+
+            {activeTab === "schema" && (
+              <div className="space-y-4">
+                <SchemaEditor
+                  value={data.schemaMarkup || data.seo?.schemaData || ""}
+                  onChange={(val) => {
+                    setData({
+                      ...data,
+                      schemaMarkup: val,
+                      seo: {
+                        ...(data.seo || {}),
+                        schemaData: val
+                      }
+                    });
+                  }}
+                  pageTitle="Leadership Team"
+                />
               </div>
             )}
 

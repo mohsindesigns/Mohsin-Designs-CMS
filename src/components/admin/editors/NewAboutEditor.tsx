@@ -8,6 +8,7 @@ import ImageField from "@/components/admin/ImageField";
 import ContentSelector from "@/components/admin/ContentSelector";
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
+import SchemaEditor from "@/components/admin/SchemaEditor";
 
 /**
  * Resilient Comma-Separated Input that buffers local string state
@@ -90,7 +91,8 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
     { id: "whyChooseUs", label: "8. Why Choose Us" },
     { id: "executiveLeadership", label: "9. Founder & Leadership" },
     { id: "reviews", label: "10. Client Reviews" },
-    { id: "ctaBanner", label: "11. CTA Banner" }
+    { id: "ctaBanner", label: "11. CTA Banner" },
+    { id: "schema", label: "12. Schema Markup" }
   ];
 
   return (
@@ -854,6 +856,29 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                 <h3 className={UI.sectionHeader}>3. Floating Portrait</h3>
                 <ImageField label="CTA Floating Portrait" value={data.ctaBanner?.portraitSrc || ""} onChange={(url) => updateSection("ctaBanner", "portraitSrc", url)} altValue={data.ctaBanner?.portraitAlt || ""} onAltChange={(alt) => updateSection("ctaBanner", "portraitAlt", alt)} />
               </div>
+            </div>
+          )}
+
+          {activeTab === "schema" && (
+            <div className="space-y-6">
+              <SchemaEditor
+                value={data.schemaMarkup || data.seo?.schemaData || ""}
+                onChange={(val) => {
+                  updateSection("schemaMarkup", null, val);
+                  setData((prev: any) => ({
+                    ...(prev || {}),
+                    schemaMarkup: val,
+                    seo: {
+                      ...(prev?.seo || {}),
+                      schemaData: val
+                    }
+                  }));
+                }}
+                pageTitle="About Page"
+                pageSlug="about"
+                title="About Page Schema Markup (JSON-LD)"
+                description="Configure custom Schema.org structured data for this page (e.g. AboutPage, Organization, Person)."
+              />
             </div>
           )}
         </motion.div>

@@ -13,6 +13,7 @@ import ImageField from "@/components/admin/ImageField";
 import IconSelector from "@/components/admin/IconSelector";
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
+import SchemaEditor from "@/components/admin/SchemaEditor";
 
 function BulletListEditor({
   label,
@@ -207,6 +208,7 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
     { id: "office", label: "03. Interactive Map & Office", icon: MapPin },
     { id: "cta", label: "04. Conversion CTA Banner", icon: Sparkles },
     { id: "notifications", label: "05. Notifications & Email", icon: Mail },
+    { id: "schema", label: "06. Schema Markup", icon: Box },
   ];
 
   return (
@@ -961,6 +963,26 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
                 />
               </div>
             </div>
+          </div>
+        )}
+
+        {/* ── TAB 6: SCHEMA MARKUP ── */}
+        {activeTab === "schema" && (
+          <div className="space-y-4">
+            <SchemaEditor
+              value={data.schemaMarkup || data.seo?.schemaData || ""}
+              onChange={(val) => {
+                setData((prev: any) => ({
+                  ...(prev || {}),
+                  schemaMarkup: val,
+                  seo: {
+                    ...(prev?.seo || {}),
+                    schemaData: val
+                  }
+                }));
+              }}
+              pageTitle="Contact Us"
+            />
           </div>
         )}
       </div>

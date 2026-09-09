@@ -13,6 +13,7 @@ import ImageField from "@/components/admin/ImageField";
 import IconSelector from "@/components/admin/IconSelector";
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
+import SchemaEditor from "@/components/admin/SchemaEditor";
 
 const DEFAULT_LOCATION_DATA = {
   hero: {
@@ -313,7 +314,8 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
     { id: "stats", label: "02. Stats Counters" },
     { id: "marquee", label: "03. Brand Marquee" },
     { id: "presence", label: "04. Countries & States" },
-    { id: "cta", label: "05. Bottom CTA Banner" }
+    { id: "cta", label: "05. Bottom CTA Banner" },
+    { id: "schema", label: "06. Schema Markup" }
   ];
 
   return (
@@ -1255,6 +1257,25 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
                   />
                 </div>
               </div>
+            </div>
+          )}
+
+          {activeTab === "schema" && (
+            <div className="space-y-4">
+              <SchemaEditor
+                value={data.schemaMarkup || data.seo?.schemaData || ""}
+                onChange={(val) => {
+                  setData((prev: any) => ({
+                    ...(prev || {}),
+                    schemaMarkup: val,
+                    seo: {
+                      ...(prev?.seo || {}),
+                      schemaData: val
+                    }
+                  }));
+                }}
+                pageTitle="Locations Overview"
+              />
             </div>
           )}
 

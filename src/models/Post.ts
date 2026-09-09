@@ -47,8 +47,7 @@ const PostSchema = new Schema({
   trashedAt: { type: Date, default: null }
 }, { timestamps: true });
 
-if (mongoose.models.Post) {
-  delete mongoose.models.Post;
-}
+PostSchema.index({ status: 1, isTrashed: 1, slug: 1 });
+PostSchema.index({ status: 1, publishedAt: -1 });
 
 export default mongoose.models.Post || mongoose.model('Post', PostSchema);

@@ -5,17 +5,16 @@ import { Metadata } from "next";
 import connectToDatabase from "@/lib/mongodb";
 import SiteContent from "@/models/Content";
 import Page from "@/models/Page";
-import Script from "next/script";
-import { generateSchema } from "@/lib/schema-generator";
+import CustomSchemaMarkup from "@/components/CustomSchemaMarkup";
 import { TemplateWrapper } from "@/components/templates/TemplateRegistry";
 import ServiceDetailTemplate from "@/components/templates/ServiceDetailTemplate";
 import { BASE_URL } from "@/lib/constants";
 import { resolveRobotsMetadata } from "@/lib/seo";
+import { getCachedSiteContent } from "@/lib/content";
 
 export async function generateMetadata(): Promise<Metadata> {
-  await connectToDatabase();
-  const content = await SiteContent.findOne({ key: "complete_data" }).lean() as any;
-  const settings = content?.data?.settings;
+  const globalData = await getCachedSiteContent();
+  const settings = globalData?.settings;
   const homepageId = settings?.homepageId;
   const isGlobalNoIndex = !!settings?.globalNoIndex;
 
@@ -63,7 +62,7 @@ export async function generateMetadata(): Promise<Metadata> {
       };
     }
     // Check if it's a service
-    const service = content?.data?.services?.services?.find((s: any) => s._id === homepageId || s.slug === homepageId);
+    const service = globalData?.services?.services?.find((s: any) => s._id === homepageId || s.slug === homepageId);
     if (service) {
       const seo = service.seo || {};
       return {
@@ -88,7 +87,7 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   // Default to Home data
-  const homeData = content?.data?.home;
+  const homeData = globalData?.home;
   const seo = homeData?.seo || {};
   return {
     ...metadata,
@@ -107,8 +106,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Index() {
-  await connectToDatabase();
-  const content = await SiteContent.findOne({ key: "complete_data" }).lean() as any;
+  const content = { data: await getCachedSiteContent() };
   const settings = content?.data?.settings;
   const homepageId = settings?.homepageId;
 
@@ -119,9 +117,13 @@ export default async function Index() {
     (item.visibility === 'specific' && item.targetPages?.includes('home'))
   );
 
-  // Find published blog posts to provide to ContentProvider
+  // Find published blog posts to provide to ContentProvider (project lean fields)
   const Post = (await import("@/models/Post")).default;
-  const postsDoc = await Post.find({ status: 'published' }).sort({ publishedAt: -1 }).limit(10).lean();
+  const postsDoc = await Post.find({ status: 'published' })
+    .select('_id title slug excerpt featuredImage publishedAt date categories')
+    .sort({ publishedAt: -1 })
+    .limit(10)
+    .lean();
   const initialBlogs = postsDoc ? JSON.parse(JSON.stringify(postsDoc)) : [];
 
   if (homepageId) {
@@ -134,17 +136,10 @@ export default async function Index() {
     }).lean();
     if (pageDoc) {
       const page = JSON.parse(JSON.stringify(pageDoc));
-      const schema = generateSchema({
-        title: page.seo?.metaTitle || page.title,
-        description: page.seo?.metaDescription || "",
-        slug: "/",
-        type: "WebPage",
-        faqs: faqs,
-        image: `${BASE_URL}/portfolio_hero_bg.png`
-      });
+      const customSchema = page?.seo?.schemaData || page?.content?.schemaMarkup || page?.content?.customSchema || page?.content?.faqSchemaMarkup;
       return (
         <>
-          <Script id="json-ld-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+          <CustomSchemaMarkup schema={customSchema} />
           <TemplateWrapper 
             templateName={page.template} 
             pageData={{
@@ -169,17 +164,10 @@ export default async function Index() {
     );
     if (serviceDoc) {
       const service = JSON.parse(JSON.stringify(serviceDoc));
-      const schema = generateSchema({
-        title: service.seo?.metaTitle || service.title,
-        description: service.seo?.metaDescription || service.description || "",
-        slug: "/",
-        type: "Service",
-        faqs: faqs,
-        image: `${BASE_URL}/portfolio_hero_bg.png`
-      });
+      const customSchema = service?.seo?.schemaData || service?.schemaMarkup || service?.customSchema;
       return (
         <>
-          <Script id="json-ld-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+          <CustomSchemaMarkup schema={customSchema} />
           <ServiceDetailTemplate params={Promise.resolve({ slug: service.slug })} />
         </>
       );
@@ -194,23 +182,15 @@ export default async function Index() {
   }).lean();
 
   const homePage = defaultHomePageDoc ? JSON.parse(JSON.stringify(defaultHomePageDoc)) : null;
-
-  const schema = generateSchema({
-    title: homePage?.seo?.metaTitle || homePage?.title || settings?.siteTitle || "Mohsin Designs",
-    description: homePage?.seo?.metaDescription || "",
-    slug: "/",
-    type: "WebPage",
-    faqs: faqs,
-    image: `${BASE_URL}/logo.png`
-  });
+  const homeCustomSchema = homePage?.seo?.schemaData || 
+                           homePage?.content?.schemaMarkup || 
+                           homePage?.content?.customSchema || 
+                           content?.data?.home?.seo?.schemaData || 
+                           content?.data?.home?.schemaMarkup;
 
   return (
     <>
-      <Script
-        id="json-ld-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-      />
+      <CustomSchemaMarkup schema={homeCustomSchema} />
       <TemplateWrapper 
         templateName="home"
         pageData={homePage || {

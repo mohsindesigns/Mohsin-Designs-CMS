@@ -35,9 +35,11 @@ export async function GET(req: NextRequest) {
     }
 
     const posts = await Post.find(query)
+      .select('title slug status featuredImage categories tags publishedAt createdAt updatedAt')
       .populate('categories', 'name')
       .populate('tags', 'name')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
     return NextResponse.json(posts);
   } catch (error: any) {

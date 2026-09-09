@@ -10,6 +10,7 @@ import ImageField from "@/components/admin/ImageField";
 import BlogSelector from "@/components/admin/BlogSelector";
 import IconSelector from "@/components/admin/IconSelector";
 import SectionToggle from "@/components/admin/SectionToggle";
+import SchemaEditor from "@/components/admin/SchemaEditor";
 
 const DEFAULT_BLOG_DATA = {
   hero: {
@@ -102,6 +103,7 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
     { id: "feed", label: "02. Blog Selection & Mode", icon: BookOpen },
     { id: "cta", label: "03. Index CTA Banner", icon: Sparkles },
     { id: "detail", label: "04. Detail Page (Sidebar & CTAs)", icon: Layers },
+    { id: "schema", label: "05. Schema Markup", icon: Settings },
   ];
 
   return (
@@ -850,6 +852,25 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
                 />
               </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === "schema" && (
+          <div className="space-y-4">
+            <SchemaEditor
+              value={data.schemaMarkup || data.seo?.schemaData || ""}
+              onChange={(val) => {
+                setData((prev: any) => ({
+                  ...(prev || {}),
+                  schemaMarkup: val,
+                  seo: {
+                    ...(prev?.seo || {}),
+                    schemaData: val
+                  }
+                }));
+              }}
+              pageTitle="Blog Insights"
+            />
           </div>
         )}
       </div>

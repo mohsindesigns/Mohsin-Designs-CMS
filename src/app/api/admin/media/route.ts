@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   }
   try {
     await connectToDatabase();
-    const media = await Media.find({}).sort({ createdAt: -1 });
+    const media = await Media.find({}).sort({ createdAt: -1 }).lean();
     return NextResponse.json(media);
   } catch (error: any) {
     console.error('Media fetch error:', error);

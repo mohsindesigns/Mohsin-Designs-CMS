@@ -15,6 +15,7 @@ import BlogSelector from "@/components/admin/BlogSelector";
 import { AVAILABLE_COUNTRIES, resolveCountryLocation } from "@/lib/countryLocations";
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
+import SchemaEditor from "@/components/admin/SchemaEditor";
 
 // Safe comma separated input helper to prevent cursor swallowing
 function CommaSeparatedInput({ value, onChange, placeholder, className }: { value: string[]; onChange: (v: string[]) => void; placeholder?: string; className?: string }) {
@@ -311,7 +312,8 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
     { id: "serviceArea", label: "13. Global Coverage" },
     { id: "faqs", label: "14. Page FAQs" },
     { id: "finalCta", label: "15. Final CTA Banner" },
-    { id: "blogSection", label: "16. Related Insights" }
+    { id: "blogSection", label: "16. Related Insights" },
+    { id: "schema", label: "17. Schema Markup" }
   ];
 
   return (
@@ -2945,6 +2947,25 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                     onChange={(posts) => updateSection("blogSection", "selectedPosts", posts)}
                   />
                 </div>
+              </div>
+            )}
+
+            {activeTab === "schema" && (
+              <div className="space-y-4">
+                <SchemaEditor
+                  value={data.schemaMarkup || data.seo?.schemaData || ""}
+                  onChange={(val) => {
+                    setData((prev: any) => ({
+                      ...(prev || {}),
+                      schemaMarkup: val,
+                      seo: {
+                        ...(prev?.seo || {}),
+                        schemaData: val
+                      }
+                    }));
+                  }}
+                  pageTitle={data.title || "Service Page"}
+                />
               </div>
             )}
 

@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useContentContext } from "../context/ContentContext";
 import { cleanMojibake } from "../lib/utils";
 
@@ -42,7 +43,12 @@ function proxyAllUrls(obj: any): any {
 
 export const useContent = () => {
     const rawData = useContentContext();
-    const completeData = sanitizeEncoding(proxyAllUrls(rawData));
+    
+    // Memoize the deep sanitize and proxy transformation so it only runs when rawData changes
+    const completeData = useMemo(() => {
+        if (!rawData || Object.keys(rawData).length === 0) return {};
+        return sanitizeEncoding(proxyAllUrls(rawData));
+    }, [rawData]);
 
     // Deep fallback helper to prevent undefined.property crashes
     const getSafe = (data: any, key: string, fallback: any = {}) => {

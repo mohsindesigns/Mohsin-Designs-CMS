@@ -29,7 +29,7 @@ export default function PrivacyPolicyPage() {
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-foreground mb-4">
               Privacy <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/60">Policy</span>
             </h1>
-            <p className="text-muted-foreground text-lg">Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <p suppressHydrationWarning className="text-muted-foreground text-lg">Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
           </motion.div>
         </div>
       </section>

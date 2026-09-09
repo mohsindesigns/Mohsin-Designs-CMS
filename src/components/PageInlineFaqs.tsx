@@ -5,6 +5,7 @@ import { Plus, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { useContent } from "@/hooks/useContent";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
+import CustomSchemaMarkup from "@/components/CustomSchemaMarkup";
 
 interface FAQItem {
   id?: string;
@@ -142,6 +143,7 @@ export default function PageInlineFaqs({
       id="faq"
       className="relative overflow-x-clip bg-white dark:bg-[#080710] py-24 md:py-32 border-t border-b border-slate-200 dark:border-white/10"
     >
+      {faqSchemaMarkup && <CustomSchemaMarkup schemaData={faqSchemaMarkup} />}
       {/* Decorative Soft Blur Orb */}
       <div className="absolute -left-32 top-1/3 h-96 w-96 rounded-full bg-primary/5 dark:bg-yellow-400/5 blur-3xl pointer-events-none" />
       <div className="absolute -right-32 bottom-1/3 h-96 w-96 rounded-full bg-primary/5 dark:bg-yellow-400/5 blur-3xl pointer-events-none" />
