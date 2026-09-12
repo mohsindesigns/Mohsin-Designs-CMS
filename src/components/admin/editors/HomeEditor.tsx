@@ -1303,11 +1303,9 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                          </div>
                          <div className="space-y-1.5">
                             <label className={UI.label}>Section Description</label>
-                            <textarea
-                               rows={3}
-                               value={data.industries?.description || "Every industry has distinct compliance, customer acquisition funnels, and technical requirements. We tailor our engineering to your exact vertical."}
-                               onChange={(e) => updateSection("industries", "description", e.target.value)}
-                               className={UI.input}
+                            <RichTextEditor
+                               content={data.industries?.description || "Every industry has distinct compliance, customer acquisition funnels, and technical requirements. We tailor our engineering to your exact vertical."}
+                               onChange={(val: string) => updateSection("industries", "description", val)}
                             />
                          </div>
                       </div>
@@ -1382,28 +1380,42 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                                         />
                                      </div>
                                   </div>
-                                  <div className="space-y-1.5">
-                                     <label className={UI.label}>Card Icon</label>
-                                     <IconSelector
-                                        value={ind.iconName || "Building2"}
-                                        onChange={(icon) => {
-                                           const list = Array.isArray(data.industries?.list) ? [...data.industries.list] : [];
-                                           list[i] = { ...list[i], iconName: icon };
-                                           updateSection("industries", "list", list);
-                                        }}
-                                     />
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                     <div className="space-y-1.5">
+                                        <label className={UI.label}>Card Icon</label>
+                                        <IconSelector
+                                           value={ind.iconName || "Building2"}
+                                           onChange={(icon) => {
+                                              const list = Array.isArray(data.industries?.list) ? [...data.industries.list] : [];
+                                              list[i] = { ...list[i], iconName: icon };
+                                              updateSection("industries", "list", list);
+                                           }}
+                                        />
+                                     </div>
+                                     <div className="space-y-1.5">
+                                        <label className={UI.label}>Link URL (optional)</label>
+                                        <input
+                                           type="text"
+                                           value={ind.link || ""}
+                                           onChange={(e) => {
+                                              const list = Array.isArray(data.industries?.list) ? [...data.industries.list] : [];
+                                              list[i] = { ...list[i], link: e.target.value };
+                                              updateSection("industries", "list", list);
+                                           }}
+                                           className={UI.input}
+                                           placeholder="e.g. /services/custom-web-applications"
+                                        />
+                                     </div>
                                   </div>
                                   <div className="space-y-1.5">
                                      <label className={UI.label}>Description</label>
-                                     <textarea
-                                        rows={2}
-                                        value={ind.desc || ind.description || ""}
-                                        onChange={(e) => {
+                                     <RichTextEditor
+                                        content={ind.desc || ind.description || ""}
+                                        onChange={(val: string) => {
                                            const list = Array.isArray(data.industries?.list) ? [...data.industries.list] : [];
-                                           list[i] = { ...list[i], desc: e.target.value };
+                                           list[i] = { ...list[i], desc: val };
                                            updateSection("industries", "list", list);
                                         }}
-                                        className={UI.input}
                                      />
                                   </div>
                                </div>

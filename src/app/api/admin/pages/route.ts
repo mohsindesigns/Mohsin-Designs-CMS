@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   try {
     await connectToDatabase();
     const pages = await Page.find({})
-      .select('_id title slug template status isTrashed createdAt updatedAt')
+      .select('_id title slug template status isTrashed createdAt updatedAt content.parentLocationId content.parentLocationSlug')
       .sort({ createdAt: -1 })
       .lean();
     return NextResponse.json(pages);
@@ -45,7 +45,8 @@ export async function POST(req: NextRequest) {
       title,
       slug,
       template,
-      status: 'published'
+      status: 'published',
+      content: (body.content && typeof body.content === 'object') ? body.content : {}
     });
 
     await recordActivity({
@@ -93,7 +94,7 @@ export async function PATCH(req: NextRequest) {
           template: source.template,
           content: source.content,
           seo: source.seo,
-          status: source.status
+          status: 'draft'
         });
         newPages.push(duplicate);
 

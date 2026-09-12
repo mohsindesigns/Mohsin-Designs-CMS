@@ -56,7 +56,7 @@ export default function CityTemplate({ pageData, params }: { pageData?: any; par
       {/* 3. Services Section */}
       {content.services?.enabled !== false && hasContent(content.services) && (
         <section id="services">
-          <Services data={content.services} />
+          <Services data={content.services} masterCatalog={content.globalServices} />
         </section>
       )}
 

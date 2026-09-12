@@ -914,12 +914,14 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       sectionTag: dbService?.faqBadge || dbService?.faqSection?.sectionTag || "14 // FREQUENTLY ASKED",
       titleIntro: dbService?.faqTitleIntro !== undefined ? dbService?.faqTitleIntro : (dbService?.faqSection?.titleIntro ?? "Service "),
       titleHighlight: dbService?.faqTitleHighlight || dbService?.faqSection?.titleHighlight || dbService?.faqTitle || "Frequently Asked Questions",
-      description: dbService?.faqDescription || dbService?.faqSection?.description || "",
-      ctaBadge: dbService?.faqSection?.ctaBadge || "FREE ARCHITECTURE AUDIT",
-      ctaTitle: dbService?.faqSection?.ctaTitle || "Have a complex custom build in mind?",
-      ctaDesc: dbService?.faqSection?.ctaDesc || "Book a 30-minute high-level technical strategy session with our lead engineer.",
-      ctaBtnText: dbService?.faqSection?.ctaBtnText || "Book Architecture Call",
-      ctaBtnLink: dbService?.faqSection?.ctaBtnLink || "#contact"
+      description: dbService?.faqDescription || dbService?.faqSection?.description || ""
+    },
+    strategyAudit: {
+      badge: dbService?.strategyAudit?.badge || "FREE ARCHITECTURE AUDIT",
+      title: dbService?.strategyAudit?.title || "Have a complex custom build in mind?",
+      desc: dbService?.strategyAudit?.desc || "Book a 30-minute high-level technical strategy session with our lead engineer.",
+      button: dbService?.strategyAudit?.button || "Book Architecture Call",
+      href: dbService?.strategyAudit?.href || "#contact"
     },
     finalCta: {
       enabled: dbService?.finalCta?.enabled,
@@ -2047,7 +2049,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       )}
 
       {/* ── 10.5 PRICING PLANS ── */}
-      {((service as any).pricing?.enabled === true && service.pricing && Array.isArray(service.pricing.plans) && service.pricing.plans.length > 0) && (
+      {((service as any).pricing?.enabled === true && service.pricing && Array.isArray(service.pricing.plans) && service.pricing.plans.length > 0) && (() => {
+        const pricingPlanCount = service.pricing.plans.length;
+        const pricingLgColsClass = pricingPlanCount >= 4 ? "lg:grid-cols-4" : pricingPlanCount === 3 ? "lg:grid-cols-3" : pricingPlanCount === 2 ? "lg:grid-cols-2" : "lg:grid-cols-1";
+        return (
         <section className="relative overflow-hidden py-20 md:py-24 bg-zinc-50/5 dark:bg-[#0c0b18]/5 border-b border-brand-zinc-200 dark:border-white/10">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
@@ -2086,7 +2091,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               )}
             </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+            <div className={`grid grid-cols-1 md:grid-cols-2 ${pricingLgColsClass} gap-6 items-stretch`}>
               {service.pricing.plans.map((plan: any, idx: number) => {
                 const isPopular = plan.isPopular;
                 const isCustom = plan.isCustom;
@@ -2168,7 +2173,8 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
           </div>
         </section>
-      )}
+        );
+      })()}
 
       {/* ── 11. RECOMMENDED SERVICES ── */}
       {((service as any).recommendedSection?.enabled !== false && recommendedServices.length > 0) && (

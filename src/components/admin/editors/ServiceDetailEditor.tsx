@@ -16,6 +16,7 @@ import { AVAILABLE_COUNTRIES, resolveCountryLocation } from "@/lib/countryLocati
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
 import SchemaEditor from "@/components/admin/SchemaEditor";
+import { syncFaqSchema } from "@/lib/faqSchema";
 
 // Safe comma separated input helper to prevent cursor swallowing
 function CommaSeparatedInput({ value, onChange, placeholder, className }: { value: string[]; onChange: (v: string[]) => void; placeholder?: string; className?: string }) {
@@ -2605,7 +2606,104 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                     label="Service FAQs"
                   />
                 </div>
-                <div className="flex items-center justify-between">
+                <div className="space-y-4 pt-2">
+                  <h3 className={UI.sectionHeader}>FAQ CTA Card (Strategy Session Box)</h3>
+                  <p className="text-xs text-[#646970] -mt-4">The card shown below the FAQ list on this service page. Leave blank to use the site default text.</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Badge Label</label>
+                      <input
+                        type="text"
+                        value={data.strategyAudit?.badge || ""}
+                        onChange={(e) => updateSection("strategyAudit", "badge", e.target.value)}
+                        className={UI.input}
+                        placeholder="FREE ARCHITECTURE AUDIT"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Card Headline</label>
+                      <input
+                        type="text"
+                        value={data.strategyAudit?.title || ""}
+                        onChange={(e) => updateSection("strategyAudit", "title", e.target.value)}
+                        className={UI.input}
+                        placeholder="Have a complex custom build in mind?"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Card Description</label>
+                    <textarea
+                      rows={2}
+                      value={data.strategyAudit?.desc || ""}
+                      onChange={(e) => updateSection("strategyAudit", "desc", e.target.value)}
+                      className={UI.textarea}
+                      placeholder="Book a 30-minute high-level technical strategy session with our lead engineer."
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>CTA Button Text</label>
+                      <input
+                        type="text"
+                        value={data.strategyAudit?.button || ""}
+                        onChange={(e) => updateSection("strategyAudit", "button", e.target.value)}
+                        className={UI.input}
+                        placeholder="Book Architecture Call"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>CTA Button Link</label>
+                      <input
+                        type="text"
+                        value={data.strategyAudit?.href || ""}
+                        onChange={(e) => updateSection("strategyAudit", "href", e.target.value)}
+                        className={UI.input}
+                        placeholder="#contact"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3 pt-4 border-t border-[#f0f0f1]">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className={UI.sectionHeader + " mb-0 pb-0 border-0"}>FAQ Schema (FAQPage)</h3>
+                      <p className="text-xs text-[#646970] mt-0.5">Generates FAQPage structured data from the questions below. Click "Sync" again after editing FAQs to refresh it.</p>
+                    </div>
+                    <SectionToggle
+                      enabled={data.faqSchemaAutoSync === true}
+                      onChange={(v: boolean) => {
+                        if (v) {
+                          const result = syncFaqSchema(data.faqs, data.schemaMarkup, data.faqSchemaAutoSync === true);
+                          if (result.status === "cancelled") return;
+                          const schemaString = result.status === "ok" ? result.schemaString : (data.schemaMarkup || "");
+                          setData((prev: any) => ({ ...(prev || {}), faqSchemaAutoSync: true, schemaMarkup: schemaString, seo: { ...(prev?.seo || {}), schemaData: schemaString } }));
+                        } else {
+                          setData((prev: any) => ({ ...(prev || {}), faqSchemaAutoSync: false, schemaMarkup: "", seo: { ...(prev?.seo || {}), schemaData: "" } }));
+                        }
+                      }}
+                      label="FAQ Schema"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const result = syncFaqSchema(data.faqs, data.schemaMarkup, data.faqSchemaAutoSync === true);
+                      if (result.status === "empty") {
+                        alert("Add at least one FAQ with both a question and an answer before syncing.");
+                        return;
+                      }
+                      if (result.status === "cancelled") return;
+                      setData((prev: any) => ({ ...(prev || {}), faqSchemaAutoSync: true, schemaMarkup: result.schemaString, seo: { ...(prev?.seo || {}), schemaData: result.schemaString } }));
+                    }}
+                    className="bg-[#2271b1] text-white px-3.5 py-2 text-[12px] font-bold rounded-[3px] hover:bg-[#135e96] transition-colors"
+                  >
+                    Sync FAQs to Schema
+                  </button>
+                </div>
+
+                <div className="flex items-center justify-between pt-4 border-t border-[#f0f0f1]">
                   <h3 className={UI.sectionHeader}>Service Specific FAQs</h3>
                   <button
                     type="button"

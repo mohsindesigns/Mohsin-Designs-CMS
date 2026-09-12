@@ -3,12 +3,17 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trash2, Loader2, Plus, Sparkles, CheckCircle2 } from "lucide-react";
+import dynamic from "next/dynamic";
 import IconSelector from "@/components/admin/IconSelector";
 import ImageField from "@/components/admin/ImageField";
 import ContentSelector from "@/components/admin/ContentSelector";
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
 import SchemaEditor from "@/components/admin/SchemaEditor";
+const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
+  ssr: false,
+  loading: () => <div className="h-20 bg-[#f6f7f7] animate-pulse border border-[#c3c4c7] rounded-sm flex items-center justify-center text-[#8c8f94] text-xs">Loading Rich Text Editor...</div>
+});
 
 /**
  * Resilient Comma-Separated Input that buffers local string state
@@ -625,17 +630,29 @@ export default function IndustryEditor({
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className={UI.label}>Sector Description</label>
-                        <textarea
-                          rows={2}
-                          value={domain.desc || domain.description || ""}
+                        <label className={UI.label}>Link URL (optional)</label>
+                        <input
+                          type="text"
+                          value={domain.link || ""}
                           onChange={(e) => {
                             const updated = [...(industryData.domainExpertise?.domains || [])];
-                            updated[idx] = { ...updated[idx], desc: e.target.value };
+                            updated[idx] = { ...updated[idx], link: e.target.value };
                             updateSection("domainExpertise", "domains", updated);
                           }}
-                          placeholder="HIPAA-compliant, trustworthy patient portals and medical practice booking systems..."
-                          className={UI.textarea}
+                          placeholder="e.g. /services/custom-web-applications"
+                          className={UI.input}
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className={UI.label}>Sector Description</label>
+                        <RichTextEditor
+                          content={domain.desc || domain.description || ""}
+                          onChange={(val: string) => {
+                            const updated = [...(industryData.domainExpertise?.domains || [])];
+                            updated[idx] = { ...updated[idx], desc: val };
+                            updateSection("domainExpertise", "domains", updated);
+                          }}
                         />
                       </div>
 

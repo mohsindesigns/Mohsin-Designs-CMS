@@ -284,9 +284,9 @@ export default function PageInlineFaqs({
                         onClick={(e) => e.stopPropagation()}
                       >
                         <div className="pl-7 pt-4 mt-4 border-t border-slate-100 dark:border-white/10">
-                          <p className="text-xs sm:text-sm text-slate-600 dark:text-zinc-300 font-medium leading-relaxed font-sans">
-                            {f.answer}
-                          </p>
+                          <div className="text-xs sm:text-sm text-slate-600 dark:text-zinc-300 font-medium leading-relaxed font-sans [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-5 [&_ol]:pl-5 [&_li]:mb-1">
+                            <RichTextRenderer content={f.answer} />
+                          </div>
                         </div>
                       </motion.div>
                     )}

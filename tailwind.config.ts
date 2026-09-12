@@ -13,6 +13,9 @@ export default {
             },
         },
         extend: {
+            screens: {
+                xs: "480px",
+            },
             fontFamily: {
                 heading: ['var(--font-heading)', 'serif'],
                 body: ['var(--font-body)', 'sans-serif'],

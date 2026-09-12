@@ -13,8 +13,10 @@ import { useRouter } from "next/navigation";
 import { TemplateEditors } from "@/components/admin/editors";
 import SeoEditor from "@/components/admin/SeoEditor";
 import SchemaEditor from "@/components/admin/SchemaEditor";
+import SectionToggle from "@/components/admin/SectionToggle";
 import MediaSelector from "@/components/admin/MediaSelector";
 import { BASE_URL } from "@/lib/constants";
+import { syncFaqSchema } from "@/lib/faqSchema";
 import dynamic from "next/dynamic";
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
   ssr: false,
@@ -443,10 +445,52 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
                     </div>
                   </div>
 
-                  {/* 3. Question & Answer Accordion List */}
+                  {/* 3. FAQ Schema Sync */}
+                  <div className="space-y-3 pt-4 border-t border-[#f0f0f1]">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="text-[12px] font-bold uppercase tracking-wider text-[#1d2327]">3. FAQ Schema (FAQPage)</h4>
+                        <p className="text-[12px] text-[#646970] mt-0.5">Generates FAQPage structured data from the questions below. Click "Sync" again after editing FAQs to refresh it.</p>
+                      </div>
+                      <SectionToggle
+                        enabled={content.faqSchemaAutoSync === true}
+                        onChange={(v: boolean) => {
+                          if (v) {
+                            const result = syncFaqSchema(content.faqs, content.schemaMarkup, content.faqSchemaAutoSync === true);
+                            if (result.status === "cancelled") return;
+                            const schemaString = result.status === "ok" ? result.schemaString : (content.schemaMarkup || "");
+                            setContent({ ...content, faqSchemaAutoSync: true, schemaMarkup: schemaString });
+                            setSeo({ ...seo, schemaData: schemaString });
+                          } else {
+                            setContent({ ...content, faqSchemaAutoSync: false, schemaMarkup: "" });
+                            setSeo({ ...seo, schemaData: "" });
+                          }
+                        }}
+                        label="FAQ Schema"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const result = syncFaqSchema(content.faqs, content.schemaMarkup, content.faqSchemaAutoSync === true);
+                        if (result.status === "empty") {
+                          alert("Add at least one FAQ with both a question and an answer before syncing.");
+                          return;
+                        }
+                        if (result.status === "cancelled") return;
+                        setContent({ ...content, schemaMarkup: result.schemaString, faqSchemaAutoSync: true });
+                        setSeo({ ...seo, schemaData: result.schemaString });
+                      }}
+                      className="bg-[#2271b1] text-white px-3.5 py-2 text-[12px] font-bold rounded-[3px] hover:bg-[#135e96] transition-colors"
+                    >
+                      Sync FAQs to Schema
+                    </button>
+                  </div>
+
+                  {/* 4. Question & Answer Accordion List */}
                   <div className="space-y-4 pt-4 border-t border-[#f0f0f1]">
                     <div className="flex justify-between items-center">
-                      <h4 className="text-[12px] font-bold uppercase tracking-wider text-[#1d2327]">3. Question & Answer List (Accordion)</h4>
+                      <h4 className="text-[12px] font-bold uppercase tracking-wider text-[#1d2327]">4. Question & Answer List (Accordion)</h4>
                       <button onClick={() => {
                         const currentFaqs = Array.isArray(content.faqs) ? content.faqs : [];
                         const nf = [...currentFaqs];

@@ -1,12 +1,47 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus, ChevronRight, Loader2, Search, Trash2, X, ExternalLink, Edit3, Check, Copy, MoreHorizontal,
   Info, Briefcase, CircleHelp, Mail, UserCheck, ArrowRight, Eye, EyeOff, Image as GalleryIcon
 } from "lucide-react";
+
+// Nests country/state/city rows under their parentLocationId (when set) so the
+// hierarchy reads top-to-bottom in the flat table, without needing a tree UI.
+// Pages with no resolvable parent keep their normal position - nothing regresses
+// for pages created before this field existed.
+type DisplayRow = { page: any; depth: number };
+function buildDisplayRows(list: any[]): DisplayRow[] {
+  const byId = new Map(list.map((p) => [p._id, p]));
+  const childrenOf = new Map<string, any[]>();
+  const childIds = new Set<string>();
+
+  list.forEach((p) => {
+    const parentId = p.content?.parentLocationId;
+    if (parentId && byId.has(parentId) && parentId !== p._id) {
+      if (!childrenOf.has(parentId)) childrenOf.set(parentId, []);
+      childrenOf.get(parentId)!.push(p);
+      childIds.add(p._id);
+    }
+  });
+
+  const rows: DisplayRow[] = [];
+  const seen = new Set<string>();
+  const appendWithChildren = (page: any, depth: number) => {
+    if (seen.has(page._id)) return; // guard against a cyclical parent chain
+    seen.add(page._id);
+    rows.push({ page, depth });
+    (childrenOf.get(page._id) || []).forEach((child) => appendWithChildren(child, depth + 1));
+  };
+
+  list.forEach((p) => {
+    if (!childIds.has(p._id)) appendWithChildren(p, 0);
+  });
+
+  return rows;
+}
 
 export default function PagesDashboard() {
   const [pages, setPages] = useState<any[]>([]);
@@ -24,8 +59,20 @@ export default function PagesDashboard() {
     title: "",
     slug: "",
     template: "home",
-    status: "draft"
+    status: "draft",
+    parentLocationId: "",
+    parentLocationSlug: ""
   });
+
+  const LOCATION_PARENT_TEMPLATE: Record<string, string> = { state: "country", city: "state" };
+  const locationParentOptions = pages.filter(
+    (p) => p.template === LOCATION_PARENT_TEMPLATE[newPage.template] && !p.isTrashed
+  );
+
+  const applyParentToSlug = (childSlug: string, parentSlug: string) => {
+    const ownSegment = (childSlug || "").split("/").filter(Boolean).pop() || "";
+    return parentSlug ? `${parentSlug}/${ownSegment}` : ownSegment;
+  };
 
   useEffect(() => {
     fetchPages();
@@ -47,10 +94,15 @@ export default function PagesDashboard() {
     if (!newPage.title || !newPage.slug) return alert("Title and Slug are required.");
 
     try {
+      const { parentLocationId, parentLocationSlug, ...pageFields } = newPage;
+      const payload = {
+        ...pageFields,
+        ...(parentLocationId ? { content: { parentLocationId, parentLocationSlug } } : {})
+      };
       const res = await fetch("/api/admin/pages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newPage)
+        body: JSON.stringify(payload)
       });
       if (res.ok) {
         const created = await res.json();
@@ -210,7 +262,7 @@ export default function PagesDashboard() {
     );
   };
 
-  const filteredPages = pages.filter(p => {
+  const filteredPages = useMemo(() => pages.filter(p => {
     const matchesSearch = p.title.toLowerCase().includes(search.toLowerCase()) || p.slug.toLowerCase().includes(search.toLowerCase());
     const isTrashed = !!p.isTrashed;
 
@@ -219,7 +271,9 @@ export default function PagesDashboard() {
 
     if (filter === "all") return matchesSearch;
     return matchesSearch && p.status === filter;
-  });
+  }), [pages, search, filter]);
+
+  const displayRows = useMemo(() => buildDisplayRows(filteredPages), [filteredPages]);
 
   if (loading) return <div className="flex h-screen items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-[#2271b1]" /></div>;
 
@@ -322,10 +376,10 @@ export default function PagesDashboard() {
             </tr>
           </thead>
           <tbody className="text-[13px] text-[#2c3338]">
-            {filteredPages.length === 0 ? (
+            {displayRows.length === 0 ? (
               <tr><td colSpan={5} className="py-6 px-4 text-[#50575e]">No pages found.</td></tr>
             ) : (
-              filteredPages.map((page, idx) => (
+              displayRows.map(({ page, depth }, idx) => (
                 <tr
                   key={page._id}
                   className={`border-b border-[#f0f0f1] group ${idx % 2 === 0 ? "bg-[#f9f9f9]" : "bg-white"} hover:bg-[#f0f0f1] transition-colors`}
@@ -338,8 +392,11 @@ export default function PagesDashboard() {
                       className="w-4 h-4 border-[#8c8f94] rounded-[3px] text-[#2271b1] focus:ring-[#2271b1]"
                     />
                   </td>
-                  <td className="py-3 px-3 align-top">
-                    <strong className="text-[#2271b1] block text-[14px]">{page.title} — {page.status === 'draft' ? <span className="text-[#646970] font-normal italic">Draft</span> : <span className="text-[#00a32a] font-normal italic">Published</span>}</strong>
+                  <td className="py-3 px-3 align-top" style={depth > 0 ? { paddingLeft: `${12 + depth * 24}px` } : undefined}>
+                    <strong className="text-[#2271b1] block text-[14px]">
+                      {depth > 0 && <span className="text-[#a7aaad] font-normal mr-1">└─</span>}
+                      {page.title} — {page.status === 'draft' ? <span className="text-[#646970] font-normal italic">Draft</span> : <span className="text-[#00a32a] font-normal italic">Published</span>}
+                    </strong>
                     <div className="flex items-center gap-2 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Link href={`/admin/pages/${page._id}`} className="text-[#2271b1] hover:underline text-[12px]">Edit</Link>
                       <span className="text-[#a7aaad]">|</span>
@@ -402,7 +459,8 @@ export default function PagesDashboard() {
                     type="text"
                     value={newPage.title}
                     onChange={(e) => {
-                      const slug = e.target.value.toLowerCase().replace(/[^a-z0-9 ]/g, "").replace(/\s+/g, "-");
+                      const ownSlug = e.target.value.toLowerCase().replace(/[^a-z0-9 ]/g, "").replace(/\s+/g, "-");
+                      const slug = applyParentToSlug(ownSlug, newPage.parentLocationSlug);
                       setNewPage({ ...newPage, title: e.target.value, slug });
                     }}
                     placeholder="Enter page title here"
@@ -422,7 +480,15 @@ export default function PagesDashboard() {
                   <label className="block text-[#1d2327] text-sm font-semibold mb-1">Template</label>
                   <select
                     value={newPage.template}
-                    onChange={(e) => setNewPage({ ...newPage, template: e.target.value })}
+                    onChange={(e) => {
+                      const template = e.target.value;
+                      if (!LOCATION_PARENT_TEMPLATE[template]) {
+                        const ownSlug = (newPage.slug || "").split("/").filter(Boolean).pop() || "";
+                        setNewPage({ ...newPage, template, parentLocationId: "", parentLocationSlug: "", slug: ownSlug });
+                      } else {
+                        setNewPage({ ...newPage, template });
+                      }
+                    }}
                     className="w-full border border-[#8c8f94] bg-white px-2 py-1.5 text-[14px] rounded-[3px] outline-none"
                   >
                     <option value="home">Home Template</option>
@@ -446,6 +512,37 @@ export default function PagesDashboard() {
                     <option value="city">City Template</option>
                   </select>
                 </div>
+                {LOCATION_PARENT_TEMPLATE[newPage.template] && (
+                  <div>
+                    <label className="block text-[#1d2327] text-sm font-semibold mb-1">
+                      Parent {LOCATION_PARENT_TEMPLATE[newPage.template] === "country" ? "Country" : "State"}
+                    </label>
+                    <select
+                      value={newPage.parentLocationId}
+                      onChange={(e) => {
+                        const parent = locationParentOptions.find((p) => p._id === e.target.value);
+                        const parentSlug = parent?.slug || "";
+                        setNewPage({
+                          ...newPage,
+                          parentLocationId: parent?._id || "",
+                          parentLocationSlug: parentSlug,
+                          slug: applyParentToSlug(newPage.slug, parentSlug)
+                        });
+                      }}
+                      className="w-full border border-[#8c8f94] bg-white px-2 py-1.5 text-[14px] rounded-[3px] outline-none"
+                    >
+                      <option value="">
+                        {locationParentOptions.length === 0 ? "No matching parent pages found" : "Select a parent..."}
+                      </option>
+                      {locationParentOptions.map((p) => (
+                        <option key={p._id} value={p._id}>{p.title} ({p.slug})</option>
+                      ))}
+                    </select>
+                    <p className="text-[11px] text-[#646970] mt-1">
+                      Nests this page's URL under the parent's slug (e.g. usa/texas) and lets the admin Pages list group it correctly.
+                    </p>
+                  </div>
+                )}
               </div>
               <div className="flex items-center justify-end px-4 py-3 bg-[#f6f7f7] border-t border-[#c3c4c7]">
                 <button

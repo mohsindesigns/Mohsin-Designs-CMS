@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useContent } from "@/hooks/useContent";
 
-export default function Services({ data: propData }: { data?: any }) {
+export default function Services({ data: propData, masterCatalog: masterCatalogProp }: { data?: any; masterCatalog?: any[] }) {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const dragStartPos = useRef({ x: 0, scrollLeft: 0 });
@@ -53,14 +53,21 @@ export default function Services({ data: propData }: { data?: any }) {
     if (card) carouselRef.current.scrollBy({ left: (dir === "next" ? 1 : -1) * (card.getBoundingClientRect().width + 24), behavior: "smooth" });
   };
 
-  // Build comprehensive master list of all available global services for robust fallback resolution
+  // Build comprehensive master list of all available global services for robust fallback resolution.
+  // Prefer an explicit masterCatalog prop (the page's own live-refreshed catalog, when the
+  // caller has one) over the shared content context, whose services.services/globalServices
+  // can lag behind the real catalog depending on how that page's content was last synced.
+  // Deliberately excludes `services.list` here: that field is a separate, legacy top-level
+  // default and is not authoritative (it can contain stale/placeholder entries that would
+  // otherwise "match themselves" and defeat the orphaned-entry filter below).
   const anyContent = content as any;
-  const masterServices = [
-    ...(Array.isArray(anyContent?.services?.services) ? anyContent.services.services : []),
-    ...(Array.isArray(anyContent?.services) ? anyContent.services : []),
-    ...(Array.isArray(anyContent?.globalServices) ? anyContent.globalServices : []),
-    ...(Array.isArray(anyContent?.services?.list) ? anyContent.services.list : [])
-  ];
+  const masterServices = Array.isArray(masterCatalogProp) && masterCatalogProp.length > 0
+    ? masterCatalogProp
+    : [
+      ...(Array.isArray(anyContent?.services?.services) ? anyContent.services.services : []),
+      ...(Array.isArray(anyContent?.services) ? anyContent.services : []),
+      ...(Array.isArray(anyContent?.globalServices) ? anyContent.globalServices : [])
+    ];
 
   return (
     <section id="services" className="relative overflow-hidden bg-[#F8FAFC] dark:bg-[#0a0a14] py-24 md:py-32 border-t border-brand-zinc-200 dark:border-white/10">
@@ -155,23 +162,35 @@ export default function Services({ data: propData }: { data?: any }) {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
           className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-none w-full -mx-2 px-2 md:mx-0 md:px-0 py-8 carousel-grab select-none"
         >
-          {services.list.map((service: any, index: number) => {
-            const globalService = masterServices.find(
-              (s: any) =>
-                (service?._id && s?._id === service._id) ||
-                (service?.id && (s?.id === service.id || s?._id === service.id)) ||
-                (service?.slug && s?.slug === service.slug) ||
-                (typeof service === 'string' && (s?._id === service || s?.id === service || s?.slug === service || s?.title === service)) ||
-                (service?.title && s?.title?.toLowerCase() === service.title?.toLowerCase())
-            );
+          {services.list
+            .map((service: any, index: number) => {
+              const globalService = masterServices.find(
+                (s: any) =>
+                  (service?._id && s?._id === service._id) ||
+                  (service?.id && (s?.id === service.id || s?._id === service.id)) ||
+                  (service?.slug && s?.slug === service.slug) ||
+                  (typeof service === 'string' && (s?._id === service || s?.id === service || s?.slug === service || s?.title === service)) ||
+                  (service?.title && s?.title?.toLowerCase() === service.title?.toLowerCase())
+              );
 
-            const title = service?.title || globalService?.title || (typeof service === 'string' ? service : "Service");
-            const desc = service?.desc || service?.description || service?.shortDescription || service?.tagline || globalService?.desc || globalService?.description || globalService?.shortDescription || globalService?.tagline || globalService?.hero?.description || "";
-            const imgSrc = service?.image || service?.overviewImage || service?.heroImage || service?.featuredImage || globalService?.image || globalService?.overviewImage || globalService?.heroImage || globalService?.featuredImage || globalService?.hero?.bgImage || globalService?.hero?.backgroundImage || "";
-            const category = service?.category || service?.tag || globalService?.category || globalService?.tag || "";
-            const slug = service?.slug || globalService?.slug || "";
-            const num = service?.num || String(index + 1).padStart(2, "0");
+              const title = service?.title || globalService?.title || (typeof service === 'string' ? service : "Service");
+              const desc = service?.desc || service?.description || service?.shortDescription || service?.tagline || globalService?.desc || globalService?.description || globalService?.shortDescription || globalService?.tagline || globalService?.hero?.description || "";
+              const imgSrc = service?.image || service?.overviewImage || service?.heroImage || service?.featuredImage || globalService?.image || globalService?.overviewImage || globalService?.heroImage || globalService?.featuredImage || globalService?.hero?.bgImage || globalService?.hero?.backgroundImage || "";
+              const category = service?.category || service?.tag || globalService?.category || globalService?.tag || "";
+              const slug = service?.slug || globalService?.slug || "";
+              const num = service?.num || String(index + 1).padStart(2, "0");
 
+              // A curated pick that matches no real service and carries no image of its
+              // own is almost always a stale/orphaned reference (e.g. a deleted service or
+              // leftover default) rather than an intentional card — skip it instead of
+              // rendering a blank "No Image" placeholder on the live site.
+              if (!globalService && !imgSrc) return null;
+
+              return { service, title, desc, imgSrc, category, slug, num };
+            })
+            .filter((entry): entry is NonNullable<typeof entry> => entry !== null)
+            .map((entry, index) => {
+            const { service, title, desc, imgSrc, category, slug, num } = entry;
             return (
               <div key={service?._id || service?.id || index} className="w-[86%] sm:w-[calc(50%-12px)] lg:w-[calc(33.33%-16px)] shrink-0 snap-start">
                 <Link

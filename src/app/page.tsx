@@ -159,15 +159,15 @@ export default async function Index() {
       return (
         <>
           <CustomSchemaMarkup schema={customSchema} />
-          <TemplateWrapper 
-            templateName={page.template} 
+          <TemplateWrapper
+            templateName={page.template}
             pageData={{
               ...page,
               content: {
                 ...(page.content || {}),
                 globalServices: content?.data?.services?.services || []
               }
-            }} 
+            }}
             globalData={content?.data || {}}
             initialBlogs={initialBlogs}
             params={Promise.resolve({ slug: ['/'] })} 
@@ -201,7 +201,7 @@ export default async function Index() {
   }).lean();
 
   const homePage = defaultHomePageDoc ? JSON.parse(JSON.stringify(defaultHomePageDoc)) : null;
-  const homeCustomSchema = homePage?.seo?.schemaData || 
+  const homeCustomSchema = homePage?.seo?.schemaData ||
                            homePage?.content?.schemaMarkup || 
                            homePage?.content?.customSchema || 
                            content?.data?.home?.seo?.schemaData || 
@@ -210,9 +210,18 @@ export default async function Index() {
   return (
     <>
       <CustomSchemaMarkup schema={homeCustomSchema} />
-      <TemplateWrapper 
+      <TemplateWrapper
         templateName="home"
-        pageData={homePage || {
+        pageData={homePage ? {
+          ...homePage,
+          content: {
+            ...(homePage.content || {}),
+            // Always refresh from the live master catalog rather than trusting
+            // whatever globalServices snapshot happened to be last saved on this
+            // Page doc - that mirror can go stale (see Services.tsx enrichment).
+            globalServices: content?.data?.services?.services || []
+          }
+        } : {
           content: {
             ...(content?.data?.home || {}),
             globalServices: content?.data?.services?.services || []

@@ -360,7 +360,7 @@ export const useContent = () => {
                 titleIntro: "Thinking, Strategies &",
                 titleHighlight: "Industry Insights",
                 description: "Explore our latest thoughts on high-performance web engineering, modern UI/UX design architectures, and conversion rate optimization.",
-                featuredLabel: "Read Full Article",
+                featuredLabel: "Read More",
                 dateSeparator: " • ",
                 selectedPosts: []
             };

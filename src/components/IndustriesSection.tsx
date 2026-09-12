@@ -1,7 +1,9 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { motion, useMotionValue } from "framer-motion";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import {
   Globe,
   Cpu,
@@ -135,9 +137,9 @@ export default function IndustriesSection({ data }: IndustriesSectionProps) {
           </h2>
 
           {industries.description && (
-            <p className="text-sm sm:text-base text-brand-zinc-600 dark:text-zinc-300 font-sans leading-relaxed pt-2">
-              {industries.description}
-            </p>
+            <div className="text-sm sm:text-base text-brand-zinc-600 dark:text-zinc-300 font-sans leading-relaxed pt-2">
+              <RichTextRenderer content={industries.description} />
+            </div>
           )}
         </motion.div>
 
@@ -168,11 +170,15 @@ export default function IndustriesSection({ data }: IndustriesSectionProps) {
 
                   <div className="space-y-2">
                     <h3 className="font-heading text-lg sm:text-xl font-black text-brand-dark dark:text-white group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors leading-snug">
-                      {ind.title}
+                      {ind.link ? (
+                        <Link href={ind.link} className="hover:underline">{ind.title}</Link>
+                      ) : (
+                        ind.title
+                      )}
                     </h3>
-                    <p className="text-xs sm:text-sm text-brand-zinc-600 dark:text-zinc-400 font-sans leading-relaxed font-normal">
-                      {ind.desc || ind.description}
-                    </p>
+                    <div className="text-xs sm:text-sm text-brand-zinc-600 dark:text-zinc-400 font-sans leading-relaxed font-normal">
+                      <RichTextRenderer content={ind.desc || ind.description || ""} />
+                    </div>
                   </div>
                 </div>
 

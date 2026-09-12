@@ -67,7 +67,7 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any; par
 
       {content.services?.enabled !== false && (
         <section id="services">
-          <Services data={content.services} />
+          <Services data={content.services} masterCatalog={content.globalServices} />
         </section>
       )}
 

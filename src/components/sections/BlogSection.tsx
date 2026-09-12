@@ -68,7 +68,7 @@ export default function BlogSection({
   }
 
   const descText = rawBlog.description || description || "";
-  const featuredLabel = rawBlog.featuredLabel || "Read Full Article";
+  const featuredLabel = rawBlog.featuredLabel || "Read More";
   const dateSeparator = rawBlog.dateSeparator || " • ";
 
   // Fallback demo posts if no posts are found
