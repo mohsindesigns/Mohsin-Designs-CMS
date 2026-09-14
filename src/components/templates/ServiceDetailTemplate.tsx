@@ -4,6 +4,7 @@ import React, { use, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { isSafeHref } from "@/lib/utils";
 import { motion, AnimatePresence, useMotionValue, useInView } from "framer-motion";
 import * as LucideIcons from "lucide-react";
 import {
@@ -1846,7 +1847,11 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
                       <div className="space-y-2">
                         <h3 className="font-heading text-lg sm:text-xl font-bold text-slate-900 dark:text-white group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors duration-300 leading-snug">
-                          {ind.title}
+                          {ind.link && isSafeHref(ind.link) ? (
+                            <Link href={ind.link} className="hover:underline">{ind.title}</Link>
+                          ) : (
+                            ind.title
+                          )}
                         </h3>
                         <p className="text-xs sm:text-[13.5px] font-sans text-slate-600 dark:text-zinc-400 leading-relaxed font-normal">
                           {ind.desc || ind.description}
@@ -2157,13 +2162,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                     <div className="pt-6 mt-8 border-t border-brand-zinc-200/80 dark:border-white/5 w-full relative z-10">
                       <Link
                         href={plan.ctaLink || `/contact?service=${service.slug}&plan=${encodeURIComponent(plan.name || "")}`}
-                        className={`w-full py-3.5 px-4 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all duration-300 shadow-sm ${isPopular
-                            ? "bg-brand-blue dark:bg-brand-yellow text-white dark:text-brand-dark hover:shadow-[0_8px_25px_rgba(3,6,172,0.25)] dark:hover:shadow-[0_8px_25px_rgba(233,189,54,0.3)] hover:-translate-y-0.5"
-                            : "bg-brand-zinc-100 hover:bg-brand-blue dark:bg-white/5 dark:hover:bg-brand-yellow text-brand-dark dark:text-white hover:text-white dark:hover:text-brand-dark hover:-translate-y-0.5 hover:shadow-md"
-                          }`}
+                        className={`w-full justify-center ${isPopular ? "btn-primary-cta" : "btn-secondary-cta"}`}
                       >
                         <span>{plan.ctaText || "Select Plan"}</span>
-                        <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+                        <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
                       </Link>
                     </div>
 

@@ -11,6 +11,11 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
+  ssr: false,
+  loading: () => <div className="h-20 bg-[#f6f7f7] animate-pulse border border-[#c3c4c7] rounded-sm flex items-center justify-center text-[#8c8f94] text-xs">Loading Rich Text Editor...</div>
+});
 import ImageField from "@/components/admin/ImageField";
 import IconSelector from "@/components/admin/IconSelector";
 import SeoEditor from "@/components/admin/SeoEditor";
@@ -19,6 +24,7 @@ import MediaSelector from "@/components/admin/MediaSelector";
 import SchemaEditor from "@/components/admin/SchemaEditor";
 import BlogSelector from "@/components/admin/BlogSelector";
 import { BASE_URL } from "@/lib/constants";
+import { syncFaqSchema } from "@/lib/faqSchema";
 import { UI } from "@/components/admin/editors/styles";
 import { AVAILABLE_COUNTRIES, resolveCountryLocation, COUNTRIES_DATABASE } from "@/lib/countryLocations";
 
@@ -2307,6 +2313,20 @@ export default function ServicesAdminPage() {
                                           </div>
                                         </div>
                                         <div className="space-y-1.5">
+                                          <label className={UI.label}>Link URL (optional)</label>
+                                          <input
+                                            type="text"
+                                            value={item.link || ""}
+                                            onChange={(e) => {
+                                              const currentItems = [...(form.industries.items || form.industries.list || [])];
+                                              currentItems[idx] = { ...currentItems[idx], link: e.target.value };
+                                              setForm({ ...form, industries: { ...form.industries, items: currentItems, list: currentItems } });
+                                            }}
+                                            className={UI.input}
+                                            placeholder="e.g. /industries/saas-enterprise-tech"
+                                          />
+                                        </div>
+                                        <div className="space-y-1.5">
                                           <label className={UI.label}>Description</label>
                                           <textarea
                                             rows={2}
@@ -3647,23 +3667,136 @@ export default function ServicesAdminPage() {
                             </div>
                             <div className="space-y-1.5">
                               <label className={UI.label}>Answer</label>
-                              <textarea
-                                rows={3}
-                                value={faq.answer || ""}
-                                onChange={e => {
+                              <RichTextEditor
+                                content={faq.answer || ""}
+                                onChange={(val: string) => {
                                   const nf = [...form.faqs];
-                                  nf[idx].answer = e.target.value;
+                                  nf[idx].answer = val;
                                   setForm({ ...form, faqs: nf });
                                 }}
-                                placeholder="Write clear, detailed answer here..."
-                                className={UI.input}
                               />
                             </div>
                           </div>
                         ))}
                       </div>
 
-                      {/* 3. Schema Markup */}
+                      {/* 3. Strategy Session CTA Box */}
+                      <div className="space-y-4 pt-4 border-t border-[#f0f0f1]">
+                        <h4 className="text-[12px] font-bold uppercase tracking-wider text-[#1d2327]">3. Sticky Strategy Session Box</h4>
+                        <div className="bg-[#f6f7f7] border border-[#dcdcde] p-4 rounded-[4px] space-y-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-1.5">
+                              <label className="text-[10px] font-bold uppercase text-[#50575e]">Badge Label</label>
+                              <input
+                                type="text"
+                                value={form.strategyAudit?.badge || "FREE ARCHITECTURE AUDIT"}
+                                onChange={e => setForm({
+                                  ...form,
+                                  strategyAudit: { ...(form.strategyAudit || {}), badge: e.target.value }
+                                })}
+                                className="w-full border border-[#c3c4c7] px-3 py-1.5 text-[13px] bg-white rounded-[3px]"
+                              />
+                            </div>
+                            <div className="space-y-1.5">
+                              <label className="text-[10px] font-bold uppercase text-[#50575e]">Card Headline</label>
+                              <input
+                                type="text"
+                                value={form.strategyAudit?.title || "Have a complex custom build in mind?"}
+                                onChange={e => setForm({
+                                  ...form,
+                                  strategyAudit: { ...(form.strategyAudit || {}), title: e.target.value }
+                                })}
+                                className="w-full border border-[#c3c4c7] px-3 py-1.5 text-[13px] font-bold bg-white rounded-[3px]"
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-1.5">
+                            <label className="text-[10px] font-bold uppercase text-[#50575e]">Card Description</label>
+                            <textarea
+                              rows={2}
+                              value={form.strategyAudit?.desc || "Book a 30-minute high-level technical strategy session with our lead engineer."}
+                              onChange={e => setForm({
+                                ...form,
+                                strategyAudit: { ...(form.strategyAudit || {}), desc: e.target.value }
+                              })}
+                              className="w-full border border-[#c3c4c7] px-3 py-1.5 text-[13px] bg-white rounded-[3px]"
+                            />
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-1.5">
+                              <label className="text-[10px] font-bold uppercase text-[#50575e]">CTA Button Text</label>
+                              <input
+                                type="text"
+                                value={form.strategyAudit?.button || "Book Architecture Call"}
+                                onChange={e => setForm({
+                                  ...form,
+                                  strategyAudit: { ...(form.strategyAudit || {}), button: e.target.value }
+                                })}
+                                className="w-full border border-[#c3c4c7] px-3 py-1.5 text-[13px] bg-white rounded-[3px]"
+                              />
+                            </div>
+                            <div className="space-y-1.5">
+                              <label className="text-[10px] font-bold uppercase text-[#50575e]">CTA Button Link</label>
+                              <input
+                                type="text"
+                                value={form.strategyAudit?.href || "#contact"}
+                                onChange={e => setForm({
+                                  ...form,
+                                  strategyAudit: { ...(form.strategyAudit || {}), href: e.target.value }
+                                })}
+                                className="w-full border border-[#c3c4c7] px-3 py-1.5 text-[13px] bg-white rounded-[3px]"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 4. FAQ Schema Sync */}
+                      <div className="space-y-3 pt-4 border-t border-[#f0f0f1]">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h4 className="text-[12px] font-bold uppercase tracking-wider text-[#1d2327]">4. FAQ Schema (FAQPage)</h4>
+                            <p className="text-[12px] text-[#646970] mt-0.5">Generates FAQPage structured data from the questions above. Click "Sync" again after editing FAQs to refresh it.</p>
+                          </div>
+                          <SectionToggle
+                            enabled={form.faqSchemaAutoSync === true}
+                            onChange={(v: boolean) => {
+                              if (v) {
+                                const result = syncFaqSchema(form.faqs, form.schemaMarkup, form.faqSchemaAutoSync === true);
+                                if (result.status === "empty") {
+                                  alert("Add at least one FAQ with both a question and an answer before enabling FAQ Schema.");
+                                  return;
+                                }
+                                if (result.status === "cancelled") return;
+                                setForm({ ...form, faqSchemaAutoSync: true, schemaMarkup: result.schemaString });
+                                setSeo({ ...seo, schemaData: result.schemaString });
+                              } else {
+                                setForm({ ...form, faqSchemaAutoSync: false, schemaMarkup: "" });
+                                setSeo({ ...seo, schemaData: "" });
+                              }
+                            }}
+                            label="FAQ Schema"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const result = syncFaqSchema(form.faqs, form.schemaMarkup, form.faqSchemaAutoSync === true);
+                            if (result.status === "empty") {
+                              alert("Add at least one FAQ with both a question and an answer before syncing.");
+                              return;
+                            }
+                            if (result.status === "cancelled") return;
+                            setForm({ ...form, schemaMarkup: result.schemaString, faqSchemaAutoSync: true });
+                            setSeo({ ...seo, schemaData: result.schemaString });
+                          }}
+                          className="bg-[#2271b1] text-white px-3.5 py-2 text-[12px] font-bold rounded-[3px] hover:bg-[#135e96] transition-colors"
+                        >
+                          Sync FAQs to Schema
+                        </button>
+                      </div>
+
+                      {/* 5. Schema Markup */}
                       <div className="pt-5 border-t border-[#c3c4c7] space-y-2">
                         <label className="text-[13px] font-bold text-[#1d2327]">FAQ Schema Markup (Bulk JSON-LD)</label>
                         <p className="text-[12px] text-[#646970] mt-0.5">Paste a single JSON-LD schema block covering all FAQs for this service page.</p>
