@@ -2052,6 +2052,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       {((service as any).pricing?.enabled === true && service.pricing && Array.isArray(service.pricing.plans) && service.pricing.plans.length > 0) && (() => {
         const pricingPlanCount = service.pricing.plans.length;
         const pricingLgColsClass = pricingPlanCount >= 4 ? "lg:grid-cols-4" : pricingPlanCount === 3 ? "lg:grid-cols-3" : pricingPlanCount === 2 ? "lg:grid-cols-2" : "lg:grid-cols-1";
+        const pricingMdColsClass = pricingPlanCount === 1 ? "md:grid-cols-1" : "md:grid-cols-2";
         return (
         <section className="relative overflow-hidden py-20 md:py-24 bg-zinc-50/5 dark:bg-[#0c0b18]/5 border-b border-brand-zinc-200 dark:border-white/10">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
@@ -2091,7 +2092,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               )}
             </motion.div>
 
-            <div className={`grid grid-cols-1 md:grid-cols-2 ${pricingLgColsClass} gap-6 items-stretch`}>
+            <div className={`grid grid-cols-1 ${pricingMdColsClass} ${pricingLgColsClass} gap-6 items-stretch`}>
               {service.pricing.plans.map((plan: any, idx: number) => {
                 const isPopular = plan.isPopular;
                 const isCustom = plan.isCustom;

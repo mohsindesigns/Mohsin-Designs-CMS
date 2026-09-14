@@ -6,6 +6,28 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
+ * Guards against javascript:/data:/vbscript: URLs in admin-entered href
+ * fields (industry card links, FAQ CTA button links, etc.) being rendered as
+ * a real navigable target - neither Next.js's <Link> nor React itself blocks
+ * dangerous URL schemes on the href/action attribute, so this must be
+ * checked at the point of render, not just relied on as client-side input
+ * validation (a raw API call could bypass that entirely).
+ */
+export function isSafeHref(url: string | undefined | null): boolean {
+  if (!url || typeof url !== "string") return false;
+  const trimmed = url.trim();
+  if (!trimmed) return false;
+  // Relative paths, hashes, and query-only links are always safe.
+  if (/^[#/?]/.test(trimmed)) return true;
+  // Known-safe absolute schemes.
+  if (/^(https?:|mailto:|tel:)/i.test(trimmed)) return true;
+  // Any other explicit scheme (javascript:, data:, vbscript:, ...) is rejected.
+  if (/^[a-z][a-z0-9+.-]*:/i.test(trimmed)) return false;
+  // No scheme and doesn't start with #/?/ - a bare relative path, safe.
+  return true;
+}
+
+/**
  * Normalizes a Page slug: lowercases, strips leading/trailing slashes, and cleans each
  * "/"-separated segment (stray characters, spaces, trailing slashes) so the stored slug
  * always matches the clean URL path Next.js resolves at request time.

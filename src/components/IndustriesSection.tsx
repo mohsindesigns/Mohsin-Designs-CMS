@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { motion, useMotionValue } from "framer-motion";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
+import { isSafeHref } from "@/lib/utils";
 import {
   Globe,
   Cpu,
@@ -170,7 +171,7 @@ export default function IndustriesSection({ data }: IndustriesSectionProps) {
 
                   <div className="space-y-2">
                     <h3 className="font-heading text-lg sm:text-xl font-black text-brand-dark dark:text-white group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors leading-snug">
-                      {ind.link ? (
+                      {ind.link && isSafeHref(ind.link) ? (
                         <Link href={ind.link} className="hover:underline">{ind.title}</Link>
                       ) : (
                         ind.title

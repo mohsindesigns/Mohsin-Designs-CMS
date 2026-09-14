@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
+import { isSafeHref } from "@/lib/utils";
 import {
   ArrowRight,
   Play,
@@ -733,7 +734,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
 
                     <div className="space-y-2">
                       <h3 className="font-heading text-lg sm:text-xl font-black text-brand-dark dark:text-white tracking-tight group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors">
-                        {domain.link ? (
+                        {domain.link && isSafeHref(domain.link) ? (
                           <Link href={domain.link} className="hover:underline">{domain.title}</Link>
                         ) : (
                           domain.title

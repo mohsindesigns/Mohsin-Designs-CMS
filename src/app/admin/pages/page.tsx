@@ -40,6 +40,14 @@ function buildDisplayRows(list: any[]): DisplayRow[] {
     if (!childIds.has(p._id)) appendWithChildren(p, 0);
   });
 
+  // Anything still unvisited here is part of a cyclical parent chain (A's
+  // parent is B, B's parent is A) - not reachable through the shipped admin
+  // UI today, but rather than silently vanishing from the table entirely,
+  // surface it as a root row instead of dropping it.
+  list.forEach((p) => {
+    if (!seen.has(p._id)) appendWithChildren(p, 0);
+  });
+
   return rows;
 }
 
@@ -482,7 +490,16 @@ export default function PagesDashboard() {
                     value={newPage.template}
                     onChange={(e) => {
                       const template = e.target.value;
-                      if (!LOCATION_PARENT_TEMPLATE[template]) {
+                      // Reset the parent selection whenever the REQUIRED PARENT TIER
+                      // changes - not just when leaving the location-template family
+                      // entirely. Switching directly between "state" (needs a country
+                      // parent) and "city" (needs a state parent) previously left the
+                      // old, now wrong-tier parent silently selected underneath a
+                      // dropdown that *looked* blank (its options had already been
+                      // refiltered to the new tier, matching nothing).
+                      const oldParentTier = LOCATION_PARENT_TEMPLATE[newPage.template];
+                      const newParentTier = LOCATION_PARENT_TEMPLATE[template];
+                      if (newParentTier !== oldParentTier) {
                         const ownSlug = (newPage.slug || "").split("/").filter(Boolean).pop() || "";
                         setNewPage({ ...newPage, template, parentLocationId: "", parentLocationSlug: "", slug: ownSlug });
                       } else {

@@ -284,7 +284,7 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
                   {TemplateEditors[page.template] ? (
                     (() => {
                       const Editor = TemplateEditors[page.template];
-                      return <Editor pageId={id} data={content} setData={setContent} />;
+                      return <Editor pageId={id} data={content} setData={setContent} seo={seo} setSeo={setSeo} />;
                     })()
                   ) : (
                     <div className="p-10 text-center text-[#646970] text-[13px]">
@@ -306,7 +306,11 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
                     value={seo.schemaData || content?.schemaMarkup || ""}
                     onChange={(val) => {
                       setSeo({ ...seo, schemaData: val });
-                      setContent({ ...content, schemaMarkup: val });
+                      // A direct hand-edit here invalidates the "current schema is our
+                      // last FAQ sync" assumption the FAQ Schema toggle/confirm() guard
+                      // relies on - without this reset, later disabling that toggle would
+                      // silently wipe this manual edit with no warning.
+                      setContent({ ...content, schemaMarkup: val, faqSchemaAutoSync: false });
                     }}
                     pageTitle={page.title}
                     pageSlug={page.slug}
@@ -457,10 +461,13 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
                         onChange={(v: boolean) => {
                           if (v) {
                             const result = syncFaqSchema(content.faqs, content.schemaMarkup, content.faqSchemaAutoSync === true);
+                            if (result.status === "empty") {
+                              alert("Add at least one FAQ with both a question and an answer before enabling FAQ Schema.");
+                              return;
+                            }
                             if (result.status === "cancelled") return;
-                            const schemaString = result.status === "ok" ? result.schemaString : (content.schemaMarkup || "");
-                            setContent({ ...content, faqSchemaAutoSync: true, schemaMarkup: schemaString });
-                            setSeo({ ...seo, schemaData: schemaString });
+                            setContent({ ...content, faqSchemaAutoSync: true, schemaMarkup: result.schemaString });
+                            setSeo({ ...seo, schemaData: result.schemaString });
                           } else {
                             setContent({ ...content, faqSchemaAutoSync: false, schemaMarkup: "" });
                             setSeo({ ...seo, schemaData: "" });

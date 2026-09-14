@@ -44,7 +44,7 @@ function CommaSeparatedInput({ value, onChange, placeholder, className }: { valu
   );
 }
 
-export default function ServiceDetailEditor({ pageId, data, setData }: { pageId: string, data: any, setData: (d: any) => void }) {
+export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo }: { pageId: string, data: any, setData: (d: any) => void, seo?: any, setSeo?: (d: any) => void }) {
   const [activeTab, setActiveTab] = useState("hero");
 
   useEffect(() => {
@@ -2676,11 +2676,16 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                       onChange={(v: boolean) => {
                         if (v) {
                           const result = syncFaqSchema(data.faqs, data.schemaMarkup, data.faqSchemaAutoSync === true);
+                          if (result.status === "empty") {
+                            alert("Add at least one FAQ with both a question and an answer before enabling FAQ Schema.");
+                            return;
+                          }
                           if (result.status === "cancelled") return;
-                          const schemaString = result.status === "ok" ? result.schemaString : (data.schemaMarkup || "");
-                          setData((prev: any) => ({ ...(prev || {}), faqSchemaAutoSync: true, schemaMarkup: schemaString, seo: { ...(prev?.seo || {}), schemaData: schemaString } }));
+                          setData((prev: any) => ({ ...(prev || {}), faqSchemaAutoSync: true, schemaMarkup: result.schemaString, seo: { ...(prev?.seo || {}), schemaData: result.schemaString } }));
+                          setSeo?.((prev: any) => ({ ...(prev || {}), schemaData: result.schemaString }));
                         } else {
                           setData((prev: any) => ({ ...(prev || {}), faqSchemaAutoSync: false, schemaMarkup: "", seo: { ...(prev?.seo || {}), schemaData: "" } }));
+                          setSeo?.((prev: any) => ({ ...(prev || {}), schemaData: "" }));
                         }
                       }}
                       label="FAQ Schema"
@@ -2696,6 +2701,7 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                       }
                       if (result.status === "cancelled") return;
                       setData((prev: any) => ({ ...(prev || {}), faqSchemaAutoSync: true, schemaMarkup: result.schemaString, seo: { ...(prev?.seo || {}), schemaData: result.schemaString } }));
+                      setSeo?.((prev: any) => ({ ...(prev || {}), schemaData: result.schemaString }));
                     }}
                     className="bg-[#2271b1] text-white px-3.5 py-2 text-[12px] font-bold rounded-[3px] hover:bg-[#135e96] transition-colors"
                   >
@@ -3053,14 +3059,20 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                 <SchemaEditor
                   value={data.schemaMarkup || data.seo?.schemaData || ""}
                   onChange={(val) => {
+                    // A direct hand-edit here invalidates the "current schema is our
+                    // last FAQ sync" assumption the FAQ Schema toggle/confirm() guard
+                    // relies on - without this reset, later disabling that toggle would
+                    // silently wipe this manual edit with no warning.
                     setData((prev: any) => ({
                       ...(prev || {}),
                       schemaMarkup: val,
+                      faqSchemaAutoSync: false,
                       seo: {
                         ...(prev?.seo || {}),
                         schemaData: val
                       }
                     }));
+                    setSeo?.((prev: any) => ({ ...(prev || {}), schemaData: val }));
                   }}
                   pageTitle={data.title || "Service Page"}
                 />

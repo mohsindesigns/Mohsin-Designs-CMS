@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useContent } from "@/hooks/useContent";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import CustomSchemaMarkup from "@/components/CustomSchemaMarkup";
+import { isSafeHref } from "@/lib/utils";
 
 interface FAQItem {
   id?: string;
@@ -77,7 +78,7 @@ export default function PageInlineFaqs({
     title: rawFaq.strategyAudit?.title || "Have a complex custom build in mind?",
     desc: rawFaq.strategyAudit?.desc || "Book a 30-minute high-level technical strategy session with our lead engineer.",
     button: rawFaq.strategyAudit?.button || "Book Architecture Call",
-    href: rawFaq.strategyAudit?.href || "#contact"
+    href: isSafeHref(rawFaq.strategyAudit?.href) ? rawFaq.strategyAudit.href : "#contact"
   };
 
   // Fallback starter FAQs if none exist

@@ -7,18 +7,26 @@ interface FaqSchemaItem {
 
 // Strips HTML tags/entities so rich-text authored FAQ content becomes plain
 // text suitable for schema.org Question/acceptedAnswer string fields.
+//
+// Entities MUST be decoded before tags are stripped, not after: an
+// entity-encoded "&lt;/script&gt;" has no literal "<" for the tag-stripping
+// regexes to match, so decoding first ensures it becomes a real "</script>"
+// that the final catch-all tag strip then removes - decoding after stripping
+// would let it survive into the output and break out of the <script> tag
+// this value is eventually rendered inside (CustomSchemaMarkup renders
+// schemaMarkup via dangerouslySetInnerHTML with no further escaping).
 function toPlainText(html: string): string {
   if (!html) return "";
   return html
-    .replace(/<\/(p|li|div|h[1-6])>/gi, "\n")
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<[^>]+>/g, "")
     .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, "&")
+    .replace(/<\/(p|li|div|h[1-6])>/gi, "\n")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
     .replace(/[ \t]+/g, " ")
     .replace(/\n\s*\n+/g, "\n")
     .trim();
