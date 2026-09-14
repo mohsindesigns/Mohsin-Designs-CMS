@@ -5,6 +5,7 @@ import { ArrowRight, ArrowUp, Github, Instagram, Linkedin, Twitter } from "lucid
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useContent } from "../hooks/useContent";
+import RichTextRenderer from "./ui/RichTextRenderer";
  
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -91,23 +92,39 @@ export default function Footer() {
           {/* Logo & Description Column */}
           <div className="lg:col-span-3 space-y-6 lg:pr-6">
             <div className="flex items-center gap-2.5">
-              <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 overflow-hidden border border-white/10">
-                <div className="absolute top-1 left-1 w-6 h-6 rounded-full bg-brand-yellow/80 mix-blend-screen" />
-                <div className="absolute bottom-1 right-1 w-6 h-6 rounded-full bg-brand-blue/80 mix-blend-screen" />
-                <span className="relative font-heading font-extrabold text-white text-base z-10">{footer?.logoLetter || "M"}</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="font-sans font-black text-lg leading-none tracking-tight text-white uppercase">
-                  {footer?.logoText || "MOHSIN"}
-                </span>
-                <span className="font-sans font-bold text-[9px] tracking-widest text-brand-yellow uppercase leading-none mt-1">
-                  {footer?.logoSub || "DESIGNS"}
-                </span>
-              </div>
+              {footer?.company?.logo ? (
+                <div className="relative flex h-10 w-24 items-center justify-start overflow-hidden">
+                  <img
+                    src={footer.company.logo}
+                    alt={footer?.company?.name || "Mohsin Designs Logo"}
+                    className="object-contain h-full max-w-full"
+                  />
+                </div>
+              ) : (
+                <>
+                  <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 overflow-hidden border border-white/10">
+                    <div className="absolute top-1 left-1 w-6 h-6 rounded-full bg-brand-yellow/80 mix-blend-screen" />
+                    <div className="absolute bottom-1 right-1 w-6 h-6 rounded-full bg-brand-blue/80 mix-blend-screen" />
+                    <span className="relative font-heading font-extrabold text-white text-base z-10">{footer?.logoLetter || "M"}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-sans font-black text-lg leading-none tracking-tight text-white uppercase">
+                      {footer?.logoText || "MOHSIN"}
+                    </span>
+                    <span className="font-sans font-bold text-[9px] tracking-widest text-brand-yellow uppercase leading-none mt-1">
+                      {footer?.logoSub || "DESIGNS"}
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
-            <p className="text-xs md:text-sm text-brand-zinc-300 leading-relaxed max-w-xs font-semibold">
-              {footer?.description}
-            </p>
+            {(footer?.company?.description || footer?.description) && (
+              <RichTextRenderer
+                content={footer?.company?.description || footer?.description}
+                className="text-xs md:text-sm text-brand-zinc-300 leading-relaxed max-w-xs font-semibold"
+                stripParagraphs
+              />
+            )}
             
             <div className="flex flex-col gap-1.5 pt-1">
               <div className="flex items-center gap-2 text-[9px] font-mono tracking-widest text-brand-zinc-400">

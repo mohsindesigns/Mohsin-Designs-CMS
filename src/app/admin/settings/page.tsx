@@ -228,6 +228,12 @@ export default function SettingsEditor() {
       const d = { ...(contentJson || {}) };
       if (!d.settings) d.settings = { siteTitle: "Mohsin Designs", siteTemplate: "%s | Mohsin Designs", favicon: "/portfolio_hero_bg.png", globalNoIndex: false };
       if (!d.navbar) d.navbar = { companyLinks: [], ctaText: "Book Now", ctaLink: "/contact-us", logo: "/portfolio_hero_bg.png" };
+      if (!d.footer) d.footer = {};
+      if (!d.footer.company) d.footer.company = { name: "Mohsin Designs", tagline: "", description: "", logo: "" };
+      if (!d.footer.marquee) d.footer.marquee = { texts: [] };
+      if (!d.footer.services) d.footer.services = { title: "Our Services", selectedServices: [], materials: { title: "Company", items: [] } };
+      if (!d.footer.services.materials) d.footer.services.materials = { title: "Company", items: [] };
+      if (!d.footer.certifications) d.footer.certifications = [];
       setData(d);
 
       const pageList = (pagesJson || [])
