@@ -220,7 +220,7 @@ export default function SettingsEditor({ pageId, data, setData }: { pageId: stri
                                   >
                                      <option value="/">Home Page</option>
                                      <option value="/services">Services</option>
-                                     <option value="/gallery">Gallery</option>
+                                     <option value="/gallery">Portfolio</option>
                                      <option value="/contact-us">Contact</option>
                                      <optgroup label="Custom Published Pages">
                                         {publishedPages.map(p => (

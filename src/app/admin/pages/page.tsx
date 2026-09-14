@@ -517,7 +517,7 @@ export default function PagesDashboard() {
                     <option value="service-detail">Service Detail Template</option>
                     <option value="team">Team Template</option>
                     <option value="careers">Careers Template</option>
-                    <option value="gallery">Gallery Template</option>
+                    <option value="gallery">Portfolio Template</option>
                     <option value="reviews">Reviews Template</option>
                     <option value="faq">FAQ Template</option>
                     <option value="contact">Contact Template</option>
@@ -626,7 +626,7 @@ export default function PagesDashboard() {
                         <option value="service-detail">Service Detail Template</option>
                         <option value="team">Team Template</option>
                         <option value="careers">Careers Template</option>
-                        <option value="gallery">Gallery Template</option>
+                        <option value="gallery">Portfolio Template</option>
                         <option value="reviews">Reviews Template</option>
                         <option value="faq">FAQ Template</option>
                         <option value="contact">Contact Template</option>

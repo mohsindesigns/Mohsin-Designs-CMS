@@ -239,7 +239,7 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
   };
 
   const tabs = [
-    { id: "hero", label: "Gallery Hero" },
+    { id: "hero", label: "Portfolio Hero" },
     { id: "projects", label: "Project Showcase" },
     { id: "process", label: "Creative Process" },
     { id: "cta", label: "Bottom CTA Banner" },
@@ -282,13 +282,13 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
             <div className="space-y-6">
               <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
                 <div>
-                  <h2 className={UI.sectionHeader}>Gallery Hero Banner Visibility</h2>
+                  <h2 className={UI.sectionHeader}>Portfolio Hero Banner Visibility</h2>
                   <p className={UI.helpText}>Enable or disable displaying this section on the live page.</p>
                 </div>
                 <SectionToggle
                   enabled={gallery.hero?.enabled !== false}
                   onChange={(v) => updateNested("hero", "enabled", v)}
-                  label="Gallery Hero"
+                  label="Portfolio Hero"
                 />
               </div>
 
@@ -930,7 +930,7 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
                     }
                   }));
                 }}
-                pageTitle="Gallery Page"
+                pageTitle="Portfolio Page"
               />
             </div>
           )}

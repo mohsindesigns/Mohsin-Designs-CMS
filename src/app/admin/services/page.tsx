@@ -17,6 +17,7 @@ import SeoEditor from "@/components/admin/SeoEditor";
 import SectionToggle from "@/components/admin/SectionToggle";
 import MediaSelector from "@/components/admin/MediaSelector";
 import SchemaEditor from "@/components/admin/SchemaEditor";
+import BlogSelector from "@/components/admin/BlogSelector";
 import { BASE_URL } from "@/lib/constants";
 import { UI } from "@/components/admin/editors/styles";
 import { AVAILABLE_COUNTRIES, resolveCountryLocation, COUNTRIES_DATABASE } from "@/lib/countryLocations";
@@ -801,7 +802,8 @@ export default function ServicesAdminPage() {
     { id: "pricing", label: "11. Pricing Packages" },
     { id: "recommendedSection", label: "12. Recommended Services" },
     { id: "serviceArea", label: "13. Global Coverage" },
-    { id: "final-cta", label: "14. CTA Banner" },
+    { id: "blogSection", label: "14. Related Insights" },
+    { id: "final-cta", label: "15. CTA Banner" },
   ];
 
   if (loading) {
@@ -2790,7 +2792,7 @@ export default function ServicesAdminPage() {
                                     <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
                                   </div>
                                   <SectionToggle
-                                    enabled={form.pricing?.enabled !== false}
+                                    enabled={form.pricing?.enabled === true}
                                     onChange={(v) => setForm({ ...form, pricing: { ...form.pricing, enabled: v } })}
                                     label="Pricing Packages Section"
                                   />
@@ -3270,7 +3272,7 @@ export default function ServicesAdminPage() {
                                             </div>
                                           </div>
 
-                                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                             <div className="space-y-1.5">
                                               <label className={UI.label}>Timezone</label>
                                               <input
@@ -3286,31 +3288,17 @@ export default function ServicesAdminPage() {
                                               />
                                             </div>
                                             <div className="space-y-1.5">
-                                              <label className={UI.label}>Map Pin X% Coordinate</label>
+                                              <label className={UI.label}>Navigation Link (URL)</label>
                                               <input
                                                 type="text"
-                                                value={hub.x || ""}
+                                                value={hub.link || ""}
                                                 onChange={(e) => {
                                                   const updated = [...currentHubs];
-                                                  updated[hIdx] = { ...updated[hIdx], x: e.target.value };
+                                                  updated[hIdx] = { ...updated[hIdx], link: e.target.value };
                                                   setForm({ ...form, serviceArea: { ...(form.serviceArea || {}), hubs: updated } });
                                                 }}
                                                 className={UI.input}
-                                                placeholder="e.g. 49.66%"
-                                              />
-                                            </div>
-                                            <div className="space-y-1.5">
-                                              <label className={UI.label}>Map Pin Y% Coordinate</label>
-                                              <input
-                                                type="text"
-                                                value={hub.y || ""}
-                                                onChange={(e) => {
-                                                  const updated = [...currentHubs];
-                                                  updated[hIdx] = { ...updated[hIdx], y: e.target.value };
-                                                  setForm({ ...form, serviceArea: { ...(form.serviceArea || {}), hubs: updated } });
-                                                }}
-                                                className={UI.input}
-                                                placeholder="e.g. 43.78%"
+                                                placeholder="e.g. /locations/california or #contact"
                                               />
                                             </div>
                                           </div>
@@ -3318,6 +3306,67 @@ export default function ServicesAdminPage() {
                                       );
                                     })}
                                   </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* SUBTAB: RELATED INSIGHTS (BLOG) */}
+                            {activeSubTab === "blogSection" && (
+                              <div className="space-y-12">
+                                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                                  <div>
+                                    <h2 className="text-base font-bold text-[#1d2327]">Section Visibility</h2>
+                                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live website.</p>
+                                  </div>
+                                  <SectionToggle
+                                    enabled={form.blogSection?.enabled !== false}
+                                    onChange={(v) => setForm({ ...form, blogSection: { ...(form.blogSection || {}), enabled: v } })}
+                                    label="Related Insights Section"
+                                  />
+                                </div>
+                                <div className="space-y-6">
+                                  <h3 className={UI.sectionHeader}>1. Section Header</h3>
+                                  <div className="space-y-1.5">
+                                    <label className={UI.label}>Badge / Tag (Eyebrow)</label>
+                                    <input
+                                      type="text"
+                                      value={form.blogSection?.subtitle || ""}
+                                      onChange={(e) => setForm({ ...form, blogSection: { ...(form.blogSection || {}), subtitle: e.target.value } })}
+                                      className={UI.input}
+                                      placeholder="e.g. LATEST ARTICLES & INSIGHTS"
+                                    />
+                                  </div>
+                                  <div className="space-y-1.5">
+                                    <label className={UI.label}>Title</label>
+                                    <input
+                                      type="text"
+                                      value={form.blogSection?.title || ""}
+                                      onChange={(e) => setForm({ ...form, blogSection: { ...(form.blogSection || {}), title: e.target.value } })}
+                                      className={UI.input}
+                                      placeholder="e.g. Related Engineering Insights"
+                                    />
+                                  </div>
+                                  <div className="space-y-1.5">
+                                    <label className={UI.label}>Description</label>
+                                    <textarea
+                                      rows={3}
+                                      value={form.blogSection?.description || ""}
+                                      onChange={(e) => setForm({ ...form, blogSection: { ...(form.blogSection || {}), description: e.target.value } })}
+                                      className={UI.input}
+                                      placeholder="e.g. Explore our latest thoughts on high-performance web engineering..."
+                                    />
+                                  </div>
+                                </div>
+                                <div className="space-y-6 pt-8 border-t border-[#f0f0f1]">
+                                  <h3 className={UI.sectionHeader}>2. Featured Articles Selection</h3>
+                                  <p className="text-[11px] text-[#646970] italic -mt-3">
+                                    Pick published blog posts to feature on this service page. At least one post must be selected for this section to appear on the live page.
+                                  </p>
+                                  <BlogSelector
+                                    selectedIds={Array.isArray(form.blogSection?.selectedPosts) ? form.blogSection.selectedPosts : []}
+                                    onChange={(selectedIds) => setForm({ ...form, blogSection: { ...(form.blogSection || {}), selectedPosts: selectedIds } })}
+                                    label="Select Featured Articles"
+                                  />
                                 </div>
                               </div>
                             )}

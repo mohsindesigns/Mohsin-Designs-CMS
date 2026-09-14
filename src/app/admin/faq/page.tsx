@@ -51,7 +51,7 @@ export default function FAQAdminPage() {
           { id: "home", label: "Homepage" },
           { id: "about", label: "About" },
           { id: "services", label: "Services" },
-          { id: "gallery", label: "Gallery" },
+          { id: "gallery", label: "Portfolio" },
           { id: "reviews", label: "Reviews" },
           { id: "faq", label: "FAQ" },
           { id: "contact", label: "Contact" }
