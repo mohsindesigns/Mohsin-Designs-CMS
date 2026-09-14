@@ -101,8 +101,24 @@ export async function PUT(req: NextRequest) {
         console.warn('Could not write services backup:', backupErr);
       }
 
+    } else if (sanitizedBody.section === 'settings') {
+      // The Settings editor bundles several sibling field groups (settings, navbar, footer,
+      // loader, hours) under one 'settings' section id, unlike other granular editors that
+      // send a single key matching their section name - merge each provided key individually
+      // so navbar/footer/loader/hours edits (e.g. the navbar logo) aren't silently dropped.
+      finalData = { ...existingData };
+      for (const key of ['settings', 'navbar', 'footer', 'loader', 'hours']) {
+        if (sanitizedBody[key] !== undefined) {
+          finalData[key] = sanitizedBody[key];
+        }
+      }
+
+      // Ensure services are NEVER touched by any other section update
+      finalData.services = existingData.services;
+      finalData.globalServices = existingServicesList;
+
     } else if (sanitizedBody.section && sanitizedBody.section !== 'complete_data') {
-      // Granular section update for other editors (e.g. 'settings', 'portfolio', 'faq', 'testimonials')
+      // Granular section update for other editors (e.g. 'portfolio', 'faq', 'testimonials')
       finalData = {
         ...existingData,
         [sanitizedBody.section]: sanitizedBody[sanitizedBody.section] ?? sanitizedBody
