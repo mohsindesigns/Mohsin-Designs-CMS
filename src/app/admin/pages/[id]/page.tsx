@@ -295,7 +295,16 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
               ) : activeTab === 'seo' ? (
                 <SeoEditor
                   data={seo}
-                  setData={setSeo}
+                  setData={(newSeo: any) => {
+                    setSeo(newSeo);
+                    // SeoEditor's own "Schema Markup" sub-tab can also hand-edit
+                    // schemaData directly - same ratchet reset as the dedicated
+                    // Schema tab and the FAQ tab's SchemaEditor, so a later FAQ
+                    // Schema toggle-OFF doesn't assume this is still its own sync.
+                    if (newSeo?.schemaData !== seo?.schemaData) {
+                      setContent((prev: any) => ({ ...prev, faqSchemaAutoSync: false }));
+                    }
+                  }}
                   pageSlug={page.slug}
                   pageTitle={page.title}
                   pageContent={content}
@@ -327,7 +336,7 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
                       const currentFaqs = Array.isArray(content.faqs) ? content.faqs : [];
                       const nf = [...currentFaqs];
                       nf.push({ question: "", answer: "", category: "GENERAL" });
-                      setContent({ ...content, faqs: nf });
+                      setContent({ ...content, faqs: nf, faqSchemaAutoSync: false });
                     }} className="bg-white border border-[#2271b1] text-[#2271b1] px-3.5 py-1.5 text-[12px] font-bold rounded-[3px] hover:bg-[#f0f6fb] transition-colors self-start">+ Add FAQ Question</button>
                   </div>
 
@@ -502,7 +511,7 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
                         const currentFaqs = Array.isArray(content.faqs) ? content.faqs : [];
                         const nf = [...currentFaqs];
                         nf.push({ question: "", answer: "", category: "GENERAL" });
-                        setContent({ ...content, faqs: nf });
+                        setContent({ ...content, faqs: nf, faqSchemaAutoSync: false });
                       }} className="text-[#2271b1] text-xs font-bold hover:underline">+ Add FAQ</button>
                     </div>
 
@@ -521,7 +530,7 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
                               </div>
                               <button
                                 onClick={() => {
-                                  setContent({ ...content, faqs: content.faqs.filter((_: any, i: number) => i !== idx) });
+                                  setContent({ ...content, faqs: content.faqs.filter((_: any, i: number) => i !== idx), faqSchemaAutoSync: false });
                                 }}
                                 className="text-[#d63638] hover:bg-red-50 p-1 rounded text-xs font-semibold flex items-center gap-1"
                               >
@@ -538,7 +547,7 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
                                   onChange={e => {
                                     const nf = [...content.faqs];
                                     nf[idx].category = e.target.value;
-                                    setContent({ ...content, faqs: nf });
+                                    setContent({ ...content, faqs: nf, faqSchemaAutoSync: false });
                                   }}
                                   placeholder="e.g. PRICING"
                                   className="w-full border border-[#c3c4c7] px-2.5 py-1.5 text-xs font-mono font-bold uppercase rounded-[3px] bg-white"
@@ -552,7 +561,7 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
                                   onChange={e => {
                                     const nf = [...content.faqs];
                                     nf[idx].question = e.target.value;
-                                    setContent({ ...content, faqs: nf });
+                                    setContent({ ...content, faqs: nf, faqSchemaAutoSync: false });
                                   }}
                                   placeholder="e.g. What is your typical project timeline?"
                                   className="w-full border border-[#c3c4c7] px-3 py-1.5 text-sm font-bold rounded-[3px] bg-white"
@@ -568,7 +577,7 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
                                 onChange={e => {
                                   const nf = [...content.faqs];
                                   nf[idx].answer = e.target.value;
-                                  setContent({ ...content, faqs: nf });
+                                  setContent({ ...content, faqs: nf, faqSchemaAutoSync: false });
                                 }}
                                 placeholder="Write clear, detailed answer here..."
                                 className="w-full border border-[#c3c4c7] px-3 py-2 text-xs leading-relaxed rounded-[3px] bg-white"

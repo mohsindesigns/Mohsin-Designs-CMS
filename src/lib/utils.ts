@@ -5,6 +5,9 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+const SAFE_HREF_SENTINEL_HOST = "__issafehref_base__.invalid";
+const SAFE_HREF_ALLOWED_SCHEMES = new Set(["http:", "https:", "mailto:", "tel:"]);
+
 /**
  * Guards against javascript:/data:/vbscript: URLs in admin-entered href
  * fields (industry card links, FAQ CTA button links, etc.) being rendered as
@@ -12,19 +15,42 @@ export function cn(...inputs: ClassValue[]) {
  * dangerous URL schemes on the href/action attribute, so this must be
  * checked at the point of render, not just relied on as client-side input
  * validation (a raw API call could bypass that entirely).
+ *
+ * Resolves the input against a fake base using the native WHATWG URL parser
+ * instead of hand-rolled regexes: an earlier regex version of this check was
+ * bypassed by embedding a tab/newline/CR inside the scheme word (e.g.
+ * "java\tscript:...") - real browsers strip those characters before
+ * resolving a URL's scheme, which the URL parser also does correctly by
+ * construction, so relying on it closes that whole bug class instead of
+ * trying to out-guess every way to spell it in a regex.
  */
 export function isSafeHref(url: string | undefined | null): boolean {
   if (!url || typeof url !== "string") return false;
   const trimmed = url.trim();
   if (!trimmed) return false;
-  // Relative paths, hashes, and query-only links are always safe.
-  if (/^[#/?]/.test(trimmed)) return true;
-  // Known-safe absolute schemes.
-  if (/^(https?:|mailto:|tel:)/i.test(trimmed)) return true;
-  // Any other explicit scheme (javascript:, data:, vbscript:, ...) is rejected.
-  if (/^[a-z][a-z0-9+.-]*:/i.test(trimmed)) return false;
-  // No scheme and doesn't start with #/?/ - a bare relative path, safe.
-  return true;
+
+  let resolved: URL;
+  try {
+    resolved = new URL(trimmed, `https://${SAFE_HREF_SENTINEL_HOST}/`);
+  } catch {
+    return false;
+  }
+
+  if (!SAFE_HREF_ALLOWED_SCHEMES.has(resolved.protocol)) return false;
+
+  // mailto:/tel: have no meaningful host - the scheme check above is enough.
+  if (resolved.protocol === "mailto:" || resolved.protocol === "tel:") return true;
+
+  // Resolved to our own sentinel host: the input was a genuine relative
+  // reference (a path, hash, or query string) with no host of its own - safe.
+  if (resolved.hostname === SAFE_HREF_SENTINEL_HOST) return true;
+
+  // Anything else specified its own host: either a fully-qualified absolute
+  // URL, or a protocol-relative "//host" shorthand that inherits the current
+  // page's scheme. Only the explicit, unambiguous http(s):// form is
+  // allowed - "//host" reads like a same-site relative link while actually
+  // navigating off-site, so it's rejected rather than silently followed.
+  return /^https?:\/\//i.test(trimmed);
 }
 
 /**

@@ -2719,6 +2719,7 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
                         ...current,
                         { q: "New Question?", a: "Detailed answer." }
                       ]);
+                      updateRootField("faqSchemaAutoSync", false);
                     }}
                     className={UI.buttonAdd}
                   >
@@ -2736,6 +2737,7 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
                           onClick={() => {
                             const list = (data.faqs || []).filter((_: any, i: number) => i !== idx);
                             updateRootField("faqs", list);
+                            updateRootField("faqSchemaAutoSync", false);
                           }}
                           className="text-[#d63638] hover:text-[#b32d2e] p-1"
                         >
@@ -2751,6 +2753,7 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
                             const list = [...(data.faqs || [])];
                             list[idx] = { ...list[idx], q: e.target.value, question: e.target.value };
                             updateRootField("faqs", list);
+                            updateRootField("faqSchemaAutoSync", false);
                           }}
                           className={UI.input + " font-bold"}
                         />
@@ -2764,6 +2767,7 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
                             const list = [...(data.faqs || [])];
                             list[idx] = { ...list[idx], a: e.target.value, answer: e.target.value };
                             updateRootField("faqs", list);
+                            updateRootField("faqSchemaAutoSync", false);
                           }}
                           className={UI.input}
                         />

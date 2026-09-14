@@ -57,6 +57,20 @@ interface CustomSchemaMarkupProps {
   schemaData?: any;
 }
 
+// Prevents any embedded schema content (however it got there - a single
+// field's raw markup, or pieces of otherwise-harmless text from SEPARATE
+// fields that only become a real tag once concatenated together in the
+// serialized JSON) from ever being interpreted as HTML: no tag, including
+// "</script>", can begin without a literal "<" character, so escaping every
+// "<" to its unicode equivalent closes this class of script-breakout
+// regardless of which upstream field(s) the dangerous text came from. This
+// is the standard mitigation for embedding untrusted JSON inside a real
+// <script> tag (rather than trying to sanitize every source field that
+// might eventually be concatenated into one JSON blob).
+function escapeForScriptTag(json: string): string {
+  return json.replace(/</g, "\\u003C");
+}
+
 export default function CustomSchemaMarkup({ schema, schemaData }: CustomSchemaMarkupProps) {
   const target = schema !== undefined ? schema : schemaData;
   const blocks = extractSchemaBlocks(target);
@@ -69,7 +83,7 @@ export default function CustomSchemaMarkup({ schema, schemaData }: CustomSchemaM
           key={`custom-json-ld-${index}`}
           type="application/ld+json"
           suppressHydrationWarning
-          dangerouslySetInnerHTML={{ __html: block }}
+          dangerouslySetInnerHTML={{ __html: escapeForScriptTag(block) }}
         />
       ))}
     </>

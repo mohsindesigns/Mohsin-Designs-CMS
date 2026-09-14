@@ -3456,7 +3456,12 @@ export default function ServicesAdminPage() {
                   {mainTab === 'seo' && (
                     <SeoEditor
                       data={seo}
-                      setData={setSeo}
+                      setData={(newSeo: any) => {
+                        setSeo(newSeo);
+                        if (newSeo?.schemaData !== seo?.schemaData) {
+                          setForm((prev: any) => ({ ...(prev || {}), faqSchemaAutoSync: false }));
+                        }
+                      }}
                       pageSlug={form.slug || ""}
                       pageTitle={form.title || ""}
                       pageContent={form}
@@ -3631,7 +3636,11 @@ export default function ServicesAdminPage() {
                         value={form.schemaMarkup || seo?.schemaData || form.faqSchemaMarkup || ""}
                         onChange={(val) => {
                           setSeo((prev: any) => ({ ...(prev || {}), schemaData: val }));
-                          setForm((prev: any) => ({ ...(prev || {}), schemaMarkup: val, faqSchemaMarkup: val }));
+                          // Reset the FAQ Schema Sync "safe to auto-clear" ratchet (set
+                          // via the other service editor at /admin/pages/[id]) - this
+                          // service record can be hand-edited from either admin screen,
+                          // and both need to invalidate the same flag on a manual edit.
+                          setForm((prev: any) => ({ ...(prev || {}), schemaMarkup: val, faqSchemaMarkup: val, faqSchemaAutoSync: false }));
                         }}
                         pageTitle={form.title || "Service"}
                       />

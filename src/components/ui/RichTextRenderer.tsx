@@ -1,7 +1,16 @@
 "use client";
 
 import React from "react";
-import DOMPurify from "dompurify";
+// isomorphic-dompurify runs real DOMPurify against a real DOM either way -
+// jsdom on the server, the browser DOM on the client - rather than a
+// hand-rolled regex sanitizer for the SSR path. A regex-based sanitizer was
+// tried here first and repeatedly bypassed (non-recursive passes letting
+// nested/decoy tags reform into a live tag, unquoted or slash-separated
+// event-handler attributes, embedded tab/newline characters splitting a
+// dangerous URL scheme past the pattern) - exactly the category of bug a
+// real HTML parser doesn't have, since it isn't trying to out-guess every
+// way markup can be spelled.
+import DOMPurify from "isomorphic-dompurify";
 import { makeLinksDoFollow, cleanMojibake } from "@/lib/utils";
 
 interface RichTextRendererProps {
@@ -10,42 +19,16 @@ interface RichTextRendererProps {
   stripParagraphs?: boolean;
 }
 
-// Server-side (SSR) fallback sanitizer. DOMPurify needs a real DOM (`window`),
-// which doesn't exist during Next.js server rendering - without this, content
-// was shipped to every visitor completely unsanitized on the initial
-// (ISR-cached) HTML response, before any client-side sanitization could ever
-// run. This is intentionally NOT a general HTML parser: it's an allowlist-
-// style stripper scoped to what this app's TipTap-based editor can actually
-// produce (paragraphs, headings, bold/italic/underline, lists, links,
-// images) - it removes script-capable elements, event-handler attributes,
-// and javascript:/data: URLs rather than attempting to parse arbitrary HTML.
-function serverSideSanitize(html: string): string {
-  if (!html) return html;
-  let out = html;
-  // Remove dangerous elements entirely, including their content.
-  out = out.replace(/<(script|style|iframe|object|embed|link|meta|svg|math|form|base)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, "");
-  // Remove any self-closing/void form of the same tags.
-  out = out.replace(/<(script|style|iframe|object|embed|link|meta|svg|math|form|base)\b[^>]*\/?>/gi, "");
-  // Strip event-handler attributes (onerror=, onclick=, onload=, etc.) from any remaining tag.
-  out = out.replace(/\s+on[a-z]+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, "");
-  // Neutralize javascript:/data:/vbscript: URLs in href/src/action attributes.
-  out = out.replace(/(href|src|action)\s*=\s*("|')\s*(javascript|data|vbscript):[^"']*\2/gi, '$1="#"');
-  // Strip any inline style attribute (defense against url(javascript:...) etc).
-  out = out.replace(/\s+style\s*=\s*("[^"]*"|'[^']*')/gi, "");
-  return out;
-}
-
 export default function RichTextRenderer({ content, className = "", stripParagraphs = false }: RichTextRendererProps) {
-  // Safe sanitize helper that handles Next.js ESM/CJS interop and SSR
   const safeSanitize = (html: string) => {
-    if (typeof window === "undefined") return serverSideSanitize(html);
-
-    // Handle different import patterns (default vs named)
-    const purify = (DOMPurify as any).default || DOMPurify;
-    if (purify && typeof purify.sanitize === "function") {
-      return purify.sanitize(html);
+    if (!html) return html;
+    try {
+      return DOMPurify.sanitize(html);
+    } catch {
+      // If the sanitizer itself throws for any reason, fail closed (render
+      // nothing) rather than falling back to unsanitized HTML.
+      return "";
     }
-    return serverSideSanitize(html);
   };
 
   // Helper to parse markdown links [Anchor Text](url) into standard HTML <a> tags
