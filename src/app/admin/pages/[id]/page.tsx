@@ -588,19 +588,6 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
                       </div>
                     )}
                   </div>
-
-                  {/* 4. Schema Markup */}
-                  <div className="pt-5 border-t border-[#c3c4c7] space-y-2">
-                    <label className="text-[13px] font-bold text-[#1d2327]">FAQ Schema Markup (Bulk JSON-LD)</label>
-                    <p className="text-[12px] text-[#646970] mt-0.5">Paste a single JSON-LD schema block covering all FAQs for this page.</p>
-                    <textarea
-                      value={content.faqSchemaMarkup || ""}
-                      onChange={e => setContent({ ...content, faqSchemaMarkup: e.target.value })}
-                      className="w-full border border-[#c3c4c7] px-3 py-2 text-[13px] font-mono rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
-                      rows={6}
-                      placeholder='e.g. {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [...]}'
-                    />
-                  </div>
                 </div>
               )}
             </div>

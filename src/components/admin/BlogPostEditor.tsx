@@ -15,6 +15,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import MediaSelector from "./MediaSelector";
 import SeoEditor from "./SeoEditor";
 import { BASE_URL } from "@/lib/constants";
+import { syncFaqSchema } from "@/lib/faqSchema";
 
 const RichTextEditor = dynamic(() => import("./RichTextEditor"), { ssr: false });
 
@@ -366,17 +367,27 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
                     )}
                   </div>
 
-                  {/* Bulk FAQ Schema Markup */}
-                  <div className="mt-8 space-y-2 border-t border-slate-200 pt-6">
-                    <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400">FAQ Schema Markup (Bulk JSON-LD)</label>
-                    <p className="text-xs text-slate-400">Paste a single JSON-LD schema block covering all your FAQs. This will be injected into the page as structured data.</p>
-                    <textarea
-                      value={post.faqSchemaMarkup || ""}
-                      onChange={(e) => setPost({ ...post, faqSchemaMarkup: e.target.value })}
-                      rows={8}
-                      placeholder='{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", ...}]}'
-                      className="w-full border border-[#c3c4c7] p-4 text-sm font-mono outline-none focus:border-[#2271b1] resize-y bg-white rounded shadow-sm"
-                    />
+                  {/* FAQ Schema Sync */}
+                  <div className="mt-8 space-y-3 border-t border-slate-200 pt-6">
+                    <div>
+                      <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400">FAQ Schema (FAQPage)</label>
+                      <p className="text-xs text-slate-400 mt-0.5">Generates FAQPage structured data from the questions above. Click "Sync" again after editing FAQs to refresh it.</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const result = syncFaqSchema(post.faq, post.faqSchemaMarkup, post.faqSchemaAutoSync === true);
+                        if (result.status === "empty") {
+                          alert("Add at least one FAQ with both a question and an answer before syncing.");
+                          return;
+                        }
+                        if (result.status === "cancelled") return;
+                        setPost({ ...post, faqSchemaMarkup: result.schemaString, faqSchemaAutoSync: true });
+                      }}
+                      className="bg-[#2271b1] text-white px-3.5 py-2 text-[12px] font-bold rounded-[3px] hover:bg-[#135e96] transition-colors"
+                    >
+                      Sync FAQs to Schema
+                    </button>
                   </div>
                 </div>
               )}
