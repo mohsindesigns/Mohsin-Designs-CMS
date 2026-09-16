@@ -5,6 +5,7 @@ import { CheckCircle, Mail, MapPin, Phone, ArrowRight } from "lucide-react";
 import { useState, FormEvent, MouseEvent } from "react";
 import contentDefaults from "@/data/content.json";
 import { useContent } from "@/hooks/useContent";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 export default function ContactForm({ data }: { data?: any }) {
   const dynamicContent = useContent();
@@ -161,9 +162,10 @@ export default function ContactForm({ data }: { data?: any }) {
                   {contact.titleHighlight}
                 </span>
               </h2>
-              <p className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg">
-                {contact.description}
-              </p>
+              <RichTextRenderer
+                content={contact.description}
+                className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg"
+              />
             </div>
 
             {/* Premium Unified Direct Contact Panel */}

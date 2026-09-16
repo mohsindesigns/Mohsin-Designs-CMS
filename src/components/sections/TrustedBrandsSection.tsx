@@ -3,6 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Globe, ArrowUpRight } from "lucide-react";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 // Standard vector logos for premier fallbacks
 const GoogleLogo = () => (
@@ -147,15 +148,15 @@ export default function TrustedBrandsSection({ data }: { data?: any }) {
 
         {/* Description */}
         {description && (
-          <motion.p
+          <motion.div
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.15 }}
             className="mt-3 text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal"
           >
-            {description}
-          </motion.p>
+            <RichTextRenderer content={description} />
+          </motion.div>
         )}
       </div>
 

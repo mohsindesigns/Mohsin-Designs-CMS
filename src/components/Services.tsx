@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useContent } from "@/hooks/useContent";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 export default function Services({ data: propData, masterCatalog: masterCatalogProp }: { data?: any; masterCatalog?: any[] }) {
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -140,13 +141,14 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
             </div>
           </div>
 
-          <p className="text-brand-zinc-500 dark:text-zinc-300 font-medium leading-relaxed text-xs md:text-sm max-w-xl">
-            {typeof services.description === "string"
+          <RichTextRenderer
+            content={typeof services.description === "string"
               ? services.description
               : Array.isArray(services.description)
               ? (services.description as string[]).join("")
               : ""}
-          </p>
+            className="text-brand-zinc-500 dark:text-zinc-300 font-medium leading-relaxed text-xs md:text-sm max-w-xl"
+          />
         </motion.div>
 
         {/* Carousel */}
@@ -297,9 +299,10 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
               <h3 className="font-heading text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight tracking-tight">
                 {services.ctaHeading}
               </h3>
-              <p className="text-white/80 dark:text-zinc-300 text-sm md:text-base font-sans font-normal leading-relaxed">
-                {services.ctaDescription}
-              </p>
+              <RichTextRenderer
+                content={services.ctaDescription}
+                className="text-white/80 dark:text-zinc-300 text-sm md:text-base font-sans font-normal leading-relaxed"
+              />
             </div>
 
             <div className="shrink-0 w-full sm:w-auto flex flex-col sm:flex-row items-center gap-4">

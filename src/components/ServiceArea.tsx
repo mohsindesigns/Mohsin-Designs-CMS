@@ -6,6 +6,7 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 import { useContent } from "@/hooks/useContent";
 import { resolveCountryLocation, COUNTRIES_DATABASE } from "@/lib/countryLocations";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 // Dynamic import with SSR disabled for Leaflet map
 const RealWorldMap = dynamic(() => import("@/components/RealWorldMap"), {
@@ -88,9 +89,10 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
               </span>
             </h2>
 
-            <p className="text-sm sm:text-base font-sans text-slate-600 dark:text-zinc-300 font-normal leading-relaxed max-w-md">
-              {description}
-            </p>
+            <RichTextRenderer
+              content={description}
+              className="text-sm sm:text-base font-sans text-slate-600 dark:text-zinc-300 font-normal leading-relaxed max-w-md"
+            />
 
             {/* ── Country / State chip grid ── */}
             <div className="w-full flex flex-wrap justify-center lg:justify-start gap-2">

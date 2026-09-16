@@ -4,6 +4,7 @@ import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { Star, Quote } from "lucide-react";
 import { useRef } from "react";
 import { useContent } from "@/hooks/useContent";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 export default function Testimonials({ data: overrideData }: { data?: any }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -284,9 +285,10 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
                 {titleHighlight}
               </span>
             </h2>
-            <p className="text-sm sm:text-base font-sans text-slate-600 dark:text-zinc-300 font-normal leading-relaxed max-w-2xl">
-              {description}
-            </p>
+            <RichTextRenderer
+              content={description}
+              className="text-sm sm:text-base font-sans text-slate-600 dark:text-zinc-300 font-normal leading-relaxed max-w-2xl"
+            />
           </div>
 
           {/* Premium Scorecard Widget */}
@@ -338,9 +340,10 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
                         <Star key={i} className="h-3 w-3 fill-[#E9BD36] text-[#E9BD36]" />
                       ))}
                     </div>
-                    <p className="text-xs font-semibold text-slate-800 dark:text-zinc-200 leading-relaxed line-clamp-3">
-                      "{item.quote}"
-                    </p>
+                    <RichTextRenderer
+                      content={item.quote}
+                      className="text-xs font-semibold text-slate-800 dark:text-zinc-200 leading-relaxed line-clamp-3"
+                    />
                   </div>
                   <div className="flex items-center gap-3 border-t border-slate-100 dark:border-white/10 pt-3 mt-2">
                     <div className={`relative h-9 w-9 rounded-full ${item.avatarBg} flex items-center justify-center text-white font-heading font-black text-xs border border-white/20 shadow-sm shrink-0`}>
@@ -376,9 +379,10 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
                         <Star key={i} className="h-3 w-3 fill-[#E9BD36] text-[#E9BD36]" />
                       ))}
                     </div>
-                    <p className="text-xs font-semibold text-slate-800 dark:text-zinc-200 leading-relaxed line-clamp-3">
-                      "{item.quote}"
-                    </p>
+                    <RichTextRenderer
+                      content={item.quote}
+                      className="text-xs font-semibold text-slate-800 dark:text-zinc-200 leading-relaxed line-clamp-3"
+                    />
                   </div>
                   <div className="flex items-center gap-3 border-t border-slate-100 dark:border-white/10 pt-3 mt-2">
                     <div className={`relative h-9 w-9 rounded-full ${item.avatarBg} flex items-center justify-center text-white font-heading font-black text-xs border border-white/20 shadow-sm shrink-0`}>
@@ -414,9 +418,10 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
                         <Star key={i} className="h-3 w-3 fill-[#E9BD36] text-[#E9BD36]" />
                       ))}
                     </div>
-                    <p className="text-xs font-semibold text-slate-800 dark:text-zinc-200 leading-relaxed line-clamp-3">
-                      "{item.quote}"
-                    </p>
+                    <RichTextRenderer
+                      content={item.quote}
+                      className="text-xs font-semibold text-slate-800 dark:text-zinc-200 leading-relaxed line-clamp-3"
+                    />
                   </div>
                   <div className="flex items-center gap-3 border-t border-slate-100 dark:border-white/10 pt-3 mt-2">
                     <div className={`relative h-9 w-9 rounded-full ${item.avatarBg} flex items-center justify-center text-white font-heading font-black text-xs border border-white/20 shadow-sm shrink-0`}>

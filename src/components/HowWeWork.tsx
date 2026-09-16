@@ -19,6 +19,7 @@ import {
   Image as ImageIcon
 } from "lucide-react";
 import { useContent } from "@/hooks/useContent";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 // ── Animated Circular Stat ────────────────────────────────────
 const RADIUS = 34;
@@ -235,9 +236,10 @@ export default function HowWeWork({ data: overrideData }: { data?: any }) {
               </h2>
 
               {/* Subtext */}
-              <p className="text-sm sm:text-base font-sans text-slate-600 dark:text-zinc-300 font-normal leading-relaxed max-w-sm">
-                {subtext}
-              </p>
+              <RichTextRenderer
+                content={subtext}
+                className="text-sm sm:text-base font-sans text-slate-600 dark:text-zinc-300 font-normal leading-relaxed max-w-sm"
+              />
 
               {/* Circular stats */}
               <div className="flex items-center justify-between gap-4 pt-6 w-full">
@@ -297,9 +299,10 @@ export default function HowWeWork({ data: overrideData }: { data?: any }) {
                         <h3 className="font-heading font-extrabold text-[1.1rem] text-slate-900 dark:text-white group-hover:text-primary dark:group-hover:text-yellow-400 transition-colors duration-300 leading-snug">
                           {reason.title}
                         </h3>
-                        <p className="text-[13px] text-slate-600 dark:text-zinc-400 leading-relaxed">
-                          {reason.desc}
-                        </p>
+                        <RichTextRenderer
+                          content={reason.desc}
+                          className="text-[13px] text-slate-600 dark:text-zinc-400 leading-relaxed"
+                        />
                       </div>
                     </div>
 

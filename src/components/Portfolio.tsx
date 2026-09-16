@@ -20,6 +20,7 @@ import {
   Award
 } from "lucide-react";
 import { useContent } from "../hooks/useContent";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 const iconMap: Record<string, any> = {
   LayoutGrid,
@@ -465,9 +466,10 @@ export default function Portfolio({ data }: { data?: any }) {
               {portfolio.titleHighlight}
             </span>
           </h2>
-          <p className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-2xl mx-auto">
-            {portfolio.description}
-          </p>
+          <RichTextRenderer
+            content={portfolio.description}
+            className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-2xl mx-auto"
+          />
         </motion.div>
 
         {/* Categories Navigation Filter Bar */}
