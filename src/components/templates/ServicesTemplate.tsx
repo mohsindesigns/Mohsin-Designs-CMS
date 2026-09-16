@@ -41,6 +41,7 @@ import * as LucideIcons from "lucide-react";
 import { useContent } from "../../hooks/useContent";
 import BlogSection from "../sections/BlogSection";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 // ── Icon resolver ─────────────────────────────────────────────────────────────
 const iconMap: Record<string, React.ElementType> = {
@@ -185,9 +186,10 @@ function ServiceCard({
           <h3 className="font-heading text-[18px] font-extrabold leading-snug text-gray-900 dark:text-white transition-colors duration-300 group-hover:text-[#0306ac] dark:group-hover:text-[#e9bd36]">
             {card.title}
           </h3>
-          <p className="text-[13px] text-gray-600 dark:text-zinc-400 leading-relaxed font-normal">
-            {card.desc}
-          </p>
+          <RichTextRenderer
+            content={card.desc}
+            className="text-[13px] text-gray-600 dark:text-zinc-400 leading-relaxed font-normal"
+          />
 
           {/* Feature Checkpoints */}
           {Array.isArray(card.features) && card.features.length > 0 && (
@@ -355,9 +357,10 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                   </span>
                 </h1>
 
-                <p className="text-sm sm:text-base font-sans text-gray-600 dark:text-zinc-300 leading-relaxed max-w-2xl">
-                  {hero.description}
-                </p>
+                <RichTextRenderer
+                  content={hero.description}
+                  className="text-sm sm:text-base font-sans text-gray-600 dark:text-zinc-300 leading-relaxed max-w-2xl"
+                />
 
                 <div className="flex flex-wrap items-center gap-4 pt-2">
                   <Link
@@ -425,9 +428,10 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                   </svg>
                 </span>
               </h2>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-                {grid.subtext}
-              </p>
+              <RichTextRenderer
+                content={grid.subtext}
+                className="text-sm sm:text-base text-gray-600 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed"
+              />
             </motion.div>
 
             {/* Cards — Responsive 1/2/3/4 col grid */}
@@ -486,9 +490,10 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                 </h2>
 
                 {/* Description */}
-                <p className="text-sm sm:text-base font-sans text-white/90 leading-relaxed max-w-lg">
-                  {ctaBanner.description}
-                </p>
+                <RichTextRenderer
+                  content={ctaBanner.description}
+                  className="text-sm sm:text-base font-sans text-white/90 leading-relaxed max-w-lg"
+                />
 
                 {/* Buttons */}
                 <div className="flex items-center gap-4 flex-wrap pt-2">

@@ -34,6 +34,7 @@ import {
   Zap
 } from "lucide-react";
 import { useContent } from "@/hooks/useContent";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 // ── Drawing Animation for Hand-Drawn SVG Underlines ────────────────
 const drawVariants = {
@@ -308,9 +309,10 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                 </h1>
 
                 {hero.description && (
-                  <p className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg">
-                    {hero.description}
-                  </p>
+                  <RichTextRenderer
+                    content={hero.description}
+                    className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg"
+                  />
                 )}
 
                 <div className="flex flex-wrap items-center gap-4 pt-2">
@@ -376,9 +378,10 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   </h2>
 
                   {stats.description && (
-                    <p className="text-sm font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-xs">
-                      {stats.description}
-                    </p>
+                    <RichTextRenderer
+                      content={stats.description}
+                      className="text-sm font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-xs"
+                    />
                   )}
                 </div>
 
@@ -464,9 +467,10 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   </h2>
 
                   {whoWeAre.description && (
-                    <p className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-2xl">
-                      {whoWeAre.description}
-                    </p>
+                    <RichTextRenderer
+                      content={whoWeAre.description}
+                      className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-2xl"
+                    />
                   )}
                 </div>
 
@@ -482,9 +486,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                             <h3 className="text-xs sm:text-sm font-black uppercase tracking-wider text-brand-dark dark:text-white group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors duration-300">
                               {row.title}
                             </h3>
-                            <p className="text-[10px] sm:text-[11px] text-brand-zinc-550 dark:text-zinc-300 font-medium leading-normal max-w-md transition-colors duration-300 group-hover:text-brand-dark dark:group-hover:text-white">
-                              {row.desc}
-                            </p>
+                            <div className="text-[10px] sm:text-[11px] text-brand-zinc-550 dark:text-zinc-300 font-medium leading-normal max-w-md transition-colors duration-300 group-hover:text-brand-dark dark:group-hover:text-white">
+                              <RichTextRenderer content={row.desc} />
+                            </div>
                           </div>
                         </div>
                         <div className="h-7 w-7 rounded-full border border-brand-zinc-300 dark:border-white/10 flex items-center justify-center text-brand-zinc-400 dark:text-zinc-500 group-hover:border-[#0306AC] dark:group-hover:border-[#E9BD36] group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] group-hover:rotate-45 transition-all duration-300 shrink-0">
@@ -599,9 +603,10 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                     </h3>
 
                     {philosophy.mission.desc && (
-                      <p className="text-xs sm:text-sm text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed">
-                        {philosophy.mission.desc}
-                      </p>
+                      <RichTextRenderer
+                        content={philosophy.mission.desc}
+                        className="text-xs sm:text-sm text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed"
+                      />
                     )}
 
                     {philosophy.mission.quote && (
@@ -682,9 +687,10 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                     </h3>
 
                     {philosophy.vision.desc && (
-                      <p className="text-xs sm:text-sm text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed">
-                        {philosophy.vision.desc}
-                      </p>
+                      <RichTextRenderer
+                        content={philosophy.vision.desc}
+                        className="text-xs sm:text-sm text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed"
+                      />
                     )}
 
                     {philosophy.vision.quote && (
@@ -729,9 +735,10 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                     </h3>
 
                     {philosophy.values.desc && (
-                      <p className="text-xs sm:text-sm text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed">
-                        {philosophy.values.desc}
-                      </p>
+                      <RichTextRenderer
+                        content={philosophy.values.desc}
+                        className="text-xs sm:text-sm text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed"
+                      />
                     )}
 
                     {philosophy.values.quote && (
@@ -973,7 +980,10 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
               </div>
               {methodology.description && (
                 <div className="max-w-md space-y-3">
-                  <p className="text-xs sm:text-sm text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed">{methodology.description}</p>
+                  <RichTextRenderer
+                    content={methodology.description}
+                    className="text-xs sm:text-sm text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed"
+                  />
                 </div>
               )}
             </div>
@@ -1005,7 +1015,10 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                         <div className="space-y-3">
                           <h3 className="font-heading text-xl font-black text-brand-dark dark:text-white tracking-tight group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors">{process.title}</h3>
-                          <p className="text-xs sm:text-sm text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed">{process.desc}</p>
+                          <RichTextRenderer
+                            content={process.desc}
+                            className="text-xs sm:text-sm text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed"
+                          />
                         </div>
                       </div>
 
@@ -1058,7 +1071,10 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
               </div>
               {domainExpertise.description && (
                 <div className="max-w-md space-y-3">
-                  <p className="text-xs sm:text-sm text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed">{domainExpertise.description}</p>
+                  <RichTextRenderer
+                    content={domainExpertise.description}
+                    className="text-xs sm:text-sm text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed"
+                  />
                 </div>
               )}
             </div>
@@ -1086,7 +1102,10 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                         <div className="space-y-2">
                           <h3 className="font-heading text-lg sm:text-xl font-black text-brand-dark dark:text-white tracking-tight group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors">{domain.title}</h3>
-                          <p className="text-xs text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed">{domain.desc}</p>
+                          <RichTextRenderer
+                            content={domain.desc}
+                            className="text-xs text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed"
+                          />
                         </div>
                       </div>
 
@@ -1132,9 +1151,10 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
               </h2>
 
               {whyChooseUs.description && (
-                <p className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-2xl mx-auto">
-                  {whyChooseUs.description}
-                </p>
+                <RichTextRenderer
+                  content={whyChooseUs.description}
+                  className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-2xl mx-auto"
+                />
               )}
             </div>
 
@@ -1166,7 +1186,10 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                       <div>
                         <div className="h-[2.5px] w-6 bg-[#0306AC] dark:bg-[#E9BD36] mb-3" />
                         <h3 className="font-heading font-extrabold text-base text-brand-dark dark:text-white tracking-tight mb-2">{feat.title}</h3>
-                        <p className="text-xs text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed">{feat.desc}</p>
+                        <RichTextRenderer
+                          content={feat.desc}
+                          className="text-xs text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed"
+                        />
                       </div>
                     </div>
                   );
@@ -1184,13 +1207,8 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
               <div className="lg:col-span-5 flex justify-center">
                 {executiveLeadership.portraitSrc && (
-                  <div className="relative aspect-[4/5] w-full max-w-[440px] rounded-[32px] overflow-hidden shadow-2xl border border-brand-zinc-200/60 dark:border-white/10 relative group">
+                  <div className="relative aspect-[4/5] w-full max-w-[440px] rounded-[32px] overflow-hidden shadow-2xl border border-brand-zinc-200/60 dark:border-white/10 group">
                     <img src={executiveLeadership.portraitSrc} alt={executiveLeadership.portraitAlt || "Founder"} className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 pointer-events-none" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-                    <div className="absolute left-6 bottom-6 text-white text-left z-10 select-none">
-                      <div className="font-heading font-extrabold text-xl tracking-tight leading-none text-white">{executiveLeadership.founderName || "Mohsin"}</div>
-                      <span className="text-[10px] font-mono text-zinc-300 uppercase tracking-widest block mt-1">{executiveLeadership.founderTitle || "FOUNDER & PRINCIPAL ARCHITECT"}</span>
-                    </div>
                   </div>
                 )}
               </div>
@@ -1216,8 +1234,13 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                 </div>
 
                 <div className="space-y-4 text-base sm:text-lg font-sans leading-relaxed text-brand-zinc-600 dark:text-zinc-300">
-                  {executiveLeadership.bioParagraph1 && <p>{executiveLeadership.bioParagraph1}</p>}
-                  {executiveLeadership.bioParagraph2 && <p>{executiveLeadership.bioParagraph2}</p>}
+                  <RichTextRenderer
+                    content={
+                      executiveLeadership.bioContent ||
+                      executiveLeadership.bio ||
+                      [executiveLeadership.bioParagraph1, executiveLeadership.bioParagraph2].filter(Boolean).map((p: string) => `<p>${p}</p>`).join("")
+                    }
+                  />
                 </div>
 
                 {Array.isArray(executiveLeadership.metrics) && executiveLeadership.metrics.length > 0 && (
@@ -1280,9 +1303,10 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                 </h2>
 
                 {ctaBanner.description && (
-                  <p className="text-sm sm:text-base font-sans text-white/90 font-normal leading-relaxed max-w-lg">
-                    {ctaBanner.description}
-                  </p>
+                  <RichTextRenderer
+                    content={ctaBanner.description}
+                    className="text-sm sm:text-base font-sans text-white/90 font-normal leading-relaxed max-w-lg"
+                  />
                 )}
 
                 <div className="flex items-center gap-4 flex-wrap pt-2">
@@ -1379,9 +1403,10 @@ function ReviewsCarousel({ reviewsData }: { reviewsData: any }) {
           </h2>
 
           {reviewsData.description && (
-            <p className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 max-w-2xl font-normal leading-relaxed">
-              {reviewsData.description}
-            </p>
+            <RichTextRenderer
+              content={reviewsData.description}
+              className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 max-w-2xl font-normal leading-relaxed"
+            />
           )}
 
           <div className="pt-1 inline-flex items-center gap-3 sm:gap-4 rounded-full bg-zinc-100/80 dark:bg-white/5 border border-brand-zinc-200 dark:border-white/10 px-5 py-2 text-xs font-mono shadow-xs">

@@ -1,0 +1,961 @@
+[
+  {
+    "name": "Home Template",
+    "editor": "HomeEditor.tsx",
+    "template": "HomeTemplate.tsx",
+    "items": [
+      {
+        "line": 358,
+        "label": "Description Narrative",
+        "section": "General",
+        "valueBinding": "data.trustedBrands?.description !== undefined ? data.trustedBrands.description : \"Powering innovative market disruptors, scaling enterprises, and high-performance industry leaders worldwide.\"",
+        "frontendRender": "Not Found / Dynamic",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 603,
+        "label": "Section Description",
+        "section": "1. Section Header",
+        "valueBinding": "typeof data.services?.description === \"string\" ? data.services.description : (Array.isArray(data.services?.description) ? (data.services.description as string[]).join(\"\") : \"\")",
+        "frontendRender": "Not Found / Dynamic",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 651,
+        "label": "CTA Description Narrative",
+        "section": "3. Bottom Services Conversion Banner (CTA)",
+        "valueBinding": "data.services?.ctaDescription || \"Discuss your technical requirements directly with our principal engineer. We map out full-funnel architectures and execute with pixel perfection.\"",
+        "frontendRender": "Not Found / Dynamic",
+        "category": "comma_separated",
+        "reason": "Comma-separated array input (e.g. tags, zip codes, tech stack)."
+      },
+      {
+        "line": 738,
+        "label": "Intro Subtext",
+        "section": "General",
+        "valueBinding": "data.whyChooseUs?.subtext || data.whyChooseUs?.section?.description || \"\"",
+        "frontendRender": "Not Found / Dynamic",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 959,
+        "label": "Description",
+        "section": "General",
+        "valueBinding": "r.desc || r.description || \"\"",
+        "frontendRender": "Referenced in template (desc)",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 1043,
+        "label": "Intro Description",
+        "section": "General",
+        "valueBinding": "data.serviceArea?.description || \"\"",
+        "frontendRender": "Referenced in template (description)",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 1448,
+        "label": "Description",
+        "section": "1. Branding",
+        "valueBinding": "data.portfolio?.description || data.portfolio?.section?.description || \"\"",
+        "frontendRender": "Referenced in template (description)",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 1678,
+        "label": "Description",
+        "section": "General",
+        "valueBinding": "data.testimonials?.description || data.testimonials?.section?.description || \"\"",
+        "frontendRender": "Referenced in template (description)",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 1828,
+        "label": "Review Quote",
+        "section": "General",
+        "valueBinding": "rev.quote || \"\"",
+        "frontendRender": "Not Found / Dynamic",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 2014,
+        "label": "Intro Description",
+        "section": "General",
+        "valueBinding": "data.blogSection?.description || data.blog?.description || \"Explore our latest thoughts on high-performance web engineering, modern UI/UX design architectures, and conversion rate optimization.\"",
+        "frontendRender": "Referenced in template (description)",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 2100,
+        "label": "Description",
+        "section": "General",
+        "valueBinding": "data.contact?.description || \"Have a project in mind or want to discuss modern digital architecture? Reach out directly or fill out the form below.\"",
+        "frontendRender": "Referenced in template (description)",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      }
+    ]
+  },
+  {
+    "name": "New About Template",
+    "editor": "NewAboutEditor.tsx",
+    "template": "NewAboutTemplate.tsx",
+    "items": [
+      {
+        "line": 156,
+        "label": "Description Narrative",
+        "section": "1. Hero Badges & Headlines",
+        "valueBinding": "data.hero?.description || \"\"",
+        "frontendRender": "</h1>\n\n                {hero.description && (\n                  <p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n                    {hero.description}\n                  </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 226,
+        "label": "Description",
+        "section": "1. Section Header Narrative",
+        "valueBinding": "data.stats?.description || \"\"",
+        "frontendRender": "</h1>\n\n                {hero.description && (\n                  <p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n                    {hero.description}\n                  </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 294,
+        "label": "Description",
+        "section": "1. Header & Watermark",
+        "valueBinding": "data.whoWeAre?.description || \"\"",
+        "frontendRender": "</h1>\n\n                {hero.description && (\n                  <p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n                    {hero.description}\n                  </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 310,
+        "label": "Description",
+        "section": "2. Features / Approach Rows",
+        "valueBinding": "row.desc || \"\"",
+        "frontendRender": "</h1>\n\n                {hero.description && (\n                  <p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n                    {hero.description}\n                  </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 363,
+        "label": "Description",
+        "section": "Header Narrative",
+        "valueBinding": "data.philosophy?.mission?.desc || \"\"",
+        "frontendRender": "</h1>\n\n                {hero.description && (\n                  <p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n                    {hero.description}\n                  </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 391,
+        "label": "Description",
+        "section": "General",
+        "valueBinding": "data.philosophy?.vision?.desc || \"\"",
+        "frontendRender": "</h1>\n\n                {hero.description && (\n                  <p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n                    {hero.description}\n                  </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 418,
+        "label": "Description",
+        "section": "General",
+        "valueBinding": "data.philosophy?.values?.desc || \"\"",
+        "frontendRender": "</h1>\n\n                {hero.description && (\n                  <p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n                    {hero.description}\n                  </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 546,
+        "label": "Description",
+        "section": "1. Section Header",
+        "valueBinding": "data.methodology?.description || \"\"",
+        "frontendRender": "</h1>\n\n                {hero.description && (\n                  <p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n                    {hero.description}\n                  </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 563,
+        "label": "Description",
+        "section": "2. Methodology Step Cards",
+        "valueBinding": "step.desc || \"\"",
+        "frontendRender": "</h1>\n\n                {hero.description && (\n                  <p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n                    {hero.description}\n                  </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 601,
+        "label": "Description",
+        "section": "1. Header",
+        "valueBinding": "data.domainExpertise?.description || \"\"",
+        "frontendRender": "</h1>\n\n                {hero.description && (\n                  <p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n                    {hero.description}\n                  </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 617,
+        "label": "Description",
+        "section": "2. Industry Domains",
+        "valueBinding": "dom.desc || \"\"",
+        "frontendRender": "</h1>\n\n                {hero.description && (\n                  <p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n                    {hero.description}\n                  </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 656,
+        "label": "Description",
+        "section": "1. Header",
+        "valueBinding": "data.whyChooseUs?.description || \"\"",
+        "frontendRender": "</h1>\n\n                {hero.description && (\n                  <p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n                    {hero.description}\n                  </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 678,
+        "label": "Description",
+        "section": "3. Right Feature Grid Cards",
+        "valueBinding": "feat.desc || \"\"",
+        "frontendRender": "</h1>\n\n                {hero.description && (\n                  <p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n                    {hero.description}\n                  </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 720,
+        "label": "Bio Paragraph 1",
+        "section": "1. Section Header & Bio",
+        "valueBinding": "data.executiveLeadership?.bioParagraph1 || \"\"",
+        "frontendRender": "<div className=\"space-y-4 text-base sm:text-lg font-sans leading-relaxed text-brand-zinc-600 dark:text-zinc-300\">\n                  {executiveLeadership.bioParagraph1 && <p>{executiveLeadership.bioParagraph1}</p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 721,
+        "label": "Bio Paragraph 2",
+        "section": "1. Section Header & Bio",
+        "valueBinding": "data.executiveLeadership?.bioParagraph2 || \"\"",
+        "frontendRender": "<p>{executiveLeadership.bioParagraph2}</p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 769,
+        "label": "Description",
+        "section": "1. Header & Rating Pill",
+        "valueBinding": "data.reviews?.description || \"\"",
+        "frontendRender": "</h1>\n\n                {hero.description && (\n                  <p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n                    {hero.description}\n                  </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 789,
+        "label": "Quote",
+        "section": "2. Marquee Reviews List",
+        "valueBinding": "rev.quote || \"\"",
+        "frontendRender": "<div className=\"pl-4 border-l-2 border-[#0306AC] dark:border-[#E9BD36] italic text-xs font-serif text-brand-dark dark:text-zinc-200 py-0.5\">\n                        {philosophy.mission.quote}\n                      </div>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 832,
+        "label": "Description",
+        "section": "1. Banner Headlines",
+        "valueBinding": "data.ctaBanner?.description || \"\"",
+        "frontendRender": "</h1>\n\n                {hero.description && (\n                  <p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n                    {hero.description}\n                  </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      }
+    ]
+  },
+  {
+    "name": "Classic About Template",
+    "editor": "AboutEditor.tsx",
+    "template": "AboutTemplate.tsx",
+    "items": [
+      {
+        "line": 436,
+        "label": "Description",
+        "section": "2. Stat Items",
+        "valueBinding": "s.description || \"\"",
+        "frontendRender": "</h3>\r\n\r\n        {description && (\r\n          <p className=\"text-[10px] sm:text-xs md:text-sm text-muted-foreground\">\r\n            {description}\r\n          </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      }
+    ]
+  },
+  {
+    "name": "Services Template",
+    "editor": "ServicesEditor.tsx",
+    "template": "ServicesTemplate.tsx",
+    "items": [
+      {
+        "line": 173,
+        "label": "Hero Narrative Description",
+        "section": "2. Headline & Description",
+        "valueBinding": "data.hero?.description || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-gray-600 dark:text-zinc-300 leading-relaxed max-w-2xl\">\n                  {hero.description}\n                </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 301,
+        "label": "Grid Subtitle / Description",
+        "section": "General",
+        "valueBinding": "data.grid?.subtext || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base text-gray-600 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed\">\n                {grid.subtext}\n              </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 391,
+        "label": "Description",
+        "section": "General",
+        "valueBinding": "data.ctaBanner?.description || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-gray-600 dark:text-zinc-300 leading-relaxed max-w-2xl\">\n                  {hero.description}\n                </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      }
+    ]
+  },
+  {
+    "name": "Service Detail Template",
+    "editor": "ServiceDetailEditor.tsx",
+    "template": "ServiceDetailTemplate.tsx",
+    "items": [
+      {
+        "line": 417,
+        "label": "Hero Description (Supports Line Breaks & Paragraphs)",
+        "section": "General",
+        "valueBinding": "data.hero?.description || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line\">\n                  {service.hero.description}\n                </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 595,
+        "label": "Section Description (Narrative)",
+        "section": "General",
+        "valueBinding": "data.whatIncluded?.description || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line\">\n                  {service.hero.description}\n                </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 654,
+        "label": "Pillar Description",
+        "section": "General",
+        "valueBinding": "pillar.desc || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line\">\n                  {service.hero.description}\n                </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 731,
+        "label": "Description",
+        "section": "General",
+        "valueBinding": "data.strategy?.description || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line\">\n                  {service.hero.description}\n                </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 804,
+        "label": "Description",
+        "section": "General",
+        "valueBinding": "comp.desc || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line\">\n                  {service.hero.description}\n                </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 868,
+        "label": "Section Description",
+        "section": "General",
+        "valueBinding": "data.benefits?.description || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line\">\n                  {service.hero.description}\n                </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 950,
+        "label": "Outcome Description",
+        "section": "General",
+        "valueBinding": "b.desc || b.description || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line\">\n                  {service.hero.description}\n                </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 1014,
+        "label": "Description",
+        "section": "General",
+        "valueBinding": "data.process?.description || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line\">\n                  {service.hero.description}\n                </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 1117,
+        "label": "Description",
+        "section": "General",
+        "valueBinding": "step.desc || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line\">\n                  {service.hero.description}\n                </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 1205,
+        "label": "Section Description",
+        "section": "General",
+        "valueBinding": "data.results?.description || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line\">\n                  {service.hero.description}\n                </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 1302,
+        "label": "Challenge Statement",
+        "section": "General",
+        "valueBinding": "cs.challenge || \"\"",
+        "frontendRender": "</div>\n\n                            {cs.challenge && (\n                              <div className=\"space-y-1 bg-zinc-50 dark:bg-white/[0.02] p-3 rounded-xl border border-zinc-100 dark:border-white/5\">\n                                <span className=\"text-[9px] font-mono font-bold text-brand-zinc-400 uppercase tracking-wider block\">The Challenge</span>\n                                <p className=\"text-brand-zinc-700 dark:text-zinc-300 text-xs leading-relaxed\">{cs.challenge}</p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 1316,
+        "label": "Strategy & Architecture Solution",
+        "section": "General",
+        "valueBinding": "cs.strategy || \"\"",
+        "frontendRender": "<span className=\"eyebrow-pill\">{service.strategy.eyebrow}</span>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 1522,
+        "label": "Section Description (Frontend Narrative)",
+        "section": "General",
+        "valueBinding": "data.industries?.description || \"Every industry has distinct compliance, customer acquisition funnels, and technical requirements. We tailor our engineering to your exact vertical.\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line\">\n                  {service.hero.description}\n                </p>",
+        "category": "comma_separated",
+        "reason": "Comma-separated array input (e.g. tags, zip codes, tech stack)."
+      },
+      {
+        "line": 1593,
+        "label": "Description",
+        "section": "General",
+        "valueBinding": "ind.desc || ind.description || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line\">\n                  {service.hero.description}\n                </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 1657,
+        "label": "Section Description",
+        "section": "General",
+        "valueBinding": "data.tools?.description || \"High-performance frameworks and analytics systems driving client ROI metrics.\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line\">\n                  {service.hero.description}\n                </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 1742,
+        "label": "Description",
+        "section": "General",
+        "valueBinding": "tool.desc || tool.description || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line\">\n                  {service.hero.description}\n                </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 1806,
+        "label": "Description",
+        "section": "General",
+        "valueBinding": "data.whyChooseUs?.description || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line\">\n                  {service.hero.description}\n                </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 1990,
+        "label": "Description",
+        "section": "General",
+        "valueBinding": "item.desc || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line\">\n                  {service.hero.description}\n                </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 2065,
+        "label": "Section Description (Frontend Narrative)",
+        "section": "General",
+        "valueBinding": "data.pricing?.description || \"Clear fixed scopes with zero hidden fees. Choose a sprint tier tailored to your immediate milestones.\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line\">\n                  {service.hero.description}\n                </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 2175,
+        "label": "Plan Description",
+        "section": "General",
+        "valueBinding": "plan.desc || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line\">\n                  {service.hero.description}\n                </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 2335,
+        "label": "Description Narrative",
+        "section": "General",
+        "valueBinding": "data.recommendedSection?.description || \"Scale faster by pairing multi-channel growth campaigns and high-performance visual coding solutions.\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line\">\n                  {service.hero.description}\n                </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 2397,
+        "label": "Description",
+        "section": "General",
+        "valueBinding": "data.serviceArea?.description || \"Deploying high-performance digital platforms across North America, Europe, and worldwide.\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line\">\n                  {service.hero.description}\n                </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 2636,
+        "label": "Card Description",
+        "section": "FAQ CTA Card (Strategy Session Box)",
+        "valueBinding": "data.strategyAudit?.desc || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line\">\n                  {service.hero.description}\n                </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 2763,
+        "label": "Answer",
+        "section": "General",
+        "valueBinding": "faq.a || faq.answer || \"\"",
+        "frontendRender": "<span className=\"font-heading font-black text-[14px] sm:text-[16px] text-brand-dark dark:text-white leading-none\">\n            {displayed}\n          </span>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 2839,
+        "label": "Description",
+        "section": "General",
+        "valueBinding": "data.finalCta?.description !== undefined ? data.finalCta.description : \"Schedule a free strategic consultation. We will audit your existing presence and map out a concrete blueprint for scalable growth.\"",
+        "frontendRender": "Not Found / Dynamic",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 3013,
+        "label": "Section Description",
+        "section": "General",
+        "valueBinding": "data.recommendedSection?.description || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line\">\n                  {service.hero.description}\n                </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 3043,
+        "label": "Description",
+        "section": "Related Blog Insights",
+        "valueBinding": "data.blogSection?.description || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line\">\n                  {service.hero.description}\n                </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      }
+    ]
+  },
+  {
+    "name": "Industry Template",
+    "editor": "IndustryEditor.tsx",
+    "template": "IndustryTemplate.tsx",
+    "items": [
+      {
+        "line": 476,
+        "label": "Section Description",
+        "section": "General",
+        "valueBinding": "industryData.servicesSection?.description || \"\"",
+        "frontendRender": "<RichTextRenderer content={hero.description} />",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 556,
+        "label": "Description",
+        "section": "General",
+        "valueBinding": "industryData.domainExpertise?.description || \"\"",
+        "frontendRender": "<RichTextRenderer content={hero.description} />",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 929,
+        "label": "Description",
+        "section": "General",
+        "valueBinding": "industryData.whyChooseUs?.description || \"\"",
+        "frontendRender": "<RichTextRenderer content={hero.description} />",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 1021,
+        "label": "Description",
+        "section": "General",
+        "valueBinding": "feat.desc || \"\"",
+        "frontendRender": "<RichTextRenderer content={hero.description} />",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 1120,
+        "label": "Description",
+        "section": "General",
+        "valueBinding": "industryData.ctaBanner?.description || \"\"",
+        "frontendRender": "<RichTextRenderer content={hero.description} />",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      }
+    ]
+  },
+  {
+    "name": "Location Template",
+    "editor": "LocationEditor.tsx",
+    "template": "LocationTemplate.tsx",
+    "items": [
+      {
+        "line": 405,
+        "label": "Subtitle Description",
+        "section": "General",
+        "valueBinding": "loc.hero?.description || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n                {hero.description}\n              </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 889,
+        "label": "Section Description",
+        "section": "General",
+        "valueBinding": "loc.presence?.description || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n                {hero.description}\n              </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 1031,
+        "label": "Country Description",
+        "section": "General",
+        "valueBinding": "country.description || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n                {hero.description}\n              </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 1192,
+        "label": "Description",
+        "section": "General",
+        "valueBinding": "loc.ctaBanner?.description || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n                {hero.description}\n              </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      }
+    ]
+  },
+  {
+    "name": "Service Area Template",
+    "editor": "ServiceAreaEditor.tsx",
+    "template": "ServiceAreaTemplate.tsx",
+    "items": [
+      {
+        "line": 377,
+        "label": "Coverage Narrative Description",
+        "section": "General",
+        "valueBinding": "data.map?.description || \"\"",
+        "frontendRender": "<p className=\"text-slate-600 text-sm leading-relaxed mb-6 flex-grow\">\r\n              {service.tagline || service.description}\r\n            </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 582,
+        "label": "Step Description Narrative",
+        "section": "General",
+        "valueBinding": "step.description",
+        "frontendRender": "<p className=\"text-slate-600 text-sm leading-relaxed mb-6 flex-grow\">\r\n              {service.tagline || service.description}\r\n            </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 713,
+        "label": "Material Description",
+        "section": "General",
+        "valueBinding": "item.description",
+        "frontendRender": "<p className=\"text-slate-600 text-sm leading-relaxed mb-6 flex-grow\">\r\n              {service.tagline || service.description}\r\n            </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 890,
+        "label": "Service Description Summary",
+        "section": "General",
+        "valueBinding": "item.description",
+        "frontendRender": "<p className=\"text-slate-600 text-sm leading-relaxed mb-6 flex-grow\">\r\n              {service.tagline || service.description}\r\n            </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 1049,
+        "label": "Zip Codes (Comma separated)",
+        "section": "General",
+        "valueBinding": "region.zipcodes ? region.zipcodes.join(\", \") : \"\"",
+        "frontendRender": "Not Found / Dynamic",
+        "category": "comma_separated",
+        "reason": "Comma-separated array input (e.g. tags, zip codes, tech stack)."
+      },
+      {
+        "line": 1172,
+        "label": "Column Narrative Description",
+        "section": "General",
+        "valueBinding": "item.description",
+        "frontendRender": "<p className=\"text-slate-600 text-sm leading-relaxed mb-6 flex-grow\">\r\n              {service.tagline || service.description}\r\n            </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 1308,
+        "label": "CTA Subheadline Narrative",
+        "section": "Lead Call To Action Visibility",
+        "valueBinding": "data.cta?.description || \"\"",
+        "frontendRender": "<p className=\"text-slate-600 text-sm leading-relaxed mb-6 flex-grow\">\r\n              {service.tagline || service.description}\r\n            </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      }
+    ]
+  },
+  {
+    "name": "Blog Template / Posts",
+    "editor": "BlogEditor.tsx",
+    "template": "BlogTemplate.tsx",
+    "items": [
+      {
+        "line": 184,
+        "label": "Subtitle Description",
+        "section": "General",
+        "valueBinding": "blog.hero.description",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n              {hero.description}\n            </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 459,
+        "label": "Banner Description",
+        "section": "General",
+        "valueBinding": "blog.ctaBanner.description",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n              {hero.description}\n            </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 627,
+        "label": "Description",
+        "section": "General",
+        "valueBinding": "blog.detailSidebarCta?.description || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n              {hero.description}\n            </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 768,
+        "label": "Description Paragraph",
+        "section": "General",
+        "valueBinding": "blog.detailCtaBanner?.description || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n              {hero.description}\n            </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      }
+    ]
+  },
+  {
+    "name": "Careers Template",
+    "editor": "CareersEditor.tsx",
+    "template": "CareersTemplate.tsx",
+    "items": []
+  },
+  {
+    "name": "Contact Template",
+    "editor": "ContactEditor.tsx",
+    "template": "ContactTemplate.tsx",
+    "items": [
+      {
+        "line": 302,
+        "label": "Hero Subtitle Description",
+        "section": "General",
+        "valueBinding": "contact.hero.description",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-md\">\n                {hero.description}\n              </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 831,
+        "label": "Banner Description",
+        "section": "General",
+        "valueBinding": "contact.ctaBanner.description",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-md\">\n                {hero.description}\n              </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      }
+    ]
+  },
+  {
+    "name": "FAQ Template",
+    "editor": "FAQEditor.tsx",
+    "template": "FAQTemplate.tsx",
+    "items": []
+  },
+  {
+    "name": "Gallery Template",
+    "editor": "GalleryEditor.tsx",
+    "template": "GalleryTemplate.tsx",
+    "items": [
+      {
+        "line": 333,
+        "label": "Subtitle Description",
+        "section": "General",
+        "valueBinding": "gallery.hero?.subtitle || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n              {hero.subtitle}\n            </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 604,
+        "label": "Subtitle / Summary Description",
+        "section": "General",
+        "valueBinding": "project.subtitle || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n              {hero.subtitle}\n            </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 682,
+        "label": "Section Subtitle",
+        "section": "General",
+        "valueBinding": "gallery.process?.subtitle || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg\">\n              {hero.subtitle}\n            </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 750,
+        "label": "Step Description",
+        "section": "General",
+        "valueBinding": "step.desc || \"\"",
+        "frontendRender": "<p className=\"font-sans text-xs sm:text-sm text-brand-zinc-600 dark:text-zinc-300 leading-relaxed font-normal\">\n                      {s.desc}\n                    </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 828,
+        "label": "Description",
+        "section": "General",
+        "valueBinding": "gallery.ctaBanner?.description || \"\"",
+        "frontendRender": "<p className=\"text-sm sm:text-base font-sans text-white/90 font-normal leading-relaxed max-w-lg\">\n                {ctaBanner.description}\n              </p>",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      }
+    ]
+  },
+  {
+    "name": "Reviews Template",
+    "editor": "ReviewsEditor.tsx",
+    "template": "ReviewsTemplate.tsx",
+    "items": []
+  },
+  {
+    "name": "Team Template",
+    "editor": "TeamEditor.tsx",
+    "template": "TeamTemplate.tsx",
+    "items": []
+  },
+  {
+    "name": "Admin Module: SeoEditor.tsx",
+    "editor": "SeoEditor.tsx",
+    "template": "N/A",
+    "items": [
+      {
+        "line": 148,
+        "label": "Meta Description",
+        "section": "General",
+        "valueBinding": "data.metaDescription || \"\"",
+        "frontendRender": "Not Found / Dynamic",
+        "category": "seo",
+        "reason": "SEO Meta/OG Description — Search engines and social crawlers require plain text without HTML tags."
+      },
+      {
+        "line": 210,
+        "label": "Unknown Field",
+        "section": "Facebook / Open Graph",
+        "valueBinding": "data.ogDescription || \"\"",
+        "frontendRender": "Not Found / Dynamic",
+        "category": "seo",
+        "reason": "SEO Meta/OG Description — Search engines and social crawlers require plain text without HTML tags."
+      },
+      {
+        "line": 230,
+        "label": "Card Style",
+        "section": "Twitter / X",
+        "valueBinding": "data.twitterDescription || \"\"",
+        "frontendRender": "Not Found / Dynamic",
+        "category": "seo",
+        "reason": "SEO Meta/OG Description — Search engines and social crawlers require plain text without HTML tags."
+      }
+    ]
+  },
+  {
+    "name": "Admin Module: BlogPostEditor.tsx",
+    "editor": "BlogPostEditor.tsx",
+    "template": "N/A",
+    "items": [
+      {
+        "line": 345,
+        "label": "Answer",
+        "section": "General",
+        "valueBinding": "item.answer",
+        "frontendRender": "Not Found / Dynamic",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      },
+      {
+        "line": 470,
+        "label": "Unknown Field",
+        "section": "Excerpt",
+        "valueBinding": "post.excerpt",
+        "frontendRender": "Not Found / Dynamic",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      }
+    ]
+  },
+  {
+    "name": "Admin Module: SchemaEditor.tsx",
+    "editor": "SchemaEditor.tsx",
+    "template": "N/A",
+    "items": [
+      {
+        "line": 328,
+        "label": "Unknown Field",
+        "section": "General",
+        "valueBinding": "value || \"\"",
+        "frontendRender": "Not Found / Dynamic",
+        "category": "candidate",
+        "reason": "Multi-line user-facing text suitable for rich formatting (RichTextEditor)."
+      }
+    ]
+  }
+]

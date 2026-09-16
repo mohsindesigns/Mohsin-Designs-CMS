@@ -355,11 +355,9 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                         </div>
                         <div className="space-y-1.5">
                            <label className={UI.label}>Description Narrative</label>
-                           <textarea
-                              rows={3}
-                              value={data.trustedBrands?.description !== undefined ? data.trustedBrands.description : "Powering innovative market disruptors, scaling enterprises, and high-performance industry leaders worldwide."}
-                              onChange={(e) => updateSection("trustedBrands", "description", e.target.value)}
-                              className={UI.input}
+                           <RichTextEditor
+                              content={data.trustedBrands?.description !== undefined ? data.trustedBrands.description : "Powering innovative market disruptors, scaling enterprises, and high-performance industry leaders worldwide."}
+                              onChange={(val) => updateSection("trustedBrands", "description", val)}
                               placeholder="Describe the client proof or partnerships."
                            />
                         </div>
@@ -600,7 +598,14 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                         <div className="space-y-1.5"><label className={UI.label}>Section Tag (Eyebrow Label)</label><input type="text" value={data.services?.sectionTag || ""} onChange={(e) => updateSection("services", "sectionTag", e.target.value)} className={UI.input} placeholder="OUR SERVICES" /></div>
                         <div className="space-y-1.5"><label className={UI.label}>Title — Intro (plain)</label><input type="text" value={data.services?.titleIntro || ""} onChange={(e) => updateSection("services", "titleIntro", e.target.value)} className={UI.input} placeholder="What We" /></div>
                         <div className="space-y-1.5"><label className={UI.label}>Title — Highlight <span className="text-[#2271b1] font-bold">(italic, brand color)</span></label><input type="text" value={data.services?.titleHighlight || ""} onChange={(e) => updateSection("services", "titleHighlight", e.target.value)} className={UI.input + " font-bold border-[#2271b1]"} placeholder="Deliver." /></div>
-                        <div className="space-y-1.5"><label className={UI.label}>Section Description</label><textarea rows={3} value={typeof data.services?.description === "string" ? data.services.description : (Array.isArray(data.services?.description) ? (data.services.description as string[]).join("") : "")} onChange={(e) => updateSection("services", "description", e.target.value)} className={UI.input} placeholder="Explore our full suite of premium digital services." /></div>
+                        <div className="space-y-1.5">
+                           <label className={UI.label}>Section Description</label>
+                           <RichTextEditor
+                              content={typeof data.services?.description === "string" ? data.services.description : (Array.isArray(data.services?.description) ? (data.services.description as string[]).join("") : "")}
+                              onChange={(val) => updateSection("services", "description", val)}
+                              placeholder="Explore our full suite of premium digital services."
+                           />
+                        </div>
                         <div className="grid grid-cols-2 gap-3">
                            <div className="space-y-1.5"><label className={UI.label}>Prev Arrow Aria Label</label><input type="text" value={data.services?.ariaPrev || ""} onChange={(e) => updateSection("services", "ariaPrev", e.target.value)} className={UI.input} placeholder="Previous service" /></div>
                            <div className="space-y-1.5"><label className={UI.label}>Next Arrow Aria Label</label><input type="text" value={data.services?.ariaNext || ""} onChange={(e) => updateSection("services", "ariaNext", e.target.value)} className={UI.input} placeholder="Next service" /></div>
@@ -648,11 +653,9 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                            </div>
                            <div className="space-y-1.5">
                               <label className={UI.label}>CTA Description Narrative</label>
-                              <textarea
-                                 rows={3}
-                                 value={data.services?.ctaDescription || "Discuss your technical requirements directly with our principal engineer. We map out full-funnel architectures and execute with pixel perfection."}
-                                 onChange={(e) => updateSection("services", "ctaDescription", e.target.value)}
-                                 className={UI.input}
+                              <RichTextEditor
+                                 content={data.services?.ctaDescription || "Discuss your technical requirements directly with our principal engineer. We map out full-funnel architectures and execute with pixel perfection."}
+                                 onChange={(val) => updateSection("services", "ctaDescription", val)}
                                  placeholder="e.g. Discuss your technical requirements directly with our principal engineer..."
                               />
                            </div>
@@ -735,11 +738,9 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
 
                         <div className="space-y-1.5">
                            <label className={UI.label}>Intro Subtext</label>
-                           <textarea
-                              rows={3}
-                              value={data.whyChooseUs?.subtext || data.whyChooseUs?.section?.description || ""}
-                              onChange={(e) => updateSection("whyChooseUs", "subtext", e.target.value)}
-                              className={UI.input}
+                           <RichTextEditor
+                              content={data.whyChooseUs?.subtext || data.whyChooseUs?.section?.description || ""}
+                              onChange={(val) => updateSection("whyChooseUs", "subtext", val)}
                               placeholder="e.g. We combine precision design, rock-solid engineering, and conversion strategy to build digital experiences that deliver real, measurable growth."
                            />
                         </div>
@@ -955,19 +956,17 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                                        </select>
                                     </div>
                                     <div className="space-y-1">
-                                       <label className="text-[11px] font-bold text-[#50575e]">Description</label>
-                                       <textarea
-                                          rows={2}
-                                          value={r.desc || r.description || ""}
-                                          onChange={(e) => {
-                                             const newR = [...currentReasons];
-                                             newR[i] = { ...newR[i], desc: e.target.value, description: e.target.value };
-                                             updateSection("whyChooseUs", "reasons", newR);
-                                          }}
-                                          className={UI.input}
-                                          placeholder="Detailed description of this step..."
-                                       />
-                                    </div>
+                                        <label className="text-[11px] font-bold text-[#50575e]">Description</label>
+                                        <RichTextEditor
+                                           content={r.desc || r.description || ""}
+                                           onChange={(val) => {
+                                              const newR = [...currentReasons];
+                                              newR[i] = { ...newR[i], desc: val, description: val };
+                                              updateSection("whyChooseUs", "reasons", newR);
+                                           }}
+                                           placeholder="Detailed description of this step..."
+                                        />
+                                     </div>
                                     <div className="space-y-1 pt-2 border-t border-[#f0f0f1]">
                                        <ImageField
                                           label="Step Image (Replaces SVG)"
@@ -1040,11 +1039,9 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
 
                         <div className="space-y-1.5">
                            <label className={UI.label}>Intro Description</label>
-                           <textarea
-                              rows={3}
-                              value={data.serviceArea?.description || ""}
-                              onChange={(e) => updateSection("serviceArea", "description", e.target.value)}
-                              className={UI.input}
+                           <RichTextEditor
+                              content={data.serviceArea?.description || ""}
+                              onChange={(val) => updateSection("serviceArea", "description", val)}
                               placeholder="e.g. With distributed engineering hubs and round-the-clock availability, we partner with industry leaders across North America, Europe, the Middle East, and Asia-Pacific."
                            />
                         </div>
@@ -1445,7 +1442,14 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                         <div className="space-y-1.5"><label className={UI.label}>Badge / Tag</label><input type="text" value={data.portfolio?.sectionTag || data.portfolio?.section?.badge || ""} onChange={(e) => updateSection("portfolio", "sectionTag", e.target.value)} className={UI.input} /></div>
                         <div className="space-y-1.5"><label className={UI.label}>Title Intro</label><input type="text" value={data.portfolio?.titleIntro || data.portfolio?.section?.headlinePrefix || ""} onChange={(e) => updateSection("portfolio", "titleIntro", e.target.value)} className={UI.input} /></div>
                         <div className="space-y-1.5"><label className={UI.label}>Title Highlight</label><input type="text" value={data.portfolio?.titleHighlight || data.portfolio?.section?.headlineHighlight || ""} onChange={(e) => updateSection("portfolio", "titleHighlight", e.target.value)} className={UI.input} /></div>
-                        <div className="space-y-1.5"><label className={UI.label}>Description</label><textarea value={data.portfolio?.description || data.portfolio?.section?.description || ""} onChange={(e) => updateSection("portfolio", "description", e.target.value)} className={UI.input + " min-h-[80px]"} /></div>
+                        <div className="space-y-1.5">
+                           <label className={UI.label}>Description</label>
+                           <RichTextEditor
+                              content={data.portfolio?.description || data.portfolio?.section?.description || ""}
+                              onChange={(val) => updateSection("portfolio", "description", val)}
+                              placeholder="Portfolio section description..."
+                           />
+                        </div>
                      </div>
 
                      {/* 2. FILTER CATEGORIES */}
@@ -1675,11 +1679,9 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                         </div>
                         <div className="space-y-1.5">
                            <label className={UI.label}>Description</label>
-                           <textarea
-                              rows={3}
-                              value={data.testimonials?.description || data.testimonials?.section?.description || ""}
-                              onChange={(e) => updateSection("testimonials", "description", e.target.value)}
-                              className={UI.input}
+                           <RichTextEditor
+                              content={data.testimonials?.description || data.testimonials?.section?.description || ""}
+                              onChange={(val) => updateSection("testimonials", "description", val)}
                               placeholder="e.g. Real feedback from visionary founders and engineering leaders who transformed their digital platforms with our expertise."
                            />
                         </div>
@@ -1825,15 +1827,13 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                                     {/* Quote Text */}
                                     <div className="space-y-1">
                                        <label className="text-[10px] font-bold uppercase text-[#50575e]">Review Quote</label>
-                                       <textarea
-                                          rows={2}
-                                          value={rev.quote || ""}
-                                          onChange={(e) => {
+                                       <RichTextEditor
+                                          content={rev.quote || ""}
+                                          onChange={(val) => {
                                              const newList = [...currentList];
-                                             newList[rIdx] = { ...newList[rIdx], quote: e.target.value };
+                                             newList[rIdx] = { ...newList[rIdx], quote: val };
                                              updateSection("testimonials", "list", newList);
                                           }}
-                                          className={UI.input}
                                           placeholder="e.g. Exceptional service and outstanding deliverables."
                                        />
                                     </div>
@@ -2011,14 +2011,12 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                          </div>
                          <div className="space-y-1.5">
                             <label className={UI.label}>Intro Description</label>
-                            <textarea
-                               rows={3}
-                               value={data.blogSection?.description || data.blog?.description || "Explore our latest thoughts on high-performance web engineering, modern UI/UX design architectures, and conversion rate optimization."}
-                               onChange={(e) => {
-                                  updateSection("blogSection", "description", e.target.value);
-                                  updateSection("blog", "description", e.target.value);
+                            <RichTextEditor
+                               content={data.blogSection?.description || data.blog?.description || "Explore our latest thoughts on high-performance web engineering, modern UI/UX design architectures, and conversion rate optimization."}
+                               onChange={(val) => {
+                                  updateSection("blogSection", "description", val);
+                                  updateSection("blog", "description", val);
                                }}
-                               className={UI.input}
                                placeholder="e.g. Explore our latest thoughts on high-performance web engineering..."
                             />
                          </div>
@@ -2097,11 +2095,10 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                         </div>
                         <div className="space-y-1.5">
                            <label className={UI.label}>Description</label>
-                           <textarea
-                              rows={3}
-                              value={data.contact?.description || "Have a project in mind or want to discuss modern digital architecture? Reach out directly or fill out the form below."}
-                              onChange={(e) => updateSection("contact", "description", e.target.value)}
-                              className={UI.input}
+                           <RichTextEditor
+                              content={data.contact?.description || "Have a project in mind or want to discuss modern digital architecture? Reach out directly or fill out the form below."}
+                              onChange={(val) => updateSection("contact", "description", val)}
+                              placeholder="e.g. Have a project in mind or want to discuss modern digital architecture?"
                            />
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

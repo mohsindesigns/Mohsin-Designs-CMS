@@ -7,8 +7,14 @@ import IconSelector from "@/components/admin/IconSelector";
 import ImageField from "@/components/admin/ImageField";
 import ContentSelector from "@/components/admin/ContentSelector";
 import { UI } from "./styles";
+import dynamic from "next/dynamic";
 import SectionToggle from "@/components/admin/SectionToggle";
 import SchemaEditor from "@/components/admin/SchemaEditor";
+
+const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
+  ssr: false,
+  loading: () => <div className="h-40 bg-[#f6f7f7] animate-pulse border border-[#c3c4c7] rounded-sm flex items-center justify-center text-[#8c8f94] text-xs">Loading Rich Text Editor...</div>
+});
 
 /**
  * Resilient Comma-Separated Input that buffers local string state
@@ -153,7 +159,11 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                 </div>
                 <div className="space-y-1.5">
                   <label className={UI.label}>Description Narrative</label>
-                  <textarea rows={3} value={data.hero?.description || ""} onChange={(e) => updateSection("hero", "description", e.target.value)} className={UI.textarea} placeholder="Hero description paragraph..." />
+                  <RichTextEditor
+                    content={data.hero?.description || ""}
+                    onChange={(val) => updateSection("hero", "description", val)}
+                    placeholder="Hero description paragraph..."
+                  />
                 </div>
               </div>
 
@@ -223,7 +233,11 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                 </div>
                 <div className="space-y-1.5">
                   <label className={UI.label}>Description</label>
-                  <textarea rows={2} value={data.stats?.description || ""} onChange={(e) => updateSection("stats", "description", e.target.value)} className={UI.textarea} />
+                  <RichTextEditor
+                    content={data.stats?.description || ""}
+                    onChange={(val) => updateSection("stats", "description", val)}
+                    placeholder="Stats section description..."
+                  />
                 </div>
               </div>
 
@@ -291,7 +305,14 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                   <div className="space-y-1.5"><label className={UI.label}>Title Intro</label><input type="text" autoComplete="off" value={data.whoWeAre?.titleIntro || ""} onChange={(e) => updateSection("whoWeAre", "titleIntro", e.target.value)} className={UI.input} placeholder="e.g. Built by Engineers, " /></div>
                   <div className="space-y-1.5"><label className={UI.label}>Title Highlight</label><input type="text" autoComplete="off" value={data.whoWeAre?.titleHighlight || ""} onChange={(e) => updateSection("whoWeAre", "titleHighlight", e.target.value)} className={UI.inputPrimary} placeholder="e.g. Guided by Craft." /></div>
                 </div>
-                <div className="space-y-1.5"><label className={UI.label}>Description</label><textarea rows={3} value={data.whoWeAre?.description || ""} onChange={(e) => updateSection("whoWeAre", "description", e.target.value)} className={UI.textarea} /></div>
+                <div className="space-y-1.5">
+                  <label className={UI.label}>Description</label>
+                  <RichTextEditor
+                    content={data.whoWeAre?.description || ""}
+                    onChange={(val) => updateSection("whoWeAre", "description", val)}
+                    placeholder="Who we are description..."
+                  />
+                </div>
               </div>
 
               <div className="space-y-4">
@@ -307,7 +328,18 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                         <div className="col-span-1 space-y-1"><label className={UI.label}>Number</label><input type="text" autoComplete="off" value={row.num || ""} onChange={(e) => { const n = [...data.whoWeAre.rows]; n[i].num = e.target.value; updateSection("whoWeAre", "rows", n); }} className={UI.input} placeholder="01" /></div>
                         <div className="col-span-3 space-y-1"><label className={UI.label}>Title</label><input type="text" autoComplete="off" value={row.title || ""} onChange={(e) => { const n = [...data.whoWeAre.rows]; n[i].title = e.target.value; updateSection("whoWeAre", "rows", n); }} className={UI.input} placeholder="Row title" /></div>
                       </div>
-                      <div className="space-y-1"><label className={UI.label}>Description</label><textarea rows={2} value={row.desc || ""} onChange={(e) => { const n = [...data.whoWeAre.rows]; n[i].desc = e.target.value; updateSection("whoWeAre", "rows", n); }} className={UI.textarea} /></div>
+                      <div className="space-y-1">
+                        <label className={UI.label}>Description</label>
+                        <RichTextEditor
+                          content={row.desc || ""}
+                          onChange={(val) => {
+                            const n = [...data.whoWeAre.rows];
+                            n[i].desc = val;
+                            updateSection("whoWeAre", "rows", n);
+                          }}
+                          placeholder="Row description..."
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -360,7 +392,14 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                   <div className="space-y-1"><label className={UI.label}>Title Intro</label><input type="text" autoComplete="off" value={data.philosophy?.mission?.titleIntro || ""} onChange={(e) => updateSection("philosophy", "mission", { ...(data.philosophy?.mission || {}), titleIntro: e.target.value })} className={UI.input} /></div>
                   <div className="space-y-1"><label className={UI.label}>Title Highlight</label><input type="text" autoComplete="off" value={data.philosophy?.mission?.titleHighlight || ""} onChange={(e) => updateSection("philosophy", "mission", { ...(data.philosophy?.mission || {}), titleHighlight: e.target.value })} className={UI.input} /></div>
                 </div>
-                <div className="space-y-1"><label className={UI.label}>Description</label><textarea rows={2} value={data.philosophy?.mission?.desc || ""} onChange={(e) => updateSection("philosophy", "mission", { ...(data.philosophy?.mission || {}), desc: e.target.value })} className={UI.textarea} /></div>
+                <div className="space-y-1">
+                  <label className={UI.label}>Description</label>
+                  <RichTextEditor
+                    content={data.philosophy?.mission?.desc || ""}
+                    onChange={(val) => updateSection("philosophy", "mission", { ...(data.philosophy?.mission || {}), desc: val })}
+                    placeholder="Mission description..."
+                  />
+                </div>
                 <div className="space-y-1"><label className={UI.label}>Quote / Callout</label><input type="text" autoComplete="off" value={data.philosophy?.mission?.quote || ""} onChange={(e) => updateSection("philosophy", "mission", { ...(data.philosophy?.mission || {}), quote: e.target.value })} className={UI.input} /></div>
                 <div className="space-y-1">
                   <label className={UI.label}>Tags (Comma Separated)</label>
@@ -388,7 +427,14 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                   <div className="space-y-1"><label className={UI.label}>Title Intro</label><input type="text" autoComplete="off" value={data.philosophy?.vision?.titleIntro || ""} onChange={(e) => updateSection("philosophy", "vision", { ...(data.philosophy?.vision || {}), titleIntro: e.target.value })} className={UI.input} /></div>
                   <div className="space-y-1"><label className={UI.label}>Title Highlight</label><input type="text" autoComplete="off" value={data.philosophy?.vision?.titleHighlight || ""} onChange={(e) => updateSection("philosophy", "vision", { ...(data.philosophy?.vision || {}), titleHighlight: e.target.value })} className={UI.input} /></div>
                 </div>
-                <div className="space-y-1"><label className={UI.label}>Description</label><textarea rows={2} value={data.philosophy?.vision?.desc || ""} onChange={(e) => updateSection("philosophy", "vision", { ...(data.philosophy?.vision || {}), desc: e.target.value })} className={UI.textarea} /></div>
+                <div className="space-y-1">
+                  <label className={UI.label}>Description</label>
+                  <RichTextEditor
+                    content={data.philosophy?.vision?.desc || ""}
+                    onChange={(val) => updateSection("philosophy", "vision", { ...(data.philosophy?.vision || {}), desc: val })}
+                    placeholder="Vision description..."
+                  />
+                </div>
                 <div className="space-y-1"><label className={UI.label}>Quote / Callout</label><input type="text" autoComplete="off" value={data.philosophy?.vision?.quote || ""} onChange={(e) => updateSection("philosophy", "vision", { ...(data.philosophy?.vision || {}), quote: e.target.value })} className={UI.input} /></div>
                 <div className="space-y-1">
                   <label className={UI.label}>Tags (Comma Separated)</label>
@@ -415,7 +461,14 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                   <div className="space-y-1"><label className={UI.label}>Title Intro</label><input type="text" autoComplete="off" value={data.philosophy?.values?.titleIntro || ""} onChange={(e) => updateSection("philosophy", "values", { ...(data.philosophy?.values || {}), titleIntro: e.target.value })} className={UI.input} /></div>
                   <div className="space-y-1"><label className={UI.label}>Title Highlight</label><input type="text" autoComplete="off" value={data.philosophy?.values?.titleHighlight || ""} onChange={(e) => updateSection("philosophy", "values", { ...(data.philosophy?.values || {}), titleHighlight: e.target.value })} className={UI.input} /></div>
                 </div>
-                <div className="space-y-1"><label className={UI.label}>Description</label><textarea rows={2} value={data.philosophy?.values?.desc || ""} onChange={(e) => updateSection("philosophy", "values", { ...(data.philosophy?.values || {}), desc: e.target.value })} className={UI.textarea} /></div>
+                <div className="space-y-1">
+                  <label className={UI.label}>Description</label>
+                  <RichTextEditor
+                    content={data.philosophy?.values?.desc || ""}
+                    onChange={(val) => updateSection("philosophy", "values", { ...(data.philosophy?.values || {}), desc: val })}
+                    placeholder="Values description..."
+                  />
+                </div>
                 <div className="space-y-1"><label className={UI.label}>Quote / Callout</label><input type="text" autoComplete="off" value={data.philosophy?.values?.quote || ""} onChange={(e) => updateSection("philosophy", "values", { ...(data.philosophy?.values || {}), quote: e.target.value })} className={UI.input} /></div>
                 <div className="space-y-1">
                   <label className={UI.label}>Tags (Comma Separated)</label>
@@ -543,7 +596,14 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                   <div className="space-y-1.5"><label className={UI.label}>Title Intro</label><input type="text" autoComplete="off" value={data.methodology?.titleIntro || ""} onChange={(e) => updateSection("methodology", "titleIntro", e.target.value)} className={UI.input} /></div>
                   <div className="space-y-1.5"><label className={UI.label}>Title Highlight</label><input type="text" autoComplete="off" value={data.methodology?.titleHighlight || ""} onChange={(e) => updateSection("methodology", "titleHighlight", e.target.value)} className={UI.inputPrimary} /></div>
                 </div>
-                <div className="space-y-1.5"><label className={UI.label}>Description</label><textarea rows={2} value={data.methodology?.description || ""} onChange={(e) => updateSection("methodology", "description", e.target.value)} className={UI.textarea} /></div>
+                <div className="space-y-1.5">
+                  <label className={UI.label}>Description</label>
+                  <RichTextEditor
+                    content={data.methodology?.description || ""}
+                    onChange={(val) => updateSection("methodology", "description", val)}
+                    placeholder="Methodology description..."
+                  />
+                </div>
               </div>
 
               <div className="space-y-4">
@@ -560,7 +620,18 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                         <div className="space-y-1"><label className={UI.label}>Badge</label><input type="text" autoComplete="off" value={step.badge || ""} onChange={(e) => { const n = [...data.methodology.steps]; n[i].badge = e.target.value; updateSection("methodology", "steps", n); }} className={UI.input} placeholder="DISCOVERY & AUDIT" /></div>
                       </div>
                       <div className="space-y-1"><label className={UI.label}>Title</label><input type="text" autoComplete="off" value={step.title || ""} onChange={(e) => { const n = [...data.methodology.steps]; n[i].title = e.target.value; updateSection("methodology", "steps", n); }} className={UI.input} /></div>
-                      <div className="space-y-1"><label className={UI.label}>Description</label><textarea rows={2} value={step.desc || ""} onChange={(e) => { const n = [...data.methodology.steps]; n[i].desc = e.target.value; updateSection("methodology", "steps", n); }} className={UI.textarea} /></div>
+                      <div className="space-y-1">
+                        <label className={UI.label}>Description</label>
+                        <RichTextEditor
+                          content={step.desc || ""}
+                          onChange={(val) => {
+                            const n = [...data.methodology.steps];
+                            n[i].desc = val;
+                            updateSection("methodology", "steps", n);
+                          }}
+                          placeholder="Step description..."
+                        />
+                      </div>
                       <div className="space-y-1">
                         <label className={UI.label}>Deliverables (Comma Separated)</label>
                         <CommaSeparatedInput
@@ -598,7 +669,14 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                   <div className="space-y-1.5"><label className={UI.label}>Title Intro</label><input type="text" autoComplete="off" value={data.domainExpertise?.titleIntro || ""} onChange={(e) => updateSection("domainExpertise", "titleIntro", e.target.value)} className={UI.input} /></div>
                   <div className="space-y-1.5"><label className={UI.label}>Title Highlight</label><input type="text" autoComplete="off" value={data.domainExpertise?.titleHighlight || ""} onChange={(e) => updateSection("domainExpertise", "titleHighlight", e.target.value)} className={UI.inputPrimary} /></div>
                 </div>
-                <div className="space-y-1.5"><label className={UI.label}>Description</label><textarea rows={2} value={data.domainExpertise?.description || ""} onChange={(e) => updateSection("domainExpertise", "description", e.target.value)} className={UI.textarea} /></div>
+                <div className="space-y-1.5">
+                  <label className={UI.label}>Description</label>
+                  <RichTextEditor
+                    content={data.domainExpertise?.description || ""}
+                    onChange={(val) => updateSection("domainExpertise", "description", val)}
+                    placeholder="Domain expertise description..."
+                  />
+                </div>
               </div>
 
               <div className="space-y-4">
@@ -614,7 +692,18 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                         <div className="col-span-1 space-y-1"><label className={UI.label}>ID</label><input type="text" autoComplete="off" value={dom.id || ""} onChange={(e) => { const n = [...data.domainExpertise.domains]; n[i].id = e.target.value; updateSection("domainExpertise", "domains", n); }} className={UI.input} placeholder="01" /></div>
                         <div className="col-span-3 space-y-1"><label className={UI.label}>Title</label><input type="text" autoComplete="off" value={dom.title || ""} onChange={(e) => { const n = [...data.domainExpertise.domains]; n[i].title = e.target.value; updateSection("domainExpertise", "domains", n); }} className={UI.input} placeholder="e.g. B2B SaaS & Tech" /></div>
                       </div>
-                      <div className="space-y-1"><label className={UI.label}>Description</label><textarea rows={2} value={dom.desc || ""} onChange={(e) => { const n = [...data.domainExpertise.domains]; n[i].desc = e.target.value; updateSection("domainExpertise", "domains", n); }} className={UI.textarea} /></div>
+                      <div className="space-y-1">
+                        <label className={UI.label}>Description</label>
+                        <RichTextEditor
+                          content={dom.desc || ""}
+                          onChange={(val) => {
+                            const n = [...data.domainExpertise.domains];
+                            n[i].desc = val;
+                            updateSection("domainExpertise", "domains", n);
+                          }}
+                          placeholder="Domain description..."
+                        />
+                      </div>
                       <div className="space-y-1">
                         <label className={UI.label}>Pill Tags (Comma Separated)</label>
                         <CommaSeparatedInput
@@ -653,7 +742,14 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                   <div className="space-y-1.5"><label className={UI.label}>Title Intro</label><input type="text" autoComplete="off" value={data.whyChooseUs?.titleIntro || ""} onChange={(e) => updateSection("whyChooseUs", "titleIntro", e.target.value)} className={UI.input} /></div>
                   <div className="space-y-1.5"><label className={UI.label}>Title Highlight</label><input type="text" autoComplete="off" value={data.whyChooseUs?.titleHighlight || ""} onChange={(e) => updateSection("whyChooseUs", "titleHighlight", e.target.value)} className={UI.inputPrimary} /></div>
                 </div>
-                <div className="space-y-1.5"><label className={UI.label}>Description</label><textarea rows={2} value={data.whyChooseUs?.description || ""} onChange={(e) => updateSection("whyChooseUs", "description", e.target.value)} className={UI.textarea} /></div>
+                <div className="space-y-1.5">
+                  <label className={UI.label}>Description</label>
+                  <RichTextEditor
+                    content={data.whyChooseUs?.description || ""}
+                    onChange={(val) => updateSection("whyChooseUs", "description", val)}
+                    placeholder="Why choose us description..."
+                  />
+                </div>
               </div>
 
               <div className="space-y-4">
@@ -675,7 +771,18 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                         <button onClick={() => { const n = data.whyChooseUs.features.filter((_: any, idx: number) => idx !== i); updateSection("whyChooseUs", "features", n); }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
                       </div>
                       <div className="space-y-1"><label className={UI.label}>Title</label><input type="text" autoComplete="off" value={feat.title || ""} onChange={(e) => { const n = [...data.whyChooseUs.features]; n[i].title = e.target.value; updateSection("whyChooseUs", "features", n); }} className={UI.input} /></div>
-                      <div className="space-y-1"><label className={UI.label}>Description</label><textarea rows={2} value={feat.desc || ""} onChange={(e) => { const n = [...data.whyChooseUs.features]; n[i].desc = e.target.value; updateSection("whyChooseUs", "features", n); }} className={UI.textarea} /></div>
+                      <div className="space-y-1">
+                        <label className={UI.label}>Description</label>
+                        <RichTextEditor
+                          content={feat.desc || ""}
+                          onChange={(val) => {
+                            const n = [...data.whyChooseUs.features];
+                            n[i].desc = val;
+                            updateSection("whyChooseUs", "features", n);
+                          }}
+                          placeholder="Feature description..."
+                        />
+                      </div>
                       <div className="space-y-1">
                         <label className={UI.label}>Icon Background Accent</label>
                         <select value={feat.iconBg || "blue"} onChange={(e) => { const n = [...data.whyChooseUs.features]; n[i].iconBg = e.target.value; updateSection("whyChooseUs", "features", n); }} className={UI.input}>
@@ -717,8 +824,26 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                   <div className="space-y-1.5"><label className={UI.label}>Founder Name</label><input type="text" autoComplete="off" value={data.executiveLeadership?.founderName || ""} onChange={(e) => updateSection("executiveLeadership", "founderName", e.target.value)} className={UI.input} placeholder="e.g. Mohsin" /></div>
                   <div className="space-y-1.5"><label className={UI.label}>Founder Title / Role</label><input type="text" autoComplete="off" value={data.executiveLeadership?.founderTitle || ""} onChange={(e) => updateSection("executiveLeadership", "founderTitle", e.target.value)} className={UI.input} placeholder="e.g. FOUNDER & PRINCIPAL ARCHITECT" /></div>
                 </div>
-                <div className="space-y-1.5"><label className={UI.label}>Bio Paragraph 1</label><textarea rows={3} value={data.executiveLeadership?.bioParagraph1 || ""} onChange={(e) => updateSection("executiveLeadership", "bioParagraph1", e.target.value)} className={UI.textarea} /></div>
-                <div className="space-y-1.5"><label className={UI.label}>Bio Paragraph 2</label><textarea rows={3} value={data.executiveLeadership?.bioParagraph2 || ""} onChange={(e) => updateSection("executiveLeadership", "bioParagraph2", e.target.value)} className={UI.textarea} /></div>
+                <div className="space-y-1.5">
+                  <label className={UI.label}>Founder Biography</label>
+                  <RichTextEditor
+                    content={
+                      data.executiveLeadership?.bioContent !== undefined
+                        ? data.executiveLeadership?.bioContent
+                        : data.executiveLeadership?.bio !== undefined
+                          ? data.executiveLeadership?.bio
+                          : [data.executiveLeadership?.bioParagraph1, data.executiveLeadership?.bioParagraph2]
+                            .filter(Boolean)
+                            .map((p: string) => `<p>${p}</p>`)
+                            .join("")
+                    }
+                    onChange={(val) => {
+                      updateSection("executiveLeadership", "bioContent", val);
+                      updateSection("executiveLeadership", "bio", val);
+                    }}
+                    placeholder="Write the founder's biography, background, and vision..."
+                  />
+                </div>
               </div>
 
               <div className="space-y-4">
@@ -766,7 +891,14 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                   <div className="space-y-1.5"><label className={UI.label}>Title Intro</label><input type="text" autoComplete="off" value={data.reviews?.titleIntro || ""} onChange={(e) => updateSection("reviews", "titleIntro", e.target.value)} className={UI.input} /></div>
                   <div className="space-y-1.5"><label className={UI.label}>Title Highlight</label><input type="text" autoComplete="off" value={data.reviews?.titleHighlight || ""} onChange={(e) => updateSection("reviews", "titleHighlight", e.target.value)} className={UI.inputPrimary} /></div>
                 </div>
-                <div className="space-y-1.5"><label className={UI.label}>Description</label><textarea rows={2} value={data.reviews?.description || ""} onChange={(e) => updateSection("reviews", "description", e.target.value)} className={UI.textarea} /></div>
+                <div className="space-y-1.5">
+                  <label className={UI.label}>Description</label>
+                  <RichTextEditor
+                    content={data.reviews?.description || ""}
+                    onChange={(val) => updateSection("reviews", "description", val)}
+                    placeholder="Client reviews description..."
+                  />
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5"><label className={UI.label}>Rating Value</label><input type="text" autoComplete="off" value={data.reviews?.ratingValue || ""} onChange={(e) => updateSection("reviews", "ratingValue", e.target.value)} className={UI.input} placeholder="5.0 / 5.0" /></div>
                   <div className="space-y-1.5"><label className={UI.label}>Rating Sublabel</label><input type="text" autoComplete="off" value={data.reviews?.ratingSub || ""} onChange={(e) => updateSection("reviews", "ratingSub", e.target.value)} className={UI.input} placeholder="Across 80+ Enterprise Reviews" /></div>
@@ -829,7 +961,14 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                   <div className="space-y-1.5"><label className={UI.label}>Title Word 1 (Plain)</label><input type="text" autoComplete="off" value={data.ctaBanner?.titleWord1 || ""} onChange={(e) => updateSection("ctaBanner", "titleWord1", e.target.value)} className={UI.input} placeholder="Truly " /></div>
                   <div className="space-y-1.5"><label className={UI.label}>Title Word 2 (Cursive & Underlined)</label><input type="text" autoComplete="off" value={data.ctaBanner?.titleWord2 || ""} onChange={(e) => updateSection("ctaBanner", "titleWord2", e.target.value)} className={UI.inputPrimary} placeholder="Remarkable." /></div>
                 </div>
-                <div className="space-y-1.5"><label className={UI.label}>Description</label><textarea rows={3} value={data.ctaBanner?.description || ""} onChange={(e) => updateSection("ctaBanner", "description", e.target.value)} className={UI.textarea} /></div>
+                <div className="space-y-1.5">
+                  <label className={UI.label}>Description</label>
+                  <RichTextEditor
+                    content={data.ctaBanner?.description || ""}
+                    onChange={(val) => updateSection("ctaBanner", "description", val)}
+                    placeholder="CTA banner description..."
+                  />
+                </div>
               </div>
 
               <div className="space-y-4">

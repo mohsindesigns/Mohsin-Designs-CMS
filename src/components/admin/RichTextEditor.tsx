@@ -14,7 +14,8 @@ import {
 import MediaSelector from "./MediaSelector";
 
 interface RichTextEditorProps {
-  content: any; // accepts string | string[] | null | undefined from DB
+  content?: any; // accepts string | string[] | null | undefined from DB
+  value?: any; // alias for content
   onChange: (html: string) => void;
   placeholder?: string;
   label?: string;
@@ -59,6 +60,7 @@ const MenuButton = ({
 
 export default function RichTextEditor({
   content,
+  value,
   onChange,
   placeholder,
   label,
@@ -69,20 +71,22 @@ export default function RichTextEditor({
   const [showOverview, setShowOverview] = useState(false);
   const [isHtmlMode, setIsHtmlMode] = useState(false);
 
+  const rawContent = content !== undefined ? content : value;
+
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
 
   const toggleHtmlMode = () => {
     if (isHtmlMode) {
       if (editor) {
-        editor.commands.setContent(normalizeContent(content));
+        editor.commands.setContent(normalizeContent(rawContent));
       }
     }
     setIsHtmlMode(!isHtmlMode);
   };
 
   // Capture initial content ONCE — editor owns its state after mount.
-  const initialContent = useRef(normalizeContent(content));
+  const initialContent = useRef(normalizeContent(rawContent));
 
   useEffect(() => {
     setMounted(true);

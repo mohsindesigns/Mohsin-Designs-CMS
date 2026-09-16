@@ -170,11 +170,9 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
 
                     <div className="space-y-1.5">
                       <label className={UI.label}>Hero Narrative Description</label>
-                      <textarea
-                        rows={3}
-                        value={data.hero?.description || ""}
-                        onChange={(e) => updateSection("hero", "description", e.target.value)}
-                        className={UI.textarea}
+                      <RichTextEditor
+                        content={data.hero?.description || ""}
+                        onChange={(val) => updateSection("hero", "description", val)}
                         placeholder="From custom Next.js platforms to full-funnel acquisition engines..."
                       />
                     </div>
@@ -298,11 +296,9 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
 
                     <div className="space-y-1.5">
                       <label className={UI.label}>Grid Subtitle / Description</label>
-                      <textarea
-                        rows={2}
-                        value={data.grid?.subtext || ""}
-                        onChange={(e) => updateSection("grid", "subtext", e.target.value)}
-                        className={UI.textarea}
+                      <RichTextEditor
+                        content={data.grid?.subtext || ""}
+                        onChange={(val) => updateSection("grid", "subtext", val)}
                         placeholder="Every service is built on scalable modern engineering..."
                       />
                     </div>
@@ -388,11 +384,9 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
 
                     <div className="space-y-1.5">
                       <label className={UI.label}>Description</label>
-                      <textarea
-                        rows={3}
-                        value={data.ctaBanner?.description || ""}
-                        onChange={(e) => updateSection("ctaBanner", "description", e.target.value)}
-                        className={UI.textarea}
+                      <RichTextEditor
+                        content={data.ctaBanner?.description || ""}
+                        onChange={(val) => updateSection("ctaBanner", "description", val)}
                         placeholder="Schedule a free 30-minute technical audit..."
                       />
                     </div>
