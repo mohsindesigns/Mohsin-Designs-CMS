@@ -66,9 +66,9 @@ const ServiceCard = ({ service, index }: any) => {
             </h3>
 
             {/* Description - High readability charcoal */}
-            <p className="text-slate-600 text-sm leading-relaxed mb-6 flex-grow">
-              {service.tagline || service.description}
-            </p>
+            <div className="text-slate-600 text-sm leading-relaxed mb-6 flex-grow">
+              <RichTextRenderer content={service.tagline || service.description} />
+            </div>
 
             {/* Feature Badges */}
             {service.features && service.features.length > 0 && (
@@ -295,9 +295,9 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
               <div className="w-12 h-0.5 bg-primary/60 mt-4 rounded-full" />
             </div>
 
-            <p className="text-slate-700 text-sm sm:text-base leading-relaxed font-semibold">
-              {mapData.description}
-            </p>
+            <div className="text-slate-700 text-sm sm:text-base leading-relaxed font-semibold">
+              <RichTextRenderer content={mapData.description} />
+            </div>
 
             {/* List Widgets with custom borders */}
             <div className="space-y-4">
@@ -414,9 +414,9 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
                     <h3 className="font-heading font-bold text-xl text-slate-900">
                       {step.title}
                     </h3>
-                    <p className="text-slate-600 text-sm leading-relaxed font-semibold">
-                      {step.description}
-                    </p>
+                    <div className="text-slate-600 text-sm leading-relaxed font-semibold">
+                      <RichTextRenderer content={step.description} />
+                    </div>
                   </div>
                 </div>
               );
@@ -479,9 +479,9 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
                   <h3 className={`font-heading font-bold text-xl text-slate-900 mb-3 ${activeTextColor} transition-colors`}>
                     {item.title}
                   </h3>
-                  <p className="text-slate-600 text-xs sm:text-sm leading-relaxed font-semibold flex-grow">
-                    {item.description}
-                  </p>
+                  <div className="text-slate-600 text-xs sm:text-sm leading-relaxed font-semibold flex-grow">
+                    <RichTextRenderer content={item.description} />
+                  </div>
                   {item.buttonLabel && item.buttonHref && (
                     <div className="mt-6 pt-4 border-t border-slate-100">
                       <Link
@@ -511,9 +511,9 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
             {regionsSection.title}
           </h2>
           {regionsSection.description && (
-            <p className="text-slate-600 text-sm sm:text-base max-w-lg mx-auto font-semibold">
-              {regionsSection.description}
-            </p>
+            <div className="text-slate-600 text-sm sm:text-base max-w-lg mx-auto font-semibold">
+              <RichTextRenderer content={regionsSection.description} />
+            </div>
           )}
         </div>
 
@@ -593,9 +593,9 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
                       <ChooseIcon className="w-8 h-8 animate-pulse " />
                     </div>
                     <h3 className="font-heading font-black text-2xl text-white mb-4">{item.title}</h3>
-                    <p className="text-sm text-white leading-relaxed font-bold">
-                      {item.description}
-                    </p>
+                    <div className="text-sm text-white leading-relaxed font-bold">
+                      <RichTextRenderer content={item.description} />
+                    </div>
                   </div>
                 );
               }
@@ -607,9 +607,9 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
                     <ChooseIcon className="w-7 h-7" />
                   </div>
                   <h3 className="font-heading font-bold text-xl text-slate-900 mb-3">{item.title}</h3>
-                  <p className="text-sm text-slate-600 leading-relaxed font-semibold">
-                    {item.description}
-                  </p>
+                  <div className="text-sm text-slate-600 leading-relaxed font-semibold">
+                    <RichTextRenderer content={item.description} />
+                  </div>
                 </div>
               );
             })}
@@ -694,9 +694,9 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
             <h2 className="text-3xl sm:text-5xl font-heading font-extrabold text-white tracking-tight">
               {cta.headline}
             </h2>
-            <p className="text-white text-sm sm:text-base max-w-xl mx-auto leading-relaxed font-medium">
-              {cta.description}
-            </p>
+            <div className="text-white text-sm sm:text-base max-w-xl mx-auto leading-relaxed font-medium">
+              <RichTextRenderer content={cta.description} />
+            </div>
             <a
               href={cta.buttonHref}
               className="inline-flex items-center justify-center bg-white hover:bg-slate-100 text-slate-950 font-black px-8 py-4 rounded-xl transition-all shadow-lg active:scale-[0.98] text-xs sm:text-sm uppercase tracking-wider gap-2 group"

@@ -15,6 +15,8 @@ import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
 import SchemaEditor from "@/components/admin/SchemaEditor";
 
+const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), { ssr: false });
+
 const DEFAULT_GALLERY_DATA = {
   hero: {
     badge: "OUR PORTFOLIO",
@@ -330,11 +332,9 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
 
                 <div className="space-y-1.5">
                   <label className={UI.label}>Subtitle Description</label>
-                  <textarea
-                    rows={3}
-                    value={gallery.hero?.subtitle || ""}
-                    onChange={(e) => updateNested("hero", "subtitle", e.target.value)}
-                    className={UI.input}
+                  <RichTextEditor
+                    content={gallery.hero?.subtitle || ""}
+                    onChange={(val: string) => updateNested("hero", "subtitle", val)}
                     placeholder="Explore our latest projects — beautifully designed..."
                   />
                 </div>
@@ -601,11 +601,9 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
 
                         <div className="space-y-1.5">
                           <label className={UI.label}>Subtitle / Summary Description</label>
-                          <textarea
-                            rows={2}
-                            value={project.subtitle || ""}
-                            onChange={(e) => handleUpdateProject(index, "subtitle", e.target.value)}
-                            className={UI.input}
+                          <RichTextEditor
+                            content={project.subtitle || ""}
+                            onChange={(val: string) => handleUpdateProject(index, "subtitle", val)}
                             placeholder="Clean, modern and intuitive interface design..."
                           />
                         </div>
@@ -679,11 +677,9 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
 
                 <div className="space-y-1.5">
                   <label className={UI.label}>Section Subtitle</label>
-                  <textarea
-                    rows={2}
-                    value={gallery.process?.subtitle || ""}
-                    onChange={(e) => updateNested("process", "subtitle", e.target.value)}
-                    className={UI.input}
+                  <RichTextEditor
+                    content={gallery.process?.subtitle || ""}
+                    onChange={(val: string) => updateNested("process", "subtitle", val)}
                     placeholder="A proven 4-step framework engineered for maximum conversion..."
                   />
                 </div>
@@ -747,11 +743,9 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
 
                     <div className="space-y-1.5">
                       <label className={UI.label}>Step Description</label>
-                      <textarea
-                        rows={2}
-                        value={step.desc || ""}
-                        onChange={(e) => handleUpdateStep(index, "desc", e.target.value)}
-                        className={UI.input}
+                      <RichTextEditor
+                        content={step.desc || ""}
+                        onChange={(val: string) => handleUpdateStep(index, "desc", val)}
                         placeholder="Deep research into brand goals..."
                       />
                     </div>
@@ -825,11 +819,9 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
 
                 <div className="space-y-1.5">
                   <label className={UI.label}>Description</label>
-                  <textarea
-                    rows={3}
-                    value={gallery.ctaBanner?.description || ""}
-                    onChange={(e) => updateNested("ctaBanner", "description", e.target.value)}
-                    className={UI.input}
+                  <RichTextEditor
+                    content={gallery.ctaBanner?.description || ""}
+                    onChange={(val: string) => updateNested("ctaBanner", "description", val)}
                     placeholder="Let's turn your vision into a stunning digital reality..."
                   />
                 </div>

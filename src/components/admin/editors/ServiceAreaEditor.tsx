@@ -374,11 +374,10 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
 
                   <div className="space-y-1.5">
                     <label className={UI.label}>Coverage Narrative Description</label>
-                    <textarea
-                      value={data.map?.description || ""}
-                      onChange={(e) => updateField("map", "description", e.target.value)}
-                      className={UI.textarea}
-                      rows={3}
+                    <RichTextEditor
+                      content={data.map?.description || ""}
+                      onChange={(val: string) => updateField("map", "description", val)}
+                      placeholder="Describe the service coverage area..."
                     />
                   </div>
 
@@ -579,15 +578,13 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
 
                           <div className="space-y-1.5">
                             <label className={UI.label}>Step Description Narrative</label>
-                            <textarea
-                              value={step.description}
-                              onChange={(e) => {
+                            <RichTextEditor
+                              content={step.description || ""}
+                              onChange={(val: string) => {
                                 const newSteps = [...data.process];
-                                newSteps[pIdx].description = e.target.value;
+                                newSteps[pIdx].description = val;
                                 updateField("process", null, newSteps);
                               }}
-                              className={UI.textarea}
-                              rows={3}
                               placeholder="Describe the step visual parameters..."
                             />
                           </div>
@@ -710,15 +707,14 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
 
                         <div className="space-y-1.5">
                           <label className="text-[11px] font-bold text-slate-600">Material Description</label>
-                          <textarea
-                            value={item.description}
-                            onChange={(e) => {
+                          <RichTextEditor
+                            content={item.description || ""}
+                            onChange={(val: string) => {
                               const newItems = [...data.materials.items];
-                              newItems[mIdx].description = e.target.value;
+                              newItems[mIdx].description = val;
                               updateField("materials", "items", newItems);
                             }}
-                            className={UI.textarea}
-                            rows={2}
+                            placeholder="Describe this material or product..."
                           />
                         </div>
 
@@ -887,15 +883,14 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
 
                           <div className="space-y-2">
                             <label className="text-[12px] font-bold text-slate-700 block">Service Description Summary</label>
-                            <textarea
-                              value={item.description}
-                              onChange={(e) => {
+                            <RichTextEditor
+                              content={item.description || ""}
+                              onChange={(val: string) => {
                                 const newItems = [...data.servicesSection.items];
-                                newItems[sIdx].description = e.target.value;
+                                newItems[sIdx].description = val;
                                 updateField("servicesSection", "items", newItems);
                               }}
-                              className={UI.textarea}
-                              rows={2.5}
+                              placeholder="Describe this service offering..."
                             />
                           </div>
 
@@ -1169,15 +1164,14 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
 
                         <div className="space-y-1.5">
                           <label className="text-[11px] font-bold text-slate-600">Column Narrative Description</label>
-                          <textarea
-                            value={item.description}
-                            onChange={(e) => {
+                          <RichTextEditor
+                            content={item.description || ""}
+                            onChange={(val: string) => {
                               const newItems = [...data.whyChoose.items];
-                              newItems[wIdx].description = e.target.value;
+                              newItems[wIdx].description = val;
                               updateField("whyChoose", "items", newItems);
                             }}
-                            className={UI.textarea}
-                            rows={2}
+                            placeholder="Describe why customers should choose this..."
                           />
                         </div>
                       </div>
@@ -1305,11 +1299,10 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                   </div>
                   <div className="space-y-1.5">
                     <label className={UI.label}>CTA Subheadline Narrative</label>
-                    <textarea
-                      value={data.cta?.description || ""}
-                      onChange={(e) => updateField("cta", "description", e.target.value)}
-                      className={UI.textarea}
-                      rows={3}
+                    <RichTextEditor
+                      content={data.cta?.description || ""}
+                      onChange={(val: string) => updateField("cta", "description", val)}
+                      placeholder="Describe the call to action..."
                     />
                   </div>
                   <div className="space-y-1.5">

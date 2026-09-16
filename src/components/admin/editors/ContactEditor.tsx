@@ -14,6 +14,9 @@ import IconSelector from "@/components/admin/IconSelector";
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
 import SchemaEditor from "@/components/admin/SchemaEditor";
+import dynamic from "next/dynamic";
+
+const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), { ssr: false });
 
 function BulletListEditor({
   label,
@@ -299,11 +302,9 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
 
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-[#50575e]">Hero Subtitle Description</label>
-                <textarea
-                  rows={3}
-                  value={contact.hero.description}
-                  onChange={(e) => updateContact(prev => ({ ...prev, hero: { ...prev.hero, description: e.target.value } }))}
-                  className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
+                <RichTextEditor
+                  content={contact.hero.description || ""}
+                  onChange={(val: string) => updateContact(prev => ({ ...prev, hero: { ...prev.hero, description: val } }))}
                   placeholder="Describe your fast inquiry process..."
                 />
               </div>
@@ -828,14 +829,12 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
 
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-[#50575e]">Banner Description</label>
-                <textarea
-                  rows={3}
-                  value={contact.ctaBanner.description}
-                  onChange={(e) => updateContact(prev => ({
+                <RichTextEditor
+                  content={contact.ctaBanner.description || ""}
+                  onChange={(val: string) => updateContact(prev => ({
                     ...prev,
-                    ctaBanner: { ...prev.ctaBanner, description: e.target.value }
+                    ctaBanner: { ...prev.ctaBanner, description: val }
                   }))}
-                  className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
                   placeholder="Schedule a free 30-minute technical audit..."
                 />
               </div>

@@ -1,6 +1,5 @@
 import React from 'react';
 import HomeTemplate from './HomeTemplate';
-import AboutTemplate from './AboutTemplate';
 import NewAboutTemplate from './NewAboutTemplate';
 import ServiceDetailTemplate from './ServiceDetailTemplate';
 import TeamTemplate from './TeamTemplate';

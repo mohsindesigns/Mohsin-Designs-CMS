@@ -559,7 +559,7 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                           slug
                         };
                       });
-                      
+
                       setData((prev: any) => ({
                         ...(prev || {}),
                         servicesDirectory: {
@@ -917,9 +917,18 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                       <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1"><label className={UI.label}>Industry / Tag</label><input type="text" autoComplete="off" value={rev.tag || ""} onChange={(e) => { const n = [...data.reviews.list]; n[i].tag = e.target.value; updateSection("reviews", "list", n); }} className={UI.input} placeholder="Enterprise SaaS" /></div>
                         <div className="space-y-1"><label className={UI.label}>Impact Badge</label><input type="text" autoComplete="off" value={rev.impact || ""} onChange={(e) => { const n = [...data.reviews.list]; n[i].impact = e.target.value; updateSection("reviews", "list", n); }} className={UI.input} placeholder="+340% Performance" /></div>
-                      </div>
-                      <div className="space-y-1"><label className={UI.label}>Quote</label><textarea rows={3} value={rev.quote || ""} onChange={(e) => { const n = [...data.reviews.list]; n[i].quote = e.target.value; updateSection("reviews", "list", n); }} className={UI.textarea} /></div>
-                      <div className="grid grid-cols-3 gap-3">
+                        <div className="space-y-1">
+                          <label className={UI.label}>Quote</label>
+                          <RichTextEditor
+                            value={rev.quote || ""}
+                            onChange={(val) => {
+                              const n = [...data.reviews.list];
+                              n[i].quote = val;
+                              updateSection("reviews", "list", n);
+                            }}
+                            placeholder="Client review quote..."
+                          />
+                        </div>
                         <div className="space-y-1"><label className={UI.label}>Client Name</label><input type="text" autoComplete="off" value={rev.name || ""} onChange={(e) => { const n = [...data.reviews.list]; n[i].name = e.target.value; updateSection("reviews", "list", n); }} className={UI.input} /></div>
                         <div className="space-y-1"><label className={UI.label}>Role</label><input type="text" autoComplete="off" value={rev.role || ""} onChange={(e) => { const n = [...data.reviews.list]; n[i].role = e.target.value; updateSection("reviews", "list", n); }} className={UI.input} /></div>
                         <div className="space-y-1"><label className={UI.label}>Company</label><input type="text" autoComplete="off" value={rev.company || ""} onChange={(e) => { const n = [...data.reviews.list]; n[i].company = e.target.value; updateSection("reviews", "list", n); }} className={UI.input} /></div>

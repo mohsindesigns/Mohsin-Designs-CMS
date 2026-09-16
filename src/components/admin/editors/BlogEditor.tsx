@@ -11,6 +11,9 @@ import BlogSelector from "@/components/admin/BlogSelector";
 import IconSelector from "@/components/admin/IconSelector";
 import SectionToggle from "@/components/admin/SectionToggle";
 import SchemaEditor from "@/components/admin/SchemaEditor";
+import dynamic from "next/dynamic";
+
+const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), { ssr: false });
 
 const DEFAULT_BLOG_DATA = {
   hero: {
@@ -181,11 +184,9 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
 
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-[#50575e]">Subtitle Description</label>
-                <textarea
-                  rows={3}
-                  value={blog.hero.description}
-                  onChange={(e) => updateBlog(prev => ({ ...prev, hero: { ...prev.hero, description: e.target.value } }))}
-                  className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
+                <RichTextEditor
+                  content={blog.hero.description || ""}
+                  onChange={(val: string) => updateBlog(prev => ({ ...prev, hero: { ...prev.hero, description: val } }))}
                   placeholder="Actionable blueprints, architectural deep-dives..."
                 />
               </div>
@@ -456,14 +457,12 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
 
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-[#50575e]">Banner Description</label>
-                <textarea
-                  rows={3}
-                  value={blog.ctaBanner.description}
-                  onChange={(e) => updateBlog(prev => ({
+                <RichTextEditor
+                  content={blog.ctaBanner.description || ""}
+                  onChange={(val: string) => updateBlog(prev => ({
                     ...prev,
-                    ctaBanner: { ...prev.ctaBanner, description: e.target.value }
+                    ctaBanner: { ...prev.ctaBanner, description: val }
                   }))}
-                  className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
                   placeholder="Schedule a free 30-minute technical audit..."
                 />
               </div>
@@ -624,14 +623,12 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
 
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-[#50575e]">Description</label>
-                <textarea
-                  rows={2}
-                  value={blog.detailSidebarCta?.description || ""}
-                  onChange={(e) => updateBlog(prev => ({
+                <RichTextEditor
+                  content={blog.detailSidebarCta?.description || ""}
+                  onChange={(val: string) => updateBlog(prev => ({
                     ...prev,
-                    detailSidebarCta: { ...(prev.detailSidebarCta || {}), description: e.target.value }
+                    detailSidebarCta: { ...(prev.detailSidebarCta || {}), description: val }
                   }))}
-                  className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white resize-none"
                   placeholder="Get a custom local SEO and web architecture strategy tailored for your business."
                 />
               </div>
@@ -765,14 +762,12 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
 
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-[#50575e]">Description Paragraph</label>
-                <textarea
-                  rows={3}
-                  value={blog.detailCtaBanner?.description || ""}
-                  onChange={(e) => updateBlog(prev => ({
+                <RichTextEditor
+                  content={blog.detailCtaBanner?.description || ""}
+                  onChange={(val: string) => updateBlog(prev => ({
                     ...prev,
-                    detailCtaBanner: { ...(prev.detailCtaBanner || {}), description: e.target.value }
+                    detailCtaBanner: { ...(prev.detailCtaBanner || {}), description: val }
                   }))}
-                  className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white resize-none"
                   placeholder="Schedule a free 30-minute technical audit..."
                 />
               </div>

@@ -52,6 +52,7 @@ import Blog from "@/components/Blog";
 import ServiceArea from "@/components/ServiceArea";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 // ── Dynamic Icon Map Resolver ──
 const baseIconMap: Record<string, React.ElementType> = {
@@ -1080,9 +1081,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                   </span>
                 </h1>
 
-                <p className="text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line">
-                  {service.hero.description}
-                </p>
+                <div className="text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line">
+                  <RichTextRenderer content={service.hero.description} />
+                </div>
 
                 {/* Benefits Checklist */}
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
@@ -1350,9 +1351,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 </span>
               </h2>
               {service.whatIncluded.description && (
-                <p className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
-                  {service.whatIncluded.description}
-                </p>
+                <div className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
+                  <RichTextRenderer content={service.whatIncluded.description} />
+                </div>
               )}
             </motion.div>
 
@@ -1367,9 +1368,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                       <h3 className="font-heading text-lg sm:text-xl font-extrabold text-brand-dark dark:text-white leading-tight">
                         {pillar.title}
                       </h3>
-                      <p className="text-[13px] font-sans text-brand-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
-                        {pillar.desc}
-                      </p>
+                      <div className="text-[13px] font-sans text-brand-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
+                        <RichTextRenderer content={pillar.desc} />
+                      </div>
                     </div>
                   </div>
 
@@ -1409,9 +1410,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                     {service.strategy.titleHighlight}
                   </span>
                 </h2>
-                <p className="text-sm sm:text-base font-sans text-brand-zinc-605 dark:text-zinc-350 font-normal leading-relaxed max-w-sm">
-                  {service.strategy.description}
-                </p>
+                <div className="text-sm sm:text-base font-sans text-brand-zinc-605 dark:text-zinc-350 font-normal leading-relaxed max-w-sm">
+                  <RichTextRenderer content={service.strategy.description} />
+                </div>
               </div>
 
               {/* Right Column Staggered List (Scrollable) */}
@@ -1429,9 +1430,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                       <h3 className="font-heading text-lg sm:text-xl font-extrabold text-brand-dark dark:text-white group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-300 leading-tight">
                         {comp.title}
                       </h3>
-                      <p className="text-xs sm:text-[13.5px] font-sans text-brand-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
-                        {comp.desc}
-                      </p>
+                      <div className="text-xs sm:text-[13.5px] font-sans text-brand-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
+                        <RichTextRenderer content={comp.desc} />
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -1477,9 +1478,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 </span>
               </h2>
               {service.benefits.description && (
-                <p className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
-                  {service.benefits.description}
-                </p>
+                <div className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
+                  <RichTextRenderer content={service.benefits.description} />
+                </div>
               )}
             </motion.div>
 
@@ -1502,9 +1503,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                           </h3>
                         )}
                         {b.desc && (
-                          <p className="text-[13px] font-sans text-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
-                            {b.desc}
-                          </p>
+                          <div className="text-[13px] font-sans text-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
+                            <RichTextRenderer content={b.desc} />
+                          </div>
                         )}
                       </div>
                     </div>
@@ -1540,9 +1541,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                     {service.process.titleHighlight}
                   </span>
                 </h2>
-                <p className="text-sm font-sans text-brand-zinc-605 dark:text-zinc-355 font-normal leading-relaxed max-w-sm">
-                  {service.process.description}
-                </p>
+                <div className="text-sm font-sans text-brand-zinc-605 dark:text-zinc-355 font-normal leading-relaxed max-w-sm">
+                  <RichTextRenderer content={service.process.description} />
+                </div>
 
                 {/* Premium Callout Box */}
                 {(service.process.calloutTag || service.process.calloutText) && (
@@ -1584,9 +1585,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                           <h3 className="font-heading text-lg font-black text-brand-dark dark:text-white group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-300">
                             {step.title}
                           </h3>
-                          <p className="text-xs sm:text-[13px] font-sans text-brand-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
-                            {step.desc}
-                          </p>
+                          <div className="text-xs sm:text-[13px] font-sans text-brand-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
+                            <RichTextRenderer content={step.desc} />
+                          </div>
                         </div>
 
                         {step.image && (
@@ -1644,9 +1645,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                       {service.results.titleHighlight}
                     </span>
                   </h2>
-                  <p className="text-xs sm:text-sm font-sans text-brand-zinc-655 dark:text-zinc-355 leading-relaxed font-normal">
-                    {service.results.description}
-                  </p>
+                  <div className="text-xs sm:text-sm font-sans text-brand-zinc-655 dark:text-zinc-355 leading-relaxed font-normal">
+                    <RichTextRenderer content={service.results.description} />
+                  </div>
                 </div>
 
                 {/* Dynamic Case Studies Switcher */}
@@ -1694,23 +1695,27 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                                 </span>
                               </div>
                               {cs.desc && (
-                                <p className="text-brand-zinc-600 dark:text-zinc-350 font-normal leading-relaxed text-xs">
-                                  {cs.desc}
-                                </p>
+                                <div className="text-brand-zinc-600 dark:text-zinc-350 font-normal leading-relaxed text-xs">
+                                  <RichTextRenderer content={cs.desc} />
+                                </div>
                               )}
                             </div>
 
                             {cs.challenge && (
                               <div className="space-y-1 bg-zinc-50 dark:bg-white/[0.02] p-3 rounded-xl border border-zinc-100 dark:border-white/5">
                                 <span className="text-[9px] font-mono font-bold text-brand-zinc-400 uppercase tracking-wider block">The Challenge</span>
-                                <p className="text-brand-zinc-700 dark:text-zinc-300 text-xs leading-relaxed">{cs.challenge}</p>
+                                <div className="text-brand-zinc-700 dark:text-zinc-300 text-xs leading-relaxed">
+                                  <RichTextRenderer content={cs.challenge} />
+                                </div>
                               </div>
                             )}
 
                             {cs.strategy && (
                               <div className="space-y-1 bg-zinc-50 dark:bg-white/[0.02] p-3 rounded-xl border border-zinc-100 dark:border-white/5">
                                 <span className="text-[9px] font-mono font-bold text-brand-blue dark:text-brand-yellow uppercase tracking-wider block">Engineered Strategy</span>
-                                <p className="text-brand-zinc-700 dark:text-zinc-300 text-xs leading-relaxed">{cs.strategy}</p>
+                                <div className="text-brand-zinc-700 dark:text-zinc-300 text-xs leading-relaxed">
+                                  <RichTextRenderer content={cs.strategy} />
+                                </div>
                               </div>
                             )}
 
@@ -1764,9 +1769,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                             </span>
                           </div>
                           {metric.desc && (
-                            <p className="text-[12px] font-sans text-zinc-600 dark:text-zinc-400 pt-1 leading-relaxed font-normal">
-                              {metric.desc}
-                            </p>
+                            <div className="text-[12px] font-sans text-zinc-600 dark:text-zinc-400 pt-1 leading-relaxed font-normal">
+                              <RichTextRenderer content={metric.desc} />
+                            </div>
                           )}
                         </div>
                       </div>
@@ -1815,9 +1820,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 </span>
               </h2>
               {service.industries.description && (
-                <p className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
-                  {service.industries.description}
-                </p>
+                <div className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
+                  <RichTextRenderer content={service.industries.description} />
+                </div>
               )}
             </motion.div>
 
@@ -1853,9 +1858,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                             ind.title
                           )}
                         </h3>
-                        <p className="text-xs sm:text-[13.5px] font-sans text-slate-600 dark:text-zinc-400 leading-relaxed font-normal">
-                          {ind.desc || ind.description}
-                        </p>
+                        <div className="text-xs sm:text-[13.5px] font-sans text-slate-600 dark:text-zinc-400 leading-relaxed font-normal">
+                          <RichTextRenderer content={ind.desc || ind.description} />
+                        </div>
                       </div>
                     </div>
 
@@ -1889,9 +1894,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                   </span>
                 </h2>
               </div>
-              <p className="text-xs sm:text-sm font-sans text-brand-zinc-655 dark:text-zinc-355 max-w-sm leading-relaxed font-normal">
-                {service.tools.description}
-              </p>
+              <div className="text-xs sm:text-sm font-sans text-brand-zinc-655 dark:text-zinc-355 max-w-sm leading-relaxed font-normal">
+                <RichTextRenderer content={service.tools.description} />
+              </div>
             </div>
 
             {/* Console Card Grid */}
@@ -1927,9 +1932,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                             {tool.name}
                           </h3>
                         </div>
-                        <p className="text-xs sm:text-[13px] font-sans text-brand-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
-                          {tool.desc || tool.description}
-                        </p>
+                        <div className="text-xs sm:text-[13px] font-sans text-brand-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
+                          <RichTextRenderer content={tool.desc || tool.description} />
+                        </div>
                       </div>
 
                       {/* Progress Gauge */}
@@ -1966,9 +1971,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                       {service.whyChooseUs.titleHighlight}
                     </span>
                   </h2>
-                  <p className="text-sm font-sans text-brand-zinc-655 dark:text-zinc-355 leading-relaxed font-normal">
-                    {service.whyChooseUs.description}
-                  </p>
+                  <div className="text-sm font-sans text-brand-zinc-655 dark:text-zinc-355 leading-relaxed font-normal">
+                    <RichTextRenderer content={service.whyChooseUs.description} />
+                  </div>
                 </div>
 
                 {/* 3 Circular Stat Rings */}
@@ -2023,9 +2028,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                             <h3 className="font-heading font-extrabold text-[1.1rem] text-brand-dark dark:text-white group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-300 leading-snug">
                               {item.title}
                             </h3>
-                            <p className="text-[13px] text-brand-zinc-500 dark:text-zinc-400 leading-relaxed font-normal">
-                              {item.desc}
-                            </p>
+                            <div className="text-[13px] text-brand-zinc-500 dark:text-zinc-400 leading-relaxed font-normal">
+                              <RichTextRenderer content={item.desc} />
+                            </div>
                           </div>
                         </div>
 
@@ -2091,9 +2096,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 </span>
               </h2>
               {service.pricing.description && (
-                <p className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
-                  {service.pricing.description}
-                </p>
+                <div className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
+                  <RichTextRenderer content={service.pricing.description} />
+                </div>
               )}
             </motion.div>
 
@@ -2131,9 +2136,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                         <h3 className="font-heading text-2xl font-black tracking-tight text-brand-dark dark:text-white group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-300">
                           {plan.name}
                         </h3>
-                        <p className="text-[12.5px] font-sans text-brand-zinc-555 dark:text-zinc-400 leading-relaxed font-normal min-h-[50px]">
-                          {plan.desc || plan.description}
-                        </p>
+                        <div className="text-[12.5px] font-sans text-brand-zinc-555 dark:text-zinc-400 leading-relaxed font-normal min-h-[50px]">
+                          <RichTextRenderer content={plan.desc || plan.description} />
+                        </div>
                       </div>
 
                       <div className="py-4.5 border-t border-b border-brand-zinc-200/80 dark:border-white/5 flex items-baseline gap-1 bg-zinc-50/30 dark:bg-white/[0.005] px-2 rounded-xl">
@@ -2198,9 +2203,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                   </span>
                 </h2>
                 {service.recommendedSection.description && (
-                  <p className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-xl leading-relaxed">
-                    {service.recommendedSection.description}
-                  </p>
+                  <div className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-xl leading-relaxed">
+                    <RichTextRenderer content={service.recommendedSection.description} />
+                  </div>
                 )}
               </div>
 
@@ -2251,9 +2256,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                       <h3 className="font-heading text-lg sm:text-xl font-black text-brand-dark dark:text-white group-hover/rec:text-brand-blue dark:group-hover/rec:text-brand-yellow transition-colors duration-300 leading-snug">
                         {recSrv.title}
                       </h3>
-                      <p className="text-[12.5px] font-sans text-brand-zinc-555 dark:text-zinc-400 leading-relaxed font-normal">
-                        {recSrv.heroDescription || recSrv.description || "High-impact growth strategies designed to accelerate conversions."}
-                      </p>
+                      <div className="text-[12.5px] font-sans text-brand-zinc-555 dark:text-zinc-400 leading-relaxed font-normal">
+                        <RichTextRenderer content={recSrv.heroDescription || recSrv.description || "High-impact growth strategies designed to accelerate conversions."} />
+                      </div>
                     </div>
 
                     <div className="relative z-10 flex items-center justify-between pt-4 mt-6">
@@ -2348,9 +2353,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 </h2>
 
                 {service.finalCta.description && (
-                  <p className="text-xs sm:text-sm font-sans text-white/90 leading-relaxed max-w-lg font-normal">
-                    {service.finalCta.description}
-                  </p>
+                  <div className="text-xs sm:text-sm font-sans text-white/90 leading-relaxed max-w-lg font-normal">
+                    <RichTextRenderer content={service.finalCta.description} />
+                  </div>
                 )}
 
                 <div className="flex flex-wrap items-center gap-4 pt-2">
