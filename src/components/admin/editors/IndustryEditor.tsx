@@ -218,12 +218,10 @@ export default function IndustryEditor({
                 <h3 className={UI.sectionHeader}>3. Subtitle Description</h3>
                 <div className="space-y-1.5">
                   <label className={UI.label}>Hero Description Narrative</label>
-                  <textarea
-                    rows={3}
-                    value={industryData.hero?.description || ""}
-                    onChange={(e) => updateSection("hero", "description", e.target.value)}
+                  <RichTextEditor
+                    content={industryData.hero?.description || ""}
+                    onChange={(val: string) => updateSection("hero", "description", val)}
                     placeholder="We engineer bespoke web applications, custom digital architectures..."
-                    className={UI.textarea}
                   />
                 </div>
               </div>

@@ -78,7 +78,9 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
     titleIntro: industryData.hero?.titleIntro || "High-Converting Platforms Built for",
     titleHighlight: industryData.hero?.titleHighlight || "Industry Leaders",
     titleSuffix: industryData.hero?.titleSuffix || "that Compound Revenue",
-    description: industryData.hero?.description || "We engineer bespoke web applications, custom digital architectures, and conversion-first UI/UX tailored specifically for regulated and high-yield commercial industries.",
+    description: industryData.hero?.description !== undefined
+      ? industryData.hero.description
+      : "We engineer bespoke web applications, custom digital architectures, and conversion-first UI/UX tailored specifically for regulated and high-yield commercial industries.",
     primaryCtaText: industryData.hero?.primaryCtaText || "Request Industry Audit",
     primaryCtaLink: industryData.hero?.primaryCtaLink || "#industry-form",
     secondaryCtaText: industryData.hero?.secondaryCtaText || "",
@@ -402,9 +404,9 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
               </h1>
 
               {hero.description && (
-                <p className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 leading-relaxed max-w-xl font-normal">
-                  {hero.description}
-                </p>
+                <div className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 leading-relaxed max-w-xl font-normal">
+                  <RichTextRenderer content={hero.description} />
+                </div>
               )}
 
               {/* Highlights Bullet Points */}
