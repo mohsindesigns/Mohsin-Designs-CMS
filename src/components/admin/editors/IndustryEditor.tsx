@@ -784,26 +784,29 @@ export default function IndustryEditor({
               </div>
 
               <div className="space-y-6">
-                <h3 className={UI.sectionHeader}>3. Bio Narrative Paragraphs</h3>
-                <div className="space-y-4">
-                  <div className="space-y-1.5">
-                    <label className={UI.label}>Bio Paragraph 1</label>
-                    <textarea
-                      rows={3}
-                      value={industryData.founder?.bioParagraph1 || ""}
-                      onChange={(e) => updateSection("founder", "bioParagraph1", e.target.value)}
-                      className={UI.textarea}
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className={UI.label}>Bio Paragraph 2</label>
-                    <textarea
-                      rows={3}
-                      value={industryData.founder?.bioParagraph2 || ""}
-                      onChange={(e) => updateSection("founder", "bioParagraph2", e.target.value)}
-                      className={UI.textarea}
-                    />
-                  </div>
+                <h3 className={UI.sectionHeader}>3. Bio Narrative</h3>
+                <div className="space-y-1.5">
+                  <label className={UI.label}>Founder Bio Narrative</label>
+                  <RichTextEditor
+                    content={
+                      industryData.founder?.bioContent !== undefined
+                        ? industryData.founder?.bioContent
+                        : industryData.founder?.bio !== undefined
+                          ? industryData.founder?.bio
+                          : [industryData.founder?.bioParagraph1, industryData.founder?.bioParagraph2]
+                            .filter(Boolean)
+                            .map((p: string) => `<p>${p}</p>`)
+                            .join("")
+                    }
+                    onChange={(val: string) => {
+                      updateSection("founder", "bioContent", val);
+                      updateSection("founder", "bio", val);
+                    }}
+                    placeholder="Write founder leadership narrative and bio..."
+                  />
+                  <p className={UI.helpText}>
+                    Use rich formatting (bold, links, lists, headings) for the founder bio.
+                  </p>
                 </div>
               </div>
 

@@ -81,21 +81,14 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
     description: industryData.hero?.description || "We engineer bespoke web applications, custom digital architectures, and conversion-first UI/UX tailored specifically for regulated and high-yield commercial industries.",
     primaryCtaText: industryData.hero?.primaryCtaText || "Request Industry Audit",
     primaryCtaLink: industryData.hero?.primaryCtaLink || "#industry-form",
-    secondaryCtaText: industryData.hero?.secondaryCtaText || "Explore Sectors",
-    secondaryCtaLink: industryData.hero?.secondaryCtaLink || "#sectors",
-    highlights: (Array.isArray(industryData.hero?.highlights) && industryData.hero.highlights.length > 0)
-      ? industryData.hero.highlights
-      : [
-        "Tailored Compliance & WCAG / ADA Standards",
-        "Sub-Second Page Load Speed on Edge Cloud",
-        "Behavioral Funnels Capturing Qualified Commercial Leads"
-      ],
-    statsPills: (Array.isArray(industryData.hero?.statsPills) && industryData.hero.statsPills.length > 0)
-      ? industryData.hero.statsPills
-      : [
-        { label: "Client Satisfaction", value: "99.8%" },
-        { label: "Avg. ROI Compounding", value: "4.8x" }
-      ],
+    secondaryCtaText: industryData.hero?.secondaryCtaText || "",
+    secondaryCtaLink: industryData.hero?.secondaryCtaLink || "",
+    highlights: (Array.isArray(industryData.hero?.highlights))
+      ? industryData.hero.highlights.filter((h: any) => typeof h === "string" && h.trim().length > 0)
+      : [],
+    statsPills: (Array.isArray(industryData.hero?.statsPills))
+      ? industryData.hero.statsPills.filter((s: any) => s && ((typeof s.value === "string" && s.value.trim().length > 0) || (typeof s.label === "string" && s.label.trim().length > 0)))
+      : [],
     formTitle: industryData.hero?.formTitle || "Get a Free Industry Strategy Session",
     formSubtitle: industryData.hero?.formSubtitle || "Direct architecture consultation with zero sales pressure.",
     formButtonText: industryData.hero?.formButtonText || "Get Free Strategy"
@@ -267,19 +260,20 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
     eyebrow: industryData.founder?.eyebrow || "EXECUTIVE LEADERSHIP & CRAFT",
     titleIntro: industryData.founder?.titleIntro || "Architectural Rigor with ",
     titleHighlight: industryData.founder?.titleHighlight || "Direct Founder Involvement",
-    founderName: industryData.founder?.founderName || "Mohsin Lead Architect",
-    founderTitle: industryData.founder?.founderTitle || "FOUNDER & PRINCIPAL ARCHITECT",
+    founderName: industryData.founder?.founderName || "",
+    founderTitle: industryData.founder?.founderTitle || "",
     portraitSrc: industryData.founder?.portraitSrc || "/founder_portrait_nobg.png",
-    portraitAlt: industryData.founder?.portraitAlt || "Mohsin Founder",
-    bioParagraph1: industryData.founder?.bioParagraph1 || "At Mohsin Designs, we reject the bloated agency model of endless account managers. Every client works directly with experienced senior engineers and conversion architects.",
-    bioParagraph2: industryData.founder?.bioParagraph2 || "We treat every project as a critical revenue engine, combining clean, scalable code with obsessive attention to UI micro-interactions and performance optimization.",
-    metrics: (Array.isArray(industryData.founder?.metrics) && industryData.founder.metrics.length > 0)
-      ? industryData.founder.metrics
-      : [
-        { value: "12+", label: "Years Experience" },
-        { value: "500+", label: "Projects Delivered" },
-        { value: "99.8%", label: "Client Retention" }
-      ]
+    portraitAlt: industryData.founder?.portraitAlt || industryData.founder?.founderName || "Mohsin Founder",
+    bio: industryData.founder?.bioContent !== undefined
+      ? industryData.founder?.bioContent
+      : industryData.founder?.bio !== undefined
+        ? industryData.founder?.bio
+        : (industryData.founder?.bioParagraph1 || industryData.founder?.bioParagraph2)
+          ? [industryData.founder?.bioParagraph1, industryData.founder?.bioParagraph2].filter(Boolean).map((p: string) => `<p>${p}</p>`).join("")
+          : "<p>At Mohsin Designs, we reject the bloated agency model of endless account managers. Every client works directly with experienced senior engineers and conversion architects.</p><p>We treat every project as a critical revenue engine, combining clean, scalable code with obsessive attention to UI micro-interactions and performance optimization.</p>",
+    metrics: (Array.isArray(industryData.founder?.metrics))
+      ? industryData.founder.metrics.filter((m: any) => m && ((typeof m.value === "string" && m.value.trim().length > 0) || (typeof m.label === "string" && m.label.trim().length > 0)))
+      : []
   };
 
   // ───────────────────────────────────────────────────────────────────────────
@@ -784,11 +778,6 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                     alt={founder.portraitAlt || "Founder"}
                     className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 pointer-events-none"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
-                  <div className="absolute left-6 bottom-6 text-white text-left z-10 select-none">
-                    <div className="font-heading font-extrabold text-xl tracking-tight leading-none text-white">{founder.founderName}</div>
-                    <span className="text-[10px] font-mono text-zinc-300 uppercase tracking-widest block mt-1">{founder.founderTitle}</span>
-                  </div>
                 </div>
               )}
             </div>
@@ -812,9 +801,8 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                 </span>
               </h2>
 
-              <div className="space-y-4 text-sm sm:text-base font-sans leading-relaxed text-brand-zinc-600 dark:text-zinc-300">
-                {founder.bioParagraph1 && <p>{founder.bioParagraph1}</p>}
-                {founder.bioParagraph2 && <p>{founder.bioParagraph2}</p>}
+              <div className="text-sm sm:text-base font-sans leading-relaxed text-brand-zinc-600 dark:text-zinc-300">
+                <RichTextRenderer content={founder.bio} className="space-y-4" />
               </div>
 
               {Array.isArray(founder.metrics) && founder.metrics.length > 0 && (
