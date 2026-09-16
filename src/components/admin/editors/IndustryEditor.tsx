@@ -473,12 +473,10 @@ export default function IndustryEditor({
                   </div>
                   <div className="space-y-1.5">
                     <label className={UI.label}>Section Description</label>
-                    <textarea
-                      rows={2}
-                      value={industryData.servicesSection?.description || ""}
-                      onChange={(e) => updateSection("servicesSection", "description", e.target.value)}
+                    <RichTextEditor
+                      content={industryData.servicesSection?.description || ""}
+                      onChange={(val) => updateSection("servicesSection", "description", val)}
                       placeholder="Modular, high-performance web engineering services built to address your sector..."
-                      className={UI.textarea}
                     />
                   </div>
                 </div>
@@ -553,12 +551,10 @@ export default function IndustryEditor({
                   </div>
                   <div className="space-y-1.5">
                     <label className={UI.label}>Description</label>
-                    <textarea
-                      rows={2}
-                      value={industryData.domainExpertise?.description || ""}
-                      onChange={(e) => updateSection("domainExpertise", "description", e.target.value)}
+                    <RichTextEditor
+                      content={industryData.domainExpertise?.description || ""}
+                      onChange={(val) => updateSection("domainExpertise", "description", val)}
                       placeholder="Every industry has distinct compliance, customer acquisition funnels, and technical requirements..."
-                      className={UI.textarea}
                     />
                   </div>
                 </div>
@@ -926,12 +922,10 @@ export default function IndustryEditor({
                   </div>
                   <div className="space-y-1.5">
                     <label className={UI.label}>Description</label>
-                    <textarea
-                      rows={2}
-                      value={industryData.whyChooseUs?.description || ""}
-                      onChange={(e) => updateSection("whyChooseUs", "description", e.target.value)}
+                    <RichTextEditor
+                      content={industryData.whyChooseUs?.description || ""}
+                      onChange={(val) => updateSection("whyChooseUs", "description", val)}
                       placeholder="We deliver measurable advantages through clean code, direct communication..."
-                      className={UI.textarea}
                     />
                   </div>
                 </div>
@@ -1018,15 +1012,14 @@ export default function IndustryEditor({
                       </div>
                       <div className="space-y-1.5">
                         <label className={UI.label}>Description</label>
-                        <textarea
-                          rows={2}
-                          value={feat.desc || ""}
-                          onChange={(e) => {
+                        <RichTextEditor
+                          content={feat.desc || ""}
+                          onChange={(val) => {
                             const updated = [...(industryData.whyChooseUs?.features || [])];
-                            updated[idx] = { ...updated[idx], desc: e.target.value };
+                            updated[idx] = { ...updated[idx], desc: val };
                             updateSection("whyChooseUs", "features", updated);
                           }}
-                          className={UI.textarea}
+                          placeholder="Feature description..."
                         />
                       </div>
                     </div>
@@ -1117,12 +1110,10 @@ export default function IndustryEditor({
                   </div>
                   <div className="space-y-1.5">
                     <label className={UI.label}>Description</label>
-                    <textarea
-                      rows={2}
-                      value={industryData.ctaBanner?.description || ""}
-                      onChange={(e) => updateSection("ctaBanner", "description", e.target.value)}
+                    <RichTextEditor
+                      content={industryData.ctaBanner?.description || ""}
+                      onChange={(val) => updateSection("ctaBanner", "description", val)}
                       placeholder="Schedule a free 30-minute industry strategy session..."
-                      className={UI.textarea}
                     />
                   </div>
                 </div>

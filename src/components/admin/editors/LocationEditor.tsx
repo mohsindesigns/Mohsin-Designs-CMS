@@ -9,11 +9,17 @@ import {
   Trophy, Users, Smile, ArrowRight, ExternalLink,
   ChevronDown, Search, Link2
 } from "lucide-react";
+import dynamic from "next/dynamic";
 import ImageField from "@/components/admin/ImageField";
 import IconSelector from "@/components/admin/IconSelector";
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
 import SchemaEditor from "@/components/admin/SchemaEditor";
+
+const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
+  ssr: false,
+  loading: () => <div className="h-20 bg-[#f6f7f7] animate-pulse border border-[#c3c4c7] rounded-sm flex items-center justify-center text-[#8c8f94] text-xs">Loading Rich Text Editor...</div>
+});
 
 const DEFAULT_LOCATION_DATA = {
   hero: {
@@ -402,11 +408,9 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
 
                 <div className="space-y-1.5">
                   <label className={UI.label}>Subtitle Description</label>
-                  <textarea
-                    rows={3}
-                    value={loc.hero?.description || ""}
-                    onChange={(e) => updateNested("hero", "description", e.target.value)}
-                    className={UI.input}
+                  <RichTextEditor
+                    content={loc.hero?.description || ""}
+                    onChange={(val) => updateNested("hero", "description", val)}
                     placeholder="Empowering high-growth businesses and enterprise brands..."
                   />
                 </div>
@@ -886,11 +890,9 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
 
                 <div className="space-y-1.5">
                   <label className={UI.label}>Section Description</label>
-                  <textarea
-                    rows={2}
-                    value={loc.presence?.description || ""}
-                    onChange={(e) => updateNested("presence", "description", e.target.value)}
-                    className={UI.input}
+                  <RichTextEditor
+                    content={loc.presence?.description || ""}
+                    onChange={(val) => updateNested("presence", "description", val)}
                     placeholder="Browse our localized service hubs..."
                   />
                 </div>
@@ -1028,11 +1030,9 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
 
                       <div className="space-y-1.5">
                         <label className={UI.label}>Country Description</label>
-                        <textarea
-                          rows={2}
-                          value={country.description || ""}
-                          onChange={(e) => handleUpdateCountry(index, "description", e.target.value)}
-                          className={UI.input}
+                        <RichTextEditor
+                          content={country.description || ""}
+                          onChange={(val) => handleUpdateCountry(index, "description", val)}
                           placeholder="Delivering enterprise-grade web development..."
                         />
                       </div>
@@ -1189,11 +1189,9 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
 
                 <div className="space-y-1.5">
                   <label className={UI.label}>Description</label>
-                  <textarea
-                    rows={3}
-                    value={loc.ctaBanner?.description || ""}
-                    onChange={(e) => updateNested("ctaBanner", "description", e.target.value)}
-                    className={UI.input}
+                  <RichTextEditor
+                    content={loc.ctaBanner?.description || ""}
+                    onChange={(val) => updateNested("ctaBanner", "description", val)}
                     placeholder="Schedule a free technical audit with our lead architect..."
                   />
                 </div>

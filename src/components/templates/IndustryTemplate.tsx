@@ -626,9 +626,10 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
               </h2>
             </div>
             {servicesSec.description && (
-              <p className="text-xs sm:text-sm text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed max-w-md">
-                {servicesSec.description}
-              </p>
+              <RichTextRenderer
+                content={servicesSec.description}
+                className="text-xs sm:text-sm text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed max-w-md"
+              />
             )}
           </div>
 
@@ -849,9 +850,10 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
             </h2>
 
             {whyChooseUs.description && (
-              <p className="text-xs sm:text-sm font-sans text-brand-zinc-600 dark:text-zinc-300 leading-relaxed max-w-2xl mx-auto">
-                {whyChooseUs.description}
-              </p>
+              <RichTextRenderer
+                content={whyChooseUs.description}
+                className="text-xs sm:text-sm font-sans text-brand-zinc-600 dark:text-zinc-300 leading-relaxed max-w-2xl mx-auto"
+              />
             )}
           </div>
 
@@ -885,7 +887,10 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                     <div>
                       <div className="h-[2px] w-6 bg-[#0306AC] dark:bg-[#E9BD36] mb-3" />
                       <h3 className="font-heading font-extrabold text-base text-brand-dark dark:text-white tracking-tight mb-1.5">{feat.title}</h3>
-                      <p className="text-xs text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed">{feat.desc}</p>
+                      <RichTextRenderer
+                        content={feat.desc}
+                        className="text-xs text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed"
+                      />
                     </div>
                   </div>
                 );
@@ -943,9 +948,10 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
               </h2>
 
               {ctaBanner.description && (
-                <p className="text-sm sm:text-base font-sans text-white/90 font-normal leading-relaxed max-w-lg">
-                  {ctaBanner.description}
-                </p>
+                <RichTextRenderer
+                  content={ctaBanner.description}
+                  className="text-sm sm:text-base font-sans text-white/90 font-normal leading-relaxed max-w-lg"
+                />
               )}
 
               <div className="flex items-center gap-4 flex-wrap pt-2">

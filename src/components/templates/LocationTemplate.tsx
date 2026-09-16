@@ -19,6 +19,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 function slugify(text: string): string {
   if (!text) return "";
@@ -403,9 +404,9 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
                 </span>
               </h1>
 
-              <p className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg">
-                {hero.description}
-              </p>
+              <div className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg">
+                <RichTextRenderer content={hero.description} />
+              </div>
 
               {/* Action Buttons */}
               <div className="flex flex-wrap items-center gap-4 pt-2">
@@ -577,9 +578,9 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
                 </span>
               </h2>
 
-              <p className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed">
-                {presence.description}
-              </p>
+              <div className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed">
+                <RichTextRenderer content={presence.description} />
+              </div>
             </div>
 
             {/* Cursive Text & Arrow Block */}
@@ -696,9 +697,9 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
                           </div>
 
                           {/* Country Description */}
-                          <p className="text-xs sm:text-sm font-sans text-brand-zinc-600 dark:text-zinc-300 leading-relaxed">
-                            {country.description}
-                          </p>
+                          <div className="text-xs sm:text-sm font-sans text-brand-zinc-600 dark:text-zinc-300 leading-relaxed">
+                            <RichTextRenderer content={country.description} />
+                          </div>
 
                           {/* States Badge List (Clean, non-nested URL /countrySlug/stateSlug) */}
                           <div className="pt-2 space-y-2.5">
@@ -762,9 +763,9 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
                 </span>
               </h2>
 
-              <p className="text-sm sm:text-base font-sans text-white/90 font-normal leading-relaxed max-w-lg">
-                {ctaBanner.description}
-              </p>
+              <div className="text-sm sm:text-base font-sans text-white/90 font-normal leading-relaxed max-w-lg">
+                <RichTextRenderer content={ctaBanner.description} />
+              </div>
 
               <div className="flex items-center gap-4 flex-wrap pt-2">
                 <Link href={ctaBanner.ctaPrimaryHref} className="btn-primary-cta">

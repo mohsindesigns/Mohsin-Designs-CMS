@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import IconSelector from "@/components/admin/IconSelector";
+const RichTextEditor = dynamic(() => import("@/components/ui/RichTextEditor"), { ssr: false });
 import ImageField from "@/components/admin/ImageField";
 import BlogSelector from "@/components/admin/BlogSelector";
 import { AVAILABLE_COUNTRIES, resolveCountryLocation } from "@/lib/countryLocations";
@@ -414,11 +415,9 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
 
                   <div className="space-y-1.5">
                     <label className={UI.label}>Hero Description (Supports Line Breaks & Paragraphs)</label>
-                    <textarea
-                      rows={4}
-                      value={data.hero?.description || ""}
-                      onChange={(e) => updateSection("hero", "description", e.target.value)}
-                      className={UI.input}
+                    <RichTextEditor
+                      content={data.hero?.description || ""}
+                      onChange={(val) => updateSection("hero", "description", val)}
                       placeholder="Enter detailed description. Line breaks will be preserved on the frontend."
                     />
                   </div>
@@ -592,11 +591,9 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
 
                 <div className="space-y-1.5">
                   <label className={UI.label}>Section Description (Narrative)</label>
-                  <textarea
-                    rows={2}
-                    value={data.whatIncluded?.description || ""}
-                    onChange={(e) => updateSection("whatIncluded", "description", e.target.value)}
-                    className={UI.input}
+                  <RichTextEditor
+                    content={data.whatIncluded?.description || ""}
+                    onChange={(val) => updateSection("whatIncluded", "description", val)}
                     placeholder="Enter an optional overview narrative for this section."
                   />
                 </div>
@@ -651,15 +648,14 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
 
                       <div className="space-y-1.5">
                         <label className={UI.label}>Pillar Description</label>
-                        <textarea
-                          rows={2}
-                          value={pillar.desc || ""}
-                          onChange={(e) => {
+                        <RichTextEditor
+                          content={pillar.desc || ""}
+                          onChange={(val) => {
                             const list = [...(data.whatIncluded?.pillars || [])];
-                            list[idx] = { ...list[idx], desc: e.target.value };
+                            list[idx] = { ...list[idx], desc: val };
                             updateSection("whatIncluded", "pillars", list);
                           }}
-                          className={UI.input}
+                          placeholder="Describe this delivery pillar..."
                         />
                       </div>
 
@@ -728,11 +724,10 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
 
                 <div className="space-y-1.5">
                   <label className={UI.label}>Description</label>
-                  <textarea
-                    rows={2}
-                    value={data.strategy?.description || ""}
-                    onChange={(e) => updateSection("strategy", "description", e.target.value)}
-                    className={UI.input}
+                  <RichTextEditor
+                    content={data.strategy?.description || ""}
+                    onChange={(val) => updateSection("strategy", "description", val)}
+                    placeholder="Describe the strategic approach..."
                   />
                 </div>
 
@@ -801,15 +796,14 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
 
                       <div className="space-y-1.5">
                         <label className={UI.label}>Description</label>
-                        <textarea
-                          rows={2}
-                          value={comp.desc || ""}
-                          onChange={(e) => {
+                        <RichTextEditor
+                          content={comp.desc || ""}
+                          onChange={(val) => {
                             const list = [...(data.strategy?.components || [])];
-                            list[idx] = { ...list[idx], desc: e.target.value };
+                            list[idx] = { ...list[idx], desc: val };
                             updateSection("strategy", "components", list);
                           }}
-                          className={UI.input}
+                          placeholder="Describe this strategic component..."
                         />
                       </div>
                     </div>
@@ -865,11 +859,9 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
 
                 <div className="space-y-1.5">
                   <label className={UI.label}>Section Description</label>
-                  <textarea
-                    rows={2}
-                    value={data.benefits?.description || ""}
-                    onChange={(e) => updateSection("benefits", "description", e.target.value)}
-                    className={UI.input}
+                  <RichTextEditor
+                    content={data.benefits?.description || ""}
+                    onChange={(val) => updateSection("benefits", "description", val)}
                     placeholder="Enter optional description for measurable outcomes..."
                   />
                 </div>
@@ -947,15 +939,14 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
 
                       <div className="space-y-1.5">
                         <label className={UI.label}>Outcome Description</label>
-                        <textarea
-                          rows={2}
-                          value={b.desc || b.description || ""}
-                          onChange={(e) => {
+                        <RichTextEditor
+                          content={b.desc || b.description || ""}
+                          onChange={(val) => {
                             const list = [...(data.benefits?.list || [])];
-                            list[idx] = { ...list[idx], desc: e.target.value, description: e.target.value };
+                            list[idx] = { ...list[idx], desc: val, description: val };
                             updateSection("benefits", "list", list);
                           }}
-                          className={UI.input}
+                          placeholder="Describe this outcome..."
                         />
                       </div>
                     </div>
@@ -1011,11 +1002,10 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
 
                 <div className="space-y-1.5">
                   <label className={UI.label}>Description</label>
-                  <textarea
-                    rows={2}
-                    value={data.process?.description || ""}
-                    onChange={(e) => updateSection("process", "description", e.target.value)}
-                    className={UI.input}
+                  <RichTextEditor
+                    content={data.process?.description || ""}
+                    onChange={(val) => updateSection("process", "description", val)}
+                    placeholder="Describe the delivery process..."
                   />
                 </div>
 
@@ -1114,15 +1104,14 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
 
                       <div className="space-y-1.5">
                         <label className={UI.label}>Description</label>
-                        <textarea
-                          rows={2}
-                          value={step.desc || ""}
-                          onChange={(e) => {
+                        <RichTextEditor
+                          content={step.desc || ""}
+                          onChange={(val) => {
                             const list = [...(data.process?.steps || [])];
-                            list[idx] = { ...list[idx], desc: e.target.value };
+                            list[idx] = { ...list[idx], desc: val };
                             updateSection("process", "steps", list);
                           }}
-                          className={UI.input}
+                          placeholder="Describe this process step..."
                         />
                       </div>
 
@@ -1202,11 +1191,10 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
 
                   <div className="space-y-1.5">
                     <label className={UI.label}>Section Description</label>
-                    <textarea
-                      rows={2}
-                      value={data.results?.description || ""}
-                      onChange={(e) => updateSection("results", "description", e.target.value)}
-                      className={UI.input}
+                    <RichTextEditor
+                      content={data.results?.description || ""}
+                      onChange={(val) => updateSection("results", "description", val)}
+                      placeholder="Describe the proven outcomes section..."
                     />
                   </div>
 
@@ -1299,29 +1287,27 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
 
                       <div className="space-y-1.5">
                         <label className={UI.label}>Challenge Statement</label>
-                        <textarea
-                          rows={2}
-                          value={cs.challenge || ""}
-                          onChange={(e) => {
+                        <RichTextEditor
+                          content={cs.challenge || ""}
+                          onChange={(val) => {
                             const list = [...(data.results?.caseStudies || [])];
-                            list[idx] = { ...list[idx], challenge: e.target.value };
+                            list[idx] = { ...list[idx], challenge: val };
                             updateSection("results", "caseStudies", list);
                           }}
-                          className={UI.input}
+                          placeholder="Describe the client challenge..."
                         />
                       </div>
 
                       <div className="space-y-1.5">
                         <label className={UI.label}>Strategy & Architecture Solution</label>
-                        <textarea
-                          rows={2}
-                          value={cs.strategy || ""}
-                          onChange={(e) => {
+                        <RichTextEditor
+                          content={cs.strategy || ""}
+                          onChange={(val) => {
                             const list = [...(data.results?.caseStudies || [])];
-                            list[idx] = { ...list[idx], strategy: e.target.value };
+                            list[idx] = { ...list[idx], strategy: val };
                             updateSection("results", "caseStudies", list);
                           }}
-                          className={UI.input}
+                          placeholder="Describe the architecture solution..."
                         />
                       </div>
 
@@ -1519,11 +1505,10 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
 
                 <div className="space-y-1.5">
                   <label className={UI.label}>Section Description (Frontend Narrative)</label>
-                  <textarea
-                    rows={3}
-                    value={data.industries?.description || "Every industry has distinct compliance, customer acquisition funnels, and technical requirements. We tailor our engineering to your exact vertical."}
-                    onChange={(e) => updateSection("industries", "description", e.target.value)}
-                    className={UI.input}
+                  <RichTextEditor
+                    content={data.industries?.description || "Every industry has distinct compliance, customer acquisition funnels, and technical requirements. We tailor our engineering to your exact vertical."}
+                    onChange={(val) => updateSection("industries", "description", val)}
+                    placeholder="Describe the vertical industries coverage..."
                   />
                 </div>
 
@@ -1590,15 +1575,14 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
 
                       <div className="space-y-1.5">
                         <label className={UI.label}>Description</label>
-                        <textarea
-                          rows={2}
-                          value={ind.desc || ind.description || ""}
-                          onChange={(e) => {
+                        <RichTextEditor
+                          content={ind.desc || ind.description || ""}
+                          onChange={(val) => {
                             const list = [...(data.industries?.list || [])];
-                            list[idx] = { ...list[idx], desc: e.target.value };
+                            list[idx] = { ...list[idx], desc: val };
                             updateSection("industries", "list", list);
                           }}
-                          className={UI.input}
+                          placeholder="Describe this industry sector..."
                         />
                       </div>
                     </div>
@@ -1654,11 +1638,10 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
 
                 <div className="space-y-1.5">
                   <label className={UI.label}>Section Description</label>
-                  <textarea
-                    rows={2}
-                    value={data.tools?.description || "High-performance frameworks and analytics systems driving client ROI metrics."}
-                    onChange={(e) => updateSection("tools", "description", e.target.value)}
-                    className={UI.input}
+                  <RichTextEditor
+                    content={data.tools?.description || "High-performance frameworks and analytics systems driving client ROI metrics."}
+                    onChange={(val) => updateSection("tools", "description", val)}
+                    placeholder="Describe the tech stack section..."
                   />
                 </div>
 
@@ -1739,15 +1722,14 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
 
                       <div className="space-y-1.5">
                         <label className={UI.label}>Description</label>
-                        <textarea
-                          rows={2}
-                          value={tool.desc || tool.description || ""}
-                          onChange={(e) => {
+                        <RichTextEditor
+                          content={tool.desc || tool.description || ""}
+                          onChange={(val) => {
                             const list = [...(data.tools?.list || [])];
-                            list[idx] = { ...list[idx], desc: e.target.value };
+                            list[idx] = { ...list[idx], desc: val };
                             updateSection("tools", "list", list);
                           }}
-                          className={UI.input}
+                          placeholder="Describe this tool/framework..."
                         />
                       </div>
                     </div>
@@ -1803,11 +1785,10 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
 
                 <div className="space-y-1.5">
                   <label className={UI.label}>Description</label>
-                  <textarea
-                    rows={2}
-                    value={data.whyChooseUs?.description || ""}
-                    onChange={(e) => updateSection("whyChooseUs", "description", e.target.value)}
-                    className={UI.input}
+                  <RichTextEditor
+                    content={data.whyChooseUs?.description || ""}
+                    onChange={(val) => updateSection("whyChooseUs", "description", val)}
+                    placeholder="Describe why clients choose us..."
                   />
                 </div>
 
@@ -1987,15 +1968,13 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
 
                       <div className="space-y-1.5">
                         <label className={UI.label}>Description</label>
-                        <textarea
-                          rows={2}
-                          value={item.desc || ""}
-                          onChange={(e) => {
+                        <RichTextEditor
+                          content={item.desc || ""}
+                          onChange={(val) => {
                             const list = [...(data.whyChooseUs?.list || [])];
-                            list[idx] = { ...list[idx], desc: e.target.value };
+                            list[idx] = { ...list[idx], desc: val };
                             updateSection("whyChooseUs", "list", list);
                           }}
-                          className={UI.input}
                           placeholder="Key value proposition narrative."
                         />
                       </div>
@@ -2062,11 +2041,10 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
 
                 <div className="space-y-1.5">
                   <label className={UI.label}>Section Description (Frontend Narrative)</label>
-                  <textarea
-                    rows={2}
-                    value={data.pricing?.description || "Clear fixed scopes with zero hidden fees. Choose a sprint tier tailored to your immediate milestones."}
-                    onChange={(e) => updateSection("pricing", "description", e.target.value)}
-                    className={UI.input}
+                  <RichTextEditor
+                    content={data.pricing?.description || "Clear fixed scopes with zero hidden fees. Choose a sprint tier tailored to your immediate milestones."}
+                    onChange={(val) => updateSection("pricing", "description", val)}
+                    placeholder="Describe the pricing section..."
                   />
                 </div>
 
@@ -2172,15 +2150,14 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
 
                       <div className="space-y-1.5">
                         <label className={UI.label}>Plan Description</label>
-                        <textarea
-                          rows={2}
-                          value={plan.desc || ""}
-                          onChange={(e) => {
+                        <RichTextEditor
+                          content={plan.desc || ""}
+                          onChange={(val) => {
                             const list = [...(data.pricing?.plans || [])];
-                            list[idx] = { ...list[idx], desc: e.target.value };
+                            list[idx] = { ...list[idx], desc: val };
                             updateSection("pricing", "plans", list);
                           }}
-                          className={UI.input}
+                          placeholder="Describe this pricing plan..."
                         />
                       </div>
 
@@ -2332,11 +2309,9 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
                 </div>
                 <div className="space-y-1.5">
                   <label className={UI.label}>Description Narrative</label>
-                  <textarea
-                    rows={3}
-                    value={data.recommendedSection?.description || "Scale faster by pairing multi-channel growth campaigns and high-performance visual coding solutions."}
-                    onChange={(e) => updateSection("recommendedSection", "description", e.target.value)}
-                    className={UI.input}
+                  <RichTextEditor
+                    content={data.recommendedSection?.description || "Scale faster by pairing multi-channel growth campaigns and high-performance visual coding solutions."}
+                    onChange={(val) => updateSection("recommendedSection", "description", val)}
                     placeholder="Overview narrative for recommended services section."
                   />
                 </div>
@@ -2394,11 +2369,9 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
 
                   <div className="space-y-1.5">
                     <label className={UI.label}>Description</label>
-                    <textarea
-                      rows={2}
-                      value={data.serviceArea?.description || "Deploying high-performance digital platforms across North America, Europe, and worldwide."}
-                      onChange={(e) => updateSection("serviceArea", "description", e.target.value)}
-                      className={UI.input}
+                    <RichTextEditor
+                      content={data.serviceArea?.description || "Deploying high-performance digital platforms across North America, Europe, and worldwide."}
+                      onChange={(val) => updateSection("serviceArea", "description", val)}
                       placeholder="e.g. Deploying high-performance digital platforms across North America, Europe, and worldwide."
                     />
                   </div>
