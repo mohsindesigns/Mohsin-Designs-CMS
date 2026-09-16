@@ -27,6 +27,7 @@ import { BASE_URL } from "@/lib/constants";
 import { makeLinksDoFollow } from "@/lib/utils";
 import { resolveRobotsMetadata } from "@/lib/seo";
 import CustomSchemaMarkup from "@/components/CustomSchemaMarkup";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 import { getCachedPost, getCachedSiteContent } from "@/lib/content";
 
@@ -494,9 +495,10 @@ export default async function BlogPostPage({ params }: Props) {
                 <h4 className="font-heading text-2xl font-black text-white leading-tight">
                   {sidebarCta.title}
                 </h4>
-                <p className="text-white/80 dark:text-zinc-300 text-xs leading-relaxed font-sans font-normal">
-                  {sidebarCta.description}
-                </p>
+                <RichTextRenderer
+                  content={sidebarCta.description}
+                  className="text-white/80 dark:text-zinc-300 text-xs leading-relaxed font-sans font-normal"
+                />
                 <Link
                   href={sidebarCta.buttonHref}
                   className="btn-primary-cta w-full justify-center text-xs py-3.5 mt-2"
@@ -612,9 +614,10 @@ export default async function BlogPostPage({ params }: Props) {
             </h2>
 
             {/* Description */}
-            <p className="text-sm sm:text-base font-sans text-white/90 font-normal leading-relaxed max-w-lg">
-              {detailCtaBanner.description}
-            </p>
+            <RichTextRenderer
+              content={detailCtaBanner.description}
+              className="text-sm sm:text-base font-sans text-white/90 font-normal leading-relaxed max-w-lg"
+            />
 
             {/* CTAs */}
             <div className="flex items-center gap-4 flex-wrap pt-2">

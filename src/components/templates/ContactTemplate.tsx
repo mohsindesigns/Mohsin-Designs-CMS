@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 // Dynamic Lucide Icon Resolver
 function DynamicIcon({ name, className }: { name?: string; className?: string }) {
@@ -275,9 +276,10 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
               </h1>
 
               {/* Subtitle */}
-              <p className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-md">
-                {hero.description}
-              </p>
+              <RichTextRenderer
+                content={hero.description}
+                className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-md"
+              />
             </motion.div>
 
             {/* RIGHT COLUMN: Send Us a Message Form Card */}
@@ -594,9 +596,10 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
               </h2>
 
               {/* Description */}
-              <p className="text-sm sm:text-base font-sans text-white/90 font-normal leading-relaxed max-w-lg">
-                {ctaBanner.description}
-              </p>
+              <RichTextRenderer
+                content={ctaBanner.description}
+                className="text-sm sm:text-base font-sans text-white/90 font-normal leading-relaxed max-w-lg"
+              />
 
               {/* Primary & Secondary CTAs */}
               <div className="flex items-center gap-4 flex-wrap pt-2">

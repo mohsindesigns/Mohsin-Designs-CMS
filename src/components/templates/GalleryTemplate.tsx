@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 // Hand-Drawn SVG Brush stroke variants
 const drawVariants = {
@@ -282,9 +283,10 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
             </h1>
 
             {/* Subtitle */}
-            <p className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg">
-              {hero.subtitle}
-            </p>
+            <RichTextRenderer
+              content={hero.subtitle}
+              className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg"
+            />
 
             {/* CTAs */}
             <div className="flex flex-wrap items-center gap-4 pt-2">
@@ -342,9 +344,10 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
                   <h3 className="font-heading text-xl sm:text-2xl font-black text-brand-dark dark:text-white group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors mb-2 leading-snug">
                     {project.brand}
                   </h3>
-                  <p className="font-sans text-xs sm:text-sm text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed mb-6">
-                    {project.subtitle}
-                  </p>
+                  <RichTextRenderer
+                    content={project.subtitle}
+                    className="font-sans text-xs sm:text-sm text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed mb-6"
+                  />
                 </div>
 
                 {/* Tech Stack Pills Footer */}
@@ -385,9 +388,10 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
             </h2>
 
             {/* Subtitle */}
-            <p className="font-sans text-sm sm:text-base text-brand-zinc-600 dark:text-zinc-300 max-w-xl mx-auto mb-12 leading-relaxed relative z-10">
-              {processSection.subtitle}
-            </p>
+            <RichTextRenderer
+              content={processSection.subtitle}
+              className="font-sans text-sm sm:text-base text-brand-zinc-600 dark:text-zinc-300 max-w-xl mx-auto mb-12 leading-relaxed relative z-10"
+            />
 
             {/* 4 Process Step Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left relative z-10">
@@ -419,9 +423,10 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
                     </h4>
 
                     {/* Step Description */}
-                    <p className="font-sans text-xs sm:text-sm text-brand-zinc-600 dark:text-zinc-300 leading-relaxed font-normal">
-                      {s.desc}
-                    </p>
+                    <RichTextRenderer
+                      content={s.desc}
+                      className="font-sans text-xs sm:text-sm text-brand-zinc-600 dark:text-zinc-300 leading-relaxed font-normal"
+                    />
                   </div>
                 </div>
               ))}
@@ -474,9 +479,10 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
               </h2>
 
               {/* Description */}
-              <p className="text-sm sm:text-base font-sans text-white/90 font-normal leading-relaxed max-w-lg">
-                {ctaBanner.description}
-              </p>
+              <RichTextRenderer
+                content={ctaBanner.description}
+                className="text-sm sm:text-base font-sans text-white/90 font-normal leading-relaxed max-w-lg"
+              />
 
               {/* CTAs */}
               <div className="flex items-center gap-4 flex-wrap pt-2">

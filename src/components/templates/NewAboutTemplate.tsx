@@ -1440,9 +1440,10 @@ function ReviewsCarousel({ reviewsData }: { reviewsData: any }) {
                       )}
                     </div>
 
-                    <p className="text-xs sm:text-sm font-sans font-medium text-brand-zinc-700 dark:text-zinc-200 leading-relaxed italic pt-1">
-                      "{r.quote}"
-                    </p>
+                    <RichTextRenderer
+                      content={r.quote}
+                      className="text-xs sm:text-sm font-sans font-medium text-brand-zinc-700 dark:text-zinc-200 leading-relaxed italic pt-1"
+                    />
 
                     {r.impact && (
                       <div className="inline-flex items-center gap-2 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1.5 text-[9.5px] font-mono font-bold text-emerald-600 dark:text-emerald-400">
@@ -1487,9 +1488,10 @@ function ReviewsCarousel({ reviewsData }: { reviewsData: any }) {
                       )}
                     </div>
 
-                    <p className="text-xs sm:text-sm font-sans font-medium text-brand-zinc-700 dark:text-zinc-200 leading-relaxed italic pt-1">
-                      "{r.quote}"
-                    </p>
+                    <RichTextRenderer
+                      content={r.quote}
+                      className="text-xs sm:text-sm font-sans font-medium text-brand-zinc-700 dark:text-zinc-200 leading-relaxed italic pt-1"
+                    />
 
                     {r.impact && (
                       <div className="inline-flex items-center gap-2 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1.5 text-[9.5px] font-mono font-bold text-[#0306AC] dark:text-[#E9BD36]">

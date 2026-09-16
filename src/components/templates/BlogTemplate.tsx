@@ -28,6 +28,7 @@ import {
   Smartphone
 } from "lucide-react";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 // Hand-Drawn SVG Brush stroke variants
 const drawVariants = {
@@ -334,9 +335,10 @@ export default function BlogTemplate({
             </h1>
 
             {/* Subtitle */}
-            <p className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg">
-              {hero.description}
-            </p>
+            <RichTextRenderer
+              content={hero.description}
+              className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg"
+            />
 
             {/* CTAs */}
             <div className="flex flex-wrap items-center gap-4 pt-2">
@@ -500,9 +502,10 @@ export default function BlogTemplate({
               </h2>
 
               {/* Description */}
-              <p className="text-sm sm:text-base font-sans text-white/90 font-normal leading-relaxed max-w-lg">
-                {ctaBanner.description}
-              </p>
+              <RichTextRenderer
+                content={ctaBanner.description}
+                className="text-sm sm:text-base font-sans text-white/90 font-normal leading-relaxed max-w-lg"
+              />
 
               {/* CTAs */}
               <div className="flex items-center gap-4 flex-wrap pt-2">
