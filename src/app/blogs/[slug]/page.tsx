@@ -290,32 +290,6 @@ export default async function BlogPostPage({ params }: Props) {
   const publishedIso = post.publishedAt ? new Date(post.publishedAt).toISOString() : (post.createdAt ? new Date(post.createdAt).toISOString() : new Date().toISOString());
   const modifiedIso = post.updatedAt ? new Date(post.updatedAt).toISOString() : publishedIso;
 
-  const blogJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    "headline": post.title,
-    "description": post.seo?.metaDescription || post.excerpt || "",
-    "image": post.seo?.ogImage || post.featuredImage || "/portfolio_hero_bg.png",
-    "datePublished": publishedIso,
-    "dateModified": modifiedIso,
-    "mainEntityOfPage": {
-      "@type": "WebPage",
-      "@id": `${BASE_URL}/blogs/${post.slug}/`
-    },
-    "author": {
-      "@type": "Person",
-      "name": authorInfo.name || "Mohsin Designs"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": siteBrandName,
-      "logo": {
-        "@type": "ImageObject",
-        "url": `${BASE_URL}/portfolio_hero_bg.png`
-      }
-    }
-  };
-
   processedContent = makeLinksDoFollow(processedContent);
 
   return (
@@ -324,10 +298,6 @@ export default async function BlogPostPage({ params }: Props) {
       {post.faqSchemaMarkup && (
         <CustomSchemaMarkup schema={post.faqSchemaMarkup} />
       )}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogJsonLd) }}
-      />
       <meta property="article:published_time" content={publishedIso} />
       <meta property="article:modified_time" content={modifiedIso} />
       <meta itemProp="datePublished" content={publishedIso} />

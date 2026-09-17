@@ -243,293 +243,24 @@ export function resolveDynamicSchemaTokens(
 }
 
 /**
- * Automatically builds an appropriate Schema.org JSON-LD structure
- * based on the page's template and content if no custom schema is provided.
+ * Auto-generated schema has been removed per user instruction.
+ * Only schemas explicitly added via the CMS Schema tab or synced from FAQs
+ * should be rendered on any page.
  */
 export function generateAutoSchemaForPage(
-  page: any = {},
-  globalData: any = {},
-  slug: string = ""
+  _page: any = {},
+  _globalData: any = {},
+  _slug: string = ""
 ): any[] {
-  const cleanSlug = (slug || page.slug || "").replace(/^\/+|\/+$/g, "");
-  const pageUrl = `${BASE_URL}/${cleanSlug ? cleanSlug + "/" : ""}`;
-  const template = (page.template || "").toLowerCase();
-  const settings = globalData?.settings || {};
-  const companyName = settings.siteName || "Mohsin Designs";
-  const companyPhone = settings.contactPhone || "+1 (614) 555-0192";
-  const companyEmail = settings.contactEmail || "contact@mohsindesigns.com";
-  const pageTitle = page.seo?.metaTitle || page.title || "";
-  const pageDesc =
-    page.seo?.metaDescription ||
-    page.content?.hero?.description ||
-    page.content?.description ||
-    "Bespoke digital architecture, web applications, and conversion-first UI/UX.";
-
-  const schemas: any[] = [];
-
-  // 1. Location-based templates (state, city, country, location, service-area)
-  if (
-    template === "state" ||
-    template === "city" ||
-    template === "country" ||
-    template === "location" ||
-    template === "locations" ||
-    template === "service-area"
-  ) {
-    const loc = extractLocationInfo(cleanSlug, pageTitle, template, page.content || {});
-    const localBusinessSchema: any = {
-      "@context": "https://schema.org",
-      "@type": "ProfessionalService",
-      "name": `${companyName} - ${loc.name}`,
-      "url": pageUrl,
-      "description": pageDesc,
-      "telephone": companyPhone,
-      "email": companyEmail,
-      "priceRange": "$$",
-      "address": {
-        "@type": "PostalAddress",
-        "addressCountry": loc.country || "US",
-        ...(loc.code ? { "addressRegion": loc.code } : {})
-      },
-      "areaServed": {
-        "@type": loc.type,
-        "name": loc.name
-      },
-      "provider": {
-        "@type": "Organization",
-        "name": companyName,
-        "url": `${BASE_URL}/`,
-        "logo": `${BASE_URL}/logo.png`
-      }
-    };
-
-    if (loc.latitude && loc.longitude) {
-      localBusinessSchema.geo = {
-        "@type": "GeoCoordinates",
-        "latitude": loc.latitude,
-        "longitude": loc.longitude
-      };
-    }
-
-    schemas.push(localBusinessSchema);
-  }
-
-  // 2. Service Detail template
-  else if (template === "service-detail" || template === "services") {
-    const serviceTitle = page.title || pageTitle;
-    const serviceDesc = page.seo?.metaDescription || page.description || page.content?.hero?.description || pageDesc;
-    const serviceSchema: any = {
-      "@context": "https://schema.org",
-      "@type": "Service",
-      "name": serviceTitle,
-      "serviceType": page.category || page.content?.hero?.eyebrow || page.hero?.eyebrow || "Digital Engineering",
-      "description": serviceDesc,
-      "url": pageUrl,
-      "provider": {
-        "@type": "ProfessionalService",
-        "name": companyName,
-        "url": `${BASE_URL}/`,
-        "logo": `${BASE_URL}/logo.png`,
-        "telephone": companyPhone,
-        "email": companyEmail,
-        "priceRange": "$$",
-        "address": {
-          "@type": "PostalAddress",
-          "addressCountry": "US"
-        }
-      }
-    };
-
-    // Area served from serviceAreaSource or default
-    const countries = Array.isArray(page.serviceAreaSource?.countries)
-      ? page.serviceAreaSource.countries
-      : (Array.isArray(page.content?.serviceAreaSource?.countries) ? page.content.serviceAreaSource.countries : []);
-
-    if (countries.length > 0) {
-      serviceSchema.areaServed = countries.map((c: string) => ({
-        "@type": "Country",
-        "name": c
-      }));
-    } else {
-      serviceSchema.areaServed = {
-        "@type": "Country",
-        "name": "United States"
-      };
-    }
-
-    // If pricing plans exist
-    const plans = (Array.isArray(page.pricing?.plans) && page.pricing.plans.length > 0)
-      ? page.pricing.plans
-      : (Array.isArray(page.content?.pricing?.plans) ? page.content.pricing.plans : []);
-
-    if (plans.length > 0) {
-      serviceSchema.hasOfferCatalog = {
-        "@type": "OfferCatalog",
-        "name": `${serviceTitle} Packages`,
-        "itemListElement": plans.map((p: any) => ({
-          "@type": "Offer",
-          "itemOffered": {
-            "@type": "Service",
-            "name": p.name || p.title || serviceTitle
-          },
-          "priceCurrency": "USD",
-          "price": p.price ? String(p.price).replace(/[^0-9.]/g, "") || "0" : "0",
-          "description": p.desc || p.description || ""
-        }))
-      };
-    }
-
-    if (page.createdAt) {
-      serviceSchema.datePublished = new Date(page.createdAt).toISOString();
-    }
-    if (page.updatedAt) {
-      serviceSchema.dateModified = new Date(page.updatedAt).toISOString();
-    }
-
-    schemas.push(serviceSchema);
-  }
-
-  // 3. Industry template
-  else if (template === "industry" || template === "industries") {
-    const industryName = page.content?.hero?.titleHighlight || pageTitle;
-    schemas.push({
-      "@context": "https://schema.org",
-      "@type": "Service",
-      "name": pageTitle,
-      "serviceType": `${industryName} Digital Solutions`,
-      "category": industryName,
-      "description": pageDesc,
-      "url": pageUrl,
-      "provider": {
-        "@type": "ProfessionalService",
-        "name": companyName,
-        "url": `${BASE_URL}/`,
-        "logo": `${BASE_URL}/logo.png`,
-        "telephone": companyPhone,
-        "email": companyEmail,
-        "priceRange": "$$",
-        "address": {
-          "@type": "PostalAddress",
-          "addressCountry": "US"
-        }
-      }
-    });
-  }
-
-  // 4. About template
-  else if (template === "about" || template === "new-about" || template === "newabout") {
-    schemas.push({
-      "@context": "https://schema.org",
-      "@type": "AboutPage",
-      "name": pageTitle,
-      "description": pageDesc,
-      "url": pageUrl,
-      "mainEntity": {
-        "@type": "Organization",
-        "name": companyName,
-        "url": `${BASE_URL}/`,
-        "logo": `${BASE_URL}/logo.png`,
-        "telephone": companyPhone,
-        "email": companyEmail
-      }
-    });
-  }
-
-  // 5. Contact template
-  else if (template === "contact") {
-    schemas.push({
-      "@context": "https://schema.org",
-      "@type": "ContactPage",
-      "name": pageTitle,
-      "description": pageDesc,
-      "url": pageUrl,
-      "mainEntity": {
-        "@type": "Organization",
-        "name": companyName,
-        "url": `${BASE_URL}/`,
-        "logo": `${BASE_URL}/logo.png`,
-        "telephone": companyPhone,
-        "email": companyEmail
-      }
-    });
-  }
-
-  // 4. Inline FAQs or FAQ template
-  const rawFaqs =
-    page.faqs ||
-    page.content?.faqs ||
-    (Array.isArray(page.content?.faq?.items) ? page.content.faq.items : []);
-
-  if (Array.isArray(rawFaqs) && rawFaqs.length > 0) {
-    const validFaqs = rawFaqs
-      .map((f: any) => ({
-        question: f.question || f.q || "",
-        answer: f.answer || f.a || ""
-      }))
-      .filter((f) => f.question && f.answer);
-
-    if (validFaqs.length > 0) {
-      schemas.push({
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": validFaqs.map((f) => ({
-          "@type": "Question",
-          "name": f.question,
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": f.answer
-          }
-        }))
-      });
-    }
-  }
-
-  // 5. Automatic BreadcrumbList for subpages
-  if (cleanSlug) {
-    const segments = cleanSlug.split("/").filter(Boolean);
-    const breadcrumbItems = [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Home",
-        "item": `${BASE_URL}/`
-      }
-    ];
-
-    let runningPath = "";
-    segments.forEach((seg: string, idx: number) => {
-      runningPath += `/${seg}`;
-      const isLast = idx === segments.length - 1;
-      const segTitle = isLast
-        ? (page.title || pageTitle)
-        : seg
-            .replace(/-/g, " ")
-            .split(" ")
-            .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-            .join(" ");
-
-      breadcrumbItems.push({
-        "@type": "ListItem",
-        "position": idx + 2,
-        "name": segTitle,
-        "item": `${BASE_URL}${runningPath}/`
-      });
-    });
-
-    schemas.push({
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": breadcrumbItems
-    });
-  }
-
-  return schemas;
+  return [];
 }
 
 /**
- * Main function called at render time. Resolves all schemas for a page:
- * 1. If custom schema exists, interpolates dynamic {{variables}}.
- * 2. If no custom schema exists, generates appropriate schema for that template.
+ * Main function called at render time. Resolves schemas for a page:
+ * ONLY returns schema explicitly added by the user in the CMS Schema tab
+ * and/or synced via "Sync FAQs to Schema".
+ * Any dynamic {{variable}} tokens in the user's custom schema are resolved.
+ * No auto schemas (Breadcrumbs, Place, Service, etc.) are injected.
  * Returns an array of JSON strings ready for <script type="application/ld+json">.
  */
 export function getResolvedSchemaBlocks({
@@ -546,12 +277,15 @@ export function getResolvedSchemaBlocks({
   const effectiveSlug = slug || page.slug || "";
   const varMap = buildSchemaVariableMap(page, globalData, effectiveSlug);
 
-  // Custom schema configured on the page
+  const blocks: string[] = [];
+
+  // 1. Schema explicitly entered by the user in the CMS Schema tab
   const rawCustomSchema =
     page.seo?.schemaData ||
     page.content?.schemaMarkup ||
     page.content?.customSchema ||
     page.schemaMarkup ||
+    page.customSchema ||
     "";
 
   let customSchemaString = "";
@@ -565,28 +299,36 @@ export function getResolvedSchemaBlocks({
     }
   }
 
-  const blocks: string[] = [];
-
   if (customSchemaString.length > 0) {
-    // Interpolate tokens inside custom schema
     const resolved = resolveDynamicSchemaTokens(customSchemaString, varMap);
     blocks.push(resolved);
+  }
 
-    // Auto-generate missing schemas:
-    // If the custom schema does NOT already include a schema type (e.g. only FAQPage was configured),
-    // still include the primary template schema (e.g. Service or ProfessionalService) and BreadcrumbList!
-    const autoList = generateAutoSchemaForPage(page, globalData, effectiveSlug);
-    for (const autoItem of autoList) {
-      const type = autoItem["@type"];
-      if (type && !resolved.includes(`"${type}"`)) {
-        blocks.push(JSON.stringify(autoItem));
-      }
+  // 2. Synced FAQ schema (if stored in faqSchemaMarkup)
+  const rawFaqSchema =
+    page.faqSchemaMarkup ||
+    page.content?.faqSchemaMarkup ||
+    "";
+
+  let faqSchemaString = "";
+  if (typeof rawFaqSchema === "string") {
+    faqSchemaString = rawFaqSchema.trim();
+  } else if (rawFaqSchema && typeof rawFaqSchema === "object") {
+    try {
+      faqSchemaString = JSON.stringify(rawFaqSchema);
+    } catch {
+      faqSchemaString = "";
     }
-  } else {
-    // No custom schema provided -> generate complete auto schema
-    const autoSchemas = generateAutoSchemaForPage(page, globalData, effectiveSlug);
-    for (const s of autoSchemas) {
-      blocks.push(JSON.stringify(s));
+  }
+
+  if (faqSchemaString.length > 0) {
+    const resolvedFaq = resolveDynamicSchemaTokens(faqSchemaString, varMap);
+    // Only push if not already present in the custom schema block
+    const alreadyPresent = blocks.some(
+      (b) => b.includes(resolvedFaq) || (resolvedFaq.includes("FAQPage") && b.includes("FAQPage"))
+    );
+    if (!alreadyPresent) {
+      blocks.push(resolvedFaq);
     }
   }
 
