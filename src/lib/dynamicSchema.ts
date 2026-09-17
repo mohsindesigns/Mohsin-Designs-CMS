@@ -311,41 +311,74 @@ export function generateAutoSchemaForPage(
 
   // 2. Service Detail template
   else if (template === "service-detail" || template === "services") {
+    const serviceTitle = page.title || pageTitle;
+    const serviceDesc = page.seo?.metaDescription || page.description || page.content?.hero?.description || pageDesc;
     const serviceSchema: any = {
       "@context": "https://schema.org",
       "@type": "Service",
-      "name": pageTitle,
-      "serviceType": page.content?.hero?.eyebrow || "Digital Engineering",
-      "description": pageDesc,
+      "name": serviceTitle,
+      "serviceType": page.category || page.content?.hero?.eyebrow || page.hero?.eyebrow || "Digital Engineering",
+      "description": serviceDesc,
       "url": pageUrl,
       "provider": {
-        "@type": "Organization",
+        "@type": "ProfessionalService",
         "name": companyName,
         "url": `${BASE_URL}/`,
-        "logo": `${BASE_URL}/logo.png`
-      },
-      "areaServed": {
-        "@type": "Country",
-        "name": "United States"
+        "logo": `${BASE_URL}/logo.png`,
+        "telephone": companyPhone,
+        "email": companyEmail,
+        "priceRange": "$$",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "US"
+        }
       }
     };
 
+    // Area served from serviceAreaSource or default
+    const countries = Array.isArray(page.serviceAreaSource?.countries)
+      ? page.serviceAreaSource.countries
+      : (Array.isArray(page.content?.serviceAreaSource?.countries) ? page.content.serviceAreaSource.countries : []);
+
+    if (countries.length > 0) {
+      serviceSchema.areaServed = countries.map((c: string) => ({
+        "@type": "Country",
+        "name": c
+      }));
+    } else {
+      serviceSchema.areaServed = {
+        "@type": "Country",
+        "name": "United States"
+      };
+    }
+
     // If pricing plans exist
-    if (Array.isArray(page.content?.pricing?.plans) && page.content.pricing.plans.length > 0) {
+    const plans = (Array.isArray(page.pricing?.plans) && page.pricing.plans.length > 0)
+      ? page.pricing.plans
+      : (Array.isArray(page.content?.pricing?.plans) ? page.content.pricing.plans : []);
+
+    if (plans.length > 0) {
       serviceSchema.hasOfferCatalog = {
         "@type": "OfferCatalog",
-        "name": `${pageTitle} Packages`,
-        "itemListElement": page.content.pricing.plans.map((p: any) => ({
+        "name": `${serviceTitle} Packages`,
+        "itemListElement": plans.map((p: any) => ({
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": p.name || p.title || pageTitle
+            "name": p.name || p.title || serviceTitle
           },
           "priceCurrency": "USD",
           "price": p.price ? String(p.price).replace(/[^0-9.]/g, "") || "0" : "0",
           "description": p.desc || p.description || ""
         }))
       };
+    }
+
+    if (page.createdAt) {
+      serviceSchema.datePublished = new Date(page.createdAt).toISOString();
+    }
+    if (page.updatedAt) {
+      serviceSchema.dateModified = new Date(page.updatedAt).toISOString();
     }
 
     schemas.push(serviceSchema);
@@ -373,8 +406,8 @@ export function generateAutoSchemaForPage(
 
   // 4. Inline FAQs or FAQ template
   const rawFaqs =
-    page.content?.faqs ||
     page.faqs ||
+    page.content?.faqs ||
     (Array.isArray(page.content?.faq?.items) ? page.content.faq.items : []);
 
   if (Array.isArray(rawFaqs) && rawFaqs.length > 0) {
@@ -418,7 +451,7 @@ export function generateAutoSchemaForPage(
       runningPath += `/${seg}`;
       const isLast = idx === segments.length - 1;
       const segTitle = isLast
-        ? pageTitle
+        ? (page.title || pageTitle)
         : seg
             .replace(/-/g, " ")
             .split(" ")
@@ -468,6 +501,7 @@ export function getResolvedSchemaBlocks({
     page.seo?.schemaData ||
     page.content?.schemaMarkup ||
     page.content?.customSchema ||
+    page.schemaMarkup ||
     "";
 
   const blocks: string[] = [];
@@ -477,12 +511,14 @@ export function getResolvedSchemaBlocks({
     const resolved = resolveDynamicSchemaTokens(rawCustomSchema, varMap);
     blocks.push(resolved);
 
-    // Also include Breadcrumb schema if not already present
-    if (!resolved.includes('"BreadcrumbList"')) {
-      const autoList = generateAutoSchemaForPage(page, globalData, effectiveSlug);
-      const breadcrumb = autoList.find((s) => s["@type"] === "BreadcrumbList");
-      if (breadcrumb) {
-        blocks.push(JSON.stringify(breadcrumb));
+    // Auto-generate missing schemas:
+    // If the custom schema does NOT already include a schema type (e.g. only FAQPage was configured),
+    // still include the primary template schema (e.g. Service) and BreadcrumbList!
+    const autoList = generateAutoSchemaForPage(page, globalData, effectiveSlug);
+    for (const autoItem of autoList) {
+      const type = autoItem["@type"];
+      if (type && !resolved.includes(`"${type}"`)) {
+        blocks.push(JSON.stringify(autoItem));
       }
     }
   } else {

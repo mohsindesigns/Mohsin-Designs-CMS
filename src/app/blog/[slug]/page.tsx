@@ -255,28 +255,7 @@ export default async function BlogPostPage({ params }: Props) {
   }
 
   const resolvedParams = { slug };
-  const service = post;
-  const globalData = globalContentData;
 
-  // Extract location info for service page
-  const serviceLocationInfo = extractLocationInfo(resolvedParams.slug, service.title, service.template || "", service.content || {});
-  // Add additional location schema block
-  const locationSchemaBlock = JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "Place",
-    "name": serviceLocationInfo.name,
-    "address": {
-      "@type": "PostalAddress",
-      "addressCountry": serviceLocationInfo.country,
-      "addressRegion": serviceLocationInfo.code || ""
-    }
-  });
-  const resolvedSchemaBlocksBase = typeof getResolvedSchemaBlocks === "function" ? getResolvedSchemaBlocks({
-    page: service,
-    globalData,
-    slug: resolvedParams.slug,
-  }) : [post.faqSchemaMarkup].filter(Boolean);
-  const resolvedSchemaBlocks = [...resolvedSchemaBlocksBase, locationSchemaBlock];
 
   const authorInfo = {
     name: String(cleanName),
@@ -365,17 +344,7 @@ export default async function BlogPostPage({ params }: Props) {
       {post.faqSchemaMarkup && (
         <CustomSchemaMarkup schema={post.faqSchemaMarkup} />
       )}
-      {/* Location schema block */}
-      <CustomSchemaMarkup schema={JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "Place",
-        "name": blogLocationInfo.name,
-        "address": {
-          "@type": "PostalAddress",
-          "addressCountry": blogLocationInfo.country,
-          "addressRegion": blogLocationInfo.code || ""
-        }
-      })} />
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(blogJsonLd) }}

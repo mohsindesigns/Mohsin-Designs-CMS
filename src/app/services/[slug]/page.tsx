@@ -9,7 +9,7 @@ import { BASE_URL } from "@/lib/constants";
 import { resolveRobotsMetadata } from "@/lib/seo";
 
 import { getCachedSiteContent } from "@/lib/content";
-import { extractLocationInfo, getResolvedSchemaBlocks } from "@/lib/dynamicSchema";
+import { getResolvedSchemaBlocks } from "@/lib/dynamicSchema";
 
 function getAbsoluteUrl(path: string | undefined) {
   if (!path) return undefined;
@@ -105,51 +105,21 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     (item.visibility === 'specific' && item.targetPages?.includes(resolvedParams.slug))
   );
 
-  // --------------------------------------------------------------
-  // 1️⃣  Build the location schema block (Place / ProfessionalService)
-  // --------------------------------------------------------------
-  const serviceLocationInfo = extractLocationInfo(
-    resolvedParams.slug,
-    service.title,
-    service.template || "",
-    service.content || {}
-  );
-
-  const locationSchemaBlock = JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "Place",
-    name: serviceLocationInfo.name,
-    address: {
-      "@type": "PostalAddress",
-      addressCountry: serviceLocationInfo.country,
-      addressRegion: serviceLocationInfo.code || "",
-    },
-    ...(serviceLocationInfo.latitude && serviceLocationInfo.longitude
-      ? {
-          geo: {
-            "@type": "GeoCoordinates",
-            latitude: serviceLocationInfo.latitude,
-            longitude: serviceLocationInfo.longitude,
-          },
-        }
-      : {}),
-  });
+  // Ensure template is set so auto schema resolves ServiceDetail
+  if (!service.template) {
+    service.template = "service-detail";
+  }
 
   // --------------------------------------------------------------
-  // 2️⃣  Base schema blocks (custom JSON‑LD or auto‑generated)
+  // Resolve dynamic schema blocks (Service, FAQPage, BreadcrumbList)
   // --------------------------------------------------------------
-  const resolvedSchemaBlocksBase = typeof getResolvedSchemaBlocks === "function"
+  const resolvedSchemaBlocks = typeof getResolvedSchemaBlocks === "function"
     ? getResolvedSchemaBlocks({
         page: service,
         globalData,
-        slug: resolvedParams.slug,
+        slug: `services/${resolvedParams.slug}`,
       })
     : [];
-
-  // --------------------------------------------------------------
-  // 3️⃣  Merge everything – the base blocks plus our location block
-  // --------------------------------------------------------------
-  const resolvedSchemaBlocks = [...resolvedSchemaBlocksBase, locationSchemaBlock];
 
   return (
     <>
