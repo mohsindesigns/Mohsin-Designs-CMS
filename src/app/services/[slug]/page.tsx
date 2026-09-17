@@ -9,6 +9,7 @@ import { BASE_URL } from "@/lib/constants";
 import { resolveRobotsMetadata } from "@/lib/seo";
 
 import { getCachedSiteContent } from "@/lib/content";
+import { extractLocationInfo, getResolvedSchemaBlocks } from "@/lib/dynamicSchema";
 
 function getAbsoluteUrl(path: string | undefined) {
   if (!path) return undefined;
@@ -104,36 +105,41 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     (item.visibility === 'specific' && item.targetPages?.includes(resolvedParams.slug))
   );
 
-  const customSchema = service?.seo?.schemaData || service?.schemaMarkup || service?.customSchema || service?.faqSchemaMarkup;
-
-  const publishedIso = service.createdAt ? new Date(service.createdAt).toISOString() : "2025-01-01T00:00:00.000Z";
-  const modifiedIso = service.updatedAt ? new Date(service.updatedAt).toISOString() : (data?.lastUpdated ? new Date(data.lastUpdated).toISOString() : new Date().toISOString());
-
-  const serviceJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Service",
-    "name": service.title,
-    "description": service.description || service.tagline || "",
-    "url": `${BASE_URL}/services/${resolvedParams.slug}/`,
-    "datePublished": publishedIso,
-    "dateModified": modifiedIso,
-    "provider": {
-      "@type": "Organization",
-      "name": "Mohsin Designs",
-      "url": `${BASE_URL}/`
-    }
-  };
+  // Resolve dynamic schema for the service page, merging any custom schema with auto-generated structures.
+  const serviceLocationInfo = extractLocationInfo(resolvedParams.slug, service.title, service.template || "", service.content || {});
+    const locationSchemaBlock = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Place",
+      "name": serviceLocationInfo.name,
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": serviceLocationInfo.country,
+        "addressRegion": serviceLocationInfo.code || ""
+      }
+    });
+    const resolvedSchemaBlocksBase = typeof getResolvedSchemaBlocks === "function" ? getResolvedSchemaBlocks({
+      page: service,
+      globalData,
+      slug: resolvedParams.slug,
+    }) : [];
+    const resolvedSchemaBlocks = [...resolvedSchemaBlocksBase, locationSchemaBlock];
 
   return (
     <>
-      <CustomSchemaMarkup schema={customSchema} />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd) }}
-      />
-      <meta property="article:published_time" content={publishedIso} />
-      <meta property="article:modified_time" content={modifiedIso} />
-      <ServiceDetailTemplate params={resolvedParams} pageData={service} />
+      {/* Compute dates for meta tags */}
+      {(() => {
+        const publishedIso = service.createdAt ? new Date(service.createdAt).toISOString() : new Date().toISOString();
+        const modifiedIso = service.updatedAt ? new Date(service.updatedAt).toISOString() : publishedIso;
+        return (
+          <>
+            {/* Render resolved JSON-LD blocks */}
+            <CustomSchemaMarkup schema={resolvedSchemaBlocks} />
+            <meta property="article:published_time" content={publishedIso} />
+            <meta property="article:modified_time" content={modifiedIso} />
+            <ServiceDetailTemplate params={resolvedParams} pageData={service} />
+          </>
+        );
+      })()}
     </>
   );
 }

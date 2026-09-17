@@ -27,6 +27,8 @@ import { BASE_URL } from "@/lib/constants";
 import { makeLinksDoFollow } from "@/lib/utils";
 import { resolveRobotsMetadata } from "@/lib/seo";
 import CustomSchemaMarkup from "@/components/CustomSchemaMarkup";
+import { extractLocationInfo, getResolvedSchemaBlocks } from "@/lib/dynamicSchema";
+
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 import { getCachedPost, getCachedSiteContent } from "@/lib/content";
@@ -252,11 +254,38 @@ export default async function BlogPostPage({ params }: Props) {
     }
   }
 
+  const resolvedParams = { slug };
+  const service = post;
+  const globalData = globalContentData;
+
+  // Extract location info for service page
+  const serviceLocationInfo = extractLocationInfo(resolvedParams.slug, service.title, service.template || "", service.content || {});
+  // Add additional location schema block
+  const locationSchemaBlock = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Place",
+    "name": serviceLocationInfo.name,
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": serviceLocationInfo.country,
+      "addressRegion": serviceLocationInfo.code || ""
+    }
+  });
+  const resolvedSchemaBlocksBase = typeof getResolvedSchemaBlocks === "function" ? getResolvedSchemaBlocks({
+    page: service,
+    globalData,
+    slug: resolvedParams.slug,
+  }) : [post.faqSchemaMarkup].filter(Boolean);
+  const resolvedSchemaBlocks = [...resolvedSchemaBlocksBase, locationSchemaBlock];
+
   const authorInfo = {
     name: String(cleanName),
     role: String(cleanRole),
     avatar: String(cleanAvatar)
   };
+
+  // Extract location info for blog content location schema
+  const blogLocationInfo = extractLocationInfo(slug, post.title, post.template || "", post.content || {});
 
   // 5. Automated Table of Contents Logic
   let tableOfContents: { id: string; text: string; level: number }[] = [];
@@ -290,6 +319,8 @@ export default async function BlogPostPage({ params }: Props) {
   const publishedIso = post.publishedAt ? new Date(post.publishedAt).toISOString() : (post.createdAt ? new Date(post.createdAt).toISOString() : new Date().toISOString());
   const modifiedIso = post.updatedAt ? new Date(post.updatedAt).toISOString() : publishedIso;
 
+  // Extract location info for content location schema
+
   const blogJsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -313,6 +344,16 @@ export default async function BlogPostPage({ params }: Props) {
         "@type": "ImageObject",
         "url": `${BASE_URL}/portfolio_hero_bg.png`
       }
+    },
+    // Add content location using extracted location info
+    "contentLocation": {
+      "@type": "Place",
+      "name": blogLocationInfo.name,
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": blogLocationInfo.country,
+        "addressRegion": blogLocationInfo.code || ""
+      }
     }
   };
 
@@ -324,6 +365,17 @@ export default async function BlogPostPage({ params }: Props) {
       {post.faqSchemaMarkup && (
         <CustomSchemaMarkup schema={post.faqSchemaMarkup} />
       )}
+      {/* Location schema block */}
+      <CustomSchemaMarkup schema={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Place",
+        "name": blogLocationInfo.name,
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": blogLocationInfo.country,
+          "addressRegion": blogLocationInfo.code || ""
+        }
+      })} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(blogJsonLd) }}

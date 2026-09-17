@@ -15,6 +15,71 @@ interface SchemaEditorProps {
 
 const SCHEMA_SNIPPETS = [
   {
+    label: "Dynamic State / City Location",
+    desc: "Auto-fetches location name (Texas, Georgia...) and coordinates",
+    snippet: `{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "{{company.name}} - {{location.name}}",
+  "url": "{{page.url}}",
+  "image": "{{page.image}}",
+  "description": "{{page.description}}",
+  "telephone": "{{company.phone}}",
+  "email": "{{company.email}}",
+  "priceRange": "$$",
+  "areaServed": {
+    "@type": "{{location.type}}",
+    "name": "{{location.name}}"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "{{company.name}}",
+    "url": "{{site.url}}",
+    "logo": "{{site.logo}}"
+  }
+}`
+  },
+  {
+    label: "Dynamic Service Offering",
+    desc: "Auto-fetches service title, category, and pricing plans",
+    snippet: `{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "{{service.title}}",
+  "serviceType": "{{service.category}}",
+  "description": "{{service.description}}",
+  "url": "{{page.url}}",
+  "provider": {
+    "@type": "Organization",
+    "name": "{{company.name}}",
+    "url": "{{site.url}}",
+    "logo": "{{site.logo}}"
+  },
+  "areaServed": {
+    "@type": "Country",
+    "name": "United States"
+  }
+}`
+  },
+  {
+    label: "Dynamic Industry Vertical",
+    desc: "Auto-fetches sector name and vertical solutions",
+    snippet: `{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "{{page.title}}",
+  "serviceType": "{{industry.name}} Digital Solutions",
+  "category": "{{industry.name}}",
+  "description": "{{page.description}}",
+  "url": "{{page.url}}",
+  "provider": {
+    "@type": "Organization",
+    "name": "{{company.name}}",
+    "url": "{{site.url}}"
+  }
+}`
+  },
+  {
     label: "LocalBusiness",
     desc: "Physical or local commercial entity",
     snippet: `{

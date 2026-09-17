@@ -11,6 +11,7 @@ import CustomSchemaMarkup from '@/components/CustomSchemaMarkup';
 import { BASE_URL } from '@/lib/constants';
 import { resolveRobotsMetadata } from '@/lib/seo';
 import { getCachedPage, getCachedSiteContent } from '@/lib/content';
+import { getResolvedSchemaBlocks } from '@/lib/dynamicSchema';
 
 interface PageProps {
   params: Promise<{ slug: string[] }>;
@@ -113,15 +114,19 @@ export default async function DynamicPage({ params }: PageProps) {
     }
   }
 
-  // Resolve custom schema configured in Page SEO or Content
-  const customSchema = page.seo?.schemaData || page.content?.schemaMarkup || page.content?.customSchema || page.content?.faqSchemaMarkup;
+  // Resolve dynamic schema: supports variable tokens and auto template-specific schema
+  const resolvedSchemaBlocks = getResolvedSchemaBlocks({
+    page,
+    globalData,
+    slug
+  });
 
   // Use TemplateWrapper to handle local content context overrides
   const { TemplateWrapper } = await import('@/components/templates/TemplateRegistry');
 
   return (
     <main>
-      <CustomSchemaMarkup schema={customSchema} />
+      <CustomSchemaMarkup schema={resolvedSchemaBlocks} />
       <TemplateWrapper
         templateName={page.template}
         pageData={{
