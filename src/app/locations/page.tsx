@@ -6,6 +6,7 @@ import SiteContent from "@/models/Content";
 import CustomSchemaMarkup from "@/components/CustomSchemaMarkup";
 import { BASE_URL } from "@/lib/constants";
 import { resolveRobotsMetadata } from "@/lib/seo";
+import { getResolvedSchemaBlocks } from "@/lib/dynamicSchema";
 
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
@@ -85,13 +86,28 @@ export default async function LocationsPage() {
                       locationData?.hero?.description || 
                       "Explore our international locations and regional service areas.";
 
-  const customSchema = page?.seo?.schemaData || page?.content?.schemaMarkup || locationData?.seo?.schemaData || locationData?.schemaMarkup;
+  const effectivePage = page || {
+    title: title || "Our Global Locations",
+    template: "location",
+    slug: "locations",
+    seo: { metaTitle: title, metaDescription: description },
+    content: {
+      locationPage: locationData,
+      schemaMarkup: page?.content?.schemaMarkup || locationData?.schemaMarkup
+    }
+  };
+
+  const resolvedSchemaBlocks = getResolvedSchemaBlocks({
+    page: effectivePage,
+    globalData,
+    slug: "locations"
+  });
 
   const { TemplateWrapper } = await import('@/components/templates/TemplateRegistry');
 
   return (
     <>
-      <CustomSchemaMarkup schema={customSchema} />
+      <CustomSchemaMarkup schema={resolvedSchemaBlocks} />
       <TemplateWrapper
         templateName="location"
         pageData={{

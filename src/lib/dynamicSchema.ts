@@ -286,6 +286,11 @@ export function generateAutoSchemaForPage(
       "telephone": companyPhone,
       "email": companyEmail,
       "priceRange": "$$",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": loc.country || "US",
+        ...(loc.code ? { "addressRegion": loc.code } : {})
+      },
       "areaServed": {
         "@type": loc.type,
         "name": loc.name
