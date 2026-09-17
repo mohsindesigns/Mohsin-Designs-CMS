@@ -4,7 +4,7 @@ import React, { use, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { isSafeHref } from "@/lib/utils";
+import { isSafeHref, getValidHref } from "@/lib/utils";
 import { motion, AnimatePresence, useMotionValue, useInView } from "framer-motion";
 import * as LucideIcons from "lucide-react";
 import {
@@ -1833,11 +1833,14 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
                 const words = String(ind.title || "").split(" ");
                 const abbreviation = ind.watermark || words.map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
+                const rawHref = ind.link || ind.href || ind.url;
+                const validHref = getValidHref(rawHref);
+                const isExternal = !!validHref && /^https?:\/\//i.test(validHref);
 
                 return (
                   <SpotlightCard
                     key={idx}
-                    className="bg-white dark:bg-[#0c0b18] border border-slate-200/80 dark:border-white/10 p-6 sm:p-8 rounded-[28px] hover:shadow-2xl hover:border-blue-600/30 dark:hover:border-yellow-400/30 transition-all duration-500 flex flex-col justify-between min-h-[250px] relative group text-left overflow-hidden"
+                    className={`bg-white dark:bg-[#0c0b18] border border-slate-200/80 dark:border-white/10 p-6 sm:p-8 rounded-[28px] hover:shadow-2xl hover:border-blue-600/30 dark:hover:border-yellow-400/30 transition-all duration-500 flex flex-col justify-between min-h-[250px] relative group text-left overflow-hidden ${validHref ? "cursor-pointer" : ""}`}
                   >
                     {/* Floating Watermark */}
                     <span className="absolute top-5 right-7 font-serif italic text-6xl sm:text-7xl font-black text-slate-100 dark:text-white/[0.04] select-none pointer-events-none transition-transform duration-500 group-hover:scale-110">
@@ -1852,20 +1855,27 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
                       <div className="space-y-2">
                         <h3 className="font-heading text-lg sm:text-xl font-bold text-slate-900 dark:text-white group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors duration-300 leading-snug">
-                          {ind.link && isSafeHref(ind.link) ? (
-                            <Link href={ind.link} className="hover:underline">{ind.title}</Link>
+                          {validHref ? (
+                            <Link
+                              href={validHref}
+                              className="hover:underline focus:outline-none after:absolute after:inset-0 after:z-10 inline-flex items-center gap-1.5"
+                              {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                            >
+                              <span>{ind.title}</span>
+                              <span className="inline-block transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-[#0306AC] dark:text-[#E9BD36]">↗</span>
+                            </Link>
                           ) : (
                             ind.title
                           )}
                         </h3>
-                        <div className="text-xs sm:text-[13.5px] font-sans text-slate-600 dark:text-zinc-400 leading-relaxed font-normal">
+                        <div className="text-xs sm:text-[13.5px] font-sans text-slate-600 dark:text-zinc-400 leading-relaxed font-normal relative z-20">
                           <RichTextRenderer content={ind.desc || ind.description} />
                         </div>
                       </div>
                     </div>
 
                     {(ind.footerLeft || ind.footerRight || service.industries.footerLeft || service.industries.footerRight) && (
-                      <div className="pt-4 mt-6 border-t border-[#0306AC]/25 dark:border-white/10 flex items-center justify-between text-[#0306AC]/80 dark:text-yellow-400/80 font-mono text-[9px] font-bold uppercase tracking-widest relative z-10">
+                      <div className="pt-4 mt-6 border-t border-[#0306AC]/25 dark:border-white/10 flex items-center justify-between text-[#0306AC]/80 dark:text-yellow-400/80 font-mono text-[9px] font-bold uppercase tracking-widest relative z-20">
                         <span>{ind.footerLeft || service.industries.footerLeft || ""}</span>
                         <span>{ind.footerRight || service.industries.footerRight || ""}</span>
                       </div>

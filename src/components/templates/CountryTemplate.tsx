@@ -61,9 +61,9 @@ export default function CountryTemplate({ pageData, params }: { pageData?: any; 
       )}
 
       {/* 3.5 Industries We Serve */}
-      {content.industries?.enabled !== false && hasContent(content.industries) && (
+      {(content.industries?.enabled !== false && content.domainExpertise?.enabled !== false) && (
         <section id="industries">
-          <IndustriesSection data={content.industries} />
+          <IndustriesSection data={content.industries || content.domainExpertise} />
         </section>
       )}
 

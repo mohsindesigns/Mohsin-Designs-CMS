@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
-import { isSafeHref } from "@/lib/utils";
+import { isSafeHref, getValidHref } from "@/lib/utils";
 import {
   ArrowRight,
   Play,
@@ -714,10 +714,14 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch text-left">
             {domainExpertise.domains.map((domain: any, idx: number) => {
               const DomainIcon = getIcon(domain.iconName, ShoppingCart);
+              const rawHref = domain.link || domain.href || domain.url;
+              const validHref = getValidHref(rawHref);
+              const isExternal = !!validHref && /^https?:\/\//i.test(validHref);
+
               return (
                 <div
                   key={domain.id || idx}
-                  className="rounded-[32px] bg-zinc-50/90 dark:bg-[#0c0b18] border border-brand-zinc-200/80 dark:border-white/10 p-6 sm:p-8 flex flex-col justify-between space-y-6 group hover:border-[#0306AC]/60 dark:hover:border-[#E9BD36]/60 transition-all duration-300 shadow-sm hover:shadow-2xl relative overflow-hidden"
+                  className={`rounded-[32px] bg-zinc-50/90 dark:bg-[#0c0b18] border border-brand-zinc-200/80 dark:border-white/10 p-6 sm:p-8 flex flex-col justify-between space-y-6 group hover:border-[#0306AC]/60 dark:hover:border-[#E9BD36]/60 transition-all duration-300 shadow-sm hover:shadow-2xl relative overflow-hidden ${validHref ? "cursor-pointer" : ""}`}
                 >
                   <div className="space-y-4 relative z-10">
                     <div className="flex items-center justify-between">
@@ -731,20 +735,27 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
 
                     <div className="space-y-2">
                       <h3 className="font-heading text-lg sm:text-xl font-black text-brand-dark dark:text-white tracking-tight group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors">
-                        {domain.link && isSafeHref(domain.link) ? (
-                          <Link href={domain.link} className="hover:underline">{domain.title}</Link>
+                        {validHref ? (
+                          <Link
+                            href={validHref}
+                            className="hover:underline focus:outline-none after:absolute after:inset-0 after:z-10 inline-flex items-center gap-1.5"
+                            {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                          >
+                            <span>{domain.title}</span>
+                            <span className="inline-block transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-[#0306AC] dark:text-[#E9BD36]">↗</span>
+                          </Link>
                         ) : (
                           domain.title
                         )}
                       </h3>
-                      <div className="text-xs sm:text-sm text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed">
+                      <div className="text-xs sm:text-sm text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed relative z-20">
                         <RichTextRenderer content={domain.desc || domain.description || ""} />
                       </div>
                     </div>
                   </div>
 
                   {Array.isArray(domain.tags) && domain.tags.length > 0 && (
-                    <div className="pt-4 border-t border-brand-zinc-200/70 dark:border-white/10 flex flex-wrap gap-1.5 relative z-10">
+                    <div className="pt-4 border-t border-brand-zinc-200/70 dark:border-white/10 flex flex-wrap gap-1.5 relative z-20">
                       {domain.tags.map((tag: string, tIdx: number) => (
                         <span
                           key={tIdx}

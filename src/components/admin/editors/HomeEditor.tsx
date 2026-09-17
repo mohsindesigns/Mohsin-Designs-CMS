@@ -1316,7 +1316,7 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                                   const currentList = Array.isArray(data.industries?.list) ? data.industries.list : [];
                                   updateSection("industries", "list", [
                                      ...currentList,
-                                     { title: "New Industry Sector", desc: "Specialized vertical capability tailored for growth.", iconName: "Building2", watermark: "IS" }
+                                     { title: "New Industry Sector", desc: "Specialized vertical capability tailored for growth.", iconName: "Building2", watermark: "IS", link: "" }
                                   ]);
                                }}
                                className={UI.buttonAdd}

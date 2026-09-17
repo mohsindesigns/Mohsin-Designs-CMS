@@ -1521,7 +1521,7 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
                         const current = Array.isArray(data.industries?.list) ? data.industries.list : [];
                         updateSection("industries", "list", [
                           ...current,
-                          { title: "New Industry Sector", desc: "Specialized vertical capability tailored for growth.", iconName: "Building2", watermark: "IS" }
+                          { title: "New Industry Sector", desc: "Specialized vertical capability tailored for growth.", iconName: "Building2", watermark: "IS", link: "" }
                         ]);
                       }}
                       className={UI.buttonAdd}
@@ -1561,16 +1561,32 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
                         />
                       </div>
 
-                      <div className="space-y-1.5">
-                        <label className={UI.label}>Card Icon</label>
-                        <IconSelector
-                          value={ind.iconName || "Building2"}
-                          onChange={(icon) => {
-                            const list = [...(data.industries?.list || [])];
-                            list[idx] = { ...list[idx], iconName: icon };
-                            updateSection("industries", "list", list);
-                          }}
-                        />
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="space-y-1.5">
+                          <label className={UI.label}>Card Icon</label>
+                          <IconSelector
+                            value={ind.iconName || "Building2"}
+                            onChange={(icon) => {
+                              const list = [...(data.industries?.list || [])];
+                              list[idx] = { ...list[idx], iconName: icon };
+                              updateSection("industries", "list", list);
+                            }}
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className={UI.label}>Link URL (optional)</label>
+                          <input
+                            type="text"
+                            value={ind.link || ""}
+                            onChange={(e) => {
+                              const list = [...(data.industries?.list || [])];
+                              list[idx] = { ...list[idx], link: e.target.value };
+                              updateSection("industries", "list", list);
+                            }}
+                            className={UI.input}
+                            placeholder="e.g. /services/custom-web-applications"
+                          />
+                        </div>
                       </div>
 
                       <div className="space-y-1.5">

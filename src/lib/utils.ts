@@ -54,6 +54,64 @@ export function isSafeHref(url: string | undefined | null): boolean {
 }
 
 /**
+ * Normalizes a URL, relative slug, anchor, or external link entered in CMS:
+ * - Rejects dangerous pseudo-protocols (javascript:, data:, vbscript:)
+ * - Automatically prepends leading "/" to internal relative slugs (e.g. "services/seo" -> "/services/seo")
+ * - Converts "www.example.com" -> "https://www.example.com"
+ * - Converts "//example.com" -> "https://example.com"
+ * - Preserves "http://", "https://", "mailto:", "tel:", and "#anchor"
+ */
+export function normalizeHref(url: string | undefined | null): string {
+  if (!url || typeof url !== "string") return "";
+  const trimmed = url.trim();
+  if (!trimmed) return "";
+
+  // Reject dangerous pseudo-protocols immediately
+  if (/^(javascript|data|vbscript):/i.test(trimmed)) {
+    return "";
+  }
+
+  // Anchor links on current page
+  if (trimmed.startsWith("#")) {
+    return trimmed;
+  }
+
+  // Allowed explicit protocols
+  if (/^(https?:\/\/|mailto:|tel:)/i.test(trimmed)) {
+    return trimmed;
+  }
+
+  // Protocol-relative //example.com -> https://example.com
+  if (trimmed.startsWith("//")) {
+    return `https:${trimmed}`;
+  }
+
+  // www.example.com -> https://www.example.com
+  if (/^www\./i.test(trimmed)) {
+    return `https://${trimmed}`;
+  }
+
+  // Pure domain pattern like "domain.com/page" or "example.org"
+  if (/^[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\/.*)?$/i.test(trimmed) && !trimmed.startsWith("/")) {
+    return `https://${trimmed}`;
+  }
+
+  // Relative internal path: ensure leading slash so Next.js doesn't append to current subroute!
+  return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+}
+
+/**
+ * Resolves and validates a safe href from any link string.
+ * Returns the normalized URL/path if valid and safe, or null otherwise.
+ */
+export function getValidHref(url: string | undefined | null): string | null {
+  if (!url || typeof url !== "string") return null;
+  const normalized = normalizeHref(url);
+  if (!normalized) return null;
+  return isSafeHref(normalized) ? normalized : null;
+}
+
+/**
  * Normalizes a Page slug: lowercases, strips leading/trailing slashes, and cleans each
  * "/"-separated segment (stray characters, spaces, trailing slashes) so the stored slug
  * always matches the clean URL path Next.js resolves at request time.

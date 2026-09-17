@@ -676,7 +676,8 @@ export default function IndustryEditor({
                           title: "New Sector Vertical",
                           desc: "Tailored architecture and compliant digital workflows.",
                           iconName: "Briefcase",
-                          tags: ["Custom Architecture", "Compliance"]
+                          tags: ["Custom Architecture", "Compliance"],
+                          link: ""
                         }
                       ]);
                     }}

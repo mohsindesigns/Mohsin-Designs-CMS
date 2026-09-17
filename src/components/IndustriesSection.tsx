@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { motion, useMotionValue } from "framer-motion";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
-import { isSafeHref } from "@/lib/utils";
+import { isSafeHref, getValidHref } from "@/lib/utils";
 import {
   Globe,
   Cpu,
@@ -91,7 +91,9 @@ export default function IndustriesSection({ data }: IndustriesSectionProps) {
       ? data.list
       : (Array.isArray(data?.items) && data.items.length > 0)
         ? data.items
-        : [
+        : (Array.isArray(data?.domains) && data.domains.length > 0)
+          ? data.domains
+          : [
             { title: "Home Services & Contracting", desc: "Roofing, decking, remodeling, and local trade contractors scaling regional territories.", iconName: "Building2", watermark: "HS" },
             { title: "Technology & SaaS", desc: "Fast-growth software startups and tech firms demanding high conversion rates.", iconName: "Cpu", watermark: "TS" },
             { title: "Commercial Real Estate", desc: "Property developers, architectural firms, and luxury real estate agencies.", iconName: "Building2", watermark: "CR" },
@@ -149,11 +151,14 @@ export default function IndustriesSection({ data }: IndustriesSectionProps) {
             const FallbackIcon = defaultIcons[idx % defaultIcons.length];
             const words = String(ind.title || "").split(" ");
             const abbreviation = ind.watermark || words.map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
+            const rawHref = ind.link || ind.href || ind.url;
+            const validHref = getValidHref(rawHref);
+            const isExternal = !!validHref && /^https?:\/\//i.test(validHref);
 
             return (
               <SpotlightCard
                 key={idx}
-                className="bg-white dark:bg-[#0c0b18] border border-slate-200/80 dark:border-white/10 p-6 sm:p-8 rounded-[28px] hover:shadow-2xl hover:border-blue-600/30 dark:hover:border-yellow-400/30 transition-all duration-500 flex flex-col justify-between min-h-[250px] relative group text-left overflow-hidden"
+                className={`bg-white dark:bg-[#0c0b18] border border-slate-200/80 dark:border-white/10 p-6 sm:p-8 rounded-[28px] hover:shadow-2xl hover:border-blue-600/30 dark:hover:border-yellow-400/30 transition-all duration-500 flex flex-col justify-between min-h-[250px] relative group text-left overflow-hidden ${validHref ? "cursor-pointer" : ""}`}
               >
                 {/* Floating Watermark */}
                 <span className="absolute top-5 right-7 font-serif italic text-6xl sm:text-7xl font-black text-slate-100 dark:text-white/[0.04] select-none pointer-events-none transition-transform duration-500 group-hover:scale-110">
@@ -171,20 +176,27 @@ export default function IndustriesSection({ data }: IndustriesSectionProps) {
 
                   <div className="space-y-2">
                     <h3 className="font-heading text-lg sm:text-xl font-black text-brand-dark dark:text-white group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors leading-snug">
-                      {ind.link && isSafeHref(ind.link) ? (
-                        <Link href={ind.link} className="hover:underline">{ind.title}</Link>
+                      {validHref ? (
+                        <Link
+                          href={validHref}
+                          className="hover:underline focus:outline-none after:absolute after:inset-0 after:z-10 inline-flex items-center gap-1.5"
+                          {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                        >
+                          <span>{ind.title}</span>
+                          <span className="inline-block transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-[#0306AC] dark:text-[#E9BD36]">↗</span>
+                        </Link>
                       ) : (
                         ind.title
                       )}
                     </h3>
-                    <div className="text-xs sm:text-sm text-brand-zinc-600 dark:text-zinc-400 font-sans leading-relaxed font-normal">
+                    <div className="text-xs sm:text-sm text-brand-zinc-600 dark:text-zinc-400 font-sans leading-relaxed font-normal relative z-20">
                       <RichTextRenderer content={ind.desc || ind.description || ""} />
                     </div>
                   </div>
                 </div>
 
                 {Array.isArray(ind.tags) && ind.tags.length > 0 && (
-                  <div className="pt-4 mt-4 border-t border-brand-zinc-200/70 dark:border-white/10 flex flex-wrap gap-1.5 relative z-10">
+                  <div className="pt-4 mt-4 border-t border-brand-zinc-200/70 dark:border-white/10 flex flex-wrap gap-1.5 relative z-20">
                     {ind.tags.map((tag: string, tIdx: number) => (
                       <span
                         key={tIdx}

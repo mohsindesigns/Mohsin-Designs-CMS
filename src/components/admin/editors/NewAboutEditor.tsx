@@ -693,6 +693,21 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                         <div className="col-span-3 space-y-1"><label className={UI.label}>Title</label><input type="text" autoComplete="off" value={dom.title || ""} onChange={(e) => { const n = [...data.domainExpertise.domains]; n[i].title = e.target.value; updateSection("domainExpertise", "domains", n); }} className={UI.input} placeholder="e.g. B2B SaaS & Tech" /></div>
                       </div>
                       <div className="space-y-1">
+                        <label className={UI.label}>Link URL (optional)</label>
+                        <input
+                          type="text"
+                          autoComplete="off"
+                          value={dom.link || ""}
+                          onChange={(e) => {
+                            const n = [...data.domainExpertise.domains];
+                            n[i].link = e.target.value;
+                            updateSection("domainExpertise", "domains", n);
+                          }}
+                          className={UI.input}
+                          placeholder="e.g. /services/custom-web-applications"
+                        />
+                      </div>
+                      <div className="space-y-1">
                         <label className={UI.label}>Description</label>
                         <RichTextEditor
                           content={dom.desc || ""}
@@ -716,7 +731,7 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                     </div>
                   ))}
                 </div>
-                <button onClick={() => updateSection("domainExpertise", "domains", [...(data.domainExpertise?.domains || []), { id: `0${(data.domainExpertise?.domains || []).length + 1}`, title: "New Domain", desc: "", iconName: "Building2", tags: [] }])} className={UI.buttonAdd}>+ Add Domain</button>
+                <button onClick={() => updateSection("domainExpertise", "domains", [...(data.domainExpertise?.domains || []), { id: `0${(data.domainExpertise?.domains || []).length + 1}`, title: "New Domain", desc: "", iconName: "Building2", tags: [], link: "" }])} className={UI.buttonAdd}>+ Add Domain</button>
               </div>
             </div>
           )}
