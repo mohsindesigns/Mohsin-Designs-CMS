@@ -106,7 +106,7 @@ export default function IndustriesSection({ data }: IndustriesSectionProps) {
   const defaultIcons = [Building2, Cpu, Globe, ShoppingCart, Briefcase, Heart];
 
   return (
-    <section id="industries" className="relative overflow-hidden py-20 md:py-28 border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/50 dark:bg-transparent">
+    <section id="industries" className="relative overflow-hidden py-24 md:py-32 border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/50 dark:bg-transparent">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
         <motion.div

@@ -46,25 +46,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static pages
   const staticRoutes: MetadataRoute.Sitemap = [
     {
-      url: BASE_URL,
+      url: `${BASE_URL}/`,
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 1.0,
     },
     {
-      url: `${BASE_URL}/privacy`,
+      url: `${BASE_URL}/privacy/`,
       lastModified: now,
       changeFrequency: 'yearly',
       priority: 0.3,
     },
     {
-      url: `${BASE_URL}/terms`,
+      url: `${BASE_URL}/terms/`,
       lastModified: now,
       changeFrequency: 'yearly',
       priority: 0.3,
     },
     {
-      url: `${BASE_URL}/blogs`,
+      url: `${BASE_URL}/blogs/`,
       lastModified: now,
       changeFrequency: 'daily',
       priority: 0.7,
@@ -78,7 +78,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .replace(/\/+$|^services\//, '');
 
     return {
-      url: `${BASE_URL}/services/${slug}`,
+      url: `${BASE_URL}/services/${slug}/`,
       lastModified: now,
       changeFrequency: 'weekly' as const,
       priority: 0.85,
@@ -89,7 +89,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const slug = String(post.slug || '').replace(/^\/+/, '').replace(/\/+$/, '');
 
     return {
-      url: `${BASE_URL}/blogs/${slug}`,
+      url: `${BASE_URL}/blogs/${slug}/`,
       lastModified: post.updatedAt ? new Date(post.updatedAt).toISOString() : now,
       changeFrequency: 'weekly' as const,
       priority: 0.75,
@@ -110,7 +110,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       !staticSlugs.has(page.cleanSlug)
     )
     .map((page: any) => ({
-      url: `${BASE_URL}/${page.cleanSlug}`,
+      url: `${BASE_URL}/${page.cleanSlug}/`,
       lastModified: page.updatedAt ? new Date(page.updatedAt).toISOString() : now,
       changeFrequency: 'weekly' as const,
       priority: 0.8,

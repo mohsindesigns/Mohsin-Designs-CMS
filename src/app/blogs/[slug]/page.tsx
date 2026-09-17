@@ -50,7 +50,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const pageTitle = post.seo?.metaTitle || `${post.title} | Mohsin Designs`;
   const pageDesc = post.seo?.metaDescription || post.excerpt || `${post.title} - Strategic insights and architectural blueprints from Mohsin Designs.`;
   const pageImage = post.seo?.ogImage || post.featuredImage || "/portfolio_hero_bg.png";
-  const canonicalUrl = post.seo?.canonicalUrl || `${BASE_URL}/blogs/${post.slug}`;
+  const canonicalUrl = post.seo?.canonicalUrl || `${BASE_URL}/blogs/${post.slug}/`;
+
+  const publishedIso = post.publishedAt ? new Date(post.publishedAt).toISOString() : (post.createdAt ? new Date(post.createdAt).toISOString() : new Date().toISOString());
+  const modifiedIso = post.updatedAt ? new Date(post.updatedAt).toISOString() : publishedIso;
 
   return {
     title: {
@@ -64,10 +67,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: post.seo?.ogTitle || pageTitle,
       description: post.seo?.ogDescription || pageDesc,
-      url: `${BASE_URL}/blogs/${post.slug}`,
+      url: canonicalUrl,
       type: "article",
-      publishedTime: post.publishedAt?.toISOString?.() || post.createdAt?.toISOString?.(),
-      modifiedTime: (post.updatedAt || post.publishedAt)?.toISOString?.(),
+      publishedTime: publishedIso,
+      modifiedTime: modifiedIso,
       images: [
         {
           url: pageImage,
@@ -82,6 +85,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: post.seo?.ogTitle || pageTitle,
       description: post.seo?.ogDescription || pageDesc,
       images: [pageImage]
+    },
+    other: {
+      "article:published_time": publishedIso,
+      "article:modified_time": modifiedIso,
+      "publish-date": publishedIso,
+      "date": publishedIso,
     }
   };
 }
@@ -278,6 +287,35 @@ export default async function BlogPostPage({ params }: Props) {
     processedContent = processedContent.replace(originalTag, newTag);
   }
 
+  const publishedIso = post.publishedAt ? new Date(post.publishedAt).toISOString() : (post.createdAt ? new Date(post.createdAt).toISOString() : new Date().toISOString());
+  const modifiedIso = post.updatedAt ? new Date(post.updatedAt).toISOString() : publishedIso;
+
+  const blogJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": post.title,
+    "description": post.seo?.metaDescription || post.excerpt || "",
+    "image": post.seo?.ogImage || post.featuredImage || "/portfolio_hero_bg.png",
+    "datePublished": publishedIso,
+    "dateModified": modifiedIso,
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `${BASE_URL}/blogs/${post.slug}/`
+    },
+    "author": {
+      "@type": "Person",
+      "name": authorInfo.name || "Mohsin Designs"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": siteBrandName,
+      "logo": {
+        "@type": "ImageObject",
+        "url": `${BASE_URL}/portfolio_hero_bg.png`
+      }
+    }
+  };
+
   processedContent = makeLinksDoFollow(processedContent);
 
   return (
@@ -286,6 +324,14 @@ export default async function BlogPostPage({ params }: Props) {
       {post.faqSchemaMarkup && (
         <CustomSchemaMarkup schema={post.faqSchemaMarkup} />
       )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogJsonLd) }}
+      />
+      <meta property="article:published_time" content={publishedIso} />
+      <meta property="article:modified_time" content={modifiedIso} />
+      <meta itemProp="datePublished" content={publishedIso} />
+      <meta itemProp="dateModified" content={modifiedIso} />
       <ReadingProgress />
 
       {/* ── 1. HERO SECTION WITH FULL BLEED BACKGROUND ────────────────── */}
@@ -337,7 +383,7 @@ export default async function BlogPostPage({ params }: Props) {
 
             <span className="inline-flex items-center gap-1.5 text-brand-zinc-500 dark:text-zinc-400 font-medium">
               <Calendar className="w-3.5 h-3.5 text-brand-blue dark:text-brand-yellow" />
-              {formattedDate}
+              <time dateTime={publishedIso} itemProp="datePublished">{formattedDate}</time>
             </span>
 
             <span className="inline-flex items-center gap-1.5 font-mono font-bold text-brand-blue dark:text-brand-yellow">

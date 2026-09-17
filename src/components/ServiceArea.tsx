@@ -113,8 +113,8 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
                     whileTap={{ scale: 0.96 }}
                     className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-bold tracking-wide transition-all duration-200 cursor-pointer select-none focus:outline-none ${
                       isActive
-                        ? "border-[#0306AC] dark:border-[#E9BD36] bg-[#EFF6FF] dark:bg-[#E9BD36]/10 text-[#0306AC] dark:text-[#E9BD36] shadow-sm"
-                        : "border-slate-200 dark:border-white/10 text-slate-600 dark:text-zinc-400 hover:border-[#0306AC] dark:hover:border-[#E9BD36] hover:text-[#0306AC] dark:hover:text-[#E9BD36]"
+                        ? "border-[#0306AC] dark:border-[#E9BD36] bg-[#EFF6FF] dark:bg-[#E9BD36]/15 text-[#0306AC] dark:text-[#E9BD36] shadow-sm"
+                        : "border-slate-200 dark:border-white/10 text-slate-700 dark:text-zinc-300 hover:border-[#0306AC] dark:hover:border-[#E9BD36] hover:bg-[#EFF6FF] dark:hover:bg-[#E9BD36]/10 hover:text-[#0306AC] dark:hover:text-[#E9BD36]"
                     }`}
                     aria-pressed={isActive}
                   >
@@ -128,7 +128,7 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
                     />
                     <span>{hub.name}</span>
                     {hub.link && (
-                      <ArrowUpRight className={`h-2.5 w-2.5 opacity-60 ${isActive ? 'opacity-100 text-primary dark:text-[#E9BD36]' : ''}`} />
+                      <ArrowUpRight className={`h-2.5 w-2.5 opacity-60 ${isActive ? 'opacity-100 text-[#0306AC] dark:text-[#E9BD36]' : ''}`} />
                     )}
                   </motion.button>
                 );
@@ -147,13 +147,23 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
                     transition={{ duration: 0.2, ease: "easeOut" }}
                     className="w-full flex items-center gap-3.5 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#161622] px-4 py-2.5 shadow-lg shadow-slate-900/5 dark:shadow-black/40 transition-colors"
                   >
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-white dark:bg-[#E9BD36] dark:text-[#080710] shadow-sm transition-colors">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#0306AC] text-white dark:bg-[#E9BD36] dark:text-[#080710] shadow-sm transition-colors">
                       <MapPin className="h-4 w-4" strokeWidth={2.5} />
                     </div>
                     <div className="min-w-0 flex-1 text-left">
-                      <p className="truncate text-xs font-black text-slate-900 dark:text-white leading-tight">
-                        {selectedHubObj.name}
-                      </p>
+                      {selectedHubObj.link ? (
+                        <a
+                          href={selectedHubObj.link}
+                          className="truncate text-xs font-black text-slate-900 dark:text-white hover:text-[#0306AC] dark:hover:text-[#E9BD36] transition-colors leading-tight inline-flex items-center gap-1"
+                        >
+                          <span>{selectedHubObj.name}</span>
+                          <ArrowUpRight className="h-3 w-3 opacity-70" />
+                        </a>
+                      ) : (
+                        <p className="truncate text-xs font-black text-slate-900 dark:text-white leading-tight">
+                          {selectedHubObj.name}
+                        </p>
+                      )}
                       <p className="truncate text-[11px] font-semibold text-slate-500 dark:text-slate-400 leading-normal">
                         {selectedHubObj.focus}
                       </p>
@@ -162,15 +172,6 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
                       <span className="text-[10px] font-mono font-bold tracking-wider text-[#0306AC] dark:text-[#E9BD36] uppercase whitespace-nowrap bg-[#EFF6FF] dark:bg-white/10 border border-[#0306AC]/20 dark:border-[#E9BD36]/20 px-2.5 py-1 rounded-lg">
                         {selectedHubObj.timezone}
                       </span>
-                      {selectedHubObj.link && (
-                        <a
-                          href={selectedHubObj.link}
-                          className="inline-flex items-center gap-1 text-[11px] font-bold text-white bg-primary hover:bg-primary/90 dark:bg-[#E9BD36] dark:text-black dark:hover:bg-[#E9BD36]/90 px-3 py-1 rounded-lg transition-all shadow-sm group/link cursor-pointer"
-                        >
-                          <span>Explore</span>
-                          <ArrowRight className="h-3 w-3 group-hover/link:translate-x-0.5 transition-transform" />
-                        </a>
-                      )}
                     </div>
                   </motion.div>
                 ) : (
@@ -186,13 +187,13 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
               </AnimatePresence>
             </div>
 
-            {/* Solid CTA Button (Contrasting White text with no hover bleeding) */}
+            {/* Solid CTA Button */}
             <a
               href={ctaHref}
-              className="inline-flex items-center justify-center gap-2.5 rounded-xl bg-primary hover:bg-primary/90 !text-white active:scale-95 px-6 py-3.5 text-xs sm:text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-xl transition-all self-center lg:self-start group cursor-pointer"
+              className="inline-flex items-center justify-center gap-2.5 rounded-xl bg-[#0306AC] hover:bg-[#020485] !text-white dark:bg-[#E9BD36] dark:hover:bg-yellow-400 dark:!text-[#080710] active:scale-95 px-6 py-3.5 text-xs sm:text-sm font-bold shadow-lg shadow-[#0306AC]/25 dark:shadow-[#E9BD36]/20 hover:shadow-xl transition-all self-center lg:self-start group cursor-pointer"
             >
-              <span className="!text-white font-bold">{ctaText}</span>
-              <ArrowRight className="h-4 w-4 !text-white group-hover:translate-x-1 transition-transform" />
+              <span className="!text-white dark:!text-[#080710] font-bold">{ctaText}</span>
+              <ArrowRight className="h-4 w-4 !text-white dark:!text-[#080710] group-hover:translate-x-1 transition-transform" />
             </a>
           </div>
 

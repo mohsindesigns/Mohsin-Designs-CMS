@@ -48,30 +48,22 @@ export default function StateTemplate({ pageData, params }: { pageData?: any; pa
       {/* 2. About The Owner (Clean - No stats, No CTA button) */}
       {(content.about?.enabled !== false && content.aboutOwner?.enabled !== false) && 
         (hasContent(content.about || content.aboutOwner)) && (
-        <section id="about">
-          <AboutOwnerClean data={content.about || content.aboutOwner} />
-        </section>
+        <AboutOwnerClean data={content.about || content.aboutOwner} />
       )}
 
       {/* 3. Services Section */}
       {content.services?.enabled !== false && hasContent(content.services) && (
-        <section id="services">
-          <Services data={content.services} masterCatalog={content.globalServices} />
-        </section>
+        <Services data={content.services} masterCatalog={content.globalServices} />
       )}
 
       {/* 3.5 Industries We Serve */}
       {(content.industries?.enabled !== false && content.domainExpertise?.enabled !== false) && (
-        <section id="industries">
-          <IndustriesSection data={content.industries || content.domainExpertise} />
-        </section>
+        <IndustriesSection data={content.industries || content.domainExpertise} />
       )}
 
       {/* 3. Selected Portfolio Projects */}
       {content.portfolio?.enabled !== false && hasContent(content.portfolio) && (
-        <section id="portfolio">
-          <Portfolio data={content.portfolio} />
-        </section>
+        <Portfolio data={content.portfolio} />
       )}
 
       {/* 4. Reviews / Testimonials */}
@@ -83,30 +75,24 @@ export default function StateTemplate({ pageData, params }: { pageData?: any; pa
       {/* 5. How We Work / Value Props */}
       {(content.whyChooseUs?.enabled !== false && content.howWeWork?.enabled !== false) && 
         (hasContent(content.whyChooseUs || content.howWeWork)) && (
-        <section id="how-we-work">
-          <HowWeWork data={content.whyChooseUs || content.howWeWork} />
-        </section>
+        <HowWeWork data={content.whyChooseUs || content.howWeWork} />
       )}
 
       {/* 6. Service Area (State & Metro cities) */}
       {content.serviceArea?.enabled !== false && hasContent(content.serviceArea) && (
-        <section id="service-area">
-          <ServiceArea data={content.serviceArea} />
-        </section>
+        <ServiceArea data={content.serviceArea} />
       )}
 
       {/* 7. FAQ Section */}
       {(content.faqs?.enabled !== false && content.faqSection?.enabled !== false) && hasContent(content.faqs) && (
-        <section id="faq">
-          <PageInlineFaqs
-            faqs={content.faqs}
-            faqSchemaMarkup={content.faqSchemaMarkup}
-            badge={content.faqBadge}
-            title={content.faqTitleHighlight || content.faqTitle}
-            description={content.faqDescription}
-            data={content}
-          />
-        </section>
+        <PageInlineFaqs
+          faqs={content.faqs}
+          faqSchemaMarkup={content.faqSchemaMarkup}
+          badge={content.faqBadge}
+          title={content.faqTitleHighlight || content.faqTitle}
+          description={content.faqDescription}
+          data={content}
+        />
       )}
 
       {/* 8. Blog Section */}
@@ -123,9 +109,7 @@ export default function StateTemplate({ pageData, params }: { pageData?: any; pa
       {/* 9. CTA Contact Form */}
       {(content.contact?.enabled !== false && content.quote?.enabled !== false) && 
         (hasContent(content.contact) || hasContent(content.quote)) && (
-        <section id="contact">
-          <ContactForm data={content.contact} />
-        </section>
+        <ContactForm data={content.contact} />
       )}
     </div>
   );

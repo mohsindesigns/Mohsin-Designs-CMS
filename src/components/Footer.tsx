@@ -121,20 +121,20 @@ export default function Footer() {
             {(footer?.company?.description || footer?.description) && (
               <RichTextRenderer
                 content={footer?.company?.description || footer?.description}
-                className="text-xs md:text-sm text-brand-zinc-300 leading-relaxed max-w-xs font-semibold"
+                className="text-xs md:text-sm text-slate-300 dark:text-zinc-300 [&_*]:!text-slate-300 dark:[&_*]:!text-zinc-300 leading-relaxed max-w-xs font-medium"
                 stripParagraphs
               />
             )}
             
             <div className="flex flex-col gap-1.5 pt-1">
-              <div className="flex items-center gap-2 text-[9px] font-mono tracking-widest text-brand-zinc-400">
+              <div className="flex items-center gap-2 text-[9px] font-mono tracking-widest text-slate-300 dark:text-zinc-400">
                 <span className="relative flex h-1.5 w-1.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
                 </span>
                 {footer?.studioStatus}
               </div>
-              <span className="text-[9px] font-mono text-brand-zinc-500 tracking-wider">
+              <span className="text-[9px] font-mono text-slate-400 dark:text-zinc-400 tracking-wider">
                 {footer?.coordinates}
               </span>
             </div>
@@ -148,7 +148,7 @@ export default function Footer() {
                   aria-label={link.ariaLabel}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 border border-white/10 text-brand-zinc-300 hover:bg-brand-blue hover:text-white dark:hover:text-[#080710] hover:border-brand-blue transition-all duration-300 shadow-sm"
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 border border-white/10 text-slate-300 hover:bg-brand-yellow hover:text-[#080710] dark:hover:bg-brand-yellow dark:hover:text-[#080710] hover:border-brand-yellow transition-all duration-300 shadow-sm"
                 >
                   {socialIcons[link.name] || <ArrowRight className="h-4 w-4" />}
                 </a>
@@ -161,10 +161,10 @@ export default function Footer() {
             <p className="font-mono font-bold text-[10px] uppercase tracking-widest text-brand-yellow">
               {footer?.labelQuickLinks || "Navigation"}
             </p>
-            <ul className="space-y-2.5 text-xs md:text-sm font-semibold text-brand-zinc-300">
+            <ul className="space-y-2.5 text-xs md:text-sm font-semibold text-slate-300 dark:text-zinc-300">
               {quickLinks.map((link: any, idx: number) => (
                 <li key={idx}>
-                  <Link href={link.href} className="inline-block hover:text-brand-yellow dark:hover:text-brand-blue hover:translate-x-1 transition-all duration-200">
+                  <Link href={link.href} className="inline-block hover:text-brand-yellow dark:hover:text-brand-yellow hover:translate-x-1 transition-all duration-200">
                     {link.name}
                   </Link>
                 </li>
@@ -177,10 +177,10 @@ export default function Footer() {
             <p className="font-mono font-bold text-[10px] uppercase tracking-widest text-brand-yellow">
               {footer?.labelServices || "Services"}
             </p>
-            <ul className="space-y-2.5 text-xs md:text-sm font-semibold text-brand-zinc-300">
+            <ul className="space-y-2.5 text-xs md:text-sm font-semibold text-slate-300 dark:text-zinc-300">
               {servicesList.map((item: any, idx: number) => (
                 <li key={idx}>
-                  <span className="inline-block hover:text-brand-yellow dark:hover:text-brand-blue hover:translate-x-1 transition-all duration-200 cursor-default">
+                  <span className="inline-block hover:text-brand-yellow dark:hover:text-brand-yellow hover:translate-x-1 transition-all duration-200 cursor-default">
                     {item}
                   </span>
                 </li>
@@ -193,25 +193,25 @@ export default function Footer() {
             <p className="font-mono font-bold text-[10px] uppercase tracking-widest text-brand-yellow">
               {footer?.labelContactInfo || "Contact Info"}
             </p>
-            <ul className="space-y-4 text-xs md:text-sm font-semibold text-brand-zinc-300">
+            <ul className="space-y-4 text-xs md:text-sm font-semibold text-slate-300 dark:text-zinc-300">
               <li className="flex flex-col gap-1">
-                <span className="text-[8px] font-mono font-black text-brand-zinc-500 uppercase tracking-widest">{footer?.labelEmail || "Email"}</span>
+                <span className="text-[8px] font-mono font-black text-slate-400 dark:text-zinc-400 uppercase tracking-widest">{footer?.labelEmail || "Email"}</span>
                 {contact?.email && (
-                  <a href={`mailto:${contact.email}`} className="text-white hover:text-brand-yellow dark:hover:text-brand-blue transition-colors font-mono break-all xs:break-normal">
+                  <a href={`mailto:${contact.email}`} className="text-white hover:text-brand-yellow dark:hover:text-brand-yellow transition-colors font-mono break-all xs:break-normal">
                     {contact.email}
                   </a>
                 )}
               </li>
               <li className="flex flex-col gap-1">
-                <span className="text-[8px] font-mono font-black text-brand-zinc-500 uppercase tracking-widest">{footer?.labelPhone || "Phone"}</span>
+                <span className="text-[8px] font-mono font-black text-slate-400 dark:text-zinc-400 uppercase tracking-widest">{footer?.labelPhone || "Phone"}</span>
                 {contact?.phone && (
-                  <a href={`tel:${contact.phone.replace(/[^0-9+]/g, "")}`} className="text-white hover:text-brand-yellow dark:hover:text-brand-blue transition-colors font-mono break-all xs:break-normal">
+                  <a href={`tel:${contact.phone.replace(/[^0-9+]/g, "")}`} className="text-white hover:text-brand-yellow dark:hover:text-brand-yellow transition-colors font-mono break-all xs:break-normal">
                     {contact.phone}
                   </a>
                 )}
               </li>
               <li className="flex flex-col gap-1">
-                <span className="text-[8px] font-mono font-black text-brand-zinc-500 uppercase tracking-widest">{footer?.labelAddress || "Address"}</span>
+                <span className="text-[8px] font-mono font-black text-slate-400 dark:text-zinc-400 uppercase tracking-widest">{footer?.labelAddress || "Address"}</span>
                 <span className="text-white leading-relaxed">
                   {footer?.valueAddress}
                 </span>
@@ -224,7 +224,7 @@ export default function Footer() {
             <p className="font-mono font-bold text-[10px] uppercase tracking-widest text-brand-yellow">
               {footer?.labelNewsletter || "Newsletter"}
             </p>
-            <p className="text-xs text-brand-zinc-300 font-semibold leading-relaxed">
+            <p className="text-xs text-slate-300 dark:text-zinc-300 font-medium leading-relaxed">
               {footer?.newsletterDesc}
             </p>
             
@@ -240,12 +240,12 @@ export default function Footer() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-transparent px-3 py-2.5 text-xs text-white focus:outline-none placeholder-brand-zinc-400 font-semibold"
+                    className="w-full bg-transparent px-3 py-2.5 text-xs text-white focus:outline-none placeholder:text-slate-400 dark:placeholder:text-zinc-500 font-medium"
                     placeholder={footer?.newsletterPlaceholder || "Your email"}
                   />
                   <button
                     type="submit"
-                    className="bg-brand-blue text-white dark:text-brand-dark px-3.5 flex items-center justify-center hover:bg-brand-yellow hover:text-brand-dark dark:hover:text-white transition-colors duration-300 cursor-pointer"
+                    className="bg-brand-blue text-white dark:bg-brand-yellow dark:text-[#080710] px-3.5 flex items-center justify-center hover:bg-brand-yellow hover:text-[#080710] dark:hover:bg-yellow-300 transition-colors duration-300 cursor-pointer"
                     aria-label={footer?.ariaSubscribe || "Subscribe"}
                   >
                     <ArrowRight className="h-4 w-4" />
@@ -256,7 +256,7 @@ export default function Footer() {
                   key="success"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="block text-xs font-bold text-brand-yellow dark:text-brand-blue"
+                  className="block text-xs font-bold text-brand-yellow"
                 >
                   {footer?.newsletterSuccess || "Subscribed successfully!"}
                 </motion.span>
@@ -284,7 +284,7 @@ export default function Footer() {
               className={`inline-block transition-all duration-300 cursor-default hover:scale-110 ${
                 idx >= 7 
                   ? "text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.28)] dark:[-webkit-text-stroke:1px_rgba(255,255,255,0.12)] hover:[-webkit-text-stroke:1px_#E9BD36] pointer-events-auto" 
-                  : "text-white/20 dark:text-white/[0.06] hover:text-brand-yellow dark:hover:text-brand-blue pointer-events-auto"
+                  : "text-white/20 dark:text-white/[0.06] hover:text-brand-yellow dark:hover:text-brand-yellow pointer-events-auto"
               }`}
             >
               {letter === " " ? "\u00A0" : letter}
@@ -295,24 +295,24 @@ export default function Footer() {
  
       {/* Bottom Bar */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 pt-10 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-white/5">
-        <p className="text-[10px] font-bold text-brand-zinc-500 dark:text-brand-zinc-400 uppercase tracking-widest text-center md:text-left">
+        <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-widest text-center md:text-left">
           {footer?.copyrightPrefix}{currentYear}{footer?.copyrightSuffix}
         </p>
         
         <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full md:w-auto justify-between md:justify-end">
-          <div className="flex gap-4 sm:gap-6 text-[10px] font-bold text-brand-zinc-500 dark:text-brand-zinc-400 uppercase tracking-wider">
+          <div className="flex gap-4 sm:gap-6 text-[10px] font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-wider">
             {footer?.privacyHref && (
-              <Link href={footer.privacyHref} className="hover:text-brand-yellow dark:hover:text-brand-blue transition-colors">{footer.privacyText}</Link>
+              <Link href={footer.privacyHref} className="hover:text-brand-yellow dark:hover:text-brand-yellow transition-colors">{footer.privacyText}</Link>
             )}
             <span>{footer?.linkSeparator || "|"}</span>
             {footer?.termsHref && (
-              <Link href={footer.termsHref} className="hover:text-brand-yellow dark:hover:text-brand-blue transition-colors">{footer.termsText}</Link>
+              <Link href={footer.termsHref} className="hover:text-brand-yellow dark:hover:text-brand-yellow transition-colors">{footer.termsText}</Link>
             )}
           </div>
  
           <button
             onClick={scrollToTop}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 border border-white/10 text-brand-zinc-300 hover:bg-brand-yellow dark:hover:bg-brand-blue hover:text-[#080710] dark:hover:text-[#080710] hover:border-brand-yellow dark:hover:border-brand-blue transition-all duration-300 cursor-pointer shadow-sm hover:scale-105 active:scale-95"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 border border-white/10 text-slate-300 hover:bg-brand-yellow dark:hover:bg-brand-yellow hover:text-[#080710] dark:hover:text-[#080710] hover:border-brand-yellow dark:hover:border-brand-yellow transition-all duration-300 cursor-pointer shadow-sm hover:scale-105 active:scale-95"
             aria-label={footer?.ariaScrollTop || "Scroll to Top"}
           >
             <ArrowUp className="h-4 w-4" />

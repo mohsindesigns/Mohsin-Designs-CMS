@@ -5,7 +5,6 @@ import { Plus, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { useContent } from "@/hooks/useContent";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
-import CustomSchemaMarkup from "@/components/CustomSchemaMarkup";
 import { isSafeHref } from "@/lib/utils";
 
 interface FAQItem {
@@ -144,7 +143,6 @@ export default function PageInlineFaqs({
       id="faq"
       className="relative overflow-x-clip bg-white dark:bg-[#080710] py-24 md:py-32 border-t border-b border-slate-200 dark:border-white/10"
     >
-      {faqSchemaMarkup && <CustomSchemaMarkup schemaData={faqSchemaMarkup} />}
       {/* Decorative Soft Blur Orb */}
       <div className="absolute -left-32 top-1/3 h-96 w-96 rounded-full bg-primary/5 dark:bg-yellow-400/5 blur-3xl pointer-events-none" />
       <div className="absolute -right-32 bottom-1/3 h-96 w-96 rounded-full bg-primary/5 dark:bg-yellow-400/5 blur-3xl pointer-events-none" />
@@ -201,9 +199,11 @@ export default function PageInlineFaqs({
                   {strategyAudit.badge}
                 </span>
                 <div className="space-y-2">
-                  <h3 className="font-heading text-xl font-bold leading-tight text-white">
-                    {strategyAudit.title}
-                  </h3>
+                  {strategyAudit.title && strategyAudit.title.trim() && (
+                    <h3 className="font-heading text-xl font-bold leading-tight text-white">
+                      {strategyAudit.title}
+                    </h3>
+                  )}
                   <div className="text-white/80 dark:text-zinc-300 text-xs leading-relaxed font-sans">
                     <RichTextRenderer content={strategyAudit.desc} />
                   </div>
@@ -249,11 +249,13 @@ export default function PageInlineFaqs({
                       
                       <div className="space-y-1">
                         {/* Question */}
-                        <h3 className={`font-heading font-extrabold text-base sm:text-lg leading-snug transition-colors duration-300 pr-2 ${
-                          isOpen ? "text-primary dark:text-yellow-400" : "text-slate-900 dark:text-white group-hover:text-primary dark:group-hover:text-yellow-400"
-                        }`}>
-                          {f.question}
-                        </h3>
+                        {f.question && f.question.trim() && (
+                          <h3 className={`font-heading font-extrabold text-base sm:text-lg leading-snug transition-colors duration-300 pr-2 ${
+                            isOpen ? "text-primary dark:text-yellow-400" : "text-slate-900 dark:text-white group-hover:text-primary dark:group-hover:text-yellow-400"
+                          }`}>
+                            {f.question}
+                          </h3>
+                        )}
                       </div>
                     </div>
 

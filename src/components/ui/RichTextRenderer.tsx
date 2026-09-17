@@ -79,7 +79,13 @@ export default function RichTextRenderer({ content, className = "", stripParagra
       .replace(/background-color:\s*transparent;?/gi, '');
   };
 
-  sanitizedHtml = makeLinksDoFollow(unescapeLiteralTags(stripInlineColors(sanitizedHtml)));
+  // Helper to strip empty headings (e.g. <h3></h3> or <h3>&nbsp;</h3> or <h3><br></h3>)
+  const stripEmptyHeadings = (html: string) => {
+    if (!html || typeof html !== "string") return html;
+    return html.replace(/<h[1-6][^>]*>\s*(?:&nbsp;|<br\s*\/?>|\s*)*<\/h[1-6]>/gi, '');
+  };
+
+  sanitizedHtml = stripEmptyHeadings(makeLinksDoFollow(unescapeLiteralTags(stripInlineColors(sanitizedHtml))));
 
   // If stripParagraphs is true, remove all P tags (real or just unescaped)
   if (stripParagraphs) {
