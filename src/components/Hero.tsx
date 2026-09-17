@@ -170,7 +170,7 @@ export default function Hero({ data, content: overrideContent }: { data?: any; c
             {/* Headline */}
             <motion.h1
               variants={itemVariants}
-              className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold leading-[1.1] tracking-tight text-brand-dark dark:text-white select-none"
+              className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-[50px] font-semibold leading-[1.15] tracking-tight text-brand-dark dark:text-white select-none"
             >
               {titleLine1}
               {titleConnector && titleConnector.trim() ? ` ${titleConnector.trim()}` : ""}

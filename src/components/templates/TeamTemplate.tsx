@@ -149,7 +149,7 @@ export default function TeamTemplate({ pageData, params }: { pageData?: any, par
               <span className="text-[10px] sm:text-xs font-semibold tracking-[0.2em] uppercase text-blue-600">{teamData?.section?.badge || "Our Leadership"}</span>
               <div className="w-6 sm:w-8 h-[2px] bg-gradient-to-r from-blue-500 to-blue-300" />
             </div>
-            <h1 className="text-3xl min-[350px]:text-4xl sm:text-5xl lg:text-6xl font-light text-slate-900 mb-4 leading-tight">
+            <h1 className="text-3xl min-[350px]:text-4xl sm:text-4xl lg:text-[42px] font-light text-slate-900 mb-4 leading-tight">
               {teamData?.section?.headlinePrefix || teamData?.section?.headlineHighlight || teamData?.section?.headlineSuffix ? (
                 <>
                   {teamData.section.headlinePrefix} <br />

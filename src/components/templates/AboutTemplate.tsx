@@ -232,7 +232,7 @@ const Hero = ({ content: passedContent }: { content?: any }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           >
-            <h1 className="text-5xl xs:text-5xl sm:text-5xl md:text-7xl lg:text-[80px] xl:text-[100px] font-black leading-[1.05] sm:leading-[1.1] md:leading-[0.95] lg:leading-[0.85] tracking-tighter text-primary mb-4 sm:mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[50px] font-black leading-[1.15] tracking-tight text-primary mb-4 sm:mb-6">
               {hero.headline?.line1} <br />
               <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-foreground via-foreground/70 to-foreground/90">
                 {hero.headline?.line2}

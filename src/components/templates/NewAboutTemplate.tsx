@@ -293,7 +293,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   </div>
                 )}
 
-                <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.12] text-brand-dark dark:text-white max-w-xl">
+                <h1 className="font-heading text-3xl sm:text-4xl lg:text-[42px] font-black tracking-tight leading-[1.18] text-brand-dark dark:text-white max-w-xl">
                   {hero.titleIntro || "Architecting Digital Products With "}
                   <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1">
                     {hero.titleHighlight || "Zero Fluff & Pure Precision."}

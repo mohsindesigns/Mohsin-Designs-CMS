@@ -1064,7 +1064,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                   </span>
                 </nav>
 
-                <h1 className="font-heading text-3xl xs:text-4xl sm:text-5xl lg:text-[56px] font-black tracking-tight leading-[1.12] text-brand-dark dark:text-white max-w-2xl">
+                <h1 className="font-heading text-3xl xs:text-3xl sm:text-4xl lg:text-[40px] font-black tracking-tight leading-[1.18] text-brand-dark dark:text-white max-w-2xl">
                   {service.hero.titleIntro}{" "}
                   <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                     {service.hero.titleHighlight}

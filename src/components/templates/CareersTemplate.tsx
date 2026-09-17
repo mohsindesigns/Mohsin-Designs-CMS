@@ -121,7 +121,7 @@ ${message}
               <span className="text-xs font-medium tracking-[0.2em] uppercase text-blue-600">{careersData?.section?.badge || "Join Mohsin Designs"}</span>
               <div className="w-8 h-[2px] bg-gradient-to-r from-blue-500 to-blue-300" />
             </motion.div>
-            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-4xl md:text-7xl font-light text-slate-900 mb-6 leading-tight">
+            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-3xl sm:text-4xl md:text-[40px] lg:text-[44px] font-light text-slate-900 mb-6 leading-tight">
               {(() => {
                 const rawHeadline = careersData?.section?.headline || "Build the Future with Us";
                 const parts = rawHeadline.includes('with') ? rawHeadline.split('with') : [rawHeadline, ""];

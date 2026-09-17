@@ -247,7 +247,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
           </nav>
 
           {/* Page Title */}
-          <h1 className="text-4xl sm:text-7xl font-heading font-extrabold text-white tracking-tight leading-tight mb-6 drop-shadow-lg">
+          <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-heading font-extrabold text-white tracking-tight leading-tight mb-6 drop-shadow-lg">
             {hero.headline}
           </h1>
 

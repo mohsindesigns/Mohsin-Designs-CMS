@@ -392,7 +392,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                 </div>
               )}
 
-              <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-black leading-[1.12] tracking-tight text-brand-dark dark:text-white">
+              <h1 className="font-heading text-3xl sm:text-3xl md:text-[36px] lg:text-[40px] font-black leading-[1.18] tracking-tight text-brand-dark dark:text-white">
                 {hero.titleIntro}{" "}
                 <span className="relative inline-block text-[#0306AC] dark:text-[#E9BD36]">
                   <span className="font-serif italic font-normal">{hero.titleHighlight}</span>

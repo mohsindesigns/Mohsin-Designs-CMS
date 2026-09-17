@@ -68,7 +68,7 @@ export default function ReviewsTemplate({ pageData, params }: { pageData?: any, 
             <div className="max-w-6xl mx-auto px-4 text-center">
                 {section?.enabled !== false && (
                 <>
-                    <h1 className="text-4xl sm:text-7xl font-bold tracking-tight mb-4" dangerouslySetInnerHTML={{ __html: section?.headline || 'Customer Stories' }} />
+                    <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-bold tracking-tight mb-4" dangerouslySetInnerHTML={{ __html: section?.headline || 'Customer Stories' }} />
                     <div className="text-lg text-gray-600 max-w-xl mx-auto mb-12">
                         <RichTextRenderer content={section?.description} stripParagraphs={true} />
                     </div>
