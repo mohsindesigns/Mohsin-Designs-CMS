@@ -604,9 +604,12 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
               // and the only way to make the trailing-slash form canonical is the site-wide
               // trailingSlash:true config, which breaks /admin/login's client-side routing
               // (confirmed via testing). Nesting is still fixed below regardless.
-              const countryUrl = country.pageSlug
+              let cleanCountryUrl = country.pageSlug
                 ? (country.pageSlug.startsWith("/") ? country.pageSlug : `/${country.pageSlug}`)
                 : country.url || (country.slug ? (country.slug.startsWith("/") ? country.slug : `/${country.slug}`) : (country.id === "USA" ? "/usa" : `/${slugify(country.name)}`));
+              
+              if (!cleanCountryUrl.endsWith("/")) cleanCountryUrl += "/";
+              const countryUrl = cleanCountryUrl;
 
               const flagSrc = country.flag || (country.id === "USA" ? "/flag_usa.png" : country.id === "NZ" ? "/flag_nz.png" : "/flag_au.png");
               const coverImg = country.image || "/country_usa.png";
@@ -617,18 +620,14 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
                 statesList = country.states.map((st: any) => {
                   if (typeof st === "string") {
                     const sSlug = slugify(st);
-                    const targetUrl = countryUrl.endsWith("/") ? `${countryUrl}${sSlug}` : `${countryUrl}/${sSlug}`;
+                    const targetUrl = `${countryUrl}${sSlug}/`;
                     return { name: st, url: targetUrl };
                   }
                   const stName = st.name || "";
-                  // Always nest the state under its parent country's URL, regardless of what
-                  // was stored in pageSlug (a bare "texas", a full "usa/texas", or with a
-                  // leading/trailing slash) - prevents a state page from ever resolving
-                  // outside its country's path.
                   const stSlugSegment = st.pageSlug
                     ? st.pageSlug.split("/").filter(Boolean).pop()
                     : slugify(stName);
-                  const targetUrl = countryUrl.endsWith("/") ? `${countryUrl}${stSlugSegment}` : `${countryUrl}/${stSlugSegment}`;
+                  const targetUrl = `${countryUrl}${stSlugSegment}/`;
                   return { name: stName, url: targetUrl };
                 }).filter((s: any) => s.name);
               }

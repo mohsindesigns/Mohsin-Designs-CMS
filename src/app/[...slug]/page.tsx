@@ -8,10 +8,12 @@ import SiteContent from '@/models/Content';
 import { getTemplate } from '@/components/templates/TemplateRegistry';
 import { Metadata } from 'next';
 import CustomSchemaMarkup from '@/components/CustomSchemaMarkup';
+import LocationBreadcrumbs from '@/components/LocationBreadcrumbs';
 import { BASE_URL } from '@/lib/constants';
 import { resolveRobotsMetadata } from '@/lib/seo';
 import { getCachedPage, getCachedSiteContent } from '@/lib/content';
 import { getResolvedSchemaBlocks } from '@/lib/dynamicSchema';
+import { validateLocationHierarchy, buildLocationBreadcrumbs } from '@/lib/locationHierarchy';
 
 interface PageProps {
   params: Promise<{ slug: string[] }>;
@@ -25,7 +27,21 @@ function getAbsoluteUrl(path: string | undefined) {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const slug = resolvedParams.slug.join('/');
+  const slugSegments = resolvedParams.slug || [];
+  const slug = slugSegments.join('/');
+
+  // If 3 segments (likely country/state/city), perform strict hierarchy validation
+  if (slugSegments.length === 3) {
+    const check = await validateLocationHierarchy(slugSegments);
+    if (!check.valid) return {};
+  } else if (slugSegments.length === 2) {
+    const check = await validateLocationHierarchy(slugSegments);
+    if (!check.valid) {
+      // Check if it's a non-location 2-segment page
+      const pageCheck = await getCachedPage(slug);
+      if (pageCheck?.template === 'state') return {}; // Invalid state hierarchy
+    }
+  }
 
   const [page, globalData] = await Promise.all([
     getCachedPage(slug),
@@ -36,7 +52,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const isGlobalNoIndex = !!globalData?.settings?.globalNoIndex;
   const seo = page.seo || {};
-  const pageUrl = `${BASE_URL}/${slug}`;
+  const pageUrl = `${BASE_URL}/${slug}/`;
+  const canonicalUrl = seo.canonicalUrl
+    ? (seo.canonicalUrl.endsWith('/') ? seo.canonicalUrl : `${seo.canonicalUrl}/`)
+    : pageUrl;
 
   return {
     title: {
@@ -44,13 +63,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     description: seo.metaDescription,
     alternates: {
-      canonical: seo.canonicalUrl || pageUrl,
+      canonical: canonicalUrl,
     },
     robots: resolveRobotsMetadata(seo, isGlobalNoIndex),
     openGraph: {
       title: seo.ogTitle || seo.metaTitle || page.title,
       description: seo.ogDescription || seo.metaDescription,
-      url: pageUrl,
+      url: canonicalUrl,
       siteName: "Mohsin Designs",
       type: "website",
       images: [
@@ -75,7 +94,27 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function DynamicPage({ params }: PageProps) {
   const resolvedParams = await params;
-  const slug = resolvedParams.slug.join('/');
+  const slugSegments = resolvedParams.slug || [];
+  const slug = slugSegments.join('/');
+
+  // Strict location hierarchy validation:
+  // - 3 segments: must be a valid published city under that exact country and state
+  // - 2 segments: if template is state, must belong to that country
+  if (slugSegments.length === 3) {
+    const check = await validateLocationHierarchy(slugSegments);
+    if (!check.valid) {
+      notFound();
+    }
+  } else if (slugSegments.length === 2) {
+    const check = await validateLocationHierarchy(slugSegments);
+    if (!check.valid) {
+      // If it's a state template but failed hierarchy, return 404
+      const stateCheck = await getCachedPage(slug);
+      if (stateCheck?.template === 'state') {
+        notFound();
+      }
+    }
+  }
 
   const [pageDoc, globalDataRaw] = await Promise.all([
     getCachedPage(slug),
@@ -114,12 +153,15 @@ export default async function DynamicPage({ params }: PageProps) {
     }
   }
 
-  // Resolve dynamic schema: supports variable tokens and auto template-specific schema
+  // Resolve dynamic schema: supports variable tokens and custom schema
   const resolvedSchemaBlocks = getResolvedSchemaBlocks({
     page,
     globalData,
     slug
   });
+
+  // Build breadcrumbs for location or standard page
+  const breadcrumbs = buildLocationBreadcrumbs(page, slug);
 
   // Use TemplateWrapper to handle local content context overrides
   const { TemplateWrapper } = await import('@/components/templates/TemplateRegistry');
@@ -127,6 +169,9 @@ export default async function DynamicPage({ params }: PageProps) {
   return (
     <main>
       <CustomSchemaMarkup schema={resolvedSchemaBlocks} />
+      {breadcrumbs.length > 1 && (
+        <LocationBreadcrumbs items={breadcrumbs} className="border-b border-slate-100 dark:border-white/5" />
+      )}
       <TemplateWrapper
         templateName={page.template}
         pageData={{
@@ -142,4 +187,5 @@ export default async function DynamicPage({ params }: PageProps) {
     </main>
   );
 }
+
 

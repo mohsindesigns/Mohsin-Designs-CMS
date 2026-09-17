@@ -58,6 +58,7 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [showMediaSelector, setShowMediaSelector] = useState(false);
+  const [allPages, setAllPages] = useState<any[]>([]);
 
   useEffect(() => {
     fetchPage();
@@ -65,7 +66,14 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
 
   const fetchPage = async () => {
     try {
-      const res = await fetch(`/api/admin/pages/${id}`);
+      const [res, pagesRes] = await Promise.all([
+        fetch(`/api/admin/pages/${id}`),
+        fetch(`/api/admin/pages?t=${Date.now()}`)
+      ]);
+      if (pagesRes.ok) {
+        const pList = await pagesRes.json();
+        setAllPages(Array.isArray(pList) ? pList : []);
+      }
       if (res.ok) {
         const data = await res.json();
         // Normalize template name
@@ -159,7 +167,104 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
     }
   };
 
-  if (loading) return <div className="flex h-64 items-center justify-center text-[#646970] font-serif">Loading...</div>;
+  // Location Hierarchy helpers
+  const countryPages = allPages.filter(p => p.template === 'country' && !p.isTrashed);
+  const statePages = allPages.filter(p => p.template === 'state' && !p.isTrashed);
+
+  // Extract current location segments
+  const slugSegments = (page?.slug || '').split('/').filter(Boolean);
+  let currentCountrySlug = content?.countrySlug || '';
+  let currentStateSlug = content?.stateSlug || '';
+  let currentCitySlug = content?.citySlug || '';
+
+  if (page?.template === 'city') {
+    if (slugSegments.length >= 3) {
+      currentCountrySlug = currentCountrySlug || slugSegments[0];
+      currentStateSlug = currentStateSlug || slugSegments[1];
+      currentCitySlug = currentCitySlug || slugSegments.slice(2).join('/');
+    } else if (slugSegments.length === 2) {
+      currentStateSlug = currentStateSlug || slugSegments[0];
+      currentCitySlug = currentCitySlug || slugSegments[1];
+    } else if (slugSegments.length === 1) {
+      currentCitySlug = currentCitySlug || slugSegments[0];
+    }
+    if (!currentCountrySlug && countryPages.length > 0) {
+      currentCountrySlug = 'usa';
+    }
+  } else if (page?.template === 'state') {
+    if (slugSegments.length >= 2) {
+      currentCountrySlug = currentCountrySlug || slugSegments[0];
+      currentStateSlug = currentStateSlug || slugSegments.slice(1).join('/');
+    } else if (slugSegments.length === 1) {
+      currentStateSlug = currentStateSlug || slugSegments[0];
+    }
+    if (!currentCountrySlug && countryPages.length > 0) {
+      currentCountrySlug = 'usa';
+    }
+  }
+
+  // Filter states for selected country
+  const filteredStates = statePages.filter(s => {
+    if (!currentCountrySlug) return true;
+    if (s.slug.startsWith(`${currentCountrySlug}/`)) return true;
+    if (s.content?.countrySlug === currentCountrySlug) return true;
+    if (currentCountrySlug === 'usa' && !s.slug.includes('/') && s.slug !== 'nsw' && s.slug !== 'victoria' && s.slug !== 'queensland' && s.slug !== 'north-island') return true;
+    return false;
+  });
+
+  const updateCityHierarchy = (cSlug: string, sSlug: string, ciSlug: string) => {
+    const parentState = statePages.find(s => {
+      const seg = s.slug.split('/').pop();
+      return seg === sSlug;
+    });
+    const parentCountry = countryPages.find(c => c.slug === cSlug);
+
+    const cleanCi = (ciSlug || '').trim().toLowerCase().replace(/^\/+|\/+$/g, '');
+    const cleanS = (sSlug || '').trim().toLowerCase();
+    const cleanC = (cSlug || '').trim().toLowerCase();
+
+    const newSlug = cleanC && cleanS && cleanCi ? `${cleanC}/${cleanS}/${cleanCi}` : cleanCi;
+    const newCanonical = newSlug ? `${BASE_URL}/${newSlug}/` : '';
+
+    setPage((prev: any) => ({ ...prev, slug: newSlug }));
+    setContent((prev: any) => ({
+      ...prev,
+      countrySlug: cleanC,
+      country: parentCountry?.title || cleanC.toUpperCase(),
+      stateSlug: cleanS,
+      state: parentState?.title || cleanS,
+      citySlug: cleanCi,
+      city: page?.title || cleanCi,
+      parentLocationId: parentState?._id || prev?.parentLocationId
+    }));
+    setSeo((prev: any) => ({
+      ...prev,
+      canonicalUrl: newCanonical
+    }));
+  };
+
+  const updateStateHierarchy = (cSlug: string, sSlug: string) => {
+    const parentCountry = countryPages.find(c => c.slug === cSlug);
+    const cleanS = (sSlug || '').trim().toLowerCase().replace(/^\/+|\/+$/g, '');
+    const cleanC = (cSlug || '').trim().toLowerCase();
+
+    const newSlug = cleanC && cleanS ? `${cleanC}/${cleanS}` : cleanS;
+    const newCanonical = newSlug ? `${BASE_URL}/${newSlug}/` : '';
+
+    setPage((prev: any) => ({ ...prev, slug: newSlug }));
+    setContent((prev: any) => ({
+      ...prev,
+      countrySlug: cleanC,
+      country: parentCountry?.title || cleanC.toUpperCase(),
+      stateSlug: cleanS,
+      state: page?.title || cleanS,
+      parentLocationId: parentCountry?._id || prev?.parentLocationId
+    }));
+    setSeo((prev: any) => ({
+      ...prev,
+      canonicalUrl: newCanonical
+    }));
+  };
 
   return (
     <div className="bg-[#f0f0f1] font-sans pb-10 max-w-full overflow-hidden">
@@ -657,6 +762,99 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
                   {EDITOR_TEMPLATES.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
                 </select>
               </div>
+
+              {/* City Hierarchy Controls */}
+              {page.template === 'city' && (
+                <div className="pt-2 border-t border-[#f0f0f1] space-y-2.5">
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-semibold text-[#1d2327]">Country</label>
+                    <select
+                      value={currentCountrySlug}
+                      onChange={(e) => updateCityHierarchy(e.target.value, currentStateSlug, currentCitySlug)}
+                      className="w-full border border-[#8c8f94] bg-white px-2 py-1 text-[12px] rounded-[3px] outline-none focus:border-[#2271b1]"
+                    >
+                      <option value="">Select Country...</option>
+                      {countryPages.map((c) => (
+                        <option key={c._id} value={c.slug}>{c.title} ({c.slug})</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-semibold text-[#1d2327]">State / Region</label>
+                    <select
+                      value={currentStateSlug}
+                      onChange={(e) => updateCityHierarchy(currentCountrySlug, e.target.value, currentCitySlug)}
+                      className="w-full border border-[#8c8f94] bg-white px-2 py-1 text-[12px] rounded-[3px] outline-none focus:border-[#2271b1]"
+                    >
+                      <option value="">Select State...</option>
+                      {filteredStates.map((s) => {
+                        const stateSegment = s.slug.includes('/') ? s.slug.split('/').pop() : s.slug;
+                        return (
+                          <option key={s._id} value={stateSegment}>
+                            {s.title} ({stateSegment})
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-semibold text-[#1d2327]">City Slug Segment</label>
+                    <input
+                      type="text"
+                      value={currentCitySlug}
+                      onChange={(e) => updateCityHierarchy(currentCountrySlug, currentStateSlug, e.target.value)}
+                      placeholder="e.g. fort-worth"
+                      className="w-full border border-[#8c8f94] bg-white px-2 py-1 text-[12px] rounded-[3px] outline-none focus:border-[#2271b1]"
+                    />
+                  </div>
+
+                  <div className="p-2 bg-[#f6f7f7] border border-[#dcdcde] rounded text-[11px] text-[#50575e] space-y-1">
+                    <span className="font-semibold block text-[#1d2327]">Full Canonical URL:</span>
+                    <span className="font-mono text-[10px] break-all text-[#2271b1] font-bold">
+                      {BASE_URL}/{currentCountrySlug || 'country'}/{currentStateSlug || 'state'}/{currentCitySlug || 'city'}/
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* State Hierarchy Controls */}
+              {page.template === 'state' && (
+                <div className="pt-2 border-t border-[#f0f0f1] space-y-2.5">
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-semibold text-[#1d2327]">Country</label>
+                    <select
+                      value={currentCountrySlug}
+                      onChange={(e) => updateStateHierarchy(e.target.value, currentStateSlug)}
+                      className="w-full border border-[#8c8f94] bg-white px-2 py-1 text-[12px] rounded-[3px] outline-none focus:border-[#2271b1]"
+                    >
+                      <option value="">Select Country...</option>
+                      {countryPages.map((c) => (
+                        <option key={c._id} value={c.slug}>{c.title} ({c.slug})</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-semibold text-[#1d2327]">State Slug Segment</label>
+                    <input
+                      type="text"
+                      value={currentStateSlug}
+                      onChange={(e) => updateStateHierarchy(currentCountrySlug, e.target.value)}
+                      placeholder="e.g. texas"
+                      className="w-full border border-[#8c8f94] bg-white px-2 py-1 text-[12px] rounded-[3px] outline-none focus:border-[#2271b1]"
+                    />
+                  </div>
+
+                  <div className="p-2 bg-[#f6f7f7] border border-[#dcdcde] rounded text-[11px] text-[#50575e] space-y-1">
+                    <span className="font-semibold block text-[#1d2327]">Full Canonical URL:</span>
+                    <span className="font-mono text-[10px] break-all text-[#2271b1] font-bold">
+                      {BASE_URL}/{currentCountrySlug || 'country'}/{currentStateSlug || 'state'}/
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
