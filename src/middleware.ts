@@ -130,13 +130,14 @@ export async function middleware(req: NextRequest) {
 
   // 2. Only run authentication on /admin routes
   if (pathname.startsWith('/admin')) {
+    const cleanAdminPath = pathname.replace(/\/+$/, '');
     // Allow login page through without auth
-    if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) return NextResponse.next();
+    if (PUBLIC_PATHS.some((p) => cleanAdminPath === p || cleanAdminPath.startsWith(p) || pathname.startsWith(p))) return NextResponse.next();
 
     // Check for session cookie
     const session = req.cookies.get(ADMIN_COOKIE);
     if (!session?.value) {
-      const loginUrl = new URL('/admin/login', req.url);
+      const loginUrl = new URL('/admin/login/', req.url);
       loginUrl.searchParams.set('from', pathname);
       return NextResponse.redirect(loginUrl);
     }
@@ -149,7 +150,7 @@ export async function middleware(req: NextRequest) {
       }
       return NextResponse.next();
     } catch (error) {
-      const loginUrl = new URL('/admin/login', req.url);
+      const loginUrl = new URL('/admin/login/', req.url);
       const res = NextResponse.redirect(loginUrl);
       res.cookies.delete(ADMIN_COOKIE);
       return res;

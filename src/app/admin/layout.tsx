@@ -38,12 +38,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const router = useRouter();
 
-  const isPublicPath = pathname === "/admin/login" || pathname === "/admin/forgot-password" || pathname?.startsWith("/admin/reset-password");
+  const cleanPath = (pathname || "").replace(/\/+$/, "");
+  const isPublicPath = cleanPath === "/admin/login" || cleanPath === "/admin/forgot-password" || cleanPath.startsWith("/admin/reset-password");
 
   useEffect(() => {
     document.title = "Mohsin Designs Admin Dashboard";
 
-    if (isPublicPath) {
+    if (isPublicPath || cleanPath.startsWith("/admin/login")) {
       setLoading(false);
       return;
     }
@@ -59,8 +60,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     fetch("/api/admin/me", { credentials: "include", cache: "no-store" })
       .then(async res => {
         if (res.status === 401) {
-          if (isMounted) {
-            window.location.href = "/admin/login?from=" + encodeURIComponent(pathname);
+          if (isMounted && !cleanPath.startsWith("/admin/login")) {
+            window.location.href = "/admin/login/?from=" + encodeURIComponent(pathname);
           }
           return null;
         }
@@ -72,7 +73,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       .then(data => {
         if (!data || !isMounted) return;
         if (data.error) {
-          window.location.href = "/admin/login?from=" + encodeURIComponent(pathname);
+          if (!cleanPath.startsWith("/admin/login")) {
+            window.location.href = "/admin/login/?from=" + encodeURIComponent(pathname);
+          }
         } else {
           setUser(data);
         }
@@ -102,7 +105,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return () => {
       isMounted = false;
     };
-  }, [pathname, isPublicPath]);
+  }, [pathname, isPublicPath, cleanPath]);
 
   if (isPublicPath) return <>{children}</>;
   if (loading) return <div className="h-screen flex items-center justify-center bg-[#f0f0f1]"><Loader2 className="w-6 h-6 animate-spin text-[#2271b1]" /></div>;
@@ -161,9 +164,11 @@ function Sidebar({ user, navItems, onClose, isMobile }: { user: any, navItems: a
     try {
       await fetch("/api/admin/logout", { method: "POST" });
     } finally {
-      window.location.href = "/admin/login";
+      window.location.href = "/admin/login/";
     }
   };
+
+  const cleanPath = (pathname || "").replace(/\/+$/, "") || "/";
 
   return (
     <>
@@ -175,7 +180,8 @@ function Sidebar({ user, navItems, onClose, isMobile }: { user: any, navItems: a
         <nav className="flex-1 flex flex-col py-1 overflow-visible">
           <div className="flex-1 overflow-visible">
             {navItems.map((item) => {
-              const active = pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href));
+              const itemPath = item.href.replace(/\/+$/, "") || "/";
+              const active = cleanPath === itemPath || (itemPath !== "/admin" && cleanPath.startsWith(itemPath));
               const Icon = item.icon;
               return (
                 <div key={item.href} className="relative group">
