@@ -1577,10 +1577,10 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
                           <label className={UI.label}>Link URL (optional)</label>
                           <input
                             type="text"
-                            value={ind.link || ""}
+                            value={ind.link || ind.href || ind.url || ""}
                             onChange={(e) => {
                               const list = [...(data.industries?.list || [])];
-                              list[idx] = { ...list[idx], link: e.target.value };
+                              list[idx] = { ...list[idx], link: e.target.value, href: e.target.value, url: e.target.value };
                               updateSection("industries", "list", list);
                             }}
                             className={UI.input}

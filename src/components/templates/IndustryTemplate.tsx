@@ -748,7 +748,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                           domain.title
                         )}
                       </h3>
-                      <div className="text-xs sm:text-sm text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed relative z-20">
+                      <div className="text-xs sm:text-sm text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed relative z-20 pointer-events-none [&_a]:pointer-events-auto">
                         <RichTextRenderer content={domain.desc || domain.description || ""} />
                       </div>
                     </div>

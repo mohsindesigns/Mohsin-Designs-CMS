@@ -697,10 +697,12 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                         <input
                           type="text"
                           autoComplete="off"
-                          value={dom.link || ""}
+                          value={dom.link || dom.href || dom.url || ""}
                           onChange={(e) => {
                             const n = [...data.domainExpertise.domains];
                             n[i].link = e.target.value;
+                            n[i].href = e.target.value;
+                            n[i].url = e.target.value;
                             updateSection("domainExpertise", "domains", n);
                           }}
                           className={UI.input}
@@ -731,7 +733,7 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                     </div>
                   ))}
                 </div>
-                <button onClick={() => updateSection("domainExpertise", "domains", [...(data.domainExpertise?.domains || []), { id: `0${(data.domainExpertise?.domains || []).length + 1}`, title: "New Domain", desc: "", iconName: "Building2", tags: [], link: "" }])} className={UI.buttonAdd}>+ Add Domain</button>
+                <button onClick={() => updateSection("domainExpertise", "domains", [...(data.domainExpertise?.domains || []), { id: `0${(data.domainExpertise?.domains || []).length + 1}`, title: "New Domain", desc: "", iconName: "Building2", tags: [], link: "", href: "", url: "" }])} className={UI.buttonAdd}>+ Add Domain</button>
               </div>
             </div>
           )}

@@ -2316,10 +2316,10 @@ export default function ServicesAdminPage() {
                                           <label className={UI.label}>Link URL (optional)</label>
                                           <input
                                             type="text"
-                                            value={item.link || ""}
+                                            value={item.link || item.href || item.url || ""}
                                             onChange={(e) => {
                                               const currentItems = [...(form.industries.items || form.industries.list || [])];
-                                              currentItems[idx] = { ...currentItems[idx], link: e.target.value };
+                                              currentItems[idx] = { ...currentItems[idx], link: e.target.value, href: e.target.value, url: e.target.value };
                                               setForm({ ...form, industries: { ...form.industries, items: currentItems, list: currentItems } });
                                             }}
                                             className={UI.input}
@@ -2345,7 +2345,7 @@ export default function ServicesAdminPage() {
                                       type="button"
                                       onClick={() => {
                                         const currentItems = [...(form.industries?.items || form.industries?.list || [])];
-                                        currentItems.push({ name: "New Industry Sector", title: "New Industry Sector", desc: "Description...", icon: "Cpu", iconName: "Cpu" });
+                                        currentItems.push({ name: "New Industry Sector", title: "New Industry Sector", desc: "Description...", icon: "Cpu", iconName: "Cpu", link: "", href: "", url: "" });
                                         setForm({ ...form, industries: { ...form.industries, items: currentItems, list: currentItems } });
                                       }}
                                       className={UI.buttonAdd}

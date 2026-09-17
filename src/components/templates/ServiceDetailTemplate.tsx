@@ -725,18 +725,19 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               title: title,
               desc: ind.desc || ind.description || "",
               iconName: ind.iconName || ind.icon || "Building2",
-              watermark: autoAbbr,
+              watermark: ind.watermark || autoAbbr,
               footerLeft: ind.footerLeft || "",
-              footerRight: ind.footerRight || ""
+              footerRight: ind.footerRight || "",
+              link: ind.link || ind.href || ind.url || ""
             };
           });
         }
 
         return [
-          { title: "Home Services & Contracting", desc: "Roofing, decking, remodeling, and local trade contractors scaling regional territories.", iconName: "Building2", watermark: "HS", footerLeft: "", footerRight: "" },
-          { title: "Technology & SaaS", desc: "Fast-growth software startups and tech firms demanding high conversion rates.", iconName: "Cpu", watermark: "TS", footerLeft: "", footerRight: "" },
-          { title: "Commercial Real Estate", desc: "Property developers, architectural firms, and luxury real estate agencies.", iconName: "Building2", watermark: "CR", footerLeft: "", footerRight: "" },
-          { title: "E-Commerce & Retail", desc: "Direct-to-consumer and B2B brands scaling transactions with seamless checkout.", iconName: "ShoppingCart", watermark: "EC", footerLeft: "", footerRight: "" }
+          { title: "Home Services & Contracting", desc: "Roofing, decking, remodeling, and local trade contractors scaling regional territories.", iconName: "Building2", watermark: "HS", footerLeft: "", footerRight: "", link: "" },
+          { title: "Technology & SaaS", desc: "Fast-growth software startups and tech firms demanding high conversion rates.", iconName: "Cpu", watermark: "TS", footerLeft: "", footerRight: "", link: "" },
+          { title: "Commercial Real Estate", desc: "Property developers, architectural firms, and luxury real estate agencies.", iconName: "Building2", watermark: "CR", footerLeft: "", footerRight: "", link: "" },
+          { title: "E-Commerce & Retail", desc: "Direct-to-consumer and B2B brands scaling transactions with seamless checkout.", iconName: "ShoppingCart", watermark: "EC", footerLeft: "", footerRight: "", link: "" }
         ];
       })()
     },
@@ -1868,7 +1869,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                             ind.title
                           )}
                         </h3>
-                        <div className="text-xs sm:text-[13.5px] font-sans text-slate-600 dark:text-zinc-400 leading-relaxed font-normal relative z-20">
+                        <div className="text-xs sm:text-[13.5px] font-sans text-slate-600 dark:text-zinc-400 leading-relaxed font-normal relative z-20 pointer-events-none [&_a]:pointer-events-auto">
                           <RichTextRenderer content={ind.desc || ind.description} />
                         </div>
                       </div>

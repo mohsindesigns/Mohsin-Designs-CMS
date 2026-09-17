@@ -1123,7 +1123,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                           </h3>
                           <RichTextRenderer
                             content={domain.desc}
-                            className="text-xs text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed relative z-20"
+                            className="text-xs text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed relative z-20 pointer-events-none [&_a]:pointer-events-auto"
                           />
                         </div>
                       </div>

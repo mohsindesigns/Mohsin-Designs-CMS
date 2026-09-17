@@ -189,7 +189,7 @@ export default function IndustriesSection({ data }: IndustriesSectionProps) {
                         ind.title
                       )}
                     </h3>
-                    <div className="text-xs sm:text-sm text-brand-zinc-600 dark:text-zinc-400 font-sans leading-relaxed font-normal relative z-20">
+                    <div className="text-xs sm:text-sm text-brand-zinc-600 dark:text-zinc-400 font-sans leading-relaxed font-normal relative z-20 pointer-events-none [&_a]:pointer-events-auto">
                       <RichTextRenderer content={ind.desc || ind.description || ""} />
                     </div>
                   </div>

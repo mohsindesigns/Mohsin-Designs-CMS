@@ -627,10 +627,10 @@ export default function IndustryEditor({
                         <label className={UI.label}>Link URL (optional)</label>
                         <input
                           type="text"
-                          value={domain.link || ""}
+                          value={domain.link || domain.href || domain.url || ""}
                           onChange={(e) => {
                             const updated = [...(industryData.domainExpertise?.domains || [])];
-                            updated[idx] = { ...updated[idx], link: e.target.value };
+                            updated[idx] = { ...updated[idx], link: e.target.value, href: e.target.value, url: e.target.value };
                             updateSection("domainExpertise", "domains", updated);
                           }}
                           placeholder="e.g. /services/custom-web-applications"
