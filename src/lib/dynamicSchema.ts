@@ -401,10 +401,55 @@ export function generateAutoSchemaForPage(
       "description": pageDesc,
       "url": pageUrl,
       "provider": {
+        "@type": "ProfessionalService",
+        "name": companyName,
+        "url": `${BASE_URL}/`,
+        "logo": `${BASE_URL}/logo.png`,
+        "telephone": companyPhone,
+        "email": companyEmail,
+        "priceRange": "$$",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "US"
+        }
+      }
+    });
+  }
+
+  // 4. About template
+  else if (template === "about" || template === "new-about" || template === "newabout") {
+    schemas.push({
+      "@context": "https://schema.org",
+      "@type": "AboutPage",
+      "name": pageTitle,
+      "description": pageDesc,
+      "url": pageUrl,
+      "mainEntity": {
         "@type": "Organization",
         "name": companyName,
         "url": `${BASE_URL}/`,
-        "logo": `${BASE_URL}/logo.png`
+        "logo": `${BASE_URL}/logo.png`,
+        "telephone": companyPhone,
+        "email": companyEmail
+      }
+    });
+  }
+
+  // 5. Contact template
+  else if (template === "contact") {
+    schemas.push({
+      "@context": "https://schema.org",
+      "@type": "ContactPage",
+      "name": pageTitle,
+      "description": pageDesc,
+      "url": pageUrl,
+      "mainEntity": {
+        "@type": "Organization",
+        "name": companyName,
+        "url": `${BASE_URL}/`,
+        "logo": `${BASE_URL}/logo.png`,
+        "telephone": companyPhone,
+        "email": companyEmail
       }
     });
   }
@@ -509,16 +554,27 @@ export function getResolvedSchemaBlocks({
     page.schemaMarkup ||
     "";
 
+  let customSchemaString = "";
+  if (typeof rawCustomSchema === "string") {
+    customSchemaString = rawCustomSchema.trim();
+  } else if (rawCustomSchema && typeof rawCustomSchema === "object") {
+    try {
+      customSchemaString = JSON.stringify(rawCustomSchema);
+    } catch {
+      customSchemaString = "";
+    }
+  }
+
   const blocks: string[] = [];
 
-  if (rawCustomSchema && typeof rawCustomSchema === "string" && rawCustomSchema.trim().length > 0) {
+  if (customSchemaString.length > 0) {
     // Interpolate tokens inside custom schema
-    const resolved = resolveDynamicSchemaTokens(rawCustomSchema, varMap);
+    const resolved = resolveDynamicSchemaTokens(customSchemaString, varMap);
     blocks.push(resolved);
 
     // Auto-generate missing schemas:
     // If the custom schema does NOT already include a schema type (e.g. only FAQPage was configured),
-    // still include the primary template schema (e.g. Service) and BreadcrumbList!
+    // still include the primary template schema (e.g. Service or ProfessionalService) and BreadcrumbList!
     const autoList = generateAutoSchemaForPage(page, globalData, effectiveSlug);
     for (const autoItem of autoList) {
       const type = autoItem["@type"];
