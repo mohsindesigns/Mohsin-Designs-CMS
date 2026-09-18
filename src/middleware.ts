@@ -88,12 +88,13 @@ export async function middleware(req: NextRequest) {
     // Refresh rules cache only once every 60s
     if (!cachedRules || cachedRules.expiresAt <= now) {
       try {
-        const internalBase = process.env.INTERNAL_API_URL || new URL('/', req.url).origin;
-        const matchUrl = new URL('/api/redirects/match', internalBase);
+        const port = process.env.PORT || '3007';
+        const internalBase = process.env.INTERNAL_API_URL || `http://127.0.0.1:${port}`;
+        const matchUrl = new URL('/api/redirects/match/', internalBase);
         matchUrl.searchParams.set('url', '__rules__');
 
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 120);
+        const timeoutId = setTimeout(() => controller.abort(), 2000);
 
         const res = await fetch(matchUrl.toString(), {
           headers: { 'x-internal-request': 'true' },
