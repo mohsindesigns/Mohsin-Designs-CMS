@@ -153,7 +153,11 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
     const badge = (full.badge && full.badge !== "CORE CAPABILITY" && full.badge !== category)
       ? full.badge
       : (full.tag && full.tag !== category ? full.tag : "");
-    const image = full.image || full.hero?.bgImage || full.hero?.backgroundImage || full.deepDive?.image || full.overviewImage || full.caseStudy?.image || "";
+    // Prefer the LIVE master service's image over the frozen per-page snapshot (`item`) so that
+    // updating a service's image in the Services admin is reflected here without re-selecting it.
+    // Fall back to the stored snapshot only when there's no live master match (manually-added stage).
+    const image = matchedMaster.image || matchedMaster.hero?.bgImage || matchedMaster.hero?.backgroundImage || matchedMaster.deepDive?.image || matchedMaster.overviewImage || matchedMaster.caseStudy?.image
+      || full.image || full.hero?.bgImage || full.hero?.backgroundImage || full.deepDive?.image || full.overviewImage || full.caseStudy?.image || "";
     const desc = full.desc || full.description || full.hero?.description || full.tagline || full.shortDescription || full.deepDive?.desc || "";
     const deliverables = Array.isArray(full.deliverables) && full.deliverables.length > 0
       ? full.deliverables
@@ -598,7 +602,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                     </div>
 
                     <h3 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-black text-brand-dark dark:text-white leading-[1.15] tracking-tight">
-                      {philosophy.mission.titleIntro || "Eliminating Technical Debt Through "}
+                      {(philosophy.mission.titleIntro || "Eliminating Technical Debt Through ").trimEnd()}{" "}
                       <span className="font-serif italic text-[#0306AC] dark:text-[#E9BD36] font-light">
                         {philosophy.mission.titleHighlight || "Intentional Design"}
                       </span>
@@ -682,7 +686,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                     </div>
 
                     <h3 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-black text-brand-dark dark:text-white leading-[1.15] tracking-tight">
-                      {philosophy.vision.titleIntro || "Setting the Global Standard in "}
+                      {(philosophy.vision.titleIntro || "Setting the Global Standard in ").trimEnd()}{" "}
                       <span className="font-serif italic text-[#0306AC] dark:text-[#E9BD36] font-light">
                         {philosophy.vision.titleHighlight || "Modern Web Engineering"}
                       </span>
@@ -730,7 +734,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                     </div>
 
                     <h3 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-black text-brand-dark dark:text-white leading-[1.15] tracking-tight">
-                      {philosophy.values.titleIntro || "Radical Transparency & "}
+                      {(philosophy.values.titleIntro || "Radical Transparency & ").trimEnd()}{" "}
                       <span className="font-serif italic text-[#0306AC] dark:text-[#E9BD36] font-light">
                         {philosophy.values.titleHighlight || "Relentless Ownership"}
                       </span>

@@ -129,20 +129,20 @@ function SpotlightCard({ children, className = "" }: { children: React.ReactNode
 
 // ── CUSTOM AD PLATFORM LOGOS ──
 const GoogleAdsLogo = () => (
-  <svg viewBox="0 0 48 48" className="h-5.5 w-auto shrink-0 filter drop-shadow-md">
+  <svg viewBox="0 0 48 48" className="h-[22px] w-auto shrink-0 filter drop-shadow-md">
     <path d="M34.7 4.3c-2.1 0-3.9 1-5.1 2.6L12.5 35.8c-1 1.7-1 3.8 0 5.5.9 1.6 2.6 2.5 4.5 2.5h20.3c3.2 0 5.7-2.6 5.7-5.7V10c0-3.1-2.5-5.7-5.7-5.7h-2.6z" fill="#F9BC05" />
     <path d="M12.5 35.8L29.6 6.9c1.2-1.6 3-2.6 5.1-2.6H17c-1.9 0-3.6.9-4.5 2.5L2.6 24.3c-1.8 3.1-.7 7.1 2.4 8.9l7.5 2.6z" fill="#4285F4" />
   </svg>
 );
 
 const MetaLogo = () => (
-  <svg viewBox="0 0 24 24" className="h-5.5 w-auto fill-[#0668E1] shrink-0 filter drop-shadow-md">
+  <svg viewBox="0 0 24 24" className="h-[22px] w-auto fill-[#0668E1] shrink-0 filter drop-shadow-md">
     <path d="M16.48 7.38c-1.34 0-2.58.55-3.5 1.55-.92-1-2.16-1.55-3.5-1.55-2.73 0-4.96 2.23-4.96 4.96s2.23 4.96 4.96 4.96c1.34 0 2.58-.55 3.5-1.55.92 1 2.16 1.55 3.5 1.55 2.73 0 4.96-2.23 4.96-4.96s-2.23-4.96-4.96-4.96zm-7 8.08c-1.72 0-3.12-1.4-3.12-3.12s1.4-3.12 3.12-3.12 3.12 1.4 3.12 3.12-1.4 3.12-3.12 3.12zm7 0c-1.72 0-3.12-1.4-3.12-3.12s1.4-3.12 3.12-3.12 3.12 1.4 3.12 3.12-1.4 3.12-3.12 3.12z" />
   </svg>
 );
 
 const AmazonLogo = () => (
-  <svg viewBox="0 0 48 48" className="h-4.5 w-auto fill-brand-dark dark:fill-white shrink-0">
+  <svg viewBox="0 0 48 48" className="h-[18px] w-auto fill-brand-dark dark:fill-white shrink-0">
     <path d="M26.4 12c-6.1 0-10.4 3.6-10.4 9.8 0 5.4 3.2 8.4 8.1 8.4 4 0 6.6-1.9 8.1-3.9v3.1h5.8V12.4h-5.8v3.1c-1.6-2.1-4.2-3.5-8.1-3.5zm.9 12.3c-3 0-4.6-1.6-4.6-4.2s1.6-4.2 4.6-4.2 4.6 1.6 4.6 4.2-1.6 4.2-4.6 4.2z" />
     <path d="M12 38c10.4 6 22.4 4 28-2" stroke="#FF9900" strokeWidth="3" strokeLinecap="round" fill="none" />
     <path d="M38 34l3.5 3.5-1.5 4" fill="#FF9900" />
@@ -150,13 +150,13 @@ const AmazonLogo = () => (
 );
 
 const BingLogo = () => (
-  <svg viewBox="0 0 24 24" className="h-5.5 w-auto fill-[#008373] dark:fill-[#00b29a] shrink-0">
+  <svg viewBox="0 0 24 24" className="h-[22px] w-auto fill-[#008373] dark:fill-[#00b29a] shrink-0">
     <path d="M5 2L15 6v12l-6 4v-9l6-2V6L5 2z" />
   </svg>
 );
 
 const AppleLogo = () => (
-  <svg viewBox="0 0 24 24" className="h-5.5 w-auto fill-brand-dark dark:fill-white shrink-0">
+  <svg viewBox="0 0 24 24" className="h-[22px] w-auto fill-brand-dark dark:fill-white shrink-0">
     <path d="M18.7 18.5c-.8 1.2-1.7 2.4-3 2.4-1.3 0-1.7-.8-3.2-.8s-2 .8-3.2.8c-1.3 0-2.3-1.2-3.1-2.4C4.6 16 3.3 10.9 4.9 8.1c.8-1.4 2.2-2.3 3.8-2.3 1.2 0 2.4.8 3.2.8.7 0 2.1-.9 3.6-.9 1.5 0 2.9.5 3.8 1.8-3.1 1.8-2.6 6-0.1 7.2-.9 2.2-2.1 4.5-3.5 5.8zM15.9 4.2c.8-.9 1.3-2.2 1.1-3.5-1.1.1-2.5.8-3.3 1.8-.7.8-1.3 2.1-1.1 3.4 1.2.1 2.5-.7 3.3-1.7z" />
   </svg>
 );
@@ -171,7 +171,7 @@ const EbayLogo = () => (
 );
 
 const RedditLogo = () => (
-  <svg viewBox="0 0 24 24" className="h-5.5 w-auto fill-[#FF4500] shrink-0">
+  <svg viewBox="0 0 24 24" className="h-[22px] w-auto fill-[#FF4500] shrink-0">
     <path d="M24 11.5c0-1.65-1.35-3-3-3-.96 0-1.86.48-2.42 1.24-1.64-1-3.85-1.64-6.23-1.72l1.32-4.14 4.3.92c.04.9.78 1.6 1.7 1.6 1 0 1.8-.8 1.8-1.8s-.8-1.8-1.8-1.8c-.84 0-1.54.58-1.74 1.36l-4.78-1.02c-.2-.04-.4.06-.48.24l-1.54 4.8c-2.42.04-4.66.68-6.32 1.68-.56-.74-1.46-1.2-2.42-1.2-1.65 0-3 1.35-3 3 0 1.1.6 2.06 1.48 2.58-.08.3-.12.62-.12.94 0 3.86 4.48 7 10 7s10-3.14 10-7c0-.32-.04-.64-.12-.94.88-.52 1.48-1.48 1.48-2.58z" />
   </svg>
 );
@@ -524,7 +524,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
                     return (
                       <div key={lIdx} className="flex items-center gap-2.5 font-sans text-xs font-black uppercase text-brand-dark dark:text-white tracking-wider whitespace-nowrap">
                         {customImage ? (
-                          <img src={customImage} alt={logoName} className="h-5.5 w-auto max-w-[90px] object-contain shrink-0 filter drop-shadow-sm" />
+                          <img src={customImage} alt={logoName} className="h-[22px] w-auto max-w-[90px] object-contain shrink-0 filter drop-shadow-sm" />
                         ) : LogoComponent ? (
                           <LogoComponent />
                         ) : (

@@ -177,7 +177,7 @@ export default function Hero({ data, content: overrideContent }: { data?: any; c
               <br />
               <motion.span
                 whileHover="hover"
-                className="text-brand-blue dark:text-brand-yellow relative inline-block pointer-events-auto cursor-pointer"
+                className="text-brand-blue dark:text-brand-yellow relative inline-block whitespace-nowrap pointer-events-auto cursor-pointer"
               >
                 {titleLine2}
                 {/* Custom animated hand-drawn SVG underline with gradient and hover interaction */}

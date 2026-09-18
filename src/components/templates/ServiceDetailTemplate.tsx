@@ -115,7 +115,7 @@ const MetaLogo = () => (
 );
 
 const AmazonLogo = () => (
-  <svg viewBox="0 0 48 48" className="h-4.5 w-auto fill-brand-dark dark:fill-white shrink-0">
+  <svg viewBox="0 0 48 48" className="h-[18px] w-auto fill-brand-dark dark:fill-white shrink-0">
     <path d="M26.4 12c-6.1 0-10.4 3.6-10.4 9.8 0 5.4 3.2 8.4 8.1 8.4 4 0 6.6-1.9 8.1-3.9v3.1h5.8V12.4h-5.8v3.1c-1.6-2.1-4.2-3.5-8.1-3.5zm.9 12.3c-3 0-4.6-1.6-4.6-4.2s1.6-4.2 4.6-4.2 4.6 1.6 4.6 4.2-1.6 4.2-4.6 4.2z" />
     <path d="M12 38c10.4 6 22.4 4 28-2" stroke="#FF9900" strokeWidth="3" strokeLinecap="round" fill="none" />
     <path d="M38 34l3.5 3.5-1.5 4" fill="#FF9900" />
@@ -1278,7 +1278,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                               className="h-5 w-auto object-contain shrink-0 filter drop-shadow-sm max-w-[120px]"
                             />
                           ) : CustomIcon ? (
-                            <CustomIcon className="h-4.5 w-4.5 text-brand-blue dark:text-brand-yellow shrink-0" />
+                            <CustomIcon className="h-[18px] w-[18px] text-brand-blue dark:text-brand-yellow shrink-0" />
                           ) : logoName.includes("Google Ads") || logoName.includes("Google Search") ? (
                             <GoogleAdsLogo />
                           ) : logoName.includes("Meta") ? (
@@ -1288,7 +1288,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                           ) : logoName.includes("Bing") ? (
                             <BingLogo />
                           ) : (
-                            <Globe className="h-4.5 w-4.5 text-brand-blue dark:text-brand-yellow shrink-0" />
+                            <Globe className="h-[18px] w-[18px] text-brand-blue dark:text-brand-yellow shrink-0" />
                           )}
                           {logoItem.name && <span>{logoItem.name}</span>}
                         </div>

@@ -188,7 +188,7 @@ function ServiceCard({
           </h3>
           <RichTextRenderer
             content={card.desc}
-            className="text-[13px] text-gray-600 dark:text-zinc-400 leading-relaxed font-normal"
+            className="text-[13px] text-gray-600 dark:text-zinc-400 leading-relaxed font-normal line-clamp-4"
           />
 
           {/* Feature Checkpoints */}

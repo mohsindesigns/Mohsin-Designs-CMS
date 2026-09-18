@@ -171,11 +171,6 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
                         {selectedHubObj.focus}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2 ml-auto shrink-0">
-                      <span className="text-[10px] font-mono font-bold tracking-wider text-[#0306AC] dark:text-[#E9BD36] uppercase whitespace-nowrap bg-[#EFF6FF] dark:bg-white/10 border border-[#0306AC]/20 dark:border-[#E9BD36]/20 px-2.5 py-1 rounded-lg">
-                        {selectedHubObj.timezone}
-                      </span>
-                    </div>
                   </motion.div>
                 ) : (
                   <motion.div

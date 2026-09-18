@@ -95,10 +95,20 @@ export default function RichTextRenderer({ content, className = "", stripParagra
       .replace(/\n/g, ' '); // Replace newlines with spaces for single line flow
   }
 
+  // Only fall back to the default copy color when the caller hasn't supplied
+  // their own text color class. Tailwind utilities of equal specificity are
+  // resolved by compiled CSS order, not by className order, so always
+  // including "text-foreground/80" here could silently outrank a caller's
+  // override (e.g. "text-white/90" on a dark CTA banner) depending on build
+  // order - making the copy invisible on dark backgrounds.
+  const hasColorOverride = /text-(white|black|slate|zinc|gray|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|brand|primary|secondary|foreground|muted|accent|\[)/.test(
+    className
+  );
+
   return (
-    <div 
+    <div
       className={`rich-text-content pointer-events-auto
-        font-body text-foreground/80 leading-relaxed
+        font-body leading-relaxed ${hasColorOverride ? "" : "text-foreground/80"}
         ${className}`}
       dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
     />

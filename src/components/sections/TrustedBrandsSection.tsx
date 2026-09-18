@@ -28,7 +28,7 @@ const StripeLogo = () => (
 );
 
 const VercelLogo = () => (
-  <svg viewBox="0 0 24 24" className="h-4.5 w-4.5 shrink-0 fill-brand-dark dark:fill-white">
+  <svg viewBox="0 0 24 24" className="h-[18px] w-[18px] shrink-0 fill-brand-dark dark:fill-white">
     <path d="M24 22.525H0l12-21.05 12 21.05z" />
   </svg>
 );
@@ -54,7 +54,7 @@ const HubspotLogo = () => (
 );
 
 const WebflowLogo = () => (
-  <svg viewBox="0 0 24 24" className="h-4.5 w-4.5 shrink-0 fill-[#4353FF]">
+  <svg viewBox="0 0 24 24" className="h-[18px] w-[18px] shrink-0 fill-[#4353FF]">
     <path d="M19.49 8.16l-3.32 9.42-3.33-9.42h-3.4l-3.32 9.42L2.79 8.16H0l4.7 13.34h3.4l3.32-9.42 3.32 9.42h3.4L24 8.16z" />
   </svg>
 );
@@ -90,7 +90,7 @@ export default function TrustedBrandsSection({ data }: { data?: any }) {
         <img
           src={item.image}
           alt={item.name || "Brand Logo"}
-          className="h-6 w-auto max-w-[110px] object-contain shrink-0 filter drop-shadow-sm transition-all duration-300"
+          className="h-6 w-auto max-w-8 object-contain shrink-0 filter drop-shadow-sm transition-all duration-300"
         />
       );
     }
@@ -181,7 +181,7 @@ export default function TrustedBrandsSection({ data }: { data?: any }) {
                     {...(wrapperProps as any)}
                     className="group relative flex items-center gap-3.5 px-5 py-3.5 rounded-2xl bg-white/70 dark:bg-[#121124]/60 border border-zinc-200/80 dark:border-white/10 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_30px_-6px_rgba(3,6,172,0.12)] dark:hover:shadow-[0_12px_30px_-6px_rgba(233,189,54,0.08)] hover:border-brand-blue/40 dark:hover:border-brand-yellow/40 hover:-translate-y-0.5 transition-all duration-300 backdrop-blur-md cursor-pointer no-underline"
                   >
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-100/80 dark:bg-white/[0.05] border border-zinc-200/60 dark:border-white/5 group-hover:scale-105 group-hover:bg-brand-blue/10 dark:group-hover:bg-brand-yellow/10 transition-transform duration-300 shrink-0">
+                    <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-zinc-100/80 dark:bg-white/[0.05] border border-zinc-200/60 dark:border-white/5 group-hover:scale-105 group-hover:bg-brand-blue/10 dark:group-hover:bg-brand-yellow/10 transition-transform duration-300 shrink-0">
                       {renderLogoIcon(brand)}
                     </div>
 

@@ -1054,6 +1054,15 @@ export default function SettingsEditor() {
                {/* Footer / Legacy Contact Details */}
                <div>
                   <h3 className="text-lg font-normal text-[#1d2327] mb-4 font-serif border-b border-[#c3c4c7] pb-2">Footer & Global Contact Details</h3>
+                  <SettingsRow label="Contact Email (Footer/General)">
+                     <input
+                       type="email"
+                       value={data.footer?.contact?.email || ""}
+                       onChange={(e) => updateData("footer", "contact", { ...data.footer?.contact, email: e.target.value })}
+                       className="w-full max-w-md border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]"
+                       placeholder="hello@mohsindesigns.com"
+                     />
+                  </SettingsRow>
                   <SettingsRow label="Primary Phone (Footer/General)">
                      <RichTextEditor
                        content={data.footer?.contact?.phone || ""}

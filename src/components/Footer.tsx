@@ -1,18 +1,24 @@
 "use client";
  
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ArrowUp, Github, Instagram, Linkedin, Twitter } from "lucide-react";
+import { ArrowRight, ArrowUp } from "lucide-react";
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useContent } from "../hooks/useContent";
 import RichTextRenderer from "./ui/RichTextRenderer";
+import { Icon } from "../config/icons";
  
+const stripHtml = (html: string) => {
+  if (!html) return "";
+  return html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim();
+};
+
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
   const content = useContent();
-  const { footer } = content;
+  const { footer, services: servicesData } = content;
   const contact = footer?.contact;
  
   const handleSubscribe = async (e: FormEvent) => {
@@ -68,18 +74,34 @@ export default function Footer() {
     }
   };
  
-  const socialIcons: Record<string, React.ReactNode> = {
-    Twitter: <Twitter className="h-4 w-4" />,
-    Linkedin: <Linkedin className="h-4 w-4" />,
-    Instagram: <Instagram className="h-4 w-4" />,
-    Github: <Github className="h-4 w-4" />
-  };
- 
-  // Safely extract data arrays, dropping blank entries so an empty
-  // name/href never renders as a dead link or empty list item.
-  const socialLinks = (footer?.socialLinks || []).filter((l: any) => l?.href && String(l.href).trim());
-  const quickLinks = (footer?.quickLinks || []).filter((l: any) => l?.name && String(l.name).trim());
-  const servicesList = (footer?.servicesList || []).filter((item: any) => item && String(item).trim());
+  // Social profiles are managed at Admin > Settings > Social, saved as
+  // footer.social ({platform, href, icon}) - not footer.socialLinks, which
+  // has no admin UI and was never actually populated.
+  const socialLinks = (footer?.social || []).filter((l: any) => l?.href && String(l.href).trim());
+
+  // "Company Links" are managed at Admin > Settings > Footer ("Company Links"),
+  // saved as footer.services.materials.items ({label, href}) - not
+  // footer.quickLinks, which has no admin UI.
+  const quickLinksTitle = footer?.services?.materials?.title || footer?.labelQuickLinks || "Company";
+  const quickLinks = (footer?.services?.materials?.items || []).filter(
+    (l: any) => l?.label && String(l.label).trim()
+  );
+
+  const allPublishedServices = (servicesData?.services || []).filter(
+    (s: any) => (s.status === 'published' || s.status === undefined) && s.title && String(s.title).trim()
+  );
+
+  // "Selected Footer Services" is managed at Admin > Settings > Footer as a
+  // list of service ids (footer.services.selectedServices). Per that UI's
+  // own description, an empty selection means "show all published services".
+  const selectedServiceIds: string[] = footer?.services?.selectedServices || [];
+  const matchedSelectedServices = selectedServiceIds.length > 0
+    ? allPublishedServices.filter((s: any) => selectedServiceIds.includes(s._id) || selectedServiceIds.includes(s.id) || selectedServiceIds.includes(s.slug))
+    : [];
+  const servicesListTitle = footer?.services?.title || footer?.labelServices || "Services";
+  const servicesList = (matchedSelectedServices.length > 0 ? matchedSelectedServices : allPublishedServices)
+    .slice(0, 6)
+    .map((s: any) => ({ label: s.title, href: `/services/${s.slug}` }));
  
   return (
     <footer className="relative bg-[#090A29] dark:bg-[#080710] text-white pt-24 pb-12 overflow-hidden border-t border-white/5 dark:border-white/10">
@@ -146,12 +168,12 @@ export default function Footer() {
                 <a
                   key={idx}
                   href={link.href}
-                  aria-label={link.ariaLabel}
+                  aria-label={link.ariaLabel || link.platform}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 border border-white/10 text-slate-300 hover:bg-brand-yellow hover:text-[#080710] dark:hover:bg-brand-yellow dark:hover:text-[#080710] hover:border-brand-yellow transition-all duration-300 shadow-sm"
                 >
-                  {socialIcons[link.name] || <ArrowRight className="h-4 w-4" />}
+                  {link.icon ? <Icon name={link.icon} className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
                 </a>
               ))}
             </div>
@@ -160,13 +182,13 @@ export default function Footer() {
           {/* Quick Links Column */}
           <div className="lg:col-span-2 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
             <p className="font-mono font-bold text-[10px] uppercase tracking-widest text-brand-yellow">
-              {footer?.labelQuickLinks || "Navigation"}
+              {quickLinksTitle}
             </p>
             <ul className="space-y-2.5 text-xs md:text-sm font-semibold text-slate-300 dark:text-zinc-300">
               {quickLinks.map((link: any, idx: number) => (
                 <li key={idx}>
-                  <Link href={link.href} className="inline-block hover:text-brand-yellow dark:hover:text-brand-yellow hover:translate-x-1 transition-all duration-200">
-                    {link.name}
+                  <Link href={link.href || "/"} className="inline-block hover:text-brand-yellow dark:hover:text-brand-yellow hover:translate-x-1 transition-all duration-200">
+                    {link.label}
                   </Link>
                 </li>
               ))}
@@ -176,14 +198,14 @@ export default function Footer() {
           {/* Services Column */}
           <div className="lg:col-span-2 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
             <p className="font-mono font-bold text-[10px] uppercase tracking-widest text-brand-yellow">
-              {footer?.labelServices || "Services"}
+              {servicesListTitle}
             </p>
             <ul className="space-y-2.5 text-xs md:text-sm font-semibold text-slate-300 dark:text-zinc-300">
               {servicesList.map((item: any, idx: number) => (
                 <li key={idx}>
-                  <span className="inline-block hover:text-brand-yellow dark:hover:text-brand-yellow hover:translate-x-1 transition-all duration-200 cursor-default">
-                    {item}
-                  </span>
+                  <Link href={item.href} className="inline-block hover:text-brand-yellow dark:hover:text-brand-yellow hover:translate-x-1 transition-all duration-200">
+                    {item.label}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -206,17 +228,19 @@ export default function Footer() {
               <li className="flex flex-col gap-1">
                 <span className="text-[8px] font-mono font-black text-slate-400 dark:text-zinc-400 uppercase tracking-widest">{footer?.labelPhone || "Phone"}</span>
                 {contact?.phone && (
-                  <a href={`tel:${contact.phone.replace(/[^0-9+]/g, "")}`} className="text-white hover:text-brand-yellow dark:hover:text-brand-yellow transition-colors font-mono break-all xs:break-normal">
-                    {contact.phone}
+                  <a href={`tel:${stripHtml(contact.phone).replace(/[^0-9+]/g, "")}`} className="text-white hover:text-brand-yellow dark:hover:text-brand-yellow transition-colors font-mono break-all xs:break-normal">
+                    {stripHtml(contact.phone)}
                   </a>
                 )}
               </li>
-              <li className="flex flex-col gap-1">
-                <span className="text-[8px] font-mono font-black text-slate-400 dark:text-zinc-400 uppercase tracking-widest">{footer?.labelAddress || "Address"}</span>
-                <span className="text-white leading-relaxed">
-                  {footer?.valueAddress}
-                </span>
-              </li>
+              {(contact?.address || footer?.valueAddress) && (
+                <li className="flex flex-col gap-1">
+                  <span className="text-[8px] font-mono font-black text-slate-400 dark:text-zinc-400 uppercase tracking-widest">{footer?.labelAddress || "Address"}</span>
+                  <span className="text-white leading-relaxed">
+                    {contact?.address || footer?.valueAddress}
+                  </span>
+                </li>
+              )}
             </ul>
           </div>
 

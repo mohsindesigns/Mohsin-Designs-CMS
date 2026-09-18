@@ -1042,12 +1042,9 @@ export default function ServicesAdminPage() {
                                     </div>
                                     <div className="space-y-1.5">
                                       <label className={UI.label}>Hero Narrative Description</label>
-                                      <textarea
-                                        rows={3}
-                                        value={form.hero?.description || ""}
-                                        onChange={(e) => setForm({ ...form, hero: { ...form.hero, description: e.target.value } })}
-                                        className={UI.input}
-                                        placeholder="High-performance digital engineering..."
+                                      <RichTextEditor
+                                        content={form.hero?.description || ""}
+                                        onChange={(val: string) => setForm({ ...form, hero: { ...form.hero, description: val } })}
                                       />
                                     </div>
                                   </div>

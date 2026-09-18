@@ -71,17 +71,26 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
     setData((prev: any) => {
       const currentData = prev || {};
       if (field) {
+        const prevSectionData = currentData[section] || {};
+        // Supports a functional updater `(prevFieldValue) => nextFieldValue`, same as React's
+        // setState. This matters for fields like the mission/vision image, where the ImageField
+        // component fires onChange (imgSrc) and onAltChange (imgAlt) back-to-back synchronously
+        // on select: both handlers otherwise close over the same pre-update `data` prop, so the
+        // second call would spread the stale object and silently clobber the first call's write
+        // (e.g. the just-set imgSrc gets wiped out by the imgAlt update). Resolving against the
+        // live `prevSectionData` here avoids that race regardless of call order.
+        const resolvedValue = typeof value === "function" ? value(prevSectionData[field]) : value;
         return {
           ...currentData,
           [section]: {
-            ...(currentData[section] || {}),
-            [field]: value
+            ...prevSectionData,
+            [field]: resolvedValue
           }
         };
       }
       return {
         ...currentData,
-        [section]: value
+        [section]: typeof value === "function" ? value(currentData[section]) : value
       };
     });
   };
@@ -413,7 +422,7 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                   <div className="space-y-1"><label className={UI.label}>Top Badge (Latency)</label><input type="text" autoComplete="off" value={data.philosophy?.mission?.badgeLatency || ""} onChange={(e) => updateSection("philosophy", "mission", { ...(data.philosophy?.mission || {}), badgeLatency: e.target.value })} className={UI.input} placeholder="< 45ms P99" /></div>
                   <div className="space-y-1"><label className={UI.label}>Bottom Badge (Performance)</label><input type="text" autoComplete="off" value={data.philosophy?.mission?.badgePerformance || ""} onChange={(e) => updateSection("philosophy", "mission", { ...(data.philosophy?.mission || {}), badgePerformance: e.target.value })} className={UI.input} placeholder="100 Score" /></div>
                 </div>
-                <ImageField label="Mission Media Image" value={data.philosophy?.mission?.imgSrc || ""} onChange={(url) => updateSection("philosophy", "mission", { ...(data.philosophy?.mission || {}), imgSrc: url })} altValue={data.philosophy?.mission?.imgAlt || ""} onAltChange={(alt) => updateSection("philosophy", "mission", { ...(data.philosophy?.mission || {}), imgAlt: alt })} />
+                <ImageField label="Mission Media Image" value={data.philosophy?.mission?.imgSrc || ""} onChange={(url) => updateSection("philosophy", "mission", (prev: any) => ({ ...(prev || {}), imgSrc: url }))} altValue={data.philosophy?.mission?.imgAlt || ""} onAltChange={(alt) => updateSection("philosophy", "mission", (prev: any) => ({ ...(prev || {}), imgAlt: alt }))} />
               </div>
 
               {/* Vision Card */}
@@ -447,7 +456,7 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                   <div className="space-y-1"><label className={UI.label}>Top Badge (Lighthouse)</label><input type="text" autoComplete="off" value={data.philosophy?.vision?.badgeLighthouse || ""} onChange={(e) => updateSection("philosophy", "vision", { ...(data.philosophy?.vision || {}), badgeLighthouse: e.target.value })} className={UI.input} /></div>
                   <div className="space-y-1"><label className={UI.label}>Bottom Badge (Accessibility)</label><input type="text" autoComplete="off" value={data.philosophy?.vision?.badgeAccessibility || ""} onChange={(e) => updateSection("philosophy", "vision", { ...(data.philosophy?.vision || {}), badgeAccessibility: e.target.value })} className={UI.input} /></div>
                 </div>
-                <ImageField label="Vision Media Image" value={data.philosophy?.vision?.imgSrc || ""} onChange={(url) => updateSection("philosophy", "vision", { ...(data.philosophy?.vision || {}), imgSrc: url })} altValue={data.philosophy?.vision?.imgAlt || ""} onAltChange={(alt) => updateSection("philosophy", "vision", { ...(data.philosophy?.vision || {}), imgAlt: alt })} />
+                <ImageField label="Vision Media Image" value={data.philosophy?.vision?.imgSrc || ""} onChange={(url) => updateSection("philosophy", "vision", (prev: any) => ({ ...(prev || {}), imgSrc: url }))} altValue={data.philosophy?.vision?.imgAlt || ""} onAltChange={(alt) => updateSection("philosophy", "vision", (prev: any) => ({ ...(prev || {}), imgAlt: alt }))} />
               </div>
 
               {/* Values Card */}
@@ -481,7 +490,7 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                   <div className="space-y-1"><label className={UI.label}>Badge 1</label><input type="text" autoComplete="off" value={data.philosophy?.values?.badgeSync || ""} onChange={(e) => updateSection("philosophy", "values", { ...(data.philosophy?.values || {}), badgeSync: e.target.value })} className={UI.input} /></div>
                   <div className="space-y-1"><label className={UI.label}>Badge 2</label><input type="text" autoComplete="off" value={data.philosophy?.values?.badgeSprint || ""} onChange={(e) => updateSection("philosophy", "values", { ...(data.philosophy?.values || {}), badgeSprint: e.target.value })} className={UI.input} /></div>
                 </div>
-                <ImageField label="Values Media Image" value={data.philosophy?.values?.imgSrc || ""} onChange={(url) => updateSection("philosophy", "values", { ...(data.philosophy?.values || {}), imgSrc: url })} altValue={data.philosophy?.values?.imgAlt || ""} onAltChange={(alt) => updateSection("philosophy", "values", { ...(data.philosophy?.values || {}), imgAlt: alt })} />
+                <ImageField label="Values Media Image" value={data.philosophy?.values?.imgSrc || ""} onChange={(url) => updateSection("philosophy", "values", (prev: any) => ({ ...(prev || {}), imgSrc: url }))} altValue={data.philosophy?.values?.imgAlt || ""} onAltChange={(alt) => updateSection("philosophy", "values", (prev: any) => ({ ...(prev || {}), imgAlt: alt }))} />
               </div>
             </div>
           )}
