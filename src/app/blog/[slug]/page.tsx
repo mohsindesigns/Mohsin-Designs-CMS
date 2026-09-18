@@ -302,15 +302,15 @@ export default async function BlogPostPage({ params }: Props) {
 
   processedContent = makeLinksDoFollow(processedContent);
 
-  // De-dupe FAQPage schema: only render faqSchemaMarkup if its content isn't
-  // already present in the primary schema field (avoids two FAQPage blocks).
+  // De-dupe FAQPage schema: only render faqSchemaMarkup if it isn't already
+  // present verbatim in the primary schema field (avoids two FAQPage
+  // blocks). A coarser "both mention FAQPage" check would silently drop the
+  // live, correct FAQ schema any time the primary block happens to contain
+  // an unrelated FAQPage entry - that's a false suppression, not a duplicate.
   const primarySchema = post.schemaMarkup || post.seo?.schemaData;
   const primarySchemaBlocks = extractSchemaBlocks(primarySchema);
   const faqSchemaBlocks = extractSchemaBlocks(post.faqSchemaMarkup).filter(
-    (faqBlock) =>
-      !primarySchemaBlocks.some(
-        (b) => b.includes(faqBlock) || (faqBlock.includes("FAQPage") && b.includes("FAQPage"))
-      )
+    (faqBlock) => !primarySchemaBlocks.some((b) => b.includes(faqBlock))
   );
 
   return (

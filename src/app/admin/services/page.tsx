@@ -3634,7 +3634,7 @@ export default function ServicesAdminPage() {
                                 type="button"
                                 onClick={() => {
                                   const nf = form.faqs.filter((_: any, i: number) => i !== idx);
-                                  setForm({ ...form, faqs: nf });
+                                  setForm({ ...form, faqs: nf, faqSchemaAutoSync: false });
                                 }}
                                 className="text-[#d63638] text-xs font-bold hover:underline"
                               >
@@ -3650,7 +3650,7 @@ export default function ServicesAdminPage() {
                                   onChange={e => {
                                     const nf = [...form.faqs];
                                     nf[idx].question = e.target.value;
-                                    setForm({ ...form, faqs: nf });
+                                    setForm({ ...form, faqs: nf, faqSchemaAutoSync: false });
                                   }}
                                   placeholder="What is your typical turnaround time?"
                                   className={UI.input}
@@ -3664,7 +3664,7 @@ export default function ServicesAdminPage() {
                                   onChange={e => {
                                     const nf = [...form.faqs];
                                     nf[idx].category = e.target.value;
-                                    setForm({ ...form, faqs: nf });
+                                    setForm({ ...form, faqs: nf, faqSchemaAutoSync: false });
                                   }}
                                   placeholder="TIMELINE"
                                   className={UI.input}
@@ -3678,7 +3678,7 @@ export default function ServicesAdminPage() {
                                 onChange={(val: string) => {
                                   const nf = [...form.faqs];
                                   nf[idx].answer = val;
-                                  setForm({ ...form, faqs: nf });
+                                  setForm({ ...form, faqs: nf, faqSchemaAutoSync: false });
                                 }}
                               />
                             </div>

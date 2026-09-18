@@ -323,10 +323,13 @@ export function getResolvedSchemaBlocks({
 
   if (faqSchemaString.length > 0) {
     const resolvedFaq = resolveDynamicSchemaTokens(faqSchemaString, varMap);
-    // Only push if not already present in the custom schema block
-    const alreadyPresent = blocks.some(
-      (b) => b.includes(resolvedFaq) || (resolvedFaq.includes("FAQPage") && b.includes("FAQPage"))
-    );
+    // Only skip it if it's genuinely already present verbatim in the custom
+    // schema block (e.g. the same generated JSON got pasted into both
+    // fields). A coarser "both mention FAQPage" check would silently drop
+    // the live, correct FAQ schema any time the custom block happens to
+    // contain an unrelated FAQPage entry (e.g. a hand-written @graph) -
+    // that's a false suppression of real structured data, not a duplicate.
+    const alreadyPresent = blocks.some((b) => b.includes(resolvedFaq));
     if (!alreadyPresent) {
       blocks.push(resolvedFaq);
     }

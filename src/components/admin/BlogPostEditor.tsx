@@ -270,7 +270,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
                     <button
                       onClick={() => {
                         const newFaq = [...(post.faq || []), { question: "", answer: "" }];
-                        setPost({ ...post, faq: newFaq });
+                        setPost({ ...post, faq: newFaq, faqSchemaAutoSync: false });
                       }}
                       className="bg-[#2271b1] text-white text-[12px] font-semibold px-4 py-1.5 rounded-[3px] border border-[#135e96] shadow-[0_1px_0_#135e96] hover:bg-[#135e96] flex items-center gap-2"
                     >
@@ -317,7 +317,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
                         <button
                           onClick={() => {
                             const newFaq = post.faq.filter((_: any, i: number) => i !== idx);
-                            setPost({ ...post, faq: newFaq });
+                            setPost({ ...post, faq: newFaq, faqSchemaAutoSync: false });
                           }}
                           className="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition-colors"
                           title="Remove FAQ"
@@ -334,7 +334,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
                               onChange={(e) => {
                                 const newFaq = [...post.faq];
                                 newFaq[idx].question = e.target.value;
-                                setPost({ ...post, faq: newFaq });
+                                setPost({ ...post, faq: newFaq, faqSchemaAutoSync: false });
                               }}
                               placeholder="e.g. What are the benefits of professional roofing?"
                               className="w-full border border-[#c3c4c7] px-4 py-2.5 text-sm outline-none focus:border-[#2271b1] bg-white rounded shadow-sm"
@@ -347,7 +347,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
                               onChange={(e) => {
                                 const newFaq = [...post.faq];
                                 newFaq[idx].answer = e.target.value;
-                                setPost({ ...post, faq: newFaq });
+                                setPost({ ...post, faq: newFaq, faqSchemaAutoSync: false });
                               }}
                               rows={4}
                               placeholder="Provide a detailed answer here..."
