@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Save, Loader2, LayoutTemplate, ChevronRight,
@@ -9,7 +9,7 @@ import {
   ChevronDown, Calendar, Eye, BookOpen
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { TemplateEditors } from "@/components/admin/editors";
 import SeoEditor from "@/components/admin/SeoEditor";
 import SchemaEditor from "@/components/admin/SchemaEditor";
@@ -46,9 +46,29 @@ const EDITOR_TEMPLATES = [
   { id: 'industries', label: 'Industries Hub', icon: Globe },
 ];
 
-export default function DynamicPageEditor({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function DynamicPageEditor({ params }: { params?: any }) {
+  const routeParams = useParams();
   const router = useRouter();
+
+  // Safely resolve page ID across React 18/19 without calling React.use()
+  const [id, setId] = useState<string>(() => {
+    if (typeof routeParams?.id === "string") return routeParams.id;
+    if (Array.isArray(routeParams?.id)) return routeParams.id[0];
+    if (params && typeof params.id === "string") return params.id;
+    return "";
+  });
+
+  useEffect(() => {
+    const raw = routeParams?.id;
+    const current = typeof raw === "string" ? raw : Array.isArray(raw) ? raw[0] : "";
+    if (current && current !== id) {
+      setId(current);
+    } else if (!id && params) {
+      Promise.resolve(params).then((p: any) => {
+        if (p?.id) setId(p.id);
+      });
+    }
+  }, [routeParams, params, id]);
 
   const [page, setPage] = useState<any>(null);
   const [content, setContent] = useState<any>(null);
@@ -61,7 +81,9 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
   const [allPages, setAllPages] = useState<any[]>([]);
 
   useEffect(() => {
-    fetchPage();
+    if (id) {
+      fetchPage();
+    }
   }, [id]);
 
   const fetchPage = async () => {
@@ -265,6 +287,14 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
       canonicalUrl: newCanonical
     }));
   };
+
+  if (loading || !page) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-[#f0f0f1]">
+        <Loader2 className="w-8 h-8 animate-spin text-[#2271b1]" />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#f0f0f1] font-sans pb-10 max-w-full overflow-hidden">
