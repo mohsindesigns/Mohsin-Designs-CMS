@@ -75,10 +75,11 @@ export default function Footer() {
     Github: <Github className="h-4 w-4" />
   };
  
-  // Safely extract data arrays
-  const socialLinks = footer?.socialLinks || [];
-  const quickLinks = footer?.quickLinks || [];
-  const servicesList = footer?.servicesList || [];
+  // Safely extract data arrays, dropping blank entries so an empty
+  // name/href never renders as a dead link or empty list item.
+  const socialLinks = (footer?.socialLinks || []).filter((l: any) => l?.href && String(l.href).trim());
+  const quickLinks = (footer?.quickLinks || []).filter((l: any) => l?.name && String(l.name).trim());
+  const servicesList = (footer?.servicesList || []).filter((item: any) => item && String(item).trim());
  
   return (
     <footer className="relative bg-[#090A29] dark:bg-[#080710] text-white pt-24 pb-12 overflow-hidden border-t border-white/5 dark:border-white/10">
