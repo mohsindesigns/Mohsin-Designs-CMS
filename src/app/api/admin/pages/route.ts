@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   try {
     await connectToDatabase();
     const pages = await Page.find({})
-      .select('_id title slug template status isTrashed createdAt updatedAt content.parentLocationId content.parentLocationSlug')
+      .select('_id title slug template status isTrashed createdAt updatedAt content.parentLocationId content.parentLocationSlug content.countrySlug content.stateSlug content.citySlug content.country content.state content.city')
       .sort({ createdAt: -1 })
       .lean();
     return NextResponse.json(pages);
@@ -41,12 +41,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: `The slug "${slug}" is already used by "${(existing as any).title}". Please choose a different slug.` }, { status: 409 });
     }
 
+    const canonicalUrl = body.seo?.canonicalUrl || `https://mohsindesigns.com/${slug}/`;
+    const pageStatus = body.status === 'draft' ? 'draft' : 'published';
+
     const newPage = await Page.create({
       title,
       slug,
       template,
-      status: 'published',
-      content: (body.content && typeof body.content === 'object') ? body.content : {}
+      status: pageStatus,
+      content: (body.content && typeof body.content === 'object') ? body.content : {},
+      seo: {
+        canonicalUrl: canonicalUrl.endsWith('/') ? canonicalUrl : `${canonicalUrl}/`,
+        ...(body.seo || {})
+      }
     });
 
     await recordActivity({

@@ -88,6 +88,16 @@ export async function validateLocationHierarchy(slugSegments: string[]): Promise
       return { valid: false };
     }
 
+    // Ensure that stateDoc actually belongs to this countryDoc
+    const stateBelongsToCountry =
+      stateDoc.slug === `${countrySlug}/${stateSlug}` ||
+      (stateDoc as any).content?.countrySlug === countrySlug ||
+      String((stateDoc as any).content?.parentLocationId) === String(countryDoc._id);
+
+    if (!stateBelongsToCountry) {
+      return { valid: false };
+    }
+
     return {
       valid: true,
       page: cityDoc,

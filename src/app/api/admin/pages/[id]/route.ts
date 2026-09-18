@@ -78,6 +78,34 @@ export async function PATCH(
         if (collision) {
           return NextResponse.json({ error: `The slug "${normalizedSlug}" is already used by "${(collision as any).title}". Please choose a different slug.` }, { status: 409 });
         }
+
+        // Keep canonicalUrl synced with the new slug if not explicitly passed
+        if (!body.seo?.canonicalUrl || (oldPage.seo?.canonicalUrl && body.seo?.canonicalUrl === oldPage.seo?.canonicalUrl)) {
+          if (!updateData.seo) updateData.seo = { ...(oldPage.seo || {}) };
+          updateData.seo.canonicalUrl = `https://mohsindesigns.com/${normalizedSlug}/`;
+        }
+
+        // Auto-create active 301 redirect for the old slug to prevent broken URLs
+        if (oldPage.slug) {
+          try {
+            const Redirect = (await import('@/models/Redirect')).default;
+            await Redirect.findOneAndUpdate(
+              { sourceUrl: `/${oldPage.slug}` },
+              {
+                sourceUrl: `/${oldPage.slug}`,
+                targetUrl: `/${normalizedSlug}/`,
+                statusCode: 301,
+                queryParamMode: 'ignore',
+                ignoreSlash: true,
+                status: 'active',
+                notes: `Auto-redirect on page slug change: /${oldPage.slug} -> /${normalizedSlug}/`
+              },
+              { upsert: true, new: true }
+            );
+          } catch (redirErr) {
+            console.error('Failed to auto-create 301 redirect on slug change:', redirErr);
+          }
+        }
       }
       updateData.slug = normalizedSlug;
     }

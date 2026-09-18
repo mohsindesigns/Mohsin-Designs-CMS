@@ -37,10 +37,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   } else if (slugSegments.length === 2) {
     const check = await validateLocationHierarchy(slugSegments);
     if (!check.valid) {
-      // Check if it's a non-location 2-segment page
+      // Check if it's an invalid location page
       const pageCheck = await getCachedPage(slug);
-      if (pageCheck?.template === 'state') return {}; // Invalid state hierarchy
+      if (pageCheck?.template === 'state' || pageCheck?.template === 'city') return {};
     }
+  } else if (slugSegments.length === 1) {
+    const pageCheck = await getCachedPage(slug);
+    if (pageCheck?.template === 'state' || pageCheck?.template === 'city') return {};
   }
 
   const [page, globalData] = await Promise.all([
@@ -108,9 +111,9 @@ export default async function DynamicPage({ params }: PageProps) {
   } else if (slugSegments.length === 2) {
     const check = await validateLocationHierarchy(slugSegments);
     if (!check.valid) {
-      // If it's a state template but failed hierarchy, return 404
-      const stateCheck = await getCachedPage(slug);
-      if (stateCheck?.template === 'state') {
+      // If it's a state or city template but failed hierarchy, return 404
+      const locCheck = await getCachedPage(slug);
+      if (locCheck?.template === 'state' || locCheck?.template === 'city') {
         notFound();
       }
     }
@@ -122,6 +125,11 @@ export default async function DynamicPage({ params }: PageProps) {
   ]);
 
   if (!pageDoc) {
+    notFound();
+  }
+
+  // City and State pages must not be accessed at 1 segment (e.g. /dallas/ or /texas/); they must use canonical hierarchy
+  if (slugSegments.length === 1 && (pageDoc.template === 'city' || pageDoc.template === 'state')) {
     notFound();
   }
 
