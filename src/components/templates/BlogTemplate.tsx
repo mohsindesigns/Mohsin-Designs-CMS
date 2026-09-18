@@ -27,7 +27,6 @@ import {
   Code,
   Smartphone
 } from "lucide-react";
-import PageInlineFaqs from "@/components/PageInlineFaqs";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 // Hand-Drawn SVG Brush stroke variants
@@ -543,11 +542,6 @@ export default function BlogTemplate({
             )}
           </div>
         </section>
-        )}
-
-        {/* ── 6. PAGE SPECIFIC FAQS ── */}
-        {(pageData?.content?.faqs?.enabled !== false && pageData?.content?.faqSection?.enabled !== false && (rawData as any)?.faqs?.enabled !== false) && (
-          <PageInlineFaqs data={pageData?.content} />
         )}
 
       </div>

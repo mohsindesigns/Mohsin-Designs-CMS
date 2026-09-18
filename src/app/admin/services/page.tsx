@@ -499,11 +499,15 @@ export default function ServicesAdminPage() {
     if (collision) return alert(`The URL slug "${form.slug}" is already used by "${collision.title}". Please choose a different slug — otherwise one of the two pages won't be reachable.`);
 
     const newServices = [...services];
-    const schemaVal = form.schemaMarkup || seo?.schemaData || form.faqSchemaMarkup || "";
+    // Custom schema and FAQ schema are independent fields (rendered together,
+    // merged, by getResolvedSchemaBlocks) - keep them separate here so saving
+    // never lets one clobber the other.
+    const schemaVal = form.schemaMarkup || seo?.schemaData || "";
     const serviceData = {
       ...DEFAULT_SERVICE_TEMPLATE,
       ...form,
       schemaMarkup: schemaVal,
+      faqSchemaMarkup: form.faqSchemaMarkup || "",
       seo: {
         ...(seo || {}),
         schemaData: schemaVal
@@ -597,8 +601,13 @@ export default function ServicesAdminPage() {
       faqTitleIntro: service.faqTitleIntro || DEFAULT_SERVICE_TEMPLATE.faqTitleIntro,
       faqTitleHighlight: service.faqTitleHighlight || DEFAULT_SERVICE_TEMPLATE.faqTitleHighlight,
       faqDescription: service.faqDescription || DEFAULT_SERVICE_TEMPLATE.faqDescription,
+      // faqSchemaMarkup falls back to the legacy schemaMarkup/schemaData value
+      // for older records saved before FAQ sync wrote to its own field - but
+      // schemaMarkup/schemaData themselves no longer fall back the other way,
+      // so the custom-schema tab doesn't show FAQ-only content as if it were
+      // a manually-entered custom schema.
       faqSchemaMarkup: service.faqSchemaMarkup || service.schemaMarkup || service.seo?.schemaData || "",
-      schemaMarkup: service.schemaMarkup || service.seo?.schemaData || service.faqSchemaMarkup || "",
+      schemaMarkup: service.schemaMarkup || service.seo?.schemaData || "",
       faqs: service.faqs || service.faq || DEFAULT_SERVICE_TEMPLATE.faqs,
       finalCta: {
         ...DEFAULT_SERVICE_TEMPLATE.finalCta,
@@ -607,7 +616,7 @@ export default function ServicesAdminPage() {
     });
     setSeo({
       ...(service.seo || {}),
-      schemaData: service.schemaMarkup || service.seo?.schemaData || service.faqSchemaMarkup || ""
+      schemaData: service.schemaMarkup || service.seo?.schemaData || ""
     });
     setIsEditing(originalIdx !== -1 ? originalIdx : 0);
     setMainTab("content");
@@ -3759,17 +3768,17 @@ export default function ServicesAdminPage() {
                             enabled={form.faqSchemaAutoSync === true}
                             onChange={(v: boolean) => {
                               if (v) {
-                                const result = syncFaqSchema(form.faqs, form.schemaMarkup, form.faqSchemaAutoSync === true);
+                                const result = syncFaqSchema(form.faqs, form.faqSchemaMarkup, form.faqSchemaAutoSync === true);
                                 if (result.status === "empty") {
                                   alert("Add at least one FAQ with both a question and an answer before enabling FAQ Schema.");
                                   return;
                                 }
                                 if (result.status === "cancelled") return;
-                                setForm({ ...form, faqSchemaAutoSync: true, schemaMarkup: result.schemaString });
-                                setSeo({ ...seo, schemaData: result.schemaString });
+                                // Only touches faqSchemaMarkup - any custom schema entered in the
+                                // Schema Markup tab is left untouched and rendered alongside it.
+                                setForm({ ...form, faqSchemaAutoSync: true, faqSchemaMarkup: result.schemaString });
                               } else {
-                                setForm({ ...form, faqSchemaAutoSync: false, schemaMarkup: "" });
-                                setSeo({ ...seo, schemaData: "" });
+                                setForm({ ...form, faqSchemaAutoSync: false, faqSchemaMarkup: "" });
                               }
                             }}
                             label="FAQ Schema"
@@ -3778,14 +3787,13 @@ export default function ServicesAdminPage() {
                         <button
                           type="button"
                           onClick={() => {
-                            const result = syncFaqSchema(form.faqs, form.schemaMarkup, form.faqSchemaAutoSync === true);
+                            const result = syncFaqSchema(form.faqs, form.faqSchemaMarkup, form.faqSchemaAutoSync === true);
                             if (result.status === "empty") {
                               alert("Add at least one FAQ with both a question and an answer before syncing.");
                               return;
                             }
                             if (result.status === "cancelled") return;
-                            setForm({ ...form, schemaMarkup: result.schemaString, faqSchemaAutoSync: true });
-                            setSeo({ ...seo, schemaData: result.schemaString });
+                            setForm({ ...form, faqSchemaMarkup: result.schemaString, faqSchemaAutoSync: true });
                           }}
                           className="bg-[#2271b1] text-white px-3.5 py-2 text-[12px] font-bold rounded-[3px] hover:bg-[#135e96] transition-colors"
                         >
@@ -3799,14 +3807,13 @@ export default function ServicesAdminPage() {
                   {mainTab === 'schema' && (
                     <div className="p-5 sm:p-6 space-y-6">
                       <SchemaEditor
-                        value={form.schemaMarkup || seo?.schemaData || form.faqSchemaMarkup || ""}
+                        value={form.schemaMarkup || seo?.schemaData || ""}
                         onChange={(val) => {
+                          // Custom schema and FAQ schema (faqSchemaMarkup, synced below) are
+                          // independent fields rendered together by getResolvedSchemaBlocks -
+                          // editing this one never touches the other.
                           setSeo((prev: any) => ({ ...(prev || {}), schemaData: val }));
-                          // Reset the FAQ Schema Sync "safe to auto-clear" ratchet (set
-                          // via the other service editor at /admin/pages/[id]) - this
-                          // service record can be hand-edited from either admin screen,
-                          // and both need to invalidate the same flag on a manual edit.
-                          setForm((prev: any) => ({ ...(prev || {}), schemaMarkup: val, faqSchemaMarkup: val, faqSchemaAutoSync: false }));
+                          setForm((prev: any) => ({ ...(prev || {}), schemaMarkup: val }));
                         }}
                         pageTitle={form.title || "Service"}
                       />

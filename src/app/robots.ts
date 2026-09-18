@@ -16,12 +16,44 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
     };
   }
 
+  // AI bots and assistants - explicitly allowed
+  const aiBots = [
+    'GPTBot',
+    'ChatGPT-User',
+    'OAI-SearchBot',
+    'CCBot',
+    'anthropic-ai',
+    'ClaudeBot',
+    'Claude-Web',
+    'PerplexityBot',
+    'Perplexity-User',
+    'Google-Extended',
+    'GoogleOther',
+    'Amazonbot',
+    'Applebot',
+    'Applebot-Extended',
+    'Bytespider',
+    'FacebookBot',
+    'Meta-ExternalAgent',
+    'Meta-ExternalFetcher',
+    'yandex',
+  ];
+
   return {
     rules: [
+      ...aiBots.map((userAgent) => ({ userAgent, allow: '/' })),
       {
         userAgent: '*',
-        allow: '/',
-        disallow: ['/api/', '/_next/', '/admin/', '/admin'],
+        allow: ['/', '/_next/image'],
+        disallow: [
+          '/api/',
+          '/_next/static/',
+          '/admin/',
+          '/admin',
+          '/xmlrpc.php',
+          '/author/',
+          '/tag/',
+        ],
       },
     ],
     sitemap: `${BASE_URL}/sitemap.xml`,

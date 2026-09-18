@@ -2662,17 +2662,18 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
                       enabled={data.faqSchemaAutoSync === true}
                       onChange={(v: boolean) => {
                         if (v) {
-                          const result = syncFaqSchema(data.faqs, data.schemaMarkup, data.faqSchemaAutoSync === true);
+                          const result = syncFaqSchema(data.faqs, data.faqSchemaMarkup, data.faqSchemaAutoSync === true);
                           if (result.status === "empty") {
                             alert("Add at least one FAQ with both a question and an answer before enabling FAQ Schema.");
                             return;
                           }
                           if (result.status === "cancelled") return;
-                          setData((prev: any) => ({ ...(prev || {}), faqSchemaAutoSync: true, schemaMarkup: result.schemaString, seo: { ...(prev?.seo || {}), schemaData: result.schemaString } }));
-                          setSeo?.((prev: any) => ({ ...(prev || {}), schemaData: result.schemaString }));
+                          // Only touches faqSchemaMarkup - any custom schema entered in the
+                          // Schema tab is left untouched and rendered alongside it by
+                          // getResolvedSchemaBlocks.
+                          setData((prev: any) => ({ ...(prev || {}), faqSchemaAutoSync: true, faqSchemaMarkup: result.schemaString }));
                         } else {
-                          setData((prev: any) => ({ ...(prev || {}), faqSchemaAutoSync: false, schemaMarkup: "", seo: { ...(prev?.seo || {}), schemaData: "" } }));
-                          setSeo?.((prev: any) => ({ ...(prev || {}), schemaData: "" }));
+                          setData((prev: any) => ({ ...(prev || {}), faqSchemaAutoSync: false, faqSchemaMarkup: "" }));
                         }
                       }}
                       label="FAQ Schema"
@@ -2681,14 +2682,13 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
                   <button
                     type="button"
                     onClick={() => {
-                      const result = syncFaqSchema(data.faqs, data.schemaMarkup, data.faqSchemaAutoSync === true);
+                      const result = syncFaqSchema(data.faqs, data.faqSchemaMarkup, data.faqSchemaAutoSync === true);
                       if (result.status === "empty") {
                         alert("Add at least one FAQ with both a question and an answer before syncing.");
                         return;
                       }
                       if (result.status === "cancelled") return;
-                      setData((prev: any) => ({ ...(prev || {}), faqSchemaAutoSync: true, schemaMarkup: result.schemaString, seo: { ...(prev?.seo || {}), schemaData: result.schemaString } }));
-                      setSeo?.((prev: any) => ({ ...(prev || {}), schemaData: result.schemaString }));
+                      setData((prev: any) => ({ ...(prev || {}), faqSchemaAutoSync: true, faqSchemaMarkup: result.schemaString }));
                     }}
                     className="bg-[#2271b1] text-white px-3.5 py-2 text-[12px] font-bold rounded-[3px] hover:bg-[#135e96] transition-colors"
                   >
@@ -3046,14 +3046,12 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
                 <SchemaEditor
                   value={data.schemaMarkup || data.seo?.schemaData || ""}
                   onChange={(val) => {
-                    // A direct hand-edit here invalidates the "current schema is our
-                    // last FAQ sync" assumption the FAQ Schema toggle/confirm() guard
-                    // relies on - without this reset, later disabling that toggle would
-                    // silently wipe this manual edit with no warning.
+                    // Custom schema and FAQ schema (data.faqSchemaMarkup, synced
+                    // separately) are independent fields rendered together by
+                    // getResolvedSchemaBlocks - editing this one never touches the other.
                     setData((prev: any) => ({
                       ...(prev || {}),
                       schemaMarkup: val,
-                      faqSchemaAutoSync: false,
                       seo: {
                         ...(prev?.seo || {}),
                         schemaData: val

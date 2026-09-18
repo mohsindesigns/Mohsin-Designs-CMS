@@ -449,12 +449,11 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
                   <SchemaEditor
                     value={seo.schemaData || content?.schemaMarkup || ""}
                     onChange={(val) => {
+                      // Custom schema and FAQ schema (content.faqSchemaMarkup, synced
+                      // separately) are independent fields rendered together by
+                      // getResolvedSchemaBlocks - editing this one never touches the other.
                       setSeo({ ...seo, schemaData: val });
-                      // A direct hand-edit here invalidates the "current schema is our
-                      // last FAQ sync" assumption the FAQ Schema toggle/confirm() guard
-                      // relies on - without this reset, later disabling that toggle would
-                      // silently wipe this manual edit with no warning.
-                      setContent({ ...content, schemaMarkup: val, faqSchemaAutoSync: false });
+                      setContent({ ...content, schemaMarkup: val });
                     }}
                     pageTitle={page.title}
                     pageSlug={page.slug}
@@ -604,17 +603,18 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
                         enabled={content.faqSchemaAutoSync === true}
                         onChange={(v: boolean) => {
                           if (v) {
-                            const result = syncFaqSchema(content.faqs, content.schemaMarkup, content.faqSchemaAutoSync === true);
+                            const result = syncFaqSchema(content.faqs, content.faqSchemaMarkup, content.faqSchemaAutoSync === true);
                             if (result.status === "empty") {
                               alert("Add at least one FAQ with both a question and an answer before enabling FAQ Schema.");
                               return;
                             }
                             if (result.status === "cancelled") return;
-                            setContent({ ...content, faqSchemaAutoSync: true, schemaMarkup: result.schemaString });
-                            setSeo({ ...seo, schemaData: result.schemaString });
+                            // Only touches faqSchemaMarkup - any custom schema entered in the
+                            // Schema tab is left untouched and rendered alongside it by
+                            // getResolvedSchemaBlocks.
+                            setContent({ ...content, faqSchemaAutoSync: true, faqSchemaMarkup: result.schemaString });
                           } else {
-                            setContent({ ...content, faqSchemaAutoSync: false, schemaMarkup: "" });
-                            setSeo({ ...seo, schemaData: "" });
+                            setContent({ ...content, faqSchemaAutoSync: false, faqSchemaMarkup: "" });
                           }
                         }}
                         label="FAQ Schema"
@@ -623,14 +623,13 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
                     <button
                       type="button"
                       onClick={() => {
-                        const result = syncFaqSchema(content.faqs, content.schemaMarkup, content.faqSchemaAutoSync === true);
+                        const result = syncFaqSchema(content.faqs, content.faqSchemaMarkup, content.faqSchemaAutoSync === true);
                         if (result.status === "empty") {
                           alert("Add at least one FAQ with both a question and an answer before syncing.");
                           return;
                         }
                         if (result.status === "cancelled") return;
-                        setContent({ ...content, schemaMarkup: result.schemaString, faqSchemaAutoSync: true });
-                        setSeo({ ...seo, schemaData: result.schemaString });
+                        setContent({ ...content, faqSchemaMarkup: result.schemaString, faqSchemaAutoSync: true });
                       }}
                       className="bg-[#2271b1] text-white px-3.5 py-2 text-[12px] font-bold rounded-[3px] hover:bg-[#135e96] transition-colors"
                     >

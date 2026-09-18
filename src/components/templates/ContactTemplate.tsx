@@ -18,7 +18,6 @@ import {
   ChevronDown,
   Loader2
 } from "lucide-react";
-import PageInlineFaqs from "@/components/PageInlineFaqs";
 import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
@@ -634,11 +633,6 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
             </div>
           </div>
         </section>
-        )}
-
-        {/* ── 5. PAGE SPECIFIC FAQS ── */}
-        {(pageData?.content?.faqs?.enabled !== false && pageData?.content?.faqSection?.enabled !== false && rawData?.faqs?.enabled !== false) && (
-          <PageInlineFaqs data={pageData?.content} />
         )}
 
       </div>
