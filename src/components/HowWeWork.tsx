@@ -195,7 +195,7 @@ export default function HowWeWork({ data: overrideData }: { data?: any }) {
   return (
     <section
       id="how-we-work"
-      className="relative bg-[#F8FAFC] dark:bg-[#0a0a14] border-t border-slate-200 dark:border-white/10 py-20 md:py-28"
+      className="relative bg-[#F8FAFC] dark:bg-[#0a0a14] border-t border-slate-200 dark:border-white/10 py-24 md:py-32"
     >
       {/* Dot grid */}
       <div

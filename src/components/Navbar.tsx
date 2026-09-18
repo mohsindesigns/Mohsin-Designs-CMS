@@ -26,7 +26,9 @@ export default function Navbar() {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { companyLinks } = navbar;
-  const services = (servicesData.services || []).filter((s: any) => s.status === 'published' || s.status === undefined);
+  const services = (servicesData.services || []).filter((s: any) =>
+    (s.status === 'published' || s.status === undefined) && s.title && String(s.title).trim()
+  );
 
   useEffect(() => {
     setIsDark(document.documentElement.classList.contains('dark'));

@@ -47,19 +47,22 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
     { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST", link: "/locations" }
   ];
 
-  const hubs = rawHubs.map((hub: any, idx: number) => {
-    const resolved = resolveCountryLocation(hub.name);
-    const dbData = COUNTRIES_DATABASE[resolved.name];
-    return {
-      id: hub.id || `hub-${idx}`,
-      name: hub.name,
-      focus: hub.focus || "Global Partner Delivery",
-      timezone: hub.timezone || resolved.timezone || "UTC",
-      link: hub.link || hub.href || hub.url || "",
-      lat: hub.lat || dbData?.lat || resolved.lat || 20,
-      lng: hub.lng || dbData?.lng || resolved.lng || 0,
-    };
-  });
+  const hubs = rawHubs
+    .filter((hub: any) => hub.name && String(hub.name).trim())
+    .map((hub: any, idx: number) => {
+      const resolved = resolveCountryLocation(hub.name);
+      const dbData = COUNTRIES_DATABASE[resolved.name];
+      return {
+        id: hub.id || `hub-${idx}`,
+        name: hub.name,
+        focus: hub.focus || "Global Partner Delivery",
+        timezone: hub.timezone || resolved.timezone || "UTC",
+        // Fall back to the general locations page so a chip is never a dead click
+        link: hub.link || hub.href || hub.url || "/locations",
+        lat: hub.lat || dbData?.lat || resolved.lat || 20,
+        lng: hub.lng || dbData?.lng || resolved.lng || 0,
+      };
+    });
 
   const selectedHubObj = hubs.find((h) => h.id === activeHub);
 

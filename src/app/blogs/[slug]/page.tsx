@@ -26,7 +26,7 @@ import PageInlineFaqs from "@/components/PageInlineFaqs";
 import { BASE_URL } from "@/lib/constants";
 import { makeLinksDoFollow } from "@/lib/utils";
 import { resolveRobotsMetadata } from "@/lib/seo";
-import CustomSchemaMarkup from "@/components/CustomSchemaMarkup";
+import CustomSchemaMarkup, { extractSchemaBlocks } from "@/components/CustomSchemaMarkup";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 import { getCachedPost, getCachedSiteContent } from "@/lib/content";
@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const isGlobalNoIndex = !!contentData?.settings?.globalNoIndex;
   const pageTitle = post.seo?.metaTitle || `${post.title} | Mohsin Designs`;
   const pageDesc = post.seo?.metaDescription || post.excerpt || `${post.title} - Strategic insights and architectural blueprints from Mohsin Designs.`;
-  const pageImage = post.seo?.ogImage || post.featuredImage || "/portfolio_hero_bg.png";
+  const pageImage = post.seo?.ogImage || post.featuredImage || undefined;
   const canonicalUrl = post.seo?.canonicalUrl || `${BASE_URL}/blogs/${post.slug}/`;
 
   const publishedIso = post.publishedAt ? new Date(post.publishedAt).toISOString() : (post.createdAt ? new Date(post.createdAt).toISOString() : new Date().toISOString());
@@ -71,20 +71,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: "article",
       publishedTime: publishedIso,
       modifiedTime: modifiedIso,
-      images: [
-        {
-          url: pageImage,
-          width: 1200,
-          height: 630,
-          alt: post.title
-        }
-      ]
+      images: pageImage
+        ? [
+            {
+              url: pageImage,
+              width: 1200,
+              height: 630,
+              alt: post.title
+            }
+          ]
+        : undefined
     },
     twitter: {
       card: "summary_large_image",
       title: post.seo?.ogTitle || pageTitle,
       description: post.seo?.ogDescription || pageDesc,
-      images: [pageImage]
+      images: pageImage ? [pageImage] : undefined
     },
     other: {
       "article:published_time": publishedIso,
@@ -141,7 +143,7 @@ export default async function BlogPostPage({ params }: Props) {
       label: ctaSource.ctaSecondary?.label || "Watch Showreel",
       href: ctaSource.ctaSecondary?.href || "/gallery"
     },
-    portraitSrc: ctaSource.portraitSrc || "/founder.png",
+    portraitSrc: ctaSource.portraitSrc || "",
     portraitAlt: ctaSource.portraitAlt || "Mohsin Designs Lead Architect"
   };
 
@@ -242,7 +244,7 @@ export default async function BlogPostPage({ params }: Props) {
     }
   }
 
-  let cleanAvatar = "/founder.png";
+  let cleanAvatar = "";
   if (rawAuthor) {
     const candidate = rawAuthor.image || rawAuthor.avatar;
     if (candidate && typeof candidate === "string" && candidate.startsWith("http")) {
@@ -292,11 +294,22 @@ export default async function BlogPostPage({ params }: Props) {
 
   processedContent = makeLinksDoFollow(processedContent);
 
+  // De-dupe FAQPage schema: only render faqSchemaMarkup if its content isn't
+  // already present in the primary schema field (avoids two FAQPage blocks).
+  const primarySchema = post.schemaMarkup || post.seo?.schemaData;
+  const primarySchemaBlocks = extractSchemaBlocks(primarySchema);
+  const faqSchemaBlocks = extractSchemaBlocks(post.faqSchemaMarkup).filter(
+    (faqBlock) =>
+      !primarySchemaBlocks.some(
+        (b) => b.includes(faqBlock) || (faqBlock.includes("FAQPage") && b.includes("FAQPage"))
+      )
+  );
+
   return (
     <article className="min-h-screen bg-white dark:bg-[#080710] text-brand-dark dark:text-white transition-colors duration-300 pb-24 relative overflow-x-clip font-sans">
-      <CustomSchemaMarkup schema={post.schemaMarkup || post.seo?.schemaData} />
-      {post.faqSchemaMarkup && (
-        <CustomSchemaMarkup schema={post.faqSchemaMarkup} />
+      <CustomSchemaMarkup schema={primarySchema} />
+      {faqSchemaBlocks.length > 0 && (
+        <CustomSchemaMarkup schema={faqSchemaBlocks} />
       )}
       <meta property="article:published_time" content={publishedIso} />
       <meta property="article:modified_time" content={modifiedIso} />
@@ -308,11 +321,6 @@ export default async function BlogPostPage({ params }: Props) {
       <section className="-mt-[110px] sm:-mt-[125px] lg:-mt-[140px] pt-[180px] sm:pt-[210px] lg:pt-[280px] pb-12 sm:pb-16 relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10">
         {/* Background Graphic Bleed */}
         <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
-          <img
-            src="/portfolio_hero_bg.png"
-            alt="Header Background"
-            className="absolute inset-0 w-full h-full object-cover object-right opacity-30 dark:opacity-20"
-          />
           {/* Solid white/dark background mask layer to prevent bleed-through */}
           <div
             className="absolute inset-0 bg-white dark:bg-[#080710]"
@@ -385,15 +393,17 @@ export default async function BlogPostPage({ params }: Props) {
             {/* Author Attribution Card */}
             {authorInfo && (
               <div className="flex flex-col min-[400px]:flex-row items-center gap-5 mb-12 p-6 min-[400px]:p-8 bg-brand-zinc-50 dark:bg-zinc-900/60 border border-brand-zinc-200 dark:border-white/10 rounded-2xl min-[400px]:rounded-3xl">
-                <div className="relative">
-                  <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-xl border-2 border-brand-blue dark:border-brand-yellow">
-                    <img
-                      src={authorInfo.avatar}
-                      alt={authorInfo.name}
-                      className="w-full h-full object-cover object-top"
-                    />
+                {authorInfo.avatar && (
+                  <div className="relative">
+                    <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-xl border-2 border-brand-blue dark:border-brand-yellow">
+                      <img
+                        src={authorInfo.avatar}
+                        alt={authorInfo.name}
+                        className="w-full h-full object-cover object-top"
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
                 <div>
                   <span className="text-[10px] font-mono font-black uppercase tracking-[0.2em] text-brand-blue dark:text-brand-yellow mb-1 block">
                     Article Strategist
@@ -650,6 +660,7 @@ export default async function BlogPostPage({ params }: Props) {
           </div>
 
           {/* Right Side Portrait & Arch Graphic */}
+          {detailCtaBanner.portraitSrc && (
           <div className="hidden lg:flex flex-1 items-end justify-center relative pr-8">
             <div className="absolute bottom-0 w-[320px] h-[320px] bg-gradient-to-t from-[#020485] to-[#0408d9] rounded-full opacity-90 border border-white/20 shadow-2xl" />
             <div className="relative z-10 w-[280px] h-[370px] self-end drop-shadow-2xl overflow-hidden rounded-t-[32px] border-t border-l border-r border-white/25 shadow-2xl">
@@ -662,6 +673,7 @@ export default async function BlogPostPage({ params }: Props) {
             </div>
             <div className="absolute top-16 right-28 h-3.5 w-3.5 rounded-full bg-[#E9BD36] shadow-[0_0_15px_#E9BD36] z-20" />
           </div>
+          )}
         </div>
       </section>
       )}

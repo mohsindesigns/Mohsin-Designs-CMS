@@ -31,7 +31,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const description = seo.metaDescription || service.description || service.tagline || `Professional ${service.title} architecture and digital solutions by Mohsin Designs.`;
   const canonicalUrl = seo.canonicalUrl || `${BASE_URL}/services/${slug}/`;
 
-  const publishedIso = service.createdAt ? new Date(service.createdAt).toISOString() : "2025-01-01T00:00:00.000Z";
+  const publishedIso = service.createdAt
+    ? new Date(service.createdAt).toISOString()
+    : (data?.lastUpdated ? new Date(data.lastUpdated).toISOString() : new Date().toISOString());
   const modifiedIso = service.updatedAt ? new Date(service.updatedAt).toISOString() : (data?.lastUpdated ? new Date(data.lastUpdated).toISOString() : new Date().toISOString());
 
   return {
@@ -125,7 +127,9 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     <>
       {/* Compute dates for meta tags */}
       {(() => {
-        const publishedIso = service.createdAt ? new Date(service.createdAt).toISOString() : new Date().toISOString();
+        const publishedIso = service.createdAt
+          ? new Date(service.createdAt).toISOString()
+          : (data?.lastUpdated ? new Date(data.lastUpdated).toISOString() : new Date().toISOString());
         const modifiedIso = service.updatedAt ? new Date(service.updatedAt).toISOString() : publishedIso;
         return (
           <>

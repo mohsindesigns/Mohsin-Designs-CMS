@@ -150,7 +150,7 @@ export default function BlogTemplate({
     titleLine1: rawData.hero?.titleLine1 || "Modern Engineering &",
     titleHighlight: rawData.hero?.titleHighlight || "Growth Insights",
     description: rawData.hero?.description || "Actionable blueprints, architectural deep-dives, and conversion rate science to build compounding market advantage.",
-    heroBgImage: rawData.hero?.heroBgImage || rawData.hero?.backgroundImage || rawData.hero?.bgImage || "/portfolio_hero_bg.png",
+    heroBgImage: rawData.hero?.heroBgImage || rawData.hero?.backgroundImage || rawData.hero?.bgImage || "",
     heroBgAlt: rawData.hero?.heroBgAlt || "Blog Header Background",
     ctaPrimary: {
       label: rawData.hero?.ctaPrimary?.label || "Explore Articles",
@@ -176,7 +176,7 @@ export default function BlogTemplate({
       label: rawData.ctaBanner?.ctaSecondary?.label || "Watch Showreel",
       href: rawData.ctaBanner?.ctaSecondary?.href || "/gallery"
     },
-    portraitSrc: rawData.ctaBanner?.portraitSrc || "/founder.png",
+    portraitSrc: rawData.ctaBanner?.portraitSrc || "",
     portraitAlt: rawData.ctaBanner?.portraitAlt || "Mohsin Designs Lead Architect"
   };
 
@@ -293,11 +293,13 @@ export default function BlogTemplate({
       <section className="-mt-[110px] sm:-mt-[125px] lg:-mt-[140px] pt-[175px] sm:pt-[200px] lg:pt-[230px] pb-10 md:pb-14 relative overflow-hidden min-h-[580px] sm:min-h-[640px] lg:min-h-[700px] flex items-center border-b border-brand-zinc-200 dark:border-white/10">
         {/* Full Background Graphic */}
         <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
-          <img
-            src={hero.heroBgImage}
-            alt={hero.heroBgAlt}
-            className="w-full h-full object-cover object-right opacity-100 dark:opacity-60"
-          />
+          {hero.heroBgImage && (
+            <img
+              src={hero.heroBgImage}
+              alt={hero.heroBgAlt}
+              className="w-full h-full object-cover object-right opacity-100 dark:opacity-60"
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent dark:from-[#080710] dark:via-[#080710]/80 dark:to-transparent pointer-events-none" />
         </div>
 
@@ -522,6 +524,7 @@ export default function BlogTemplate({
             </div>
 
             {/* Right Side Portrait & Arch Graphic */}
+            {ctaBanner.portraitSrc && (
             <div className="hidden lg:flex flex-1 items-end justify-center relative pr-8">
               <div className="absolute bottom-0 w-[320px] h-[320px] bg-gradient-to-t from-[#020485] to-[#0408d9] rounded-full opacity-90 border border-white/20 shadow-2xl" />
               <div className="relative z-10 w-[280px] h-[370px] self-end drop-shadow-2xl overflow-hidden rounded-t-[32px] border-t border-l border-r border-white/25 shadow-2xl">
@@ -537,6 +540,7 @@ export default function BlogTemplate({
               </div>
               <div className="absolute top-16 right-28 h-3.5 w-3.5 rounded-full bg-[#E9BD36] shadow-[0_0_15px_#E9BD36] z-20" />
             </div>
+            )}
           </div>
         </section>
         )}
