@@ -204,8 +204,8 @@ export default function PageInlineFaqs({
                       {strategyAudit.title}
                     </h3>
                   )}
-                  <div className="text-white/80 dark:text-zinc-300 text-xs leading-relaxed font-sans">
-                    <RichTextRenderer content={strategyAudit.desc} />
+                  <div className="text-white/85 dark:text-zinc-300 text-xs leading-relaxed font-sans">
+                    <RichTextRenderer content={strategyAudit.desc} className="text-white/85 dark:text-zinc-300 [&_*]:!text-white/85 dark:[&_*]:!text-zinc-300 text-xs leading-relaxed" />
                   </div>
                 </div>
                 <a

@@ -108,7 +108,7 @@ export default function RichTextRenderer({ content, className = "", stripParagra
   return (
     <div
       className={`rich-text-content pointer-events-auto
-        font-body leading-relaxed ${hasColorOverride ? "" : "text-foreground/80"}
+        font-body leading-relaxed ${hasColorOverride ? "[&_p]:!text-inherit [&_span]:!text-inherit [&_li]:!text-inherit" : "text-foreground/80"}
         ${className}`}
       dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
     />

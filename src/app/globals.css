@@ -242,6 +242,15 @@
   a:hover {
     @apply text-primary;
   }
+
+  /* Footer links safe default */
+  footer a {
+    color: #cbd5e1;
+  }
+  footer a:hover {
+    color: #E9BD36 !important;
+  }
+
 }
 
 @layer utilities {

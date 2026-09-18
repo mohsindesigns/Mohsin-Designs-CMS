@@ -100,7 +100,6 @@ export default function Footer() {
     : [];
   const servicesListTitle = footer?.services?.title || footer?.labelServices || "Services";
   const servicesList = (matchedSelectedServices.length > 0 ? matchedSelectedServices : allPublishedServices)
-    .slice(0, 6)
     .map((s: any) => ({ label: s.title, href: `/services/${s.slug}` }));
  
   return (
@@ -187,7 +186,7 @@ export default function Footer() {
             <ul className="space-y-2.5 text-xs md:text-sm font-semibold text-slate-300 dark:text-zinc-300">
               {quickLinks.map((link: any, idx: number) => (
                 <li key={idx}>
-                  <Link href={link.href || "/"} className="inline-block hover:text-brand-yellow dark:hover:text-brand-yellow hover:translate-x-1 transition-all duration-200">
+                  <Link href={link.href || "/"} className="inline-block text-slate-300 dark:text-zinc-300 hover:!text-brand-yellow dark:hover:!text-brand-yellow hover:translate-x-1 transition-all duration-200">
                     {link.label}
                   </Link>
                 </li>
@@ -203,7 +202,7 @@ export default function Footer() {
             <ul className="space-y-2.5 text-xs md:text-sm font-semibold text-slate-300 dark:text-zinc-300">
               {servicesList.map((item: any, idx: number) => (
                 <li key={idx}>
-                  <Link href={item.href} className="inline-block hover:text-brand-yellow dark:hover:text-brand-yellow hover:translate-x-1 transition-all duration-200">
+                  <Link href={item.href} className="inline-block text-slate-300 dark:text-zinc-300 hover:!text-brand-yellow dark:hover:!text-brand-yellow hover:translate-x-1 transition-all duration-200">
                     {item.label}
                   </Link>
                 </li>
@@ -236,9 +235,7 @@ export default function Footer() {
               {(contact?.address || footer?.valueAddress) && (
                 <li className="flex flex-col gap-1">
                   <span className="text-[8px] font-mono font-black text-slate-400 dark:text-zinc-400 uppercase tracking-widest">{footer?.labelAddress || "Address"}</span>
-                  <span className="text-white leading-relaxed">
-                    {contact?.address || footer?.valueAddress}
-                  </span>
+                  <div className="text-white leading-relaxed [&_a]:!text-white hover:[&_a]:!text-brand-yellow [&_a]:underline [&_p]:m-0"><RichTextRenderer content={contact?.address || footer?.valueAddress} className="text-white [&_*]:!text-white hover:[&_a]:!text-brand-yellow text-xs md:text-sm" stripParagraphs /></div>
                 </li>
               )}
             </ul>
@@ -327,11 +324,11 @@ export default function Footer() {
         <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full md:w-auto justify-between md:justify-end">
           <div className="flex gap-4 sm:gap-6 text-[10px] font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-wider">
             {footer?.privacyHref && (
-              <Link href={footer.privacyHref} className="hover:text-brand-yellow dark:hover:text-brand-yellow transition-colors">{footer.privacyText}</Link>
+              <Link href={footer.privacyHref} className="text-slate-400 dark:text-zinc-400 hover:!text-brand-yellow dark:hover:!text-brand-yellow transition-colors">{footer.privacyText}</Link>
             )}
             <span>{footer?.linkSeparator || "|"}</span>
             {footer?.termsHref && (
-              <Link href={footer.termsHref} className="hover:text-brand-yellow dark:hover:text-brand-yellow transition-colors">{footer.termsText}</Link>
+              <Link href={footer.termsHref} className="text-slate-400 dark:text-zinc-400 hover:!text-brand-yellow dark:hover:!text-brand-yellow transition-colors">{footer.termsText}</Link>
             )}
           </div>
  
