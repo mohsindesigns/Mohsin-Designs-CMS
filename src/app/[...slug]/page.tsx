@@ -1,4 +1,5 @@
 import { notFound, permanentRedirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 
 export const revalidate = 60; // Cache for 1 minute, updated via revalidatePath in admin panel
 
@@ -45,10 +46,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     if (pageCheck?.template === 'state' || pageCheck?.template === 'city') return {};
   }
 
-  const [page, globalData] = await Promise.all([
+  let [page, globalData] = await Promise.all([
     getCachedPage(slug),
     getCachedSiteContent()
   ]);
+
+  if (!page) {
+    try {
+      const cookieStore = await cookies();
+      if (cookieStore.get('mohsin_admin_session')?.value) {
+        await connectToDatabase();
+        page = await Page.findOne({ slug, isTrashed: { $ne: true } }).lean();
+      }
+    } catch {}
+  }
 
   if (!page) return {};
 
@@ -118,10 +129,20 @@ export default async function DynamicPage({ params }: PageProps) {
     }
   }
 
-  const [pageDoc, globalDataRaw] = await Promise.all([
+  let [pageDoc, globalDataRaw] = await Promise.all([
     getCachedPage(slug),
     getCachedSiteContent()
   ]);
+
+  if (!pageDoc) {
+    try {
+      const cookieStore = await cookies();
+      if (cookieStore.get('mohsin_admin_session')?.value) {
+        await connectToDatabase();
+        pageDoc = await Page.findOne({ slug, isTrashed: { $ne: true } }).lean();
+      }
+    } catch {}
+  }
 
   if (!pageDoc) {
     notFound();

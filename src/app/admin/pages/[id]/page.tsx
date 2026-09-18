@@ -282,7 +282,7 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
           <Link href="/admin/pages" className="bg-white border border-[#2271b1] text-[#2271b1] text-[12px] px-1.5 py-0.5 rounded-[3px] hover:bg-[#f0f6fb] transition-colors">Add New</Link>
           {page?.slug && (
             <Link
-              href={page.slug === 'home' ? '/' : `/${page.slug}`}
+              href={page.slug === 'home' || page.slug === 'homepage' ? '/' : `/${page.slug.replace(/^\/+|\/+$/g, '')}/`}
               target="_blank"
               className="bg-white border border-[#c3c4c7] text-[#2c3338] text-[12px] px-1.5 py-0.5 rounded-[3px] hover:bg-[#f6f7f7] transition-colors flex items-center gap-1"
             >
@@ -310,7 +310,7 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
           <div className="flex flex-wrap items-center gap-1 text-[12px] text-[#646970] px-1">
             <strong>Permalink:</strong>
             <span className="bg-[#f0f0f1] border border-[#c3c4c7] px-1 rounded-sm text-[#1d2327] break-all">
-              {BASE_URL}/{page.slug}
+              {BASE_URL}/{page.slug === 'home' || page.slug === 'homepage' ? '' : `${page.slug.replace(/^\/+|\/+$/g, '')}/`}
             </span>
             <button
               onClick={async () => {
@@ -725,7 +725,7 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
               {page?.slug && (
                 <div className="pt-2 border-t border-[#f0f0f1] mt-2">
                   <Link
-                    href={page.slug === 'home' ? '/' : `/${page.slug}`}
+                    href={page.slug === 'home' || page.slug === 'homepage' ? '/' : `/${page.slug.replace(/^\/+|\/+$/g, '')}/`}
                     target="_blank"
                     className="text-[#2271b1] hover:underline flex items-center gap-1"
                   >

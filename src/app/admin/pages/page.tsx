@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, X } from "lucide-react";
+import { BASE_URL } from "@/lib/constants";
 
 export type DisplayRow = {
   page: any;
@@ -133,9 +134,10 @@ function buildDisplayRows(
 
   roots.forEach((root) => appendPageAndChildren(root, 0));
 
-  // Guard: unvisited pages due to circular chains
+  // Only append truly unvisited pages that have NO parent anywhere in the hierarchy (orphans/cycles)
   list.forEach((p) => {
-    if (!seen.has(String(p._id))) {
+    const pId = String(p._id);
+    if (!seen.has(pId) && !childIds.has(pId)) {
       appendPageAndChildren(p, 0);
     }
   });
@@ -168,8 +170,6 @@ export default function PagesDashboard() {
     selectedCountrySlug: "usa",
     selectedStateSlug: ""
   });
-
-  const BASE_URL = "https://mohsindesigns.com";
 
   useEffect(() => {
     fetchPages();
@@ -686,12 +686,12 @@ export default function PagesDashboard() {
                       }
                     >
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        {/* Classic WordPress em-dashes */}
+                        {/* Clean hierarchical indentation indicator (no em-dash) */}
                         {depth === 1 && (
-                          <span className="text-[#a7aaad] font-bold mr-0.5 select-none">—</span>
+                          <span className="text-[#8c8f94] text-[12px] font-mono select-none mr-0.5">└</span>
                         )}
                         {depth >= 2 && (
-                          <span className="text-[#a7aaad] font-bold mr-0.5 select-none">— —</span>
+                          <span className="text-[#8c8f94] text-[12px] font-mono select-none mr-0.5">└─</span>
                         )}
 
                         {/* Expand / Collapse toggle arrow if page has children */}
@@ -699,7 +699,7 @@ export default function PagesDashboard() {
                           <button
                             type="button"
                             onClick={() => toggleExpand(String(page._id))}
-                            className="text-[#646970] hover:text-[#2271b1] p-0.5 text-[10px] font-mono leading-none focus:outline-none select-none transition-colors"
+                            className="text-[#646970] hover:text-[#2271b1] p-0.5 text-[11px] font-mono leading-none focus:outline-none select-none transition-colors"
                             title={isExpanded ? "Collapse subpages" : "Expand subpages"}
                           >
                             {isExpanded ? "▼" : "▶"}
@@ -726,13 +726,13 @@ export default function PagesDashboard() {
 
                         {page.status === "draft" && (
                           <span className="text-[#646970] font-normal italic text-[12px]">
-                            — Draft
+                            (Draft)
                           </span>
                         )}
                       </div>
 
-                      {/* Classic WordPress row hover actions */}
-                      <div className="flex items-center gap-2 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {/* Classic WordPress row hover actions (visible on mobile / touch, hover on desktop) */}
+                      <div className="flex items-center gap-2 mt-1 sm:opacity-0 group-hover:opacity-100 transition-opacity flex-wrap">
                         <Link
                           href={`/admin/pages/${page._id}`}
                           className="text-[#2271b1] hover:underline text-[12px]"
@@ -762,7 +762,7 @@ export default function PagesDashboard() {
                         </button>
                         <span className="text-[#a7aaad]">|</span>
                         <Link
-                          href={page.slug === "home" ? "/" : `/${page.slug}/`}
+                          href={page.slug === "home" || page.slug === "homepage" ? "/" : `/${page.slug.replace(/^\/+|\/+$/g, "")}/`}
                           target="_blank"
                           className="text-[#2271b1] hover:underline text-[12px]"
                         >
