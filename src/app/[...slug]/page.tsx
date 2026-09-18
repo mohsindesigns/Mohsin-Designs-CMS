@@ -8,12 +8,11 @@ import SiteContent from '@/models/Content';
 import { getTemplate } from '@/components/templates/TemplateRegistry';
 import { Metadata } from 'next';
 import CustomSchemaMarkup from '@/components/CustomSchemaMarkup';
-import LocationBreadcrumbs from '@/components/LocationBreadcrumbs';
 import { BASE_URL } from '@/lib/constants';
 import { resolveRobotsMetadata } from '@/lib/seo';
 import { getCachedPage, getCachedSiteContent } from '@/lib/content';
 import { getResolvedSchemaBlocks } from '@/lib/dynamicSchema';
-import { validateLocationHierarchy, buildLocationBreadcrumbs } from '@/lib/locationHierarchy';
+import { validateLocationHierarchy } from '@/lib/locationHierarchy';
 
 interface PageProps {
   params: Promise<{ slug: string[] }>;
@@ -168,18 +167,12 @@ export default async function DynamicPage({ params }: PageProps) {
     slug
   });
 
-  // Build breadcrumbs for location or standard page
-  const breadcrumbs = buildLocationBreadcrumbs(page, slug);
-
   // Use TemplateWrapper to handle local content context overrides
   const { TemplateWrapper } = await import('@/components/templates/TemplateRegistry');
 
   return (
     <main>
       <CustomSchemaMarkup schema={resolvedSchemaBlocks} />
-      {breadcrumbs.length > 1 && (
-        <LocationBreadcrumbs items={breadcrumbs} className="border-b border-slate-100 dark:border-white/5" />
-      )}
       <TemplateWrapper
         templateName={page.template}
         pageData={{
