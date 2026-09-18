@@ -3,11 +3,14 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, X, ExternalLink } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 
 export type DisplayRow = {
   page: any;
   depth: number;
+  hasChildren: boolean;
+  childCount: number;
+  isExpanded: boolean;
 };
 
 /**
@@ -15,9 +18,13 @@ export type DisplayRow = {
  * - Parent pages are root (depth 0).
  * - Child pages (e.g. States) appear directly under their parent with depth 1.
  * - Sub-child pages (e.g. Cities) appear directly under their state with depth 2.
- * - All children under each parent are sorted alphabetically.
+ * - By default, every parent is collapsed unless explicitly expanded or in search mode.
  */
-function buildDisplayRows(list: any[]): DisplayRow[] {
+function buildDisplayRows(
+  list: any[],
+  expandedIds: Set<string>,
+  isSearching: boolean = false
+): DisplayRow[] {
   const byId = new Map<string, any>();
   const bySlug = new Map<string, any>();
 
@@ -70,6 +77,16 @@ function buildDisplayRows(list: any[]): DisplayRow[] {
     );
   }
 
+  // Count total descendants recursively for child count indicator
+  const countDescendants = (pageId: string): number => {
+    const children = childrenOf.get(pageId) || [];
+    let count = children.length;
+    for (const child of children) {
+      count += countDescendants(String(child._id));
+    }
+    return count;
+  };
+
   const rows: DisplayRow[] = [];
   const seen = new Set<string>();
 
@@ -78,13 +95,25 @@ function buildDisplayRows(list: any[]): DisplayRow[] {
     if (seen.has(pId)) return;
     seen.add(pId);
 
-    rows.push({ page, depth });
-
     const children = childrenOf.get(pId) || [];
-    children.forEach((child) => appendPageAndChildren(child, depth + 1));
+    const hasChildren = children.length > 0;
+    const isExpanded = isSearching || expandedIds.has(pId);
+
+    rows.push({
+      page,
+      depth,
+      hasChildren,
+      childCount: countDescendants(pId),
+      isExpanded
+    });
+
+    // Only render children if this parent is expanded (or when actively searching)
+    if (isExpanded) {
+      children.forEach((child) => appendPageAndChildren(child, depth + 1));
+    }
   };
 
-  // Identify root pages (pages that are not children of any active page)
+  // Identify root pages
   const roots: any[] = [];
   list.forEach((p) => {
     if (!childIds.has(String(p._id))) {
@@ -104,7 +133,7 @@ function buildDisplayRows(list: any[]): DisplayRow[] {
 
   roots.forEach((root) => appendPageAndChildren(root, 0));
 
-  // Guard: if any pages were missed due to circular references
+  // Guard: unvisited pages due to circular chains
   list.forEach((p) => {
     if (!seen.has(String(p._id))) {
       appendPageAndChildren(p, 0);
@@ -124,6 +153,9 @@ export default function PagesDashboard() {
   const [filter, setFilter] = useState("all");
   const [bulkAction, setBulkAction] = useState("");
   const [editingPage, setEditingPage] = useState<any>(null);
+
+  // By default, every parent is collapsed (empty set)
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
   // New Page Form State
   const [newPage, setNewPage] = useState({
@@ -174,6 +206,27 @@ export default function PagesDashboard() {
       return false;
     });
   }, [statePages, newPage.selectedCountrySlug]);
+
+  const toggleExpand = (id: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const expandAll = () => {
+    const allParentIds = new Set<string>();
+    pages.forEach((p) => {
+      allParentIds.add(String(p._id));
+    });
+    setExpandedIds(allParentIds);
+  };
+
+  const collapseAll = () => {
+    setExpandedIds(new Set());
+  };
 
   const handleCreatePage = async () => {
     if (!newPage.title || !newPage.slug) {
@@ -431,10 +484,10 @@ export default function PagesDashboard() {
     });
   }, [pages, search, filter]);
 
-  // Display rows with WordPress tree structure
+  // Display rows with WordPress tree structure (collapsed by default)
   const displayRows = useMemo(() => {
-    return buildDisplayRows(filteredPages);
-  }, [filteredPages]);
+    return buildDisplayRows(filteredPages, expandedIds, search.trim().length > 0);
+  }, [filteredPages, expandedIds, search]);
 
   if (loading) {
     return (
@@ -469,35 +522,56 @@ export default function PagesDashboard() {
         </button>
       </div>
 
-      {/* WordPress Standard Filter Links */}
-      <div className="flex items-center gap-2 text-[13px]">
-        <button
-          onClick={() => setFilter("all")}
-          className={`${filter === "all" ? "text-black font-bold" : "text-[#2271b1] hover:text-[#135e96] underline decoration-transparent hover:decoration-current"}`}
-        >
-          All <span className="text-[#646970] font-normal">({pages.filter((p) => !p.isTrashed).length})</span>
-        </button>
-        <span className="text-[#c3c4c7]">|</span>
-        <button
-          onClick={() => setFilter("published")}
-          className={`${filter === "published" ? "text-black font-bold" : "text-[#2271b1] hover:text-[#135e96] underline decoration-transparent hover:decoration-current"}`}
-        >
-          Published <span className="text-[#646970] font-normal">({pages.filter((p) => p.status === "published" && !p.isTrashed).length})</span>
-        </button>
-        <span className="text-[#c3c4c7]">|</span>
-        <button
-          onClick={() => setFilter("draft")}
-          className={`${filter === "draft" ? "text-black font-bold" : "text-[#2271b1] hover:text-[#135e96] underline decoration-transparent hover:decoration-current"}`}
-        >
-          Drafts <span className="text-[#646970] font-normal">({pages.filter((p) => p.status === "draft" && !p.isTrashed).length})</span>
-        </button>
-        <span className="text-[#c3c4c7]">|</span>
-        <button
-          onClick={() => setFilter("trash")}
-          className={`${filter === "trash" ? "text-black font-bold" : "text-[#d63638] underline decoration-transparent hover:decoration-current"}`}
-        >
-          Trash <span className="text-[#646970] font-normal">({pages.filter((p) => p.isTrashed).length})</span>
-        </button>
+      {/* WordPress Standard Filter Links + Collapse / Expand Controls */}
+      <div className="flex flex-wrap items-center justify-between gap-2 text-[13px]">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setFilter("all")}
+            className={`${filter === "all" ? "text-black font-bold" : "text-[#2271b1] hover:text-[#135e96] underline decoration-transparent hover:decoration-current"}`}
+          >
+            All <span className="text-[#646970] font-normal">({pages.filter((p) => !p.isTrashed).length})</span>
+          </button>
+          <span className="text-[#c3c4c7]">|</span>
+          <button
+            onClick={() => setFilter("published")}
+            className={`${filter === "published" ? "text-black font-bold" : "text-[#2271b1] hover:text-[#135e96] underline decoration-transparent hover:decoration-current"}`}
+          >
+            Published <span className="text-[#646970] font-normal">({pages.filter((p) => p.status === "published" && !p.isTrashed).length})</span>
+          </button>
+          <span className="text-[#c3c4c7]">|</span>
+          <button
+            onClick={() => setFilter("draft")}
+            className={`${filter === "draft" ? "text-black font-bold" : "text-[#2271b1] hover:text-[#135e96] underline decoration-transparent hover:decoration-current"}`}
+          >
+            Drafts <span className="text-[#646970] font-normal">({pages.filter((p) => p.status === "draft" && !p.isTrashed).length})</span>
+          </button>
+          <span className="text-[#c3c4c7]">|</span>
+          <button
+            onClick={() => setFilter("trash")}
+            className={`${filter === "trash" ? "text-black font-bold" : "text-[#d63638] underline decoration-transparent hover:decoration-current"}`}
+          >
+            Trash <span className="text-[#646970] font-normal">({pages.filter((p) => p.isTrashed).length})</span>
+          </button>
+        </div>
+
+        {/* Clean, simple Expand All / Collapse All utilities */}
+        <div className="flex items-center gap-2 text-[12px] text-[#50575e]">
+          <button
+            type="button"
+            onClick={expandAll}
+            className="text-[#2271b1] hover:text-[#135e96] hover:underline"
+          >
+            Expand All
+          </button>
+          <span className="text-[#c3c4c7]">|</span>
+          <button
+            type="button"
+            onClick={collapseAll}
+            className="text-[#2271b1] hover:text-[#135e96] hover:underline"
+          >
+            Collapse All
+          </button>
+        </div>
       </div>
 
       {/* Top Bar: Bulk Actions & Search */}
@@ -580,7 +654,7 @@ export default function PagesDashboard() {
                 </td>
               </tr>
             ) : (
-              displayRows.map(({ page, depth }, idx) => {
+              displayRows.map(({ page, depth, hasChildren, childCount, isExpanded }, idx) => {
                 const isSelected = selectedIds.includes(page._id);
 
                 return (
@@ -600,7 +674,7 @@ export default function PagesDashboard() {
                       />
                     </td>
 
-                    {/* Title with WordPress-style em-dash indentation */}
+                    {/* Title with WordPress-style em-dash indentation & collapsible toggle */}
                     <td
                       className="py-3 px-3 align-top"
                       style={
@@ -611,25 +685,51 @@ export default function PagesDashboard() {
                           : undefined
                       }
                     >
-                      <strong className="text-[#2271b1] block text-[14px]">
+                      <div className="flex items-center gap-1.5 flex-wrap">
                         {/* Classic WordPress em-dashes */}
                         {depth === 1 && (
-                          <span className="text-[#a7aaad] font-bold mr-1.5 select-none">—</span>
+                          <span className="text-[#a7aaad] font-bold mr-0.5 select-none">—</span>
                         )}
                         {depth >= 2 && (
-                          <span className="text-[#a7aaad] font-bold mr-1.5 select-none">— —</span>
+                          <span className="text-[#a7aaad] font-bold mr-0.5 select-none">— —</span>
                         )}
 
-                        <Link href={`/admin/pages/${page._id}`} className="hover:underline">
-                          {page.title}
-                        </Link>
+                        {/* Expand / Collapse toggle arrow if page has children */}
+                        {hasChildren ? (
+                          <button
+                            type="button"
+                            onClick={() => toggleExpand(String(page._id))}
+                            className="text-[#646970] hover:text-[#2271b1] p-0.5 text-[10px] font-mono leading-none focus:outline-none select-none transition-colors"
+                            title={isExpanded ? "Collapse subpages" : "Expand subpages"}
+                          >
+                            {isExpanded ? "▼" : "▶"}
+                          </button>
+                        ) : null}
+
+                        {/* Title Link */}
+                        <strong className="text-[#2271b1] text-[14px]">
+                          <Link href={`/admin/pages/${page._id}`} className="hover:underline">
+                            {page.title}
+                          </Link>
+                        </strong>
+
+                        {/* If collapsed, show subtle count indicator */}
+                        {hasChildren && !isExpanded && (
+                          <button
+                            type="button"
+                            onClick={() => toggleExpand(String(page._id))}
+                            className="text-[#646970] hover:text-[#2271b1] text-[11px] font-normal cursor-pointer hover:underline select-none"
+                          >
+                            ({childCount} {childCount === 1 ? "subpage" : "subpages"})
+                          </button>
+                        )}
 
                         {page.status === "draft" && (
-                          <span className="text-[#646970] font-normal italic ml-1.5">
+                          <span className="text-[#646970] font-normal italic text-[12px]">
                             — Draft
                           </span>
                         )}
-                      </strong>
+                      </div>
 
                       {/* Classic WordPress row hover actions */}
                       <div className="flex items-center gap-2 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
