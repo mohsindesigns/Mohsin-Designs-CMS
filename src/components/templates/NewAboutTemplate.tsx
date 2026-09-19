@@ -1,5 +1,6 @@
 "use client";
 
+import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import { motion } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
@@ -277,7 +278,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
         {/* ── 1. HERO SECTION ── */}
         {hero?.enabled !== false && (
-        <section className="relative overflow-hidden py-4 sm:py-6 md:py-8 border-b border-brand-zinc-200 dark:border-white/10">
+        <section className="relative overflow-hidden pt-28 md:pt-36 lg:pt-40 pb-16 lg:pb-24 border-b border-brand-zinc-200 dark:border-white/10">
           <div className="absolute inset-0 -z-10 bg-linear-grid-blue-4 [background-size:40px_40px] opacity-[0.05] dark:opacity-[0.08]" />
 
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
@@ -288,6 +289,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                 className="lg:col-span-6 space-y-6 text-left"
               >
+                <PageBreadcrumbs page={pageData} />
                 {hero.badgeText && (
                   <div className="inline-flex pointer-events-auto">
                     <span className="inline-flex items-center gap-2 rounded-full bg-brand-yellow px-4 py-1.5 text-[10px] font-black tracking-wider uppercase text-[#080710] select-none shadow-sm">
@@ -361,7 +363,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
         {/* ── 2. STATS BAR SECTION ── */}
         {stats?.enabled !== false && (
-        <section className="relative overflow-hidden py-12 sm:py-16 md:py-20 border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/10 dark:bg-white/[0.005]">
+        <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/10 dark:bg-white/[0.005] section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-stretch">
               <div className="lg:col-span-4 flex flex-col justify-between self-stretch text-left">
@@ -444,7 +446,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
         {/* ── 3. WHO WE ARE SECTION ── */}
         {whoWeAre?.enabled !== false && (
-        <section className="relative overflow-hidden py-12 sm:py-16 md:py-20 border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710]">
+        <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] section-y">
           {whoWeAre.watermark && (
             <div className="absolute right-[5%] top-[10%] text-[15vw] sm:text-[12vw] font-heading font-black tracking-tighter text-[#0306AC]/[0.015] dark:text-white/[0.01] pointer-events-none select-none z-0 leading-none">
               {whoWeAre.watermark}
@@ -562,7 +564,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
         {philosophy?.enabled !== false && (
         <section
           ref={sectionRef}
-          className="relative overflow-hidden py-12 sm:py-16 md:py-20 border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] transition-colors duration-300"
+          className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] transition-colors duration-300 section-y"
         >
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808007_1px,transparent_1px),linear-gradient(to_bottom,#80808007_1px,transparent_1px)] bg-[size:48px_48px] pointer-events-none -z-10" />
 
@@ -791,7 +793,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
         {/* ── 5. OUR SERVICES SECTION ──────── */}
         {(servicesDirectory.enabled !== false && stagesList.length > 0) && (
-          <section id="services-directory" className="relative overflow-x-clip py-12 sm:py-16 md:py-20 border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710]">
+          <section id="services-directory" className="relative overflow-x-clip border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] section-y">
             {/* Mobile Pills */}
             <div className="sticky top-14 sm:top-16 z-30 flex lg:hidden overflow-x-auto no-scrollbar py-3 px-4 gap-2 bg-white/95 dark:bg-[#080710]/95 backdrop-blur-xl border-b border-brand-zinc-200 dark:border-white/10 shadow-sm mb-8 select-none">
               {stagesList.map((item: any, idx: number) => {
@@ -964,7 +966,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
         {/* ── 6. PROCESS SECTION ──────── */}
         {methodology?.enabled !== false && (
-        <section className="relative overflow-hidden py-12 sm:py-16 md:py-20 border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710]">
+        <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 space-y-16">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 text-left border-b border-brand-zinc-200/80 dark:border-white/10 pb-12">
               <div className="max-w-2xl space-y-4">
@@ -1055,7 +1057,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
         {/* ── 7. DOMAIN EXPERTISE SECTION ──────── */}
         {domainExpertise?.enabled !== false && (
-        <section className="relative overflow-hidden py-12 sm:py-16 md:py-20 border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710]">
+        <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 space-y-16">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 text-left border-b border-brand-zinc-200/80 dark:border-white/10 pb-12">
               <div className="max-w-2xl space-y-4">
@@ -1153,7 +1155,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
         {/* ── 8. WHY BUSINESSES CHOOSE US SECTION ──────── */}
         {whyChooseUs?.enabled !== false && (
-        <section className="relative overflow-hidden py-12 sm:py-16 md:py-20 border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710]">
+        <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 space-y-16">
             <div className="text-center flex flex-col items-center max-w-3xl mx-auto space-y-4">
               {whyChooseUs.eyebrow && (
@@ -1225,7 +1227,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
         {/* ── 9. ABOUT FOUNDER SECTION ──────── */}
         {executiveLeadership?.enabled !== false && (
-        <section className="relative overflow-hidden py-12 sm:py-16 md:py-20 border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710]">
+        <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
               <div className="lg:col-span-5 flex justify-center">
@@ -1298,7 +1300,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
         {/* ── 11. CTA BANNER SECTION ──────── */}
         {ctaBanner?.enabled !== false && (
-        <section className="relative overflow-hidden py-8 sm:py-12 bg-white dark:bg-[#080710]">
+        <section className="relative overflow-hidden bg-white dark:bg-[#080710] section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
             <div className="cta-banner-card">
               <div className="relative z-10 flex flex-col justify-center gap-6 p-8 sm:p-12 lg:p-14 lg:max-w-[58%] text-left">
@@ -1378,7 +1380,7 @@ function ReviewsCarousel({ reviewsData }: { reviewsData: any }) {
   const marqueeTrack2 = [...reviewsList.slice().reverse(), ...reviewsList.slice().reverse(), ...reviewsList.slice().reverse(), ...reviewsList.slice().reverse()];
 
   return (
-    <section className="relative overflow-hidden pt-10 sm:pt-14 pb-4 sm:pb-6 border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710]">
+    <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] section-y">
       <style>{`
         @keyframes marqueeLeft {
           0% { transform: translate3d(0, 0, 0); }

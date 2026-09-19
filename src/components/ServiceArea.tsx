@@ -69,7 +69,7 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
   return (
     <section
       id="service-area"
-      className="relative overflow-hidden bg-transparent py-24 md:py-32 border-t border-b border-slate-200 dark:border-white/10"
+      className="relative overflow-hidden bg-transparent border-t border-b border-slate-200 dark:border-white/10 section-y"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12">
         <div className="flex flex-col lg:grid lg:grid-cols-12 gap-10 lg:gap-16 items-start lg:items-center">

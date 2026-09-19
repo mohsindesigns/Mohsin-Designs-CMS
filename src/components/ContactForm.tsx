@@ -96,7 +96,7 @@ export default function ContactForm({ data }: { data?: any }) {
     <section
       id="contact"
       onMouseMove={handleMouseMove}
-      className="relative overflow-hidden bg-[#F9FAFB] dark:bg-[#080710] py-24 md:py-32 border-b border-brand-zinc-200 dark:border-white/10"
+      className="relative overflow-hidden bg-[#F9FAFB] dark:bg-[#080710] border-b border-brand-zinc-200 dark:border-white/10 section-y"
     >
 
       {/* Subtle Light Tilted Grid Lines */}

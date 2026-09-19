@@ -1,3 +1,4 @@
+import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -343,17 +344,14 @@ export default async function BlogPostPage({ params }: Props) {
 
         <div className="mx-auto max-w-6xl px-4 sm:px-6 relative z-10 w-full">
           {/* Breadcrumb Row */}
-          <div className="flex flex-wrap items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-brand-zinc-500 dark:text-zinc-400 mb-5">
-            <Link href="/" className="hover:text-brand-blue dark:hover:text-brand-yellow transition-colors">
-              Home
-            </Link>
-            <span className="text-brand-zinc-300 dark:text-zinc-600">/</span>
-            <Link href="/blogs" className="hover:text-brand-blue dark:hover:text-brand-yellow transition-colors">
-              Blogs
-            </Link>
-            <span className="text-brand-zinc-300 dark:text-zinc-600">/</span>
-            <span className="text-brand-blue dark:text-brand-yellow font-black">{categoryBadge}</span>
-          </div>
+          <PageBreadcrumbs
+            className="mb-5"
+            items={[
+              { name: "Home", url: "/" },
+              { name: "Blogs", url: "/blogs/" },
+              { name: post.title, url: "#" },
+            ]}
+          />
 
           {/* Title */}
           <h1 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white leading-[1.18] tracking-tight mb-6 max-w-3xl drop-shadow-sm">

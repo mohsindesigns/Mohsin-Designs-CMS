@@ -1,5 +1,6 @@
 "use client";
 
+import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import dynamic from "next/dynamic";
 import Hero from "@/components/Hero";
 import Services from "@/components/Services";
@@ -37,7 +38,7 @@ export default function CountryTemplate({ pageData, params }: { pageData?: any; 
   return (
     <div className="relative">
       {/* 1. Hero Section */}
-      {content.hero?.enabled !== false && hasContent(content.hero) && <Hero data={content.hero} />}
+      {content.hero?.enabled !== false && hasContent(content.hero) && <Hero data={content.hero} breadcrumb={<PageBreadcrumbs page={pageData} />} />}
 
       {/* 1.5 Trusted Brands */}
       {(content.trustedBrands?.enabled !== false && content.clientTrust?.enabled !== false && content.trustedBy?.enabled !== false) && 

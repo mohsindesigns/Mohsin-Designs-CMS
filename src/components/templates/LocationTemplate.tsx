@@ -1,5 +1,6 @@
 "use client";
 
+import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import React, { useEffect, useRef } from "react";
 import { motion, useMotionValue, useSpring, useInView } from "framer-motion";
 import * as LucideIcons from "lucide-react";
@@ -379,6 +380,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               className="lg:col-span-7 space-y-6 text-left"
             >
+              <PageBreadcrumbs page={pageData} />
               {/* Star Badge */}
               <div className="inline-flex pointer-events-auto">
                 <span className="inline-flex items-center gap-2 rounded-full bg-brand-yellow px-4 py-1.5 text-[10px] font-black tracking-wider uppercase text-[#080710] select-none shadow-sm">
@@ -432,7 +434,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
 
       {/* ── 2. STATS BAR SECTION with 3D Spring Roller Counters ── */}
       {((stats as any)?.enabled !== false && (locationData as any).stats?.enabled !== false) && (
-      <section className="relative overflow-hidden py-12 md:py-16 border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/10 dark:bg-[#0c0b18]/10">
+      <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/10 dark:bg-[#0c0b18]/10 section-y">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
@@ -560,7 +562,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
 
       {/* ── 4. COUNTRIES WE SERVE ── */}
       {((presence as any)?.enabled !== false && (locationData as any).presence?.enabled !== false) && (
-      <section className="relative overflow-hidden py-20 md:py-28 border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710]">
+      <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] section-y">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 space-y-16">
 
           {/* Header Block */}
@@ -737,7 +739,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
 
       {/* ── 5. CTA BANNER SECTION ── */}
       {((ctaBanner as any)?.enabled !== false && (locationData as any).ctaBanner?.enabled !== false) && (
-      <section id="contact" className="relative overflow-hidden py-12 bg-white dark:bg-[#080710]">
+      <section id="contact" className="relative overflow-hidden bg-white dark:bg-[#080710] section-y">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
           <div className="cta-banner-card">
             <div className="relative z-10 flex flex-col justify-center gap-6 p-8 sm:p-12 lg:p-14 lg:max-w-[58%]">

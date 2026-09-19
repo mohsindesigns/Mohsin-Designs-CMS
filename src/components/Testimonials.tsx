@@ -195,7 +195,7 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
     <section
       id="testimonials"
       ref={containerRef}
-      className="relative overflow-hidden bg-[#F8FAFC] dark:bg-[#0a0a14] py-24 md:py-32 border-t border-b border-slate-200 dark:border-white/10"
+      className="relative overflow-hidden bg-[#F8FAFC] dark:bg-[#0a0a14] border-t border-b border-slate-200 dark:border-white/10 section-y"
     >
       {/* Styles for horizontal marquee animations & hover pause */}
       <style>{`

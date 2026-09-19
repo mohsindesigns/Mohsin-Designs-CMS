@@ -233,7 +233,7 @@ export default function BlogSection({
   return (
     <section
       id="blog"
-      className="relative overflow-hidden bg-white dark:bg-[#080710] py-24 md:py-32 border-t border-b border-slate-200 dark:border-white/10"
+      className="relative overflow-hidden bg-white dark:bg-[#080710] border-t border-b border-slate-200 dark:border-white/10 section-y"
     >
       {/* Decorative Background Glows */}
       <div className="absolute top-1/3 -right-32 w-96 h-96 rounded-full bg-[#E9BD36]/10 blur-3xl pointer-events-none z-0" />

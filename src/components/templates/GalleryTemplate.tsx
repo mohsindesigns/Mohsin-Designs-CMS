@@ -1,5 +1,6 @@
 "use client";
 
+import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import React, { useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -256,6 +257,7 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="max-w-2xl space-y-6 text-left"
           >
+            <PageBreadcrumbs page={pageData} />
             {/* Brand Pill Badge */}
             <div className="inline-flex pointer-events-auto">
               <span className="inline-flex items-center gap-2 rounded-full bg-brand-yellow px-4 py-1.5 text-[10px] font-black tracking-wider uppercase text-[#080710] select-none shadow-sm">
@@ -310,7 +312,7 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
 
         {/* ── 2. PORTFOLIO GRID (WITHOUT FILTER TABS) ─────────────────── */}
         {(galleryPage.portfolioGrid?.enabled !== false && galleryPage.projects?.enabled !== false) && (
-        <section id="projects" className="my-10">
+        <section id="projects" className="section-gap">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {projects.map((project: any) => (
               <div
@@ -369,7 +371,7 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
 
         {/* ── 3. OUR CREATIVE PROCESS SECTION (CLEAN 4-STEP GRID) ── */}
         {((processSection as any)?.enabled !== false && (galleryPage as any).processSection?.enabled !== false && (galleryPage as any).process?.enabled !== false) && (
-        <section className="my-20">
+        <section className="section-gap">
           <div className="bg-white dark:bg-[#12121e] border border-brand-zinc-200/90 dark:border-white/10 rounded-[32px] p-8 sm:p-14 text-center relative overflow-hidden shadow-sm">
             {/* Ambient Glow */}
             <div className="absolute top-0 right-0 w-96 h-96 bg-brand-blue/[0.04] dark:bg-brand-blue/[0.08] rounded-full blur-[100px] pointer-events-none" />
@@ -450,7 +452,7 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
 
         {/* ── 4. BOTTOM SIGNATURE CTA BANNER ─────────────────────────── */}
         {((ctaBanner as any)?.enabled !== false && (galleryPage as any).ctaBanner?.enabled !== false) && (
-        <section id="contact" className="my-12 relative overflow-hidden">
+        <section id="contact" className="relative overflow-hidden section-gap">
           <div className="cta-banner-card !shadow-[0_16px_40px_-12px_rgba(3,6,172,0.22)] dark:!shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)]">
             <div className="relative z-10 flex flex-col justify-center gap-6 p-8 sm:p-12 lg:p-14 lg:max-w-[58%]">
               {/* Eyebrow Pill */}

@@ -262,6 +262,18 @@
     @apply px-6 md:px-12 lg:px-24 py-20 md:py-32;
   }
 
+  /* Single source of truth for vertical rhythm between full-width page sections.
+     Every template/section should use this instead of ad-hoc py-* values. */
+  .section-y {
+    @apply py-16 sm:py-20 lg:py-24;
+  }
+
+  /* Same idea for pages that stack cards inside one shared container
+     (blog, gallery, contact): a uniform gap between sibling blocks. */
+  .section-gap {
+    @apply my-12 md:my-16;
+  }
+
   .heading-xl {
     @apply text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-medium text-foreground;
     font-family: var(--font-heading);

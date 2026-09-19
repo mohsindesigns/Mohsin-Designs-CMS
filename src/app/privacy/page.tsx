@@ -1,6 +1,7 @@
 // app/privacy/page.tsx or src/app/privacy/page.tsx
 "use client";
 
+import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import { motion } from "framer-motion";
 import { Icon } from "../../config/icons";
 
@@ -21,6 +22,11 @@ export default function PrivacyPolicyPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-8"
           >
+            <PageBreadcrumbs
+              align="center"
+              className="mb-6"
+              items={[{ name: "Home", url: "/" }, { name: "Privacy Policy", url: "/privacy/" }]}
+            />
             <div className="inline-flex items-center gap-2 bg-primary/5 px-4 py-2 rounded-full border border-primary/10 mb-6">
               <Icon name="Shield" className="w-4 h-4 text-primary" />
               <span className="text-primary uppercase tracking-wider text-xs font-semibold">Legal</span>

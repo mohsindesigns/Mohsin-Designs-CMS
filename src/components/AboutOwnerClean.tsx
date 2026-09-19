@@ -43,7 +43,7 @@ export default function AboutOwnerClean({ data: propData }: { data?: any }) {
   const circleLetter = about?.circleLetter || "M";
 
   return (
-    <section id="about" className="relative overflow-hidden bg-white dark:bg-[#080710] py-24 md:py-32 border-t border-brand-zinc-200 dark:border-white/10">
+    <section id="about" className="relative overflow-hidden bg-white dark:bg-[#080710] border-t border-brand-zinc-200 dark:border-white/10 section-y">
 
       {/* Structural background grid lines */}
       <div className="absolute inset-x-0 top-12 h-[1px] bg-brand-blue/[0.04] pointer-events-none" />

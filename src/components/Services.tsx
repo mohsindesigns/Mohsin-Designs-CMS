@@ -71,7 +71,7 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
     ];
 
   return (
-    <section id="services" className="relative overflow-hidden bg-[#F8FAFC] dark:bg-[#0a0a14] py-24 md:py-32 border-t border-brand-zinc-200 dark:border-white/10">
+    <section id="services" className="relative overflow-hidden bg-[#F8FAFC] dark:bg-[#0a0a14] border-t border-brand-zinc-200 dark:border-white/10 section-y">
 
       <style>{`
         .scrollbar-none::-webkit-scrollbar { display: none; }

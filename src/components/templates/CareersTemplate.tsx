@@ -1,5 +1,6 @@
 "use client";
 
+import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Upload, Send, Briefcase, FileText, User, Mail, Phone, CheckCircle, ArrowRight } from 'lucide-react';
@@ -108,7 +109,7 @@ ${message}
   return (
     <main className="bg-white min-h-screen font-body w-full overflow-hidden">
       {(careersData?.enabled !== false) && (
-      <section className="relative py-16 md:py-32 overflow-hidden w-full">
+      <section className="relative overflow-hidden w-full pt-28 md:pt-36 lg:pt-40 pb-16 sm:pb-20 lg:pb-24">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: `linear-gradient(to right, #2563eb 1px, transparent 1px), linear-gradient(to bottom, #2563eb 1px, transparent 1px)`, backgroundSize: '80px 80px' }} />
         </div>
@@ -116,6 +117,7 @@ ${message}
         <div className="max-w-5xl mx-auto px-4 relative z-30">
           {careersData?.section?.enabled !== false && (
           <div className="max-w-3xl mx-auto text-center mb-12 md:mb-24">
+            <PageBreadcrumbs page={pageData} align="center" className="mb-6" />
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-center gap-3 mb-6">
               <div className="w-8 h-[2px] bg-gradient-to-r from-blue-300 to-blue-500" />
               <span className="text-xs font-medium tracking-[0.2em] uppercase text-blue-600">{careersData?.section?.badge || "Join Mohsin Designs"}</span>

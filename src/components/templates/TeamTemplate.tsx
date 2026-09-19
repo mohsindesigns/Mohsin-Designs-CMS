@@ -1,5 +1,6 @@
 "use client";
 
+import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import { useRef, useEffect, useState } from "react";
 import { useContent } from "../../hooks/useContent";
 import RichTextRenderer from "../ui/RichTextRenderer";
@@ -136,7 +137,7 @@ export default function TeamTemplate({ pageData, params }: { pageData?: any, par
   return (
     <main className="bg-white">
       {(teamData?.enabled !== false) && (
-      <section ref={sectionRef} className="relative py-14 md:py-18 lg:py-20 overflow-hidden">
+      <section ref={sectionRef} className="relative overflow-hidden pt-28 md:pt-36 lg:pt-40 pb-16 sm:pb-20 lg:pb-24">
         <div className="absolute inset-0 pointer-events-none bg-[#f8fafc]">
           <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `linear-gradient(to right, #0f172a 1px, transparent 1px), linear-gradient(to bottom, #0f172a 1px, transparent 1px)`, backgroundSize: '100px 100px' }} />
         </div>
@@ -144,6 +145,7 @@ export default function TeamTemplate({ pageData, params }: { pageData?: any, par
         <div className="max-w-7xl mx-auto px-3 sm:px-6 md:px-8 relative z-30">
           {teamData?.section?.enabled !== false && (
           <div className="max-w-3xl mx-auto text-center mb-16 sm:mb-24 md:mb-32 leadership-reveal relative z-20">
+            <PageBreadcrumbs page={pageData} align="center" className="mb-6" />
             <div className="flex items-center justify-center gap-2 sm:gap-3 mb-6">
               <div className="w-6 sm:w-8 h-[2px] bg-gradient-to-r from-blue-300 to-blue-500" />
               <span className="text-[10px] sm:text-xs font-semibold tracking-[0.2em] uppercase text-blue-600">{teamData?.section?.badge || "Our Leadership"}</span>

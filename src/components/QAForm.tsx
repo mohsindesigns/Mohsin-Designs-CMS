@@ -725,7 +725,7 @@ ${formData.message}
   return (
     <section
       ref={sectionRef}
-      className="relative bg-background py-12 sm:py-14 md:py-16 lg:py-16 overflow-hidden"
+      className="relative bg-background overflow-hidden section-y"
     >
       <div className="absolute inset-0 pointer-events-none">
         <div

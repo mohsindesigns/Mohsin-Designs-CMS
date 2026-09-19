@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, type ReactNode } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, ArrowUpRight, Star } from "lucide-react";
 import Image from "next/image";
@@ -20,7 +20,7 @@ const clipVariants = {
   })
 };
 
-export default function Hero({ data, content: overrideContent }: { data?: any; content?: any } = {}) {
+export default function Hero({ data, content: overrideContent, breadcrumb }: { data?: any; content?: any; breadcrumb?: ReactNode } = {}) {
   const content = useContent();
   const hero = data || overrideContent || content.hero;
 
@@ -159,6 +159,12 @@ export default function Hero({ data, content: overrideContent }: { data?: any; c
             style={{ y: yText }}
             className="lg:col-span-7 space-y-6 text-center lg:text-left flex flex-col items-center lg:items-start will-change-transform pb-4 pointer-events-auto"
           >
+            {breadcrumb && (
+              <motion.div variants={itemVariants} className="pointer-events-auto">
+                {breadcrumb}
+              </motion.div>
+            )}
+
             {/* Pill Badge */}
             <motion.div variants={itemVariants} className="inline-flex pointer-events-auto">
               <span className="inline-flex items-center gap-2 rounded-full bg-brand-yellow px-4 py-1.5 text-[10px] font-black tracking-wider uppercase text-[#080710] select-none shadow-sm">

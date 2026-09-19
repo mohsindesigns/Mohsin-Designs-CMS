@@ -1,5 +1,6 @@
 "use client";
 
+import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import { useContent } from "../../hooks/useContent";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 
@@ -16,7 +17,7 @@ export default function FAQTemplate({ pageData, params }: { pageData?: any, para
     const badge = pageData?.content?.faqBadge || pageData?.faqBadge || section?.badge;
 
     return (
-        <main>
+        <main className="pt-12 lg:pt-8">
             {(pageData?.content?.faqs?.enabled !== false && pageData?.content?.faqSection?.enabled !== false && section?.enabled !== false) && (
                 <PageInlineFaqs
                     faqs={faq?.itemsEnabled !== false ? items : []}
@@ -25,6 +26,7 @@ export default function FAQTemplate({ pageData, params }: { pageData?: any, para
                     subtitle={subtitle}
                     badge={badge}
                     showFilters={faq?.categoriesEnabled !== false}
+                    breadcrumb={<PageBreadcrumbs page={pageData} />}
                 />
             )}
         </main>

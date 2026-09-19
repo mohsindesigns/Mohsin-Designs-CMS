@@ -150,10 +150,6 @@ export default function Footer() {
             
             <div className="flex flex-col gap-1.5 pt-1">
               <div className="flex items-center gap-2 text-[9px] font-mono tracking-widest text-slate-300 dark:text-zinc-400">
-                <span className="relative flex h-1.5 w-1.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
-                </span>
                 {footer?.studioStatus}
               </div>
               <span className="text-[9px] font-mono text-slate-400 dark:text-zinc-400 tracking-wider">
@@ -318,18 +314,14 @@ export default function Footer() {
       {/* Bottom Bar */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 pt-10 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-white/5">
         <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-widest text-center md:text-left">
-          {footer?.copyrightPrefix}{currentYear}{footer?.copyrightSuffix}
+          {footer?.copyrightPrefix || "© "}{currentYear}{footer?.copyrightSuffix || " Mohsin Designs. All rights reserved."}
         </p>
         
         <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full md:w-auto justify-between md:justify-end">
           <div className="flex gap-4 sm:gap-6 text-[10px] font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-wider">
-            {footer?.privacyHref && (
-              <Link href={footer.privacyHref} className="text-slate-400 dark:text-zinc-400 hover:!text-brand-yellow dark:hover:!text-brand-yellow transition-colors">{footer.privacyText}</Link>
-            )}
+            <Link href={footer?.privacyHref || "/privacy"} className="text-slate-400 dark:text-zinc-400 hover:!text-brand-yellow dark:hover:!text-brand-yellow transition-colors">{footer?.privacyText || "Privacy Policy"}</Link>
             <span>{footer?.linkSeparator || "|"}</span>
-            {footer?.termsHref && (
-              <Link href={footer.termsHref} className="text-slate-400 dark:text-zinc-400 hover:!text-brand-yellow dark:hover:!text-brand-yellow transition-colors">{footer.termsText}</Link>
-            )}
+            <Link href={footer?.termsHref || "/terms"} className="text-slate-400 dark:text-zinc-400 hover:!text-brand-yellow dark:hover:!text-brand-yellow transition-colors">{footer?.termsText || "Terms & Conditions"}</Link>
           </div>
  
           <button

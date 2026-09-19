@@ -100,7 +100,7 @@ export default function AboutOwner() {
   const ctaHref = about?.buttons?.[0]?.href || "/contact";
 
   return (
-    <section id="about" className="relative overflow-hidden bg-transparent py-24 md:py-32 border-b border-brand-zinc-200 dark:border-white/10">
+    <section id="about" className="relative overflow-hidden bg-transparent border-b border-brand-zinc-200 dark:border-white/10 section-y">
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">

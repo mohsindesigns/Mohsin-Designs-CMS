@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useContent } from "@/hooks/useContent";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import { isSafeHref } from "@/lib/utils";
@@ -26,6 +26,8 @@ interface PageInlineFaqsProps {
   showFilters?: boolean;
   titleIntro?: string;
   titleHighlight?: string;
+  /** Optional breadcrumb rendered above the section tag (standalone FAQ page). */
+  breadcrumb?: ReactNode;
 }
 
 export default function PageInlineFaqs({
@@ -39,7 +41,8 @@ export default function PageInlineFaqs({
   titleHighlight: propTitleHighlight,
   hideHeader = false,
   faqSchemaMarkup,
-  showFilters
+  showFilters,
+  breadcrumb
 }: PageInlineFaqsProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
   const content = useContent();
@@ -141,7 +144,7 @@ export default function PageInlineFaqs({
   return (
     <section
       id="faq"
-      className="relative overflow-x-clip bg-white dark:bg-[#080710] py-24 md:py-32 border-t border-b border-slate-200 dark:border-white/10"
+      className="relative overflow-x-clip bg-white dark:bg-[#080710] border-t border-b border-slate-200 dark:border-white/10 section-y"
     >
       {/* Decorative Soft Blur Orb */}
       <div className="absolute -left-32 top-1/3 h-96 w-96 rounded-full bg-primary/5 dark:bg-yellow-400/5 blur-3xl pointer-events-none" />
@@ -159,6 +162,7 @@ export default function PageInlineFaqs({
           <div className="lg:col-span-5 lg:sticky lg:top-28 self-start space-y-8 flex flex-col justify-start">
             
             <div className="flex flex-col gap-4">
+              {breadcrumb}
               {/* Category Pill Tag */}
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary dark:text-yellow-400 text-xs font-bold uppercase tracking-widest self-start">
                 <span className="relative flex h-2 w-2">

@@ -109,7 +109,7 @@ export default function TrustedBrandsSection({ data }: { data?: any }) {
   };
 
   return (
-    <section className="relative overflow-hidden py-16 sm:py-20 border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/40 dark:bg-[#0c0b18]/40">
+    <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/40 dark:bg-[#0c0b18]/40 section-y">
       
       {/* Background Ambience Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-brand-blue/[0.03] dark:bg-brand-yellow/[0.02] blur-[120px] pointer-events-none -z-10" />

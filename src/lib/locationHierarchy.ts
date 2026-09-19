@@ -1,6 +1,7 @@
 import connectToDatabase from "@/lib/mongodb";
 import Page from "@/models/Page";
 import { BASE_URL } from "@/lib/constants";
+import { buildPageBreadcrumbs } from "./breadcrumbs";
 
 /**
  * Normalizes a string into a clean, URL-safe slug.
@@ -179,58 +180,8 @@ export async function validateLocationHierarchy(slugSegments: string[]): Promise
 
 /**
  * Builds breadcrumb trail for any location or standard page.
+ * (Implementation lives in ./breadcrumbs so client components can share it.)
  */
 export function buildLocationBreadcrumbs(page: any, slug: string): Array<{ name: string; url: string }> {
-  const crumbs: Array<{ name: string; url: string }> = [
-    { name: "Home", url: "/" }
-  ];
-
-  if (!page) return crumbs;
-
-  const template = page.template;
-  const content = page.content || {};
-
-  if (template === "city") {
-    const countryName = content.country || "USA";
-    const countrySlug = content.countrySlug || "usa";
-    const stateName = content.state || "State";
-    const stateSlug = content.stateSlug || "";
-    const cityName = content.city || page.title;
-
-    crumbs.push({ name: countryName, url: `/${countrySlug}/` });
-    if (stateSlug) {
-      crumbs.push({ name: stateName, url: `/${countrySlug}/${stateSlug}/` });
-    }
-    crumbs.push({ name: cityName, url: `/${page.slug}/` });
-    return crumbs;
-  }
-
-  if (template === "state") {
-    const countryName = content.country || "USA";
-    const countrySlug = content.countrySlug || "usa";
-    const stateName = page.title;
-
-    crumbs.push({ name: countryName, url: `/${countrySlug}/` });
-    crumbs.push({ name: stateName, url: `/${page.slug}/` });
-    return crumbs;
-  }
-
-  if (template === "country") {
-    crumbs.push({ name: page.title, url: `/${page.slug}/` });
-    return crumbs;
-  }
-
-  // Default path-based crumbs for other pages
-  const parts = (slug || page.slug || "").split("/").filter(Boolean);
-  let accum = "";
-  for (let i = 0; i < parts.length; i++) {
-    accum += `/${parts[i]}`;
-    const isLast = i === parts.length - 1;
-    const name = isLast
-      ? (page.seo?.breadcrumbTitle || page.title || parts[i])
-      : parts[i].split("-").map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
-    crumbs.push({ name, url: `${accum}/` });
-  }
-
-  return crumbs;
+  return buildPageBreadcrumbs(page, slug);
 }

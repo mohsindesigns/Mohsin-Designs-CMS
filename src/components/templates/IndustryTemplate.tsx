@@ -1,5 +1,6 @@
 "use client";
 
+import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -382,6 +383,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
 
             {/* Left Column: Hero Content */}
             <div className="lg:col-span-7 space-y-6 text-left">
+              <PageBreadcrumbs page={pageData} />
               {hero.eyebrowBadge && (
                 <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 dark:bg-white/10 border border-blue-200/80 dark:border-white/15 px-3.5 py-1.5 text-[10px] font-mono tracking-widest text-[#0306AC] dark:text-[#E9BD36] font-bold uppercase w-fit shadow-xs">
                   <span className="relative flex h-2 w-2">
@@ -605,7 +607,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
       {/* 2. SERVICES CAPABILITIES GRID SECTION                               */}
       {/* ─────────────────────────────────────────────────────────────────── */}
       {((servicesSec as any)?.enabled !== false && (industryData as any).servicesSection?.enabled !== false && (industryData as any).services?.enabled !== false) && (
-      <section className="relative overflow-hidden py-16 sm:py-20 lg:py-24 border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/50 dark:bg-white/[0.01]">
+      <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/50 dark:bg-white/[0.01] section-y">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 space-y-14">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 text-left border-b border-brand-zinc-200/80 dark:border-white/10 pb-8">
             <div className="max-w-2xl space-y-3">
@@ -684,7 +686,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
       {/* 3. DOMAIN EXPERTISE / INDUSTRIES SECTION                            */}
       {/* ─────────────────────────────────────────────────────────────────── */}
       {((domainExpertise as any)?.enabled !== false && (industryData as any).domainExpertise?.enabled !== false) && (
-      <section id="sectors" className="relative overflow-hidden py-16 sm:py-20 lg:py-24 border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710]">
+      <section id="sectors" className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] section-y">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 space-y-16">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 text-left border-b border-brand-zinc-200/80 dark:border-white/10 pb-10">
             <div className="max-w-2xl space-y-4">
@@ -779,7 +781,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
       {/* 4. ABOUT FOUNDER SECTION                                            */}
       {/* ─────────────────────────────────────────────────────────────────── */}
       {((founder as any)?.enabled !== false && (industryData as any).founder?.enabled !== false) && (
-      <section className="relative overflow-hidden py-16 sm:py-20 lg:py-24 border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/50 dark:bg-white/[0.01]">
+      <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/50 dark:bg-white/[0.01] section-y">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
 
@@ -840,7 +842,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
       {/* 5. WHY BUSINESSES CHOOSE US SECTION                                 */}
       {/* ─────────────────────────────────────────────────────────────────── */}
       {((whyChooseUs as any)?.enabled !== false && (industryData as any).whyChooseUs?.enabled !== false) && (
-      <section className="relative overflow-hidden py-16 sm:py-20 lg:py-24 border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710]">
+      <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] section-y">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 space-y-16">
           <div className="text-center flex flex-col items-center max-w-3xl mx-auto space-y-4">
             {whyChooseUs.eyebrow && (
@@ -931,7 +933,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
       {/* 7. FINAL HIGH-CONVERSION CTA BANNER SECTION                         */}
       {/* ─────────────────────────────────────────────────────────────────── */}
       {((ctaBanner as any)?.enabled !== false && (industryData as any).ctaBanner?.enabled !== false) && (
-      <section className="relative overflow-hidden py-12 sm:py-16 bg-white dark:bg-[#080710]">
+      <section className="relative overflow-hidden bg-white dark:bg-[#080710] section-y">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
           <div className="cta-banner-card !shadow-[0_16px_40px_-12px_rgba(3,6,172,0.22)] dark:!shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)]">
             <div className="relative z-10 flex flex-col justify-center gap-6 p-8 sm:p-12 lg:p-14 lg:max-w-[58%] text-left">

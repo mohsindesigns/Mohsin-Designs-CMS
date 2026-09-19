@@ -1,5 +1,6 @@
 "use client";
 
+import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -309,6 +310,7 @@ export default function BlogTemplate({
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="max-w-2xl space-y-6 text-left"
           >
+            <PageBreadcrumbs page={pageData} />
             {/* Brand Pill Badge */}
             <div className="inline-flex pointer-events-auto">
               <span className="inline-flex items-center gap-2 rounded-full bg-brand-yellow px-4 py-1.5 text-[10px] font-black tracking-wider uppercase text-[#080710] select-none shadow-sm">
@@ -363,7 +365,7 @@ export default function BlogTemplate({
 
         {/* ── 2. MODERN EDITORIAL CARDS WITH LINK WRAPPER ─────────────── */}
         {((rawData as any).feedEnabled !== false && (rawData as any).feed?.enabled !== false && (rawData as any).articles?.enabled !== false) && (
-        <section id="articles" className="my-10">
+        <section id="articles" className="section-gap">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentPage}
@@ -435,7 +437,7 @@ export default function BlogTemplate({
 
         {/* ── 4. SLEEK FLOATING GLASSMORPHIC PAGINATION CAPSULE ───────── */}
         {(totalPages > 1 && (rawData as any).feedEnabled !== false && (rawData as any).feed?.enabled !== false) && (
-          <section className="my-14 flex items-center justify-center">
+          <section className="flex items-center justify-center section-gap">
             <div className="bg-white/90 dark:bg-[#12121e]/90 backdrop-blur-2xl border border-brand-zinc-200/90 dark:border-white/10 shadow-[0_10px_35px_rgba(3,6,172,0.08)] dark:shadow-[0_10px_35px_rgba(0,0,0,0.4)] p-2 rounded-full flex items-center gap-2 max-w-fit">
               <button
                 disabled={currentPage === 1}
@@ -474,7 +476,7 @@ export default function BlogTemplate({
 
         {/* ── 5. HIGH-CONVERSION AGENCY CTA BANNER ────────────────────── */}
         {((ctaBanner as any)?.enabled !== false && (rawData as any).ctaBanner?.enabled !== false) && (
-        <section id="contact" className="my-8 relative overflow-hidden">
+        <section id="contact" className="relative overflow-hidden section-gap">
           <div className="cta-banner-card !shadow-[0_16px_40px_-12px_rgba(3,6,172,0.22)] dark:!shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)]">
             <div className="relative z-10 flex flex-col justify-center gap-6 p-8 sm:p-12 lg:p-14 lg:max-w-[62%]">
               {/* Eyebrow Pill */}

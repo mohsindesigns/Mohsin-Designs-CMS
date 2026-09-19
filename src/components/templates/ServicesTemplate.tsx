@@ -1,5 +1,6 @@
 "use client";
 
+import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -326,6 +327,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                 transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] as any }}
                 className="lg:col-span-8 space-y-6 text-left"
               >
+                <PageBreadcrumbs page={pageData} />
                 {/* Badge */}
                 <div className="flex items-center gap-3">
                   <span className="inline-flex items-center gap-2 rounded-full bg-[#e9bd36] px-4 py-1.5 text-[10px] font-mono font-black tracking-widest uppercase text-[#080710] shadow-sm">
@@ -387,7 +389,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
 
       {/* ── 2. SERVICES GRID ────────────────────────────────────────────────── */}
       {(grid as any)?.enabled !== false && (
-        <section id="services-grid" className="relative overflow-hidden py-16 sm:py-20 md:py-24 border-b border-gray-200 dark:border-white/10">
+        <section id="services-grid" className="relative overflow-hidden border-b border-gray-200 dark:border-white/10 section-y">
 
           {/* Subtle grid background */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808007_1px,transparent_1px),linear-gradient(to_bottom,#80808007_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
@@ -447,7 +449,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
 
       {/* ── 3. CTA BANNER ──────────────────────────────────────────────────── */}
       {(ctaBanner as any)?.enabled !== false && (
-        <section className="my-16 relative overflow-hidden">
+        <section className="relative overflow-hidden section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12">
             <motion.div
               initial={{ opacity: 0, y: 24 }}

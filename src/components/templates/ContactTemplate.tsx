@@ -1,5 +1,6 @@
 "use client";
 
+import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -253,6 +254,7 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
               transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
               className="lg:col-span-5 space-y-6 text-left"
             >
+              <PageBreadcrumbs page={pageData} />
               {/* Eyebrow Badge */}
               <div className="flex items-center gap-3">
                 <span className="inline-flex items-center gap-2 rounded-full bg-brand-yellow px-4 py-1.5 text-[10px] font-mono font-black tracking-widest uppercase text-[#080710] shadow-sm">
@@ -448,7 +450,7 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
 
         {/* ── 2. OTHER WAYS TO CONNECT (4 CARDS ROW) ─────────────────── */}
         {((contactMethods as any)?.enabled !== false && (rawData as any).contactMethods?.enabled !== false && (rawData as any).methods?.enabled !== false) && (
-        <section className="mb-20">
+        <section className="section-gap">
           <div className="text-center max-w-xl mx-auto mb-10 space-y-2">
             <span className="text-xs font-mono font-black uppercase tracking-widest text-brand-blue dark:text-brand-yellow">
               {contactMethods.eyebrow}
@@ -490,7 +492,7 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
 
         {/* ── 3. INTERACTIVE MAP & OUR OFFICE SECTION ─────────────────── */}
         {((office as any)?.enabled !== false && (rawData as any).office?.enabled !== false) && (
-        <section className="mb-20">
+        <section className="section-gap">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
 
             {/* Left: Custom Styled Embedded Map */}
@@ -567,7 +569,7 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
 
         {/* ── 4. SIGNATURE AGENCY CTA BANNER ─────────────────────────── */}
         {((ctaBanner as any)?.enabled !== false && (rawData as any).ctaBanner?.enabled !== false) && (
-        <section className="my-8 relative overflow-hidden">
+        <section className="relative overflow-hidden section-gap">
           <div className="cta-banner-card !shadow-[0_16px_40px_-12px_rgba(3,6,172,0.22)] dark:!shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)]">
             <div className="relative z-10 flex flex-col justify-center gap-6 p-8 sm:p-12 lg:p-14 lg:max-w-[62%]">
               {/* Eyebrow Pill */}

@@ -1,11 +1,12 @@
 "use client";
 
+import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import {
   MapPin, CheckCircle, Map, ShieldCheck, Clock, Award, Check, Navigation,
-  Building, Compass, ArrowRight, Zap, Star, ChevronRight,
+  Building, Compass, ArrowRight, Zap, Star,
   Home, Layout, TreePine, Building2, Droplets, BadgeCheck, TrendingUp, Users,
   Phone, Calendar, ClipboardCheck, Hammer, Sparkles, Globe, ShieldAlert,
   Wrench, PencilRuler, Flame, AlertTriangle, FileCheck2, FileText, Layers, RefreshCw,
@@ -239,12 +240,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
         <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
 
           {/* Breadcrumbs - High Contrast */}
-          <nav className="inline-flex items-center gap-2 text-xs sm:text-sm  text-white mb-8 uppercase tracking-wider bg-white/10 px-5 py-2.5 rounded-full backdrop-blur-md border border-white/20">
-            <Link href="/" className=" text-white transition-colors">Home</Link>
-            <ChevronRight className="w-4 h-4 text-slate-400" />
-
-            <span className="text-white font-black">{pageData?.title || "Coverage"}</span>
-          </nav>
+          <PageBreadcrumbs page={pageData} tone="onDark" align="center" className="mb-8" />
 
           {/* Page Title */}
           <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-heading font-extrabold text-white tracking-tight leading-tight mb-6 drop-shadow-lg">
@@ -282,7 +278,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
       {/* ================= MAP SECTION - macOS BROWSER DEVICE MOCKUP (Fully Dynamic) ================= */}
       {(mapData?.enabled !== false && content.map?.enabled !== false) && (
-      <section className="py-24 px-6 max-w-7xl mx-auto">
+      <section className="px-6 max-w-7xl mx-auto section-y">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
 
           {/* Left Side: Local Highlight Details */}
@@ -371,7 +367,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
       {/* ================= PROCESS SECTION - DYNAMIC TIMELINE CARDS ================= */}
       {(processSection?.enabled !== false && content.process?.enabled !== false) && (
-      <section className="py-24 bg-white border-y border-slate-200/60">
+      <section className="bg-white border-y border-slate-200/60 section-y">
         <div className="max-w-7xl mx-auto px-6">
 
           <div className="text-center mb-16">
@@ -429,7 +425,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
       {/* ================= PREMIUM MATERIALS WE INSTALL (Fully Dynamic) ================= */}
       {(materialsData?.enabled !== false && content.materials?.enabled !== false) && (
-      <section className="py-24 bg-slate-50">
+      <section className="bg-slate-50 section-y">
         <div className="max-w-7xl mx-auto px-6">
 
           <div className="text-center mb-16">
@@ -505,7 +501,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
       {/* ================= COMMUNITY ACCORDION COUNTY CARD GROUPS ================= */}
       {(regionsSection?.enabled !== false && content.regions?.enabled !== false) && (
-      <section className="py-24 px-6 max-w-7xl mx-auto">
+      <section className="px-6 max-w-7xl mx-auto section-y">
         <div className="text-center mb-12">
           <h2 className="text-2xl sm:text-4xl font-heading font-bold text-slate-900 mb-4">
             {regionsSection.title}
@@ -545,7 +541,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
       {/* ================= 3. ACTIVE SERVICE CARDS ================= */}
       {(servicesSection?.enabled !== false && content.services?.enabled !== false) && (
-      <section className="bg-white py-24 border-y border-slate-200/60">
+      <section className="bg-white border-y border-slate-200/60 section-y">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <span className="text-primary text-xs font-bold tracking-widest uppercase mb-3 block">{servicesSection.headline}</span>
@@ -566,7 +562,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
       {/* ================= WHY CHOOSE US - (Middle Card Highlighted in Premium Dark-Slate) (Fully Dynamic) ================= */}
       {(whyChooseData?.enabled !== false && content.whyChooseUs?.enabled !== false) && (
-      <section className="py-24 bg-slate-50">
+      <section className="bg-slate-50 section-y">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <span className="text-primary text-xs font-bold tracking-widest uppercase mb-3 block">{whyChooseData.headline}</span>
@@ -621,7 +617,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
       {/* ================= DYNAMIC OVERVIEW SECTION (Heading left, Image right) ================= */}
       {(overviewData?.enabled !== false && content.overview?.enabled !== false) && (
-      <section className="py-24 bg-white border-y border-slate-200/60">
+      <section className="bg-white border-y border-slate-200/60 section-y">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
 
@@ -684,7 +680,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
       {/* ================= FINAL CTA SECTION ================= */}
       {(cta?.enabled !== false && content.cta?.enabled !== false) && (
-      <section className="py-20 px-6 max-w-5xl mx-auto">
+      <section className="px-6 max-w-5xl mx-auto section-y">
         <div className="relative bg-slate-950 rounded-[2rem] p-10 sm:p-16 text-center border border-slate-800 shadow-xl overflow-hidden">
           <div className="absolute inset-0 z-0">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 opacity-70" />

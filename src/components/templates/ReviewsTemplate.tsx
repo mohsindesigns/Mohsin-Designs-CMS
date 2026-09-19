@@ -1,5 +1,6 @@
 "use client";
 
+import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import { useRef, useState, useEffect } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { Icon } from "../../config/icons";
@@ -63,9 +64,10 @@ export default function ReviewsTemplate({ pageData, params }: { pageData?: any, 
     const [selectedVideo, setSelectedVideo] = useState<{ id: string; title: string } | null>(null);
 
     return (
-        <main className="relative min-h-screen bg-gray-50 dark:bg-background pt-24 pb-16">
+        <main className="relative min-h-screen bg-gray-50 dark:bg-background pt-28 md:pt-36 lg:pt-40 pb-16 sm:pb-20 lg:pb-24">
             {data?.enabled !== false && (
             <div className="max-w-6xl mx-auto px-4 text-center">
+                <PageBreadcrumbs page={pageData} align="center" className="mb-8" />
                 {section?.enabled !== false && (
                 <>
                     <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-bold tracking-tight mb-4" dangerouslySetInnerHTML={{ __html: section?.headline || 'Customer Stories' }} />

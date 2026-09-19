@@ -1,5 +1,6 @@
 "use client";
 
+import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import React, { use, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -1051,19 +1052,13 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 className="lg:col-span-7 space-y-6 text-left"
               >
                 {/* Breadcrumbs */}
-                <nav className="flex items-center gap-2 text-[10px] sm:text-xs font-mono tracking-wider uppercase text-brand-zinc-400 dark:text-zinc-550 select-none">
-                  <Link href="/" className="hover:text-brand-blue dark:hover:text-brand-yellow transition-colors">
-                    Home
-                  </Link>
-                  <span className="text-brand-zinc-300 dark:text-zinc-700">/</span>
-                  <Link href="/services" className="hover:text-brand-blue dark:hover:text-brand-yellow transition-colors">
-                    Services
-                  </Link>
-                  <span className="text-brand-zinc-300 dark:text-zinc-700">/</span>
-                  <span className="text-brand-blue dark:text-brand-yellow font-black">
-                    {service.title}
-                  </span>
-                </nav>
+                <PageBreadcrumbs
+                  items={[
+                    { name: "Home", url: "/" },
+                    { name: "Services", url: "/services/" },
+                    { name: service.title, url: "#" },
+                  ]}
+                />
 
                 <h1 className="font-heading text-3xl xs:text-3xl sm:text-4xl lg:text-[40px] font-black tracking-tight leading-[1.18] text-brand-dark dark:text-white max-w-2xl">
                   {service.hero.titleIntro}{" "}
@@ -1320,7 +1315,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
       {/* ── 03. WHAT'S INCLUDED (3 Core Pillars) ── */}
       {(service as any).whatIncluded?.enabled !== false && (
-        <section id="what-included" className="relative overflow-hidden py-20 md:py-24 border-b border-brand-zinc-200 dark:border-white/10">
+        <section id="what-included" className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
             <motion.div
@@ -1397,7 +1392,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
       {/* ── 04. SERVICE STRATEGY (Left Sticky Right Scroll) ── */}
       {((service as any).strategy?.enabled !== false && (service as any).fullScope?.enabled !== false) && (
-        <section className="relative overflow-x-clip py-20 md:py-24 bg-zinc-50/15 dark:bg-[#0c0b18]/10 border-b border-brand-zinc-200 dark:border-white/10">
+        <section className="relative overflow-x-clip bg-zinc-50/15 dark:bg-[#0c0b18]/10 border-b border-brand-zinc-200 dark:border-white/10 section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
@@ -1447,7 +1442,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
       {/* ── 05. BUSINESS BENEFITS (4 Key Benefits) ── */}
       {(service as any).benefits?.enabled !== false && (
-        <section className="relative overflow-hidden py-20 md:py-24 border-b border-brand-zinc-200 dark:border-white/10">
+        <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
             <motion.div
@@ -1528,7 +1523,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
       {/* ── 06. OUR PROCESS / ROADMAP (Sticky Left, Scroll Right Editorial Cards) ── */}
       {(service as any).process?.enabled !== false && (
-        <section className="relative overflow-x-clip py-20 md:py-24 bg-zinc-50/15 dark:bg-[#0c0b18]/10 border-b border-brand-zinc-200 dark:border-white/10">
+        <section className="relative overflow-x-clip bg-zinc-50/15 dark:bg-[#0c0b18]/10 border-b border-brand-zinc-200 dark:border-white/10 section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
@@ -1631,7 +1626,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
       {/* ── 07. RESULTS (Metrics & Dynamic Cases Switcher) ── */}
       {(service as any).results?.enabled !== false && (
-        <section className="relative overflow-hidden py-16 md:py-20 border-b border-brand-zinc-200 dark:border-white/10 bg-[#F9FAFB]/50 dark:bg-[#0c0b18]/15">
+        <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-[#F9FAFB]/50 dark:bg-[#0c0b18]/15 section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
@@ -1789,7 +1784,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
       {/* ── 08. INDUSTRIES WE SERVE (Dashed Icon Container Style) ── */}
       {(service as any).industries?.enabled !== false && (
-        <section className="relative overflow-hidden py-20 md:py-24 border-b border-brand-zinc-200 dark:border-white/10">
+        <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
             <motion.div
@@ -1892,7 +1887,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
       {/* ── 09. TOOLS & TECHNOLOGY (Console Mockup Style) ── */}
       {(service as any).tools?.enabled !== false && (
-        <section className="relative overflow-hidden py-20 md:py-24 bg-zinc-50/10 dark:bg-[#0c0b18]/10 border-b border-brand-zinc-200 dark:border-white/10">
+        <section className="relative overflow-hidden bg-zinc-50/10 dark:bg-[#0c0b18]/10 border-b border-brand-zinc-200 dark:border-white/10 section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-14 text-left">
@@ -1966,7 +1961,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
       {/* ── 10. WHY CHOOSE US (Sticky Left, Scroll Right Differentiators) ── */}
       {(service as any).whyChooseUs?.enabled !== false && (
-        <section className="relative overflow-x-clip py-20 md:py-24 border-b border-brand-zinc-200 dark:border-white/10">
+        <section className="relative overflow-x-clip border-b border-brand-zinc-200 dark:border-white/10 section-y">
           <div className="absolute inset-0 opacity-[0.022] pointer-events-none" style={{ backgroundImage: "radial-gradient(#0306AC 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
 
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
@@ -2075,7 +2070,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
         const pricingLgColsClass = pricingPlanCount >= 4 ? "lg:grid-cols-4" : pricingPlanCount === 3 ? "lg:grid-cols-3" : pricingPlanCount === 2 ? "lg:grid-cols-2" : "lg:grid-cols-1";
         const pricingMdColsClass = pricingPlanCount === 1 ? "md:grid-cols-1" : "md:grid-cols-2";
         return (
-        <section className="relative overflow-hidden py-20 md:py-24 bg-zinc-50/5 dark:bg-[#0c0b18]/5 border-b border-brand-zinc-200 dark:border-white/10">
+        <section className="relative overflow-hidden bg-zinc-50/5 dark:bg-[#0c0b18]/5 border-b border-brand-zinc-200 dark:border-white/10 section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
             <motion.div
@@ -2197,7 +2192,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
       {/* ── 11. RECOMMENDED SERVICES ── */}
       {((service as any).recommendedSection?.enabled !== false && recommendedServices.length > 0) && (
-        <section className="relative overflow-hidden py-20 md:py-24 bg-zinc-50/10 dark:bg-[#0c0b18]/15 border-b border-brand-zinc-200 dark:border-white/10">
+        <section className="relative overflow-hidden bg-zinc-50/10 dark:bg-[#0c0b18]/15 border-b border-brand-zinc-200 dark:border-white/10 section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-14 text-left">
@@ -2328,7 +2323,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
       {/* ── 14. FINAL CTA BANNER ── */}
       {(service as any).finalCta?.enabled !== false && (
-        <section className="my-10 relative overflow-hidden">
+        <section className="relative overflow-hidden section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12">
             <motion.div
               initial={{ opacity: 0, y: 24 }}
