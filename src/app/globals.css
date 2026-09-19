@@ -745,6 +745,25 @@
     border-color: rgba(255, 255, 255, 0.2);
   }
 
+  /* Rich-text (CMS) descriptions on dark CTA surfaces. RichTextRenderer defaults to dark
+     text, brand-blue links and per-element colours on ul/ol/headings, all of which are
+     unreadable on the blue/black card. Use .on-dark-surface for any dark card that is not
+     .cta-banner-card. Both themes: these surfaces are dark in light AND dark mode. */
+  .cta-banner-card .rich-text-content,
+  .on-dark-surface .rich-text-content {
+    color: rgb(255 255 255 / 0.9) !important;
+  }
+
+  :is(.cta-banner-card, .on-dark-surface) .rich-text-content :is(p, span, ul, ol, li, strong, b, em, i, h1, h2, h3, h4, blockquote) {
+    color: inherit !important;
+  }
+
+  :is(.cta-banner-card, .on-dark-surface) .rich-text-content a,
+  :is(.cta-banner-card, .on-dark-surface) .rich-text-link {
+    color: #E9BD36 !important;
+    text-decoration: underline !important;
+  }
+
   /* ===========================
      GLOBAL CTA BUTTON SYSTEM
      Premium, unified, consistent

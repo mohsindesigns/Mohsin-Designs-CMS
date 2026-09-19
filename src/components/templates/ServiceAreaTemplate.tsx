@@ -582,7 +582,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
               if (wIdx === 1) {
                 // Highlighted centerpiece dark-slate card
                 return (
-                  <div key={wIdx} className="flex flex-col items-center text-center p-10 bg-slate-900 text-white rounded-3xl shadow-2xl relative scale-105 border-2 border-primary/40 group hover:border-primary transition-all duration-300 z-10">
+                  <div key={wIdx} className="on-dark-surface flex flex-col items-center text-center p-10 bg-slate-900 text-white rounded-3xl shadow-2xl relative scale-105 border-2 border-primary/40 group hover:border-primary transition-all duration-300 z-10">
                     <div className="absolute top-4 right-4 bg-primary text-white text-[10px] font-black uppercase tracking-wider px-3.5 py-1 rounded-full shadow-md">
                       Highly Requested
                     </div>
@@ -683,7 +683,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
       {/* ================= FINAL CTA SECTION ================= */}
       {(cta?.enabled !== false && content.cta?.enabled !== false) && (
       <section className="px-6 max-w-5xl mx-auto section-y">
-        <div className="relative bg-slate-950 rounded-[2rem] p-10 sm:p-16 text-center border border-slate-800 shadow-xl overflow-hidden">
+        <div className="on-dark-surface relative bg-slate-950 rounded-[2rem] p-10 sm:p-16 text-center border border-slate-800 shadow-xl overflow-hidden">
           <div className="absolute inset-0 z-0">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 opacity-70" />
           </div>
