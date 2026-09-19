@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import { 
   Plus, Search, Filter, MoreVertical, Edit, 
   Trash2, Copy, Eye, EyeOff, Calendar, 

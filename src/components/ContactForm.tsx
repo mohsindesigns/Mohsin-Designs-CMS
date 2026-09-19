@@ -1,5 +1,6 @@
 "use client";
 
+import { withTrailingSlash } from "@/lib/url";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, Mail, MapPin, Phone, ArrowRight } from "lucide-react";
 import { useState, FormEvent, MouseEvent } from "react";
@@ -198,7 +199,7 @@ export default function ContactForm({ data }: { data?: any }) {
                 {/* Location Item */}
                 {contact.locationHref || contact.locationLink || contact.addressLink ? (
                   <a
-                    href={contact.locationHref || contact.locationLink || contact.addressLink}
+                    href={withTrailingSlash(contact.locationHref || contact.locationLink || contact.addressLink)}
                     className="flex items-center gap-4 group/item p-2.5 rounded-2xl hover:bg-brand-blue/5 dark:hover:bg-white/5 transition-colors"
                   >
                     <div className="w-10 h-10 rounded-xl bg-brand-blue/10 dark:bg-brand-yellow/10 border border-brand-blue/20 dark:border-brand-yellow/20 flex items-center justify-center text-brand-blue dark:text-brand-yellow group-hover/item:scale-105 transition-transform shrink-0">

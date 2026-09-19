@@ -1,9 +1,10 @@
 "use client";
 
+import { withTrailingSlash } from "@/lib/url";
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import React, { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import { motion, AnimatePresence } from "framer-motion";
 import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
 import { isSafeHref, getValidHref } from "@/lib/utils";
@@ -440,13 +441,13 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
               {/* Action Buttons Row */}
               <div className="flex items-center gap-3.5 flex-wrap pt-2">
                 {hero.primaryCtaText && (
-                  <a href={hero.primaryCtaLink || "#industry-form"} className="btn-primary-cta">
+                  <a href={withTrailingSlash(hero.primaryCtaLink || "#industry-form")} className="btn-primary-cta">
                     <span>{hero.primaryCtaText}</span>
                     <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
                   </a>
                 )}
                 {hero.secondaryCtaText && (
-                  <a href={hero.secondaryCtaLink || "#sectors"} className="btn-secondary-cta">
+                  <a href={withTrailingSlash(hero.secondaryCtaLink || "#sectors")} className="btn-secondary-cta">
                     <span>{hero.secondaryCtaText}</span>
                     <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
                   </a>
@@ -968,11 +969,11 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
               )}
 
               <div className="flex items-center gap-4 flex-wrap pt-2">
-                <a href={ctaBanner.ctaPrimaryHref || "#industry-form"} className="btn-primary-cta">
+                <a href={withTrailingSlash(ctaBanner.ctaPrimaryHref || "#industry-form")} className="btn-primary-cta">
                   <span>{ctaBanner.ctaPrimaryText}</span>
                   <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
                 </a>
-                <a href={ctaBanner.ctaSecondaryHref || "/gallery"} className="btn-secondary-cta">
+                <a href={withTrailingSlash(ctaBanner.ctaSecondaryHref || "/gallery")} className="btn-secondary-cta">
                   <span>{ctaBanner.ctaSecondaryText}</span>
                   <span className="btn-icon"><Play className="h-3.5 w-3.5 fill-current ml-0.5" /></span>
                 </a>

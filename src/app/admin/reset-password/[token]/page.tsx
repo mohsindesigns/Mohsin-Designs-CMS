@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Lock, Loader2, CheckCircle2, Shield, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 
 export default function ResetPasswordPage() {
   const params = useParams();

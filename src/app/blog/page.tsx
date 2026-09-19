@@ -21,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const pageContent = pageDoc?.content?.blogPage || pageDoc?.content || {};
   const globalBlogData = contentDoc?.data?.blogPage || {};
   const seo = pageDoc?.seo || pageContent?.seo || globalBlogData?.seo || {};
-  const pageUrl = `${BASE_URL}/blog`;
+  const pageUrl = `${BASE_URL}/blog/`;
 
   const metaTitle = seo.metaTitle || pageContent?.hero?.titleHighlight || globalBlogData?.hero?.title || "Blog & Growth Insights | Mohsin Designs";
   const metaDescription = seo.metaDescription || pageContent?.hero?.description || globalBlogData?.hero?.description || "Actionable blueprints, architectural deep-dives, and conversion rate science.";

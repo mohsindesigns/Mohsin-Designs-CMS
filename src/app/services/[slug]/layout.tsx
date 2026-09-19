@@ -33,12 +33,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description,
     robots: resolveRobotsMetadata(seo, isGlobalNoIndex),
     alternates: {
-      canonical: `${BASE_URL}/services/${slug}`,
+      canonical: `${BASE_URL}/services/${slug}/`,
     },
     openGraph: {
       title,
       description,
-      url: `${BASE_URL}/services/${slug}`,
+      url: `${BASE_URL}/services/${slug}/`,
       type: "website",
       images: [
         {

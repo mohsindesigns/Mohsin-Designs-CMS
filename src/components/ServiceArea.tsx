@@ -1,5 +1,6 @@
 "use client";
 
+import { withTrailingSlash } from "@/lib/url";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowUpRight, MapPin, Globe } from "lucide-react";
 import { useState } from "react";
@@ -107,7 +108,7 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
                     key={hub.id}
                     onClick={() => {
                       if (isActive && hub.link) {
-                        window.location.href = hub.link;
+                        window.location.href = withTrailingSlash(hub.link);
                       } else {
                         setActiveHub(isActive ? null : hub.id);
                       }
@@ -156,7 +157,7 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
                     <div className="min-w-0 flex-1 text-left">
                       {selectedHubObj.link ? (
                         <a
-                          href={selectedHubObj.link}
+                          href={withTrailingSlash(selectedHubObj.link)}
                           className="truncate text-xs font-black text-slate-900 dark:text-white hover:text-[#0306AC] dark:hover:text-[#E9BD36] transition-colors leading-tight inline-flex items-center gap-1"
                         >
                           <span>{selectedHubObj.name}</span>
@@ -187,7 +188,7 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
 
             {/* Solid CTA Button */}
             <a
-              href={ctaHref}
+              href={withTrailingSlash(ctaHref)}
               className="inline-flex items-center justify-center gap-2.5 rounded-xl bg-[#0306AC] hover:bg-[#020485] !text-white dark:bg-[#E9BD36] dark:hover:bg-yellow-400 dark:!text-[#080710] active:scale-95 px-6 py-3.5 text-xs sm:text-sm font-bold shadow-lg shadow-[#0306AC]/25 dark:shadow-[#E9BD36]/20 hover:shadow-xl transition-all self-center lg:self-start group cursor-pointer"
             >
               <span className="!text-white dark:!text-[#080710] font-bold">{ctaText}</span>

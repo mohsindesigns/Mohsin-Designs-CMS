@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import { useContent } from "@/hooks/useContent";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 

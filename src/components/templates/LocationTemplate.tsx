@@ -1,5 +1,6 @@
 "use client";
 
+import { withTrailingSlash } from "@/lib/url";
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import React, { useEffect, useRef } from "react";
 import { motion, useMotionValue, useSpring, useInView } from "framer-motion";
@@ -16,7 +17,7 @@ import {
   Sparkles,
   Star
 } from "lucide-react";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
@@ -198,7 +199,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
     ctaPrimaryText: locationData.hero?.ctaPrimaryText || "EXPLORE OUR WORK",
     ctaPrimaryHref: locationData.hero?.ctaPrimaryHref || "/gallery",
     ctaSecondaryText: locationData.hero?.ctaSecondaryText || "GET FREE STRATEGY",
-    ctaSecondaryHref: locationData.hero?.ctaSecondaryHref || "/contact",
+    ctaSecondaryHref: locationData.hero?.ctaSecondaryHref || "/contact-us",
     bgLight: locationData.hero?.bgLight || "/locationhero.png",
     bgDark: locationData.hero?.bgDark || "/locationherodark.png"
   };
@@ -320,7 +321,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
     titleWord2: locationData.ctaBanner?.titleWord2 || "Today?",
     description: locationData.ctaBanner?.description || "Schedule a free technical audit with our lead architect. We'll analyze your existing regional footprint and map out a concrete growth strategy.",
     ctaPrimaryText: locationData.ctaBanner?.ctaPrimaryText || "BOOK STRATEGY SESSION",
-    ctaPrimaryHref: locationData.ctaBanner?.ctaPrimaryHref || "/contact",
+    ctaPrimaryHref: locationData.ctaBanner?.ctaPrimaryHref || "/contact-us",
     ctaSecondaryText: locationData.ctaBanner?.ctaSecondaryText || "EXPLORE SHOWREEL",
     ctaSecondaryHref: locationData.ctaBanner?.ctaSecondaryHref || "/gallery",
     portraitSrc: locationData.ctaBanner?.portraitSrc || "/founder_portrait_nobg.png",
@@ -637,7 +638,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
               return (
                 <div
                   key={country.id || idx}
-                  onClick={() => router.push(countryUrl)}
+                  onClick={() => router.push(withTrailingSlash(countryUrl))}
                   className="block no-underline group/card-link cursor-pointer"
                 >
                   <SpotlightCard className="rounded-[28px] border border-brand-zinc-200 dark:border-white/10">

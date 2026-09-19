@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Save, Loader2, Settings, LayoutTemplate, Type, Image as ImageIcon, ChevronRight, Globe, Mail, Phone, MapPin, Share2, Plus, Trash2, List, ExternalLink, Search, Check, X, Upload, ChevronUp, ChevronDown, RefreshCw } from "lucide-react";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import * as LucideIcons from "lucide-react";
 import ImageField from "@/components/admin/ImageField";
 import dynamic from "next/dynamic";

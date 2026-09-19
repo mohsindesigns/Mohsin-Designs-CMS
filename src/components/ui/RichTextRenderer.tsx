@@ -1,5 +1,6 @@
 "use client";
 
+import { normalizeHtmlLinks } from "@/lib/url";
 import React from "react";
 // isomorphic-dompurify runs real DOMPurify against a real DOM either way -
 // jsdom on the server, the browser DOM on the client - rather than a
@@ -44,7 +45,7 @@ export default function RichTextRenderer({ content, className = "", stripParagra
         {content.map((p, i) => (
           <div 
             key={i} 
-            dangerouslySetInnerHTML={{ __html: makeLinksDoFollow(safeSanitize(parseMarkdownLinks(cleanMojibake(p)))) }} 
+            dangerouslySetInnerHTML={{ __html: normalizeHtmlLinks(makeLinksDoFollow(safeSanitize(parseMarkdownLinks(cleanMojibake(p))))) }} 
             className="rich-text-content pointer-events-auto"
           />
         ))}
@@ -85,7 +86,7 @@ export default function RichTextRenderer({ content, className = "", stripParagra
     return html.replace(/<h[1-6][^>]*>\s*(?:&nbsp;|<br\s*\/?>|\s*)*<\/h[1-6]>/gi, '');
   };
 
-  sanitizedHtml = stripEmptyHeadings(makeLinksDoFollow(unescapeLiteralTags(stripInlineColors(sanitizedHtml))));
+  sanitizedHtml = normalizeHtmlLinks(stripEmptyHeadings(makeLinksDoFollow(unescapeLiteralTags(stripInlineColors(sanitizedHtml)))));
 
   // If stripParagraphs is true, remove all P tags (real or just unescaped)
   if (stripParagraphs) {

@@ -3,7 +3,7 @@
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import React, { useMemo } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -78,7 +78,7 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
       image: "/portfolio_card_1.png",
       tag: "+320% Traffic",
       tech: ["Next.js 15", "TailwindCSS", "Framer Motion"],
-      link: "/contact"
+      link: "/contact-us"
     },
     {
       id: "2",
@@ -88,7 +88,7 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
       image: "/portfolio_card_2.png",
       tag: "4.9x ROAS",
       tech: ["Figma UI", "System Kit", "Dashboard"],
-      link: "/contact"
+      link: "/contact-us"
     },
     {
       id: "3",
@@ -98,7 +98,7 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
       image: "/portfolio_card_3.png",
       tag: "+185% Leads",
       tech: ["Shopify Pro", "React", "E-Commerce"],
-      link: "/contact"
+      link: "/contact-us"
     },
     {
       id: "4",
@@ -108,7 +108,7 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
       image: "/portfolio_card_4.png",
       tag: "100% Custom",
       tech: ["Branding", "Vector Art", "Brand Book"],
-      link: "/contact"
+      link: "/contact-us"
     },
     {
       id: "5",
@@ -118,7 +118,7 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
       image: "/portfolio_card_5.png",
       tag: "+450% Reach",
       tech: ["Social Media", "Marketing", "3D Motion"],
-      link: "/contact"
+      link: "/contact-us"
     },
     {
       id: "6",
@@ -128,7 +128,7 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
       image: "/portfolio_card_6.png",
       tag: "Top #1 Rank",
       tech: ["Next.js", "SEO Pro", "Real Estate"],
-      link: "/contact"
+      link: "/contact-us"
     }
   ];
 
@@ -211,11 +211,11 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
     description: galleryPage.ctaBanner?.description || "Let's turn your vision into a stunning digital reality. Get in touch for a custom strategy, competitive pricing, and fast execution.",
     ctaPrimary: {
       label: galleryPage.ctaBanner?.ctaPrimary?.label || "START YOUR PROJECT",
-      href: galleryPage.ctaBanner?.ctaPrimary?.href || "/contact"
+      href: galleryPage.ctaBanner?.ctaPrimary?.href || "/contact-us"
     },
     ctaSecondary: {
       label: galleryPage.ctaBanner?.ctaSecondary?.label || "GET FREE ESTIMATE",
-      href: galleryPage.ctaBanner?.ctaSecondary?.href || "/contact"
+      href: galleryPage.ctaBanner?.ctaSecondary?.href || "/contact-us"
     },
     portraitSrc: galleryPage.ctaBanner?.portraitSrc || "/founder_portrait_nobg.png",
     portraitAlt: galleryPage.ctaBanner?.portraitAlt || "Founder & Creative Director"

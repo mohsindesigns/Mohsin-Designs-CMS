@@ -1,5 +1,6 @@
 "use client";
 
+import { withTrailingSlash } from "@/lib/url";
 import React, { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import { resolveCountryLocation, COUNTRIES_DATABASE } from "@/lib/countryLocations";
@@ -173,7 +174,7 @@ export default function RealWorldMap({
 
       marker.on("click", () => {
         if (activeHubId === hub.id && hub.link) {
-          window.location.href = hub.link;
+          window.location.href = withTrailingSlash(hub.link);
         } else {
           onSelectHub(hub.id);
           map.flyTo([lat, lng], Math.max(map.getZoom(), 4), { duration: 1.2 });

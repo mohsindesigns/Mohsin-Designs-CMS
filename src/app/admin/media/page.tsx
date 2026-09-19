@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Upload, Search, Trash2, X, ChevronRight, Loader2,

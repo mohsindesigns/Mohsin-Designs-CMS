@@ -3,7 +3,7 @@
 import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import { useContent } from "../../hooks/useContent";
 import { Icon } from "../../config/icons";
 import gsap from "gsap";

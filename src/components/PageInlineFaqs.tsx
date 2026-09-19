@@ -1,5 +1,6 @@
 "use client";
 
+import { withTrailingSlash } from "@/lib/url";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, ArrowRight } from "lucide-react";
 import { useState, type ReactNode } from "react";
@@ -213,7 +214,7 @@ export default function PageInlineFaqs({
                   </div>
                 </div>
                 <a
-                  href={strategyAudit.href}
+                  href={withTrailingSlash(strategyAudit.href)}
                   className="inline-flex items-center justify-between w-full px-5 py-3.5 rounded-2xl bg-white text-slate-950 hover:bg-yellow-400 hover:text-slate-950 font-heading font-black text-xs uppercase tracking-wider transition-all duration-300 shadow-md group/btn no-underline"
                 >
                   <span>{strategyAudit.button}</span>

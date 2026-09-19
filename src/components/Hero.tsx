@@ -1,5 +1,6 @@
 "use client";
 
+import { withTrailingSlash } from "@/lib/url";
 import { useRef, useEffect, type ReactNode } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, ArrowUpRight, Star } from "lucide-react";
@@ -270,7 +271,7 @@ export default function Hero({ data, content: overrideContent, breadcrumb }: { d
                   return (
                     <a
                       key={idx}
-                      href={btnHref}
+                      href={withTrailingSlash(btnHref)}
                       className={`${isPrimary ? "btn-primary-cta" : "btn-secondary-cta"} pointer-events-auto`}
                     >
                       <span>{btnText}</span>

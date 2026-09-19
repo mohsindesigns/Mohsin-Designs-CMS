@@ -27,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
   
   const locationData = pageContent.locationPage || globalData.locationPage || globalData.serviceArea || {};
   const seo = page?.seo || locationData?.seo || {};
-  const pageUrl = `${BASE_URL}/locations`;
+  const pageUrl = `${BASE_URL}/locations/`;
 
   const metaTitle = seo.metaTitle || 
                     (locationData?.hero?.titleIntro && locationData?.hero?.titleHighlight ? `${locationData.hero.titleIntro} ${locationData.hero.titleHighlight}` : null) ||

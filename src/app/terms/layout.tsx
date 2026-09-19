@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const isGlobalNoIndex = !!content?.data?.settings?.globalNoIndex;
   const termsData = content?.data?.termsPage || {};
   const seo = termsData.seo || {};
-  const pageUrl = `${BASE_URL}/terms`;
+  const pageUrl = `${BASE_URL}/terms/`;
 
   return {
     title: seo.metaTitle || "Terms and Conditions",

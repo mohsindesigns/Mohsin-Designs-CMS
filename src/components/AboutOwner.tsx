@@ -1,5 +1,6 @@
 "use client";
 
+import { withTrailingSlash } from "@/lib/url";
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
@@ -97,7 +98,7 @@ export default function AboutOwner() {
   ];
 
   const ctaText = about?.buttons?.[0]?.text || "Let's Collaborate";
-  const ctaHref = about?.buttons?.[0]?.href || "/contact";
+  const ctaHref = about?.buttons?.[0]?.href || "/contact-us";
 
   return (
     <section id="about" className="relative overflow-hidden bg-transparent border-b border-brand-zinc-200 dark:border-white/10 section-y">
@@ -266,7 +267,7 @@ export default function AboutOwner() {
             {/* Premium CTA Button */}
             <div className="pt-4">
               <a
-                href={ctaHref}
+                href={withTrailingSlash(ctaHref)}
                 className="btn-secondary-cta"
               >
                 <span>{ctaText}</span>

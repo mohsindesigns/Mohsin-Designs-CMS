@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Plus, Pencil, Trash2, Loader2, CircleHelp, Save, X, ChevronRight, Globe, Layers, ListFilter } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import dynamic from "next/dynamic";
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), { 
   ssr: false,

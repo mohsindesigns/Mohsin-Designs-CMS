@@ -1,9 +1,10 @@
 "use client";
 
+import { withTrailingSlash } from "@/lib/url";
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import React from "react";
 import { motion } from "framer-motion";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import {
   MapPin, CheckCircle, Map, ShieldCheck, Clock, Award, Check, Navigation,
   Building, Compass, ArrowRight, Zap, Star,
@@ -638,7 +639,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
               {overviewData.buttonText && (
                 <div className="pt-4">
                   <a
-                    href={overviewData.buttonHref || "#contact"}
+                    href={withTrailingSlash(overviewData.buttonHref || "#contact")}
                     className="inline-flex items-center justify-center bg-primary hover:bg-primary/95 text-white font-black px-8 py-4 rounded-xl transition-all shadow-lg active:scale-[0.98] text-xs uppercase tracking-wider gap-2 group"
                   >
                     {overviewData.buttonText}
@@ -694,7 +695,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
               <RichTextRenderer content={cta.description} />
             </div>
             <a
-              href={cta.buttonHref}
+              href={withTrailingSlash(cta.buttonHref)}
               className="inline-flex items-center justify-center bg-white hover:bg-slate-100 text-slate-950 font-black px-8 py-4 rounded-xl transition-all shadow-lg active:scale-[0.98] text-xs sm:text-sm uppercase tracking-wider gap-2 group"
             >
               {cta.buttonText} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

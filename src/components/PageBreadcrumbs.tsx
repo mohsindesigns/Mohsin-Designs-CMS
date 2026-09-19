@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import { usePathname } from "next/navigation";
 import { buildPageBreadcrumbs, type BreadcrumbItem } from "@/lib/breadcrumbs";
 

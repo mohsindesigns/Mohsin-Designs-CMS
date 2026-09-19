@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff, Shield, Lock, User, AlertCircle, Loader2, ChevronRight } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
 
 function LoginForm() {

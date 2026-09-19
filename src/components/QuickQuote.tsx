@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import Link from "@/components/ui/Link";
 import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '../config/icons';
 import { useContent } from '../hooks/useContent';

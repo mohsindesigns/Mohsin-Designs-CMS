@@ -1,9 +1,10 @@
 "use client";
 
+import { withTrailingSlash } from "@/lib/url";
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import { useState, useMemo } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import { motion, AnimatePresence } from "framer-motion";
 import * as LucideIcons from "lucide-react";
 import {
@@ -158,7 +159,7 @@ export default function BlogTemplate({
     },
     ctaSecondary: {
       label: rawData.hero?.ctaSecondary?.label || "Schedule Strategy Call",
-      href: rawData.hero?.ctaSecondary?.href || "/contact"
+      href: rawData.hero?.ctaSecondary?.href || "/contact-us"
     }
   };
 
@@ -170,7 +171,7 @@ export default function BlogTemplate({
     description: rawData.ctaBanner?.description || "Schedule a free 30-minute technical audit. We'll diagnose bottlenecks in your existing presence and map out a concrete blueprint for compounding growth.",
     ctaPrimary: {
       label: rawData.ctaBanner?.ctaPrimary?.label || "Book Strategy Session",
-      href: rawData.ctaBanner?.ctaPrimary?.href || "/contact"
+      href: rawData.ctaBanner?.ctaPrimary?.href || "/contact-us"
     },
     ctaSecondary: {
       label: rawData.ctaBanner?.ctaSecondary?.label || "Watch Showreel",
@@ -345,12 +346,12 @@ export default function BlogTemplate({
 
             {/* CTAs */}
             <div className="flex flex-wrap items-center gap-4 pt-2">
-              <a href={hero.ctaPrimary.href} className="btn-primary-cta">
+              <a href={withTrailingSlash(hero.ctaPrimary.href)} className="btn-primary-cta">
                 <span>{hero.ctaPrimary.label}</span>
                 <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
               </a>
 
-              <a href={hero.ctaSecondary.href} className="btn-secondary-cta">
+              <a href={withTrailingSlash(hero.ctaSecondary.href)} className="btn-secondary-cta">
                 <span>{hero.ctaSecondary.label}</span>
                 <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
               </a>
@@ -512,12 +513,12 @@ export default function BlogTemplate({
 
               {/* CTAs */}
               <div className="flex items-center gap-4 flex-wrap pt-2">
-                <a href={ctaBanner.ctaPrimary.href} className="btn-primary-cta">
+                <a href={withTrailingSlash(ctaBanner.ctaPrimary.href)} className="btn-primary-cta">
                   <span>{ctaBanner.ctaPrimary.label}</span>
                   <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
                 </a>
 
-                <a href={ctaBanner.ctaSecondary.href} className="btn-secondary-cta">
+                <a href={withTrailingSlash(ctaBanner.ctaSecondary.href)} className="btn-secondary-cta">
                   <span>{ctaBanner.ctaSecondary.label}</span>
                   <span className="btn-icon"><Play className="h-3.5 w-3.5 fill-current ml-0.5" /></span>
                 </a>

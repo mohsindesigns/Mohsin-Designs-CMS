@@ -28,7 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
   // Resolve gallery Page data
   const galleryData = pageContent.galleryPage || globalData.galleryPage || globalData.portfolio || {};
   const seo = page?.seo || galleryData?.seo || {};
-  const pageUrl = `${BASE_URL}/gallery`;
+  const pageUrl = `${BASE_URL}/gallery/`;
 
   const heroTitle = (galleryData?.hero?.titlePrefix ? [galleryData.hero.titlePrefix, galleryData.hero.titleHighlight].filter(Boolean).join(" ") : null) ||
                     galleryData?.header?.title || 

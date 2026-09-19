@@ -9,7 +9,7 @@ import {
   CheckCircle2, AlertCircle, BarChart3, Search,
   Plus, Trash2, CircleHelp
 } from "lucide-react";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import MediaSelector from "./MediaSelector";

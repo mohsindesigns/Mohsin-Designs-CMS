@@ -1,10 +1,11 @@
 "use client";
 
+import { withTrailingSlash } from "@/lib/url";
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import { motion } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import { getValidHref } from "@/lib/utils";
 import {
   ArrowRight,
@@ -325,14 +326,14 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                 <div className="flex flex-wrap items-center gap-4 pt-2">
                   {hero.ctaPrimaryText && (
-                    <a href={hero.ctaPrimaryHref || "#"} className="btn-primary-cta">
+                    <a href={withTrailingSlash(hero.ctaPrimaryHref || "#")} className="btn-primary-cta">
                       <span>{hero.ctaPrimaryText}</span>
                       <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
                     </a>
                   )}
 
                   {hero.ctaSecondaryText && (
-                    <a href={hero.ctaSecondaryHref || "#"} className="btn-secondary-cta">
+                    <a href={withTrailingSlash(hero.ctaSecondaryHref || "#")} className="btn-secondary-cta">
                       <span>{hero.ctaSecondaryText}</span>
                       <span className="btn-icon"><Play className="h-3.5 w-3.5 fill-current ml-0.5" /></span>
                     </a>
@@ -851,7 +852,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                         return (
                           <a
                             key={item.id || idx}
-                            href={`#service-stage-${item.id || idx + 1}`}
+                            href={withTrailingSlash(`#service-stage-${item.id || idx + 1}`)}
                             className={`py-2.5 px-3.5 rounded-2xl flex items-center justify-between transition-all duration-300 group relative ${isActive
                               ? "bg-[#0306AC] text-white dark:bg-[#E9BD36] dark:text-[#080710] shadow-xl scale-[1.02] font-bold"
                               : "hover:bg-zinc-200/60 dark:hover:bg-white/5 text-brand-zinc-600 dark:text-zinc-400"
@@ -881,7 +882,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                     {servicesDirectory.consultationBtnText && (
                       <div className="pt-2 border-t border-brand-zinc-200/80 dark:border-white/10">
                         <a
-                          href={servicesDirectory.consultationBtnHref || "#contact"}
+                          href={withTrailingSlash(servicesDirectory.consultationBtnHref || "#contact")}
                           className="w-full py-3.5 rounded-2xl bg-[#E9BD36] text-[#080710] font-mono text-[11px] font-black uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#ffe554] hover:scale-[1.02] transition-all duration-300 shadow-lg"
                         >
                           <span>{servicesDirectory.consultationBtnText}</span>
@@ -950,7 +951,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                             </div>
                           )}
 
-                          <a href={servicesDirectory.getStartedHref || (stage.slug ? `/services/${stage.slug}` : "#contact")} className="inline-flex items-center gap-2 text-xs font-mono font-black text-brand-dark dark:text-white group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors">
+                          <a href={withTrailingSlash(servicesDirectory.getStartedHref || (stage.slug ? `/services/${stage.slug}` : "#contact"))} className="inline-flex items-center gap-2 text-xs font-mono font-black text-brand-dark dark:text-white group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors">
                             <span>{servicesDirectory.getStartedText || "Explore Service"}</span>
                             <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                           </a>
@@ -1336,14 +1337,14 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                 <div className="flex items-center gap-4 flex-wrap pt-2">
                   {ctaBanner.ctaPrimaryText && (
-                    <a href={ctaBanner.ctaPrimaryHref || "#contact"} className="btn-primary-cta">
+                    <a href={withTrailingSlash(ctaBanner.ctaPrimaryHref || "#contact")} className="btn-primary-cta">
                       <span>{ctaBanner.ctaPrimaryText}</span>
                       <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
                     </a>
                   )}
 
                   {ctaBanner.ctaSecondaryText && (
-                    <a href={ctaBanner.ctaSecondaryHref || "#"} className="btn-secondary-cta">
+                    <a href={withTrailingSlash(ctaBanner.ctaSecondaryHref || "#")} className="btn-secondary-cta">
                       <span>{ctaBanner.ctaSecondaryText}</span>
                       <span className="btn-icon"><Play className="h-3.5 w-3.5 fill-current ml-0.5" /></span>
                     </a>

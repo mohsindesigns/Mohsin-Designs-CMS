@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowUp } from "lucide-react";
 import { FormEvent, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import { useContent } from "../hooks/useContent";
 import RichTextRenderer from "./ui/RichTextRenderer";
 import { Icon } from "../config/icons";

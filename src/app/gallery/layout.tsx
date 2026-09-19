@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const isGlobalNoIndex = !!content?.data?.settings?.globalNoIndex;
   const galleryData = content?.data?.galleryPage || content?.data?.gallery || {};
   const seo = galleryData.seo || {};
-  const pageUrl = `${BASE_URL}/gallery`;
+  const pageUrl = `${BASE_URL}/gallery/`;
 
   return {
     title: seo.metaTitle || "Project Gallery",

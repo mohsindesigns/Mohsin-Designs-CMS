@@ -1,9 +1,10 @@
 "use client";
 
+import { withTrailingSlash } from "@/lib/url";
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import { motion, AnimatePresence } from "framer-motion";
 import * as LucideIcons from "lucide-react";
 import {
@@ -464,7 +465,7 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
             {contactMethods.methods.map((method: any, mIdx: number) => (
               <a
                 key={method.id || mIdx}
-                href={method.actionHref || "#contact-form"}
+                href={withTrailingSlash(method.actionHref || "#contact-form")}
                 className="bg-white dark:bg-[#12121e] border border-brand-zinc-200/90 dark:border-white/10 hover:border-brand-blue/60 dark:hover:border-brand-yellow/60 p-6 sm:p-7 rounded-[28px] shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-400 flex flex-col justify-between group cursor-pointer relative overflow-hidden"
               >
                 <div className="space-y-4">
@@ -604,13 +605,13 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
 
               {/* Primary & Secondary CTAs */}
               <div className="flex items-center gap-4 flex-wrap pt-2">
-                <a href={ctaBanner.ctaPrimary.href} className="btn-primary-cta">
+                <a href={withTrailingSlash(ctaBanner.ctaPrimary.href)} className="btn-primary-cta">
                   <span>{ctaBanner.ctaPrimary.label}</span>
                   <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
                 </a>
 
                 {ctaBanner.ctaSecondary && (
-                  <a href={ctaBanner.ctaSecondary.href} target="_blank" rel="noopener noreferrer" className="btn-secondary-cta">
+                  <a href={withTrailingSlash(ctaBanner.ctaSecondary.href)} target="_blank" rel="noopener noreferrer" className="btn-secondary-cta">
                     <span>{ctaBanner.ctaSecondary.label}</span>
                     <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
                   </a>

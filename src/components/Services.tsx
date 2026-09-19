@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import { useContent } from "@/hooks/useContent";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
@@ -29,7 +29,7 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
     ctaHeading:    raw?.ctaHeading    || raw?.cta?.heading          || "Need a Custom Architecture or Specialized Solution?",
     ctaDescription:raw?.ctaDescription|| raw?.cta?.description      || "Discuss your technical requirements directly with our principal engineer. We map out full-funnel architectures and execute with pixel perfection.",
     ctaButtonText: raw?.ctaButtonText || raw?.cta?.buttonText       || "Schedule Technical Consultation",
-    ctaButtonHref: raw?.ctaButtonHref || raw?.cta?.buttonHref       || "/contact",
+    ctaButtonHref: raw?.ctaButtonHref || raw?.cta?.buttonHref       || "/contact-us",
     ctaEyebrow:    raw?.ctaEyebrow    || raw?.cta?.eyebrow          || "STRATEGY & SCOPING"
   };
 

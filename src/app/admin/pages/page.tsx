@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, X } from "lucide-react";
 import { BASE_URL } from "@/lib/constants";

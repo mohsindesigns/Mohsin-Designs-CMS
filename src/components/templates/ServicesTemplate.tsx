@@ -2,7 +2,7 @@
 
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import React, { useState } from "react";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import {
@@ -243,7 +243,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
     bgImage: content.hero?.bgImage || content.hero?.backgroundImage || "/portfolio_hero_bg.png",
     ctaPrimary: {
       label: content.hero?.ctaPrimary?.label || "Schedule Strategy Call",
-      href: content.hero?.ctaPrimary?.href || "/contact",
+      href: content.hero?.ctaPrimary?.href || "/contact-us",
     },
     ctaSecondary: {
       label: content.hero?.ctaSecondary?.label || "Explore Inclusions",
@@ -267,11 +267,11 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
     description: content.ctaBanner?.description || "Schedule a free 30-minute technical audit. We'll diagnose bottlenecks in your existing presence and map out a concrete blueprint for compounding growth.",
     ctaPrimary: {
       label: content.ctaBanner?.ctaPrimary?.label || "Book Strategy Session",
-      href: content.ctaBanner?.ctaPrimary?.href || "/contact",
+      href: content.ctaBanner?.ctaPrimary?.href || "/contact-us",
     },
     ctaSecondary: {
       label: content.ctaBanner?.ctaSecondary?.label || "Direct Office Line",
-      href: content.ctaBanner?.ctaSecondary?.href || "/contact",
+      href: content.ctaBanner?.ctaSecondary?.href || "/contact-us",
     },
     portraitSrc: content.ctaBanner?.portraitSrc || "/founder.png",
     portraitAlt: content.ctaBanner?.portraitAlt || "Mohsin Designs Lead Architect",
@@ -305,7 +305,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
 
       {/* ── 1. HERO ────────────────────────────────────────────────────────── */}
       {(hero as any)?.enabled !== false && (
-        <section className="-mt-[110px] sm:-mt-[125px] lg:-mt-[140px] pt-[175px] sm:pt-[200px] lg:pt-[230px] pb-16 sm:pb-24 relative overflow-hidden border-b border-gray-200 dark:border-white/10">
+        <section className="pt-28 md:pt-36 lg:pt-40 pb-16 lg:pb-24 relative overflow-hidden border-b border-gray-200 dark:border-white/10">
 
           {/* Full background bleed image */}
           <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
@@ -367,14 +367,14 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                 <div className="flex flex-wrap items-center gap-4 pt-2">
                   <Link
                     href={hero.ctaPrimary.href}
-                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold bg-[#0306ac] text-white hover:bg-[#020485] dark:bg-[#e9bd36] dark:text-[#080710] dark:hover:bg-amber-400 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold bg-[#0306ac] text-white hover:bg-[#020485] hover:text-white dark:bg-[#e9bd36] dark:text-[#080710] dark:hover:bg-amber-400 dark:hover:text-[#080710] transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
                   >
                     <span>{hero.ctaPrimary.label}</span>
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                   <Link
                     href={hero.ctaSecondary.href}
-                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold bg-white dark:bg-white/5 border border-gray-300 dark:border-white/15 text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-white/10 transition-all"
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold bg-white dark:bg-white/5 border border-gray-300 dark:border-white/15 text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-white/10 hover:text-gray-800 dark:hover:text-white transition-all"
                   >
                     <span>{hero.ctaSecondary.label}</span>
                     <ArrowRight className="h-4 w-4" />
@@ -501,14 +501,14 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                 <div className="flex items-center gap-4 flex-wrap pt-2">
                   <Link
                     href={ctaBanner.ctaPrimary.href}
-                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold bg-[#E9BD36] text-[#080710] hover:bg-amber-400 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold bg-[#E9BD36] text-[#080710] hover:bg-amber-400 hover:text-[#080710] transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
                   >
                     <span>{ctaBanner.ctaPrimary.label}</span>
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                   <Link
                     href={ctaBanner.ctaSecondary.href}
-                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold bg-white/10 hover:bg-white/20 border border-white/20 text-white transition-all"
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold bg-white/10 hover:bg-white/20 border border-white/20 text-white hover:text-white transition-all"
                   >
                     <span>{ctaBanner.ctaSecondary.label}</span>
                     <ArrowRight className="h-4 w-4" />

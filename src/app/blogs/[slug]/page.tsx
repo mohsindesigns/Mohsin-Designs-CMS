@@ -1,8 +1,9 @@
+import { withTrailingSlash } from "@/lib/url";
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import {
   Calendar,
   User,
@@ -138,7 +139,7 @@ export default async function BlogPostPage({ params }: Props) {
     description: ctaSource.description || "Schedule a free 30-minute technical audit. We'll diagnose bottlenecks in your existing presence and map out a concrete blueprint for compounding growth.",
     ctaPrimary: {
       label: ctaSource.ctaPrimary?.label || "Book Strategy Session",
-      href: ctaSource.ctaPrimary?.href || "/contact"
+      href: ctaSource.ctaPrimary?.href || "/contact-us"
     },
     ctaSecondary: {
       label: ctaSource.ctaSecondary?.label || "Watch Showreel",
@@ -455,7 +456,7 @@ export default async function BlogPostPage({ params }: Props) {
                     {tableOfContents.map((item, idx) => (
                       <a
                         key={idx}
-                        href={`#${item.id}`}
+                        href={withTrailingSlash(`#${item.id}`)}
                         className={`flex items-center gap-3.5 py-2 px-3 rounded-xl transition-all duration-300 group ${
                           item.level <= 2
                             ? "text-brand-dark dark:text-white font-bold hover:bg-brand-blue/10 dark:hover:bg-brand-yellow/10 hover:text-brand-blue dark:hover:text-brand-yellow bg-brand-zinc-50/50 dark:bg-zinc-900/40"
@@ -645,12 +646,12 @@ export default async function BlogPostPage({ params }: Props) {
 
             {/* CTAs */}
             <div className="flex items-center gap-4 flex-wrap pt-2">
-              <a href={detailCtaBanner.ctaPrimary.href} className="btn-primary-cta">
+              <a href={withTrailingSlash(detailCtaBanner.ctaPrimary.href)} className="btn-primary-cta">
                 <span>{detailCtaBanner.ctaPrimary.label}</span>
                 <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
               </a>
 
-              <a href={detailCtaBanner.ctaSecondary.href} className="btn-secondary-cta">
+              <a href={withTrailingSlash(detailCtaBanner.ctaSecondary.href)} className="btn-secondary-cta">
                 <span>{detailCtaBanner.ctaSecondary.label}</span>
                 <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
               </a>

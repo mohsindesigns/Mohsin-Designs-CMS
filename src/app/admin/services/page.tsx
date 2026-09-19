@@ -10,7 +10,7 @@ import {
   Calendar, Edit3
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import dynamic from "next/dynamic";
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
   ssr: false,

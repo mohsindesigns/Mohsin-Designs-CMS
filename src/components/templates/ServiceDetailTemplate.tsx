@@ -1,8 +1,9 @@
 "use client";
 
+import { withTrailingSlash } from "@/lib/url";
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import React, { use, useState, useEffect, useRef } from "react";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { isSafeHref, getValidHref } from "@/lib/utils";
@@ -937,7 +938,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       primaryCtaText: dbService?.finalCta?.primaryCtaText || dbService?.finalCta?.primaryCta?.text || dbService?.finalCta?.btnText || "Schedule Discovery Session",
       primaryCtaLink: dbService?.finalCta?.primaryCtaLink || dbService?.finalCta?.primaryCta?.link || dbService?.finalCta?.btnLink || "#contact-form",
       secondaryCtaText: dbService?.finalCta?.secondaryCtaText || dbService?.finalCta?.secondaryCta?.text || "",
-      secondaryCtaLink: dbService?.finalCta?.secondaryCtaLink || dbService?.finalCta?.secondaryCta?.link || "/contact",
+      secondaryCtaLink: dbService?.finalCta?.secondaryCtaLink || dbService?.finalCta?.secondaryCta?.link || "/contact-us",
       founderImage: dbService?.finalCta?.founderImage || dbService?.finalCta?.image || dbService?.finalCta?.backgroundImage || dbService?.finalCta?.bgImage || "/founder_portrait_nobg.png"
     },
     blogSection: dbService?.blogSection,
@@ -1095,11 +1096,11 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
                 {/* CTA Buttons */}
                 <div className="flex flex-wrap items-center gap-4 pt-4">
-                  <a href={service.hero.primaryCta?.link || "#contact-form"} className="btn-primary-cta">
+                  <a href={withTrailingSlash(service.hero.primaryCta?.link || "#contact-form")} className="btn-primary-cta">
                     <span>{service.hero.primaryCta?.text || "Start Your Project"}</span>
                     <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
                   </a>
-                  <a href={service.hero.secondaryCta?.link || "#what-included"} className="btn-secondary-cta">
+                  <a href={withTrailingSlash(service.hero.secondaryCta?.link || "#what-included")} className="btn-secondary-cta">
                     <span>{service.hero.secondaryCta?.text || "Explore Inclusions"}</span>
                     <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
                   </a>
@@ -2366,13 +2367,13 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
                 <div className="flex flex-wrap items-center gap-4 pt-2">
                   {service.finalCta.primaryCtaText && (
-                    <a href={service.finalCta.primaryCtaLink || "#contact-form"} className="btn-primary-cta">
+                    <a href={withTrailingSlash(service.finalCta.primaryCtaLink || "#contact-form")} className="btn-primary-cta">
                       <span>{service.finalCta.primaryCtaText}</span>
                       <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
                     </a>
                   )}
                   {service.finalCta.secondaryCtaText && (
-                    <a href={service.finalCta.secondaryCtaLink || "/contact"} className="btn-secondary-cta">
+                    <a href={withTrailingSlash(service.finalCta.secondaryCtaLink || "/contact-us")} className="btn-secondary-cta">
                       <span>{service.finalCta.secondaryCtaText}</span>
                       <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
                     </a>

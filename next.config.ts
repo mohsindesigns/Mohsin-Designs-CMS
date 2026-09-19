@@ -28,32 +28,32 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/contact',
-        destination: '/contact-us',
+        destination: '/contact-us/',
         permanent: true,
       },
       {
         source: '/about',
-        destination: '/about-us',
+        destination: '/about-us/',
         permanent: true,
       },
       {
         source: '/privacy-policy',
-        destination: '/privacy',
+        destination: '/privacy/',
         permanent: true,
       },
       {
         source: '/terms-of-service',
-        destination: '/terms',
+        destination: '/terms/',
         permanent: true,
       },
       {
         source: '/blog',
-        destination: '/blogs',
+        destination: '/blogs/',
         permanent: true,
       },
       {
         source: '/blog/:slug*',
-        destination: '/blogs/:slug*',
+        destination: '/blogs/:slug*/',
         permanent: true,
       },
     ];

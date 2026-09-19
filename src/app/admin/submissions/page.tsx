@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Calendar, User, Phone, Briefcase, Filter, Search, X, CheckCircle2, AlertCircle, FileDown, ExternalLink, ChevronRight, Download, Trash2, RefreshCw, MessageSquare, Globe } from "lucide-react";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 
 export default function SubmissionsPage() {
   const [submissions, setSubmissions] = useState<any[]>([]);

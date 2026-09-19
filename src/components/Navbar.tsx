@@ -1,12 +1,13 @@
 "use client";
 
+import { withTrailingSlash } from "@/lib/url";
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight, Menu, X, Star, Sun, Moon } from "lucide-react";
 import { Icon } from "../config/icons";
 import { useContent } from "../hooks/useContent";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 
 const stripHtml = (html: string) => {
   if (!html) return "";
@@ -245,7 +246,7 @@ export default function Navbar() {
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
           <a
-            href={navbar.ctaLink || "/contact-us"}
+            href={withTrailingSlash(navbar.ctaLink || "/contact-us")}
             className="btn-primary-cta"
           >
             <span>{navbar.ctaText || "Book Now"}</span>
@@ -354,7 +355,7 @@ export default function Navbar() {
             })}
             <hr className="border-brand-zinc-100 dark:border-white/10" />
             <a
-              href={navbar.ctaLink || "/contact-us"}
+              href={withTrailingSlash(navbar.ctaLink || "/contact-us")}
               onClick={handleLinkClick}
               className="btn-primary-cta w-full"
             >

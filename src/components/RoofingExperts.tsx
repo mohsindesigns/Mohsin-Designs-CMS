@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useRef, useEffect, useState, useCallback, useMemo, memo } from "react";
 import { Icon } from "../config/icons";
 import { useContent } from "../hooks/useContent";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import RichTextRenderer from "./ui/RichTextRenderer";
 
 const Counter = memo(({ value, suffix = "", duration = 1.8 }: { value: number; suffix?: string; duration?: number }) => {

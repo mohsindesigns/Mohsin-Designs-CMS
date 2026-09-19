@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const isGlobalNoIndex = !!content?.data?.settings?.globalNoIndex;
   const privacyData = content?.data?.privacyPage || {};
   const seo = privacyData.seo || {};
-  const pageUrl = `${BASE_URL}/privacy`;
+  const pageUrl = `${BASE_URL}/privacy/`;
 
   return {
     title: seo.metaTitle || "Privacy Policy",

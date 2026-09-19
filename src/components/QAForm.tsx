@@ -10,7 +10,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Icon } from "../config/icons";
 import { useContent } from "../hooks/useContent";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import RichTextRenderer from "./ui/RichTextRenderer";
 import TurnstileCaptcha from "./ui/TurnstileCaptcha";
 

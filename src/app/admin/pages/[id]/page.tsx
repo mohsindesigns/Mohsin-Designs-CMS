@@ -8,7 +8,7 @@ import {
   Star, CircleHelp, Phone, Users, Globe, ArrowUpRight, Trash2, ArrowLeft, ExternalLink,
   ChevronDown, Calendar, Eye, BookOpen
 } from "lucide-react";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import { useRouter, useParams } from "next/navigation";
 import { TemplateEditors } from "@/components/admin/editors";
 import SeoEditor from "@/components/admin/SeoEditor";
