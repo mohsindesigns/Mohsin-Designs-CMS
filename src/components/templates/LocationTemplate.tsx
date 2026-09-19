@@ -351,7 +351,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
 
       {/* ── 1. HERO SECTION ── */}
       {((hero as any)?.enabled !== false && (locationData as any).hero?.enabled !== false) && (
-      <section className="-mt-[110px] sm:-mt-[125px] lg:-mt-[140px] pt-[180px] sm:pt-[210px] lg:pt-[240px] pb-12 sm:pb-16 md:pb-20 relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 min-h-[500px] lg:min-h-[560px] flex items-center">
+      <section className="pt-28 md:pt-36 lg:pt-40 pb-16 lg:pb-24 relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 min-h-[500px] lg:min-h-[560px] flex items-center">
 
         {/* Full-Bleed Background Images */}
         <div className="absolute inset-0 z-0 select-none pointer-events-none">
@@ -765,9 +765,10 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
                 </span>
               </h2>
 
-              <div className="text-sm sm:text-base font-sans text-white/90 font-normal leading-relaxed max-w-lg">
-                <RichTextRenderer content={ctaBanner.description} />
-              </div>
+              <RichTextRenderer
+                content={ctaBanner.description}
+                className="text-sm sm:text-base font-sans text-white/90 font-normal leading-relaxed max-w-lg"
+              />
 
               <div className="flex items-center gap-4 flex-wrap pt-2">
                 <Link href={ctaBanner.ctaPrimaryHref} className="btn-primary-cta">

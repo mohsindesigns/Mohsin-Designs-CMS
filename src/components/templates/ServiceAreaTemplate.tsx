@@ -590,9 +590,10 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
                       <ChooseIcon className="w-8 h-8 animate-pulse " />
                     </div>
                     <h3 className="font-heading font-black text-2xl text-white mb-4">{item.title}</h3>
-                    <div className="text-sm text-white leading-relaxed font-bold">
-                      <RichTextRenderer content={item.description} />
-                    </div>
+                    <RichTextRenderer
+                      content={item.description}
+                      className="text-sm text-white leading-relaxed font-bold"
+                    />
                   </div>
                 );
               }
@@ -691,9 +692,10 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
             <h2 className="text-3xl sm:text-5xl font-heading font-extrabold text-white tracking-tight">
               {cta.headline}
             </h2>
-            <div className="text-white text-sm sm:text-base max-w-xl mx-auto leading-relaxed font-medium">
-              <RichTextRenderer content={cta.description} />
-            </div>
+            <RichTextRenderer
+              content={cta.description}
+              className="text-white text-sm sm:text-base max-w-xl mx-auto leading-relaxed font-medium"
+            />
             <a
               href={withTrailingSlash(cta.buttonHref)}
               className="inline-flex items-center justify-center bg-white hover:bg-slate-100 text-slate-950 font-black px-8 py-4 rounded-xl transition-all shadow-lg active:scale-[0.98] text-xs sm:text-sm uppercase tracking-wider gap-2 group"

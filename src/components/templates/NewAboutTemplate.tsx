@@ -115,6 +115,16 @@ const DigitTicker = ({ value }: { value: number }) => {
   );
 };
 
+// Shows the WHOLE image whatever its shape: the sharp image is contained (never cropped)
+// on top of a blurred copy of itself, so there are no empty bars either.
+// Parent must be `relative` + `overflow-hidden` with a fixed height/aspect.
+const FullImage = ({ src, alt, className = "" }: { src: string; alt?: string; className?: string }) => (
+  <>
+    <img src={src} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-70 blur-2xl pointer-events-none" />
+    <img src={src} alt={alt || ""} className={`relative h-full w-full object-contain ${className}`} />
+  </>
+);
+
 export default function NewAboutTemplate({ pageData }: { pageData?: any; params?: any }) {
   const content = useContent();
   const rawAbout = pageData?.content || content?.newAboutPage || {};
@@ -523,22 +533,14 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                   {whoWeAre.imgWorkspace && (
                     <div className="absolute left-[15%] top-[15%] w-[70%] aspect-[1.3] rounded-2xl overflow-hidden border border-brand-zinc-200 dark:border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.06)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] bg-white dark:bg-[#12121e]">
-                      <img
-                        src={whoWeAre.imgWorkspace}
-                        alt={whoWeAre.imgWorkspaceAlt || "Team Workspace"}
-                        className="w-full h-full object-cover"
-                      />
+                      <FullImage src={whoWeAre.imgWorkspace} alt={whoWeAre.imgWorkspaceAlt || "Team Workspace"} />
                       <div className="absolute inset-0 bg-linear-grid-blue-4 opacity-[0.02] [background-size:16px_16px]" />
                     </div>
                   )}
 
                   {whoWeAre.imgUiDetail && (
                     <div className="absolute right-2 bottom-6 w-[55%] aspect-[1.28] rounded-2xl overflow-hidden border border-[#E9BD36]/20 dark:border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.12)] dark:shadow-[0_30px_60px_rgba(0,0,0,0.5)] bg-white dark:bg-[#12121e]">
-                      <img
-                        src={whoWeAre.imgUiDetail}
-                        alt={whoWeAre.imgUiDetailAlt || "UI Detail"}
-                        className="w-full h-full object-cover"
-                      />
+                      <FullImage src={whoWeAre.imgUiDetail} alt={whoWeAre.imgUiDetailAlt || "UI Detail"} />
                       <div className="absolute inset-0 bg-gradient-to-tr from-[#0306AC]/10 to-transparent mix-blend-overlay pointer-events-none" />
                     </div>
                   )}
@@ -639,7 +641,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   <div className="lg:col-span-7 order-1 lg:order-2">
                     <div className="aspect-[1.45] w-full rounded-[32px] overflow-hidden border border-brand-zinc-200/80 dark:border-white/10 shadow-sm relative bg-[#090812]">
                       {philosophy.mission.imgSrc && (
-                        <img src={philosophy.mission.imgSrc} alt={philosophy.mission.imgAlt || "Mission"} className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 pointer-events-none" />
+                        <FullImage src={philosophy.mission.imgSrc} alt={philosophy.mission.imgAlt || "Mission"} className="group-hover:scale-[1.03] transition-transform duration-700 pointer-events-none" />
                       )}
                       {philosophy.mission.badgeLatency && (
                         <div className="absolute top-5 right-5 bg-black/70 backdrop-blur-md border border-white/15 px-4 py-2 rounded-2xl flex items-center gap-3 shadow-xl select-none">
@@ -662,7 +664,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   <div className="lg:col-span-7">
                     <div className="aspect-[1.45] w-full rounded-[32px] overflow-hidden border border-brand-zinc-200/80 dark:border-white/10 shadow-sm relative bg-[#090812]">
                       {philosophy.vision.imgSrc && (
-                        <img src={philosophy.vision.imgSrc} alt={philosophy.vision.imgAlt || "Vision"} className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 pointer-events-none" />
+                        <FullImage src={philosophy.vision.imgSrc} alt={philosophy.vision.imgAlt || "Vision"} className="group-hover:scale-[1.03] transition-transform duration-700 pointer-events-none" />
                       )}
                       {philosophy.vision.badgeAccessibility && (
                         <div className="absolute bottom-5 left-5 bg-black/70 backdrop-blur-md border border-white/15 px-4 py-2 rounded-2xl flex items-center gap-3 shadow-xl select-none">
@@ -771,7 +773,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   <div className="lg:col-span-7 order-1 lg:order-2">
                     <div className="aspect-[1.45] w-full rounded-[32px] overflow-hidden border border-brand-zinc-200/80 dark:border-white/10 shadow-sm relative bg-[#090812]">
                       {philosophy.values.imgSrc && (
-                        <img src={philosophy.values.imgSrc} alt={philosophy.values.imgAlt || "Values"} className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 pointer-events-none" />
+                        <FullImage src={philosophy.values.imgSrc} alt={philosophy.values.imgAlt || "Values"} className="group-hover:scale-[1.03] transition-transform duration-700 pointer-events-none" />
                       )}
                       {philosophy.values.badgeSync && (
                         <div className="absolute top-5 left-5 bg-black/70 backdrop-blur-md border border-white/15 px-4 py-2 rounded-2xl flex items-center gap-3 shadow-xl select-none">
@@ -920,7 +922,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                         {stage.image ? (
                           <div className="aspect-[1.65] w-full rounded-2xl overflow-hidden border border-brand-zinc-200/80 dark:border-white/10 relative bg-[#090812]">
-                            <img src={stage.image} alt={stage.title} className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700 pointer-events-none" />
+                            <FullImage src={stage.image} alt={stage.title} className="group-hover:scale-[1.04] transition-transform duration-700 pointer-events-none" />
                             {stage.category ? (
                               <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white select-none">
                                 <div className="flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/15">
@@ -1194,8 +1196,8 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   </div>
 
                   {whyChooseUs.blueCardImage && (
-                    <div className="relative mt-8 -mx-8 sm:-mx-9 -mb-8 sm:-mb-9 rounded-b-[36px] overflow-hidden shadow-inner">
-                      <img src={whyChooseUs.blueCardImage} alt={whyChooseUs.blueCardImageAlt || "Feature"} className="w-full h-64 sm:h-72 lg:h-80 object-cover object-center" />
+                    <div className="relative mt-8 -mx-8 sm:-mx-9 -mb-8 sm:-mb-9 rounded-b-[36px] overflow-hidden shadow-inner h-64 sm:h-72 lg:h-80">
+                      <FullImage src={whyChooseUs.blueCardImage} alt={whyChooseUs.blueCardImageAlt || "Feature"} />
                     </div>
                   )}
                 </div>
@@ -1234,7 +1236,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
               <div className="lg:col-span-5 flex justify-center">
                 {executiveLeadership.portraitSrc && (
                   <div className="relative aspect-[4/5] w-full max-w-[440px] rounded-[32px] overflow-hidden shadow-2xl border border-brand-zinc-200/60 dark:border-white/10 group">
-                    <img src={executiveLeadership.portraitSrc} alt={executiveLeadership.portraitAlt || "Founder"} className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 pointer-events-none" />
+                    <FullImage src={executiveLeadership.portraitSrc} alt={executiveLeadership.portraitAlt || "Founder"} className="group-hover:scale-[1.03] transition-transform duration-700 pointer-events-none" />
                   </div>
                 )}
               </div>

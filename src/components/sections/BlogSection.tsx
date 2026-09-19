@@ -331,7 +331,7 @@ export default function BlogSection({
                 className="group flex flex-col rounded-[2.5rem] border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#12121e] p-6 md:p-8 shadow-[0_2px_12px_rgba(3,6,172,0.015)] hover:shadow-[0_20px_40px_rgba(3,6,172,0.08)] hover:border-primary/30 dark:hover:border-primary/30 transition-all duration-300 overflow-hidden card-sweep-glare select-none block no-underline"
               >
                 {/* Image Wrapper */}
-                <div className="relative aspect-[16/10] overflow-hidden bg-slate-100 dark:bg-zinc-800 border border-slate-200/40 dark:border-white/10 rounded-3xl mb-6">
+                <div className="relative aspect-[1200/627] overflow-hidden bg-slate-100 dark:bg-zinc-800 border border-slate-200/40 dark:border-white/10 rounded-3xl mb-6">
                   <Image
                     src={posts[0].image}
                     alt={posts[0].title}
@@ -392,14 +392,14 @@ export default function BlogSection({
               >
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 w-full">
                   {/* Small Thumbnail */}
-                  <div className="relative w-full sm:w-24 aspect-[16/10] sm:aspect-square overflow-hidden bg-slate-100 dark:bg-zinc-800 border border-slate-200/40 dark:border-white/10 rounded-2xl shrink-0">
+                  <div className="relative w-full sm:w-40 aspect-[1200/627] overflow-hidden bg-slate-100 dark:bg-zinc-800 border border-slate-200/40 dark:border-white/10 rounded-2xl shrink-0">
                     <Image
                       src={post.image}
                       alt={post.title}
                       fill
                       unoptimized={post.image?.startsWith('http') || post.image?.startsWith('/uploads') || post.image?.startsWith('/cdn-images')}
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      sizes="(max-width: 640px) 100vw, 100px"
+                      sizes="(max-width: 640px) 100vw, 160px"
                     />
                   </div>
 

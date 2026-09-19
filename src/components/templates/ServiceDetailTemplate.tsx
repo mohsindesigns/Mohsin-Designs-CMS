@@ -1032,7 +1032,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
       {/* ── 01. SERVICE HERO ── */}
       {(service as any).hero?.enabled !== false && (
-        <section className="-mt-[110px] sm:-mt-[125px] lg:-mt-[140px] pt-[175px] sm:pt-[200px] lg:pt-[230px] pb-16 sm:pb-24 relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10">
+        <section className="pt-28 md:pt-36 lg:pt-40 pb-16 lg:pb-24 relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10">
           <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
             <img
               src={service.hero?.backgroundImage || service.hero?.bgImage || "/portfolio_hero_bg.png"}
@@ -2360,9 +2360,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 </h2>
 
                 {service.finalCta.description && (
-                  <div className="text-xs sm:text-sm font-sans text-white/90 leading-relaxed max-w-lg font-normal">
-                    <RichTextRenderer content={service.finalCta.description} />
-                  </div>
+                  <RichTextRenderer
+                    content={service.finalCta.description}
+                    className="text-xs sm:text-sm font-sans text-white/90 leading-relaxed max-w-lg font-normal"
+                  />
                 )}
 
                 <div className="flex flex-wrap items-center gap-4 pt-2">
