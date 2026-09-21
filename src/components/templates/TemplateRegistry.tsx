@@ -63,11 +63,20 @@ export const TemplateWrapper = ({ templateName, pageData, globalData, initialBlo
     ? {
       ...(pageData?.content || {}),
       settings: globalData?.settings || {},
+      navbar: globalData?.navbar || {},
+      footer: globalData?.footer || {},
       globalServices: globalData?.services?.services || globalData?.globalServices || [],
     }
     : {
       ...(globalData || {}),
       ...(pageData?.content || {}),
+      // Crucial: pageData.content must NEVER override global site layout (navbar, footer)
+      navbar: globalData?.navbar || {},
+      footer: globalData?.footer || {},
+      settings: {
+        ...(globalData?.settings || {}),
+        ...(pageData?.content?.settings || {})
+      },
       hero: {
         ...(globalData?.hero || {}),
         ...(pageData?.content?.hero || {}),

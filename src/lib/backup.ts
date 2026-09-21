@@ -3,8 +3,8 @@ import Backup from '@/models/Backup';
 import SiteContent from '@/models/Content';
 import Page from '@/models/Page';
 
-const MAX_COMPLETE_BACKUPS = 50;
-const MAX_PAGE_BACKUPS = 100;
+const MAX_COMPLETE_BACKUPS = 5;
+const MAX_PAGE_BACKUPS = 10;
 
 /**
  * Creates an atomic snapshot of the entire complete_data document before or after any mutation

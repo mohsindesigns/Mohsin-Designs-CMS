@@ -63,6 +63,10 @@ export async function PATCH(
     }).catch((pBkErr) => console.warn('[Backup Engine] Backup import failed:', pBkErr));
 
     const updateData = { ...body };
+    if (updateData.content) {
+      delete updateData.content.navbar;
+      delete updateData.content.footer;
+    }
     if (body.isTrashed !== undefined) {
       updateData.isTrashed = body.isTrashed;
       updateData.trashedAt = body.isTrashed ? new Date() : null;
@@ -139,13 +143,23 @@ export async function PATCH(
         const SiteContent = (await import('@/models/Content')).default;
         const currentDoc = await SiteContent.findOne({ key: 'complete_data' });
         if (currentDoc) {
-          const cleanContent = { ...content };
-          // Strict protection: home page sync must NEVER touch services
+          // Strict protection: home page sync must NEVER touch services, navbar, footer, settings, loader, or hours
+          const cleanContent: any = { ...content };
           delete cleanContent.services;
           delete cleanContent.globalServices;
+          delete cleanContent.navbar;
+          delete cleanContent.footer;
+          delete cleanContent.settings;
+          delete cleanContent.loader;
+          delete cleanContent.hours;
           const mergedData = { ...currentDoc.data, ...cleanContent };
           mergedData.services = currentDoc.data?.services;
           mergedData.globalServices = currentDoc.data?.globalServices || currentDoc.data?.services?.services;
+          mergedData.navbar = currentDoc.data?.navbar;
+          mergedData.footer = currentDoc.data?.footer;
+          mergedData.settings = currentDoc.data?.settings;
+          mergedData.loader = currentDoc.data?.loader;
+          mergedData.hours = currentDoc.data?.hours;
           if (content.portfolio) {
             mergedData.portfolio = { ...(currentDoc.data?.portfolio || {}), ...content.portfolio };
           }

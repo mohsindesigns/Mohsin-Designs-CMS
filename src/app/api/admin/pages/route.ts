@@ -44,12 +44,16 @@ export async function POST(req: NextRequest) {
     const canonicalUrl = body.seo?.canonicalUrl || `https://mohsindesigns.com/${slug}/`;
     const pageStatus = body.status === 'draft' ? 'draft' : 'published';
 
+    const cleanContent = (body.content && typeof body.content === 'object') ? { ...body.content } : {};
+    delete cleanContent.navbar;
+    delete cleanContent.footer;
+
     const newPage = await Page.create({
       title,
       slug,
       template,
       status: pageStatus,
-      content: (body.content && typeof body.content === 'object') ? body.content : {},
+      content: cleanContent,
       seo: {
         canonicalUrl: canonicalUrl.endsWith('/') ? canonicalUrl : `${canonicalUrl}/`,
         ...(body.seo || {})

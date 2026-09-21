@@ -34,7 +34,12 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
          fetch("/api/content?key=complete_data")
             .then(res => res.json())
             .then(resData => {
-               const defaultData = resData?.data || resData || {};
+               const defaultData = { ...(resData?.data || resData || {}) };
+               delete defaultData.navbar;
+               delete defaultData.footer;
+               delete defaultData.settings;
+               delete defaultData.services;
+               delete defaultData.globalServices;
                setData((prev: any) => ({
                   ...defaultData,
                   ...(prev || {}),

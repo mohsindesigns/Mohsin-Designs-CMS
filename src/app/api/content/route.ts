@@ -155,6 +155,17 @@ export async function PUT(req: NextRequest) {
         services: existingServicesList
       };
       finalData.globalServices = existingServicesList;
+
+      // IMMUTABLE GLOBAL LAYOUT SHIELD:
+      // Navbar, footer, settings, loader, and hours are strictly managed in Admin > Settings.
+      // Other full-payload updates MUST NEVER overwrite them.
+      if (sanitizedBody.section !== 'settings') {
+        finalData.navbar = existingData.navbar;
+        finalData.footer = existingData.footer;
+        finalData.settings = existingData.settings;
+        if (existingData.loader) finalData.loader = existingData.loader;
+        if (existingData.hours) finalData.hours = existingData.hours;
+      }
     }
 
     // COMPLETE ATOMIC DATABASE SNAPSHOT (Async / Non-blocking):
