@@ -26,9 +26,9 @@ interface ThemedSelectProps {
 }
 
 const DEFAULT_TRIGGER =
-"w-full flex items-center justify-between gap-2 rounded-2xl border px-4 py-3.5 text-sm text-left transition-all" +
-"bg-[#F8FAFC] dark:bg-white/5 border-[#E2E8F0] dark:border-white/10 text-[#0F172A] dark:text-white" +
-"hover:border-brand-blue/40 dark:hover:border-brand-yellow/40" +
+"w-full flex items-center justify-between gap-2 rounded-2xl border px-4 py-3.5 text-sm text-left transition-all " +
+"bg-[#F8FAFC] dark:bg-white/5 border-[#E2E8F0] dark:border-white/10 text-[#0F172A] dark:text-white " +
+"hover:border-brand-blue/40 dark:hover:border-brand-yellow/40 " +
 "focus:outline-none focus:border-brand-blue dark:focus:border-brand-yellow focus:ring-4 focus:ring-brand-blue/10 dark:focus:ring-brand-yellow/10";
 
 /**
