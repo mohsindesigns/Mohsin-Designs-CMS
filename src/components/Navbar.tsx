@@ -382,7 +382,12 @@ export default function Navbar() {
                                 <span className="text-[13px] font-medium">Add a map in Admin &gt; Settings &gt; Header</span>
                               </div>
                             )}
-                            {map.kind !== "none" && (
+                            {/* Text overlay only makes sense over a static photo we control. A live Google
+                                Maps embed draws its own place card / rating / attribution chrome wherever
+                                it wants, inside a cross-origin iframe we can't reposition or suppress - any
+                                overlay here WILL eventually collide with it. So: image gets the full
+                                editorial treatment, embed gets left alone to just be an interactive map. */}
+                            {map.kind === "image" && (
                               <>
                                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/65" />
                                 <div className="pointer-events-none absolute inset-x-0 top-0 p-6">
@@ -399,14 +404,14 @@ export default function Navbar() {
                                   )}
                                   <span className="mt-2.5 block h-[3px] w-9 rounded-full bg-brand-yellow" />
                                 </div>
+                                <div className="pointer-events-none absolute inset-x-0 bottom-0 px-5 pb-4 pt-10">
+                                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-[13px] font-semibold text-brand-dark shadow-md">
+                                    <MapPin className="h-3.5 w-3.5 text-brand-blue" />
+                                    {caption}
+                                  </span>
+                                </div>
                               </>
                             )}
-                            <div className="pointer-events-none absolute inset-x-0 bottom-0 px-5 pb-4 pt-10">
-                              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-[13px] font-semibold text-brand-dark shadow-md">
-                                <MapPin className="h-3.5 w-3.5 text-brand-blue" />
-                                {caption}
-                              </span>
-                            </div>
                           </div>
                         </div>
                       </motion.div>
