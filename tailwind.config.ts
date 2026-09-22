@@ -108,10 +108,17 @@ export default {
                     light: "var(--color-brand-light)",
                     "zinc-50": "var(--color-light)",
                     "zinc-100": "#F3F4F6",
+                    "zinc-150": "#ECEDF0",
                     "zinc-200": "var(--color-border)",
                     "zinc-300": "#D1D5DB",
                     "zinc-400": "#9CA3AF",
                     "zinc-500": "var(--color-gray)",
+                    "zinc-550": "#61616A",
+                    "zinc-555": "#5F5F68",
+                    "zinc-600": "#4B5563",
+                    "zinc-605": "#4A5462",
+                    "zinc-655": "#414B5A",
+                    "zinc-700": "#374151",
                     "zinc-800": "#1F2937",
                     // ── Unified mode-switching accent (blue in light, yellow in dark) ──
                     accent: "var(--color-brand-accent)",
@@ -120,6 +127,29 @@ export default {
                     "accent-glow": "var(--color-brand-accent-glow)",
                     // Star ratings — always yellow
                     star: "var(--color-star-rating)",
+                },
+                // These add IN-BETWEEN shades to Tailwind's own built-in palettes (e.g.
+                // zinc-355, sky-550) that several components reference but were never part
+                // of Tailwind's default scale (which only has 50/100/200/.../900/950) or
+                // this config - those classes were silently compiling to nothing. Adding
+                // just the missing keys here merges with, rather than replaces, the
+                // built-in shades.
+                zinc: {
+                    350: "#BABAC1",
+                    355: "#B7B7BE",
+                    455: "#878790",
+                    550: "#61616A",
+                    555: "#5F5F68",
+                },
+                slate: {
+                    655: "#3C4A5E",
+                },
+                indigo: {
+                    105: "#DFE6FF",
+                    650: "#493FD7",
+                },
+                sky: {
+                    550: "#0894D8",
                 },
             },
             borderRadius: {
