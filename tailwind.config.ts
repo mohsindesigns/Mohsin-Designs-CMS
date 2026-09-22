@@ -16,6 +16,14 @@ export default {
             screens: {
                 xs: "480px",
             },
+            spacing: {
+                // "4.5" (1.125rem / 18px) sits between the default p-4 and p-5 steps. It's used
+                // in a handful of places (e.g. the service-detail contact form card's mobile
+                // padding) but was never added to the scale, so p-4.5/py-4.5/etc silently
+                // compiled to nothing - those elements rendered with ZERO padding on any
+                // viewport where a responsive override didn't also apply, which is most phones.
+                "4.5": "1.125rem",
+            },
             fontFamily: {
                 // Exactly two brand fonts, everywhere:
                 //   heading (Lora)          -> all headings, body copy defaults
