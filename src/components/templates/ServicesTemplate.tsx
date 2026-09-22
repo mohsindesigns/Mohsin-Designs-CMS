@@ -343,18 +343,19 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                   {hero.titleIntro}{" "}
                   <span className="relative inline-block text-[#0306ac] dark:text-[#e9bd36] pb-1 ml-1">
                     {hero.titleHighlight}
-                    <svg
-                      className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90"
-                      viewBox="0 0 100 10"
-                      preserveAspectRatio="none"
-                    >
+                    <svg className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-[#E9BD36] dark:text-[#F3CB5C]" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true">
                       <motion.path
-                        d="M 2 5 Q 50 1.5, 98 3.5 C 99 3.5, 99 4.5, 98 5 Q 50 7, 2 5.5 Z"
-                        fill="currentColor"
-                        custom={{ delay: 0.5, duration: 0.65 }}
+                        d="M2 7.2C24 2.6 54 2.2 77 3.6C87 4.3 94 5.6 98 7.6"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.4"
+                        strokeLinecap="round"
+                        vectorEffect="non-scaling-stroke"
+                        custom={{ delay: 0.45, duration: 0.7 }}
                         variants={drawVariants}
                         initial="hidden"
-                        animate="visible"
+                        whileInView="visible"
+                        viewport={{ once: true }}
                       />
                     </svg>
                   </span>
@@ -402,15 +403,15 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                 {grid.titleIntro}{" "}
                 <span className="relative inline-block text-[#0306ac] dark:text-[#e9bd36] pb-1 ml-1">
                   {grid.titleHighlight}
-                  <svg
-                    className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90"
-                    viewBox="0 0 100 10"
-                    preserveAspectRatio="none"
-                  >
+                  <svg className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-[#E9BD36] dark:text-[#F3CB5C]" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true">
                     <motion.path
-                      d="M 2 5 Q 50 1.5, 98 3.5 C 99 3.5, 99 4.5, 98 5 Q 50 7, 2 5.5 Z"
-                      fill="currentColor"
-                      custom={{ delay: 0.3, duration: 0.65 }}
+                      d="M2 7.2C24 2.6 54 2.2 77 3.6C87 4.3 94 5.6 98 7.6"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.4"
+                      strokeLinecap="round"
+                      vectorEffect="non-scaling-stroke"
+                      custom={{ delay: 0.45, duration: 0.7 }}
                       variants={drawVariants}
                       initial="hidden"
                       whileInView="visible"
@@ -466,15 +467,20 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                     <span className="font-cursive text-[#E9BD36] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
                       {ctaBanner.titleHighlight}
                     </span>
-                    <svg
-                      className="absolute left-0 bottom-[-2px] w-full h-3 text-[#E9BD36]"
-                      viewBox="0 0 100 10"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                    >
-                      <path d="M 5 6 C 30 9, 70 9, 95 4" />
+                    <svg className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-[#E9BD36] dark:text-[#F3CB5C]" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true">
+                      <motion.path
+                        d="M2 7.2C24 2.6 54 2.2 77 3.6C87 4.3 94 5.6 98 7.6"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.4"
+                        strokeLinecap="round"
+                        vectorEffect="non-scaling-stroke"
+                        custom={{ delay: 0.45, duration: 0.7 }}
+                        variants={drawVariants}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                      />
                     </svg>
                   </span>{" "}
                   {ctaBanner.titleLine2}

@@ -397,9 +397,20 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                 {hero.titleIntro}{" "}
                 <span className="relative inline-block text-[#0306AC] dark:text-[#E9BD36]">
  <span className="font-heading font-normal">{hero.titleHighlight}</span>
-                  <svg className="absolute left-0 bottom-[-2px] w-full h-3 text-brand-accent" viewBox="0 0 100 10" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
-                    <path d="M 5 6 C 30 9, 70 9, 95 4" />
-                  </svg>
+                  <svg className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-[#E9BD36] dark:text-[#F3CB5C]" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true">
+                  <motion.path
+                    d="M2 7.2C24 2.6 54 2.2 77 3.6C87 4.3 94 5.6 98 7.6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.4"
+                    strokeLinecap="round"
+                    vectorEffect="non-scaling-stroke"
+                    custom={{ delay: 0.45, duration: 0.7 }}
+                    variants={drawVariants}
+                    initial="hidden"
+                    animate="visible"
+                  />
+                </svg>
                 </span>{" "}
                 {hero.titleSuffix}
               </h1>
@@ -942,9 +953,20 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                   {ctaBanner.titleWord1}
                   <span className="relative inline-block">
                     <span className="font-cursive text-[#E9BD36] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">{ctaBanner.titleWord2}</span>
-                    <svg className="absolute left-0 bottom-[-2px] w-full h-3 text-[#E9BD36]" viewBox="0 0 100 10" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
-                      <path d="M 5 6 C 30 9, 70 9, 95 4" />
-                    </svg>
+                    <svg className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-[#E9BD36] dark:text-[#F3CB5C]" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true">
+                  <motion.path
+                    d="M2 7.2C24 2.6 54 2.2 77 3.6C87 4.3 94 5.6 98 7.6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.4"
+                    strokeLinecap="round"
+                    vectorEffect="non-scaling-stroke"
+                    custom={{ delay: 0.45, duration: 0.7 }}
+                    variants={drawVariants}
+                    initial="hidden"
+                    animate="visible"
+                  />
+                </svg>
                   </span>
                 </span>
               </h2>
