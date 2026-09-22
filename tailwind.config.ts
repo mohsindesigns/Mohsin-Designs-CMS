@@ -23,6 +23,10 @@ export default {
                 // compiled to nothing - those elements rendered with ZERO padding on any
                 // viewport where a responsive override didn't also apply, which is most phones.
                 "4.5": "1.125rem",
+                // "15" (3.75rem / 60px) - same gap, used once for a decorative element's
+                // horizontal offset (left-15), which was rendering at the CSS default
+                // (left: auto) instead of being offset at all.
+                "15": "3.75rem",
             },
             fontFamily: {
                 // Exactly two brand fonts, everywhere:
@@ -156,6 +160,23 @@ export default {
                 lg: "var(--radius)",
                 md: "calc(var(--radius) - 2px)",
                 sm: "calc(var(--radius) - 4px)",
+            },
+            // Same story as the color/spacing gaps above: Tailwind's duration scale only has
+            // 75/100/150/200/300/500/700/1000 by default, but several components use
+            // duration-250/350/355/400. Those compiled to nothing, so `transition-all
+            // duration-355` etc. silently ran at the transition utility's own built-in 150ms
+            // default instead of the intended duration - not invisible, just the wrong speed.
+            transitionDuration: {
+                "250": "250ms",
+                "350": "350ms",
+                "355": "355ms",
+                "400": "400ms",
+            },
+            // scale-103 (a couple of "image zooms slightly on hover" effects) isn't in
+            // Tailwind's default scale set (75/90/95/100/105/110/125/150) either - the
+            // hover effect was silently doing nothing.
+            scale: {
+                "103": "1.03",
             },
             keyframes: {
                 "accordion-down": {
