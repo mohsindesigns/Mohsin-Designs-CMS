@@ -266,7 +266,7 @@ export default function Footer() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-transparent px-3 py-2.5 text-xs text-white focus:outline-none placeholder:text-slate-400 dark:placeholder:text-zinc-500 font-medium"
+                    className="w-full bg-transparent px-3 py-2.5 text-base sm:text-xs text-white focus:outline-none placeholder:text-slate-400 dark:placeholder:text-zinc-500 font-medium"
                     placeholder={footer?.newsletterPlaceholder || "Your email"}
                   />
                   <button

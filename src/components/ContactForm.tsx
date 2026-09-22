@@ -290,7 +290,7 @@ export default function ContactForm({ data }: { data?: any }) {
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                           placeholder={contact.placeholderName}
-                          className={`w-full bg-brand-light dark:bg-white/5 border rounded-2xl px-4 py-3.5 text-xs font-semibold text-brand-dark dark:text-white placeholder-brand-zinc-400 dark:placeholder-zinc-500 focus:ring-4 focus:ring-brand-blue/10 dark:focus:ring-brand-yellow/10 focus:border-brand-blue dark:focus:border-brand-yellow focus:bg-white dark:focus:bg-[#161622] outline-none transition-all ${errors.name ? "border-red-400" : "border-brand-zinc-200 dark:border-white/10"
+                          className={`w-full bg-brand-light dark:bg-white/5 border rounded-2xl px-4 py-3.5 text-base sm:text-sm font-semibold text-brand-dark dark:text-white placeholder-brand-zinc-400 dark:placeholder-zinc-500 focus:ring-4 focus:ring-brand-blue/10 dark:focus:ring-brand-yellow/10 focus:border-brand-blue dark:focus:border-brand-yellow focus:bg-white dark:focus:bg-[#161622] outline-none transition-all ${errors.name ? "border-red-400" : "border-brand-zinc-200 dark:border-white/10"
                             }`}
                         />
                       </div>
@@ -308,7 +308,7 @@ export default function ContactForm({ data }: { data?: any }) {
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                           placeholder={contact.placeholderEmail}
-                          className={`w-full bg-brand-light dark:bg-white/5 border rounded-2xl px-4 py-3.5 text-xs font-semibold text-brand-dark dark:text-white placeholder-brand-zinc-400 dark:placeholder-zinc-500 focus:ring-4 focus:ring-brand-blue/10 dark:focus:ring-brand-yellow/10 focus:border-brand-blue dark:focus:border-brand-yellow focus:bg-white dark:focus:bg-[#161622] outline-none transition-all ${errors.email ? "border-red-400" : "border-brand-zinc-200 dark:border-white/10"
+                          className={`w-full bg-brand-light dark:bg-white/5 border rounded-2xl px-4 py-3.5 text-base sm:text-sm font-semibold text-brand-dark dark:text-white placeholder-brand-zinc-400 dark:placeholder-zinc-500 focus:ring-4 focus:ring-brand-blue/10 dark:focus:ring-brand-yellow/10 focus:border-brand-blue dark:focus:border-brand-yellow focus:bg-white dark:focus:bg-[#161622] outline-none transition-all ${errors.email ? "border-red-400" : "border-brand-zinc-200 dark:border-white/10"
                             }`}
                         />
                       </div>
@@ -327,7 +327,7 @@ export default function ContactForm({ data }: { data?: any }) {
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         placeholder={contact.placeholderPhone}
-                        className={`w-full bg-brand-light dark:bg-white/5 border rounded-2xl px-4 py-3.5 text-xs font-semibold text-brand-dark dark:text-white placeholder-brand-zinc-400 dark:placeholder-zinc-500 focus:ring-4 focus:ring-brand-blue/10 dark:focus:ring-brand-yellow/10 focus:border-brand-blue dark:focus:border-brand-yellow focus:bg-white dark:focus:bg-[#161622] outline-none transition-all ${errors.phone ? "border-red-400" : "border-brand-zinc-200 dark:border-white/10"
+                        className={`w-full bg-brand-light dark:bg-white/5 border rounded-2xl px-4 py-3.5 text-base sm:text-sm font-semibold text-brand-dark dark:text-white placeholder-brand-zinc-400 dark:placeholder-zinc-500 focus:ring-4 focus:ring-brand-blue/10 dark:focus:ring-brand-yellow/10 focus:border-brand-blue dark:focus:border-brand-yellow focus:bg-white dark:focus:bg-[#161622] outline-none transition-all ${errors.phone ? "border-red-400" : "border-brand-zinc-200 dark:border-white/10"
                           }`}
                       />
                     </div>
@@ -344,7 +344,7 @@ export default function ContactForm({ data }: { data?: any }) {
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       placeholder={contact.placeholderMessage}
-                      className={`w-full bg-brand-light dark:bg-white/5 border rounded-2xl px-4 py-3.5 text-xs font-semibold text-brand-dark dark:text-white placeholder-brand-zinc-400 dark:placeholder-zinc-500 focus:ring-4 focus:ring-brand-blue/10 dark:focus:ring-brand-yellow/10 focus:border-brand-blue dark:focus:border-brand-yellow focus:bg-white dark:focus:bg-[#161622] outline-none transition-all resize-none ${errors.message ? "border-red-400" : "border-brand-zinc-200 dark:border-white/10"
+                      className={`w-full bg-brand-light dark:bg-white/5 border rounded-2xl px-4 py-3.5 text-base sm:text-sm font-semibold text-brand-dark dark:text-white placeholder-brand-zinc-400 dark:placeholder-zinc-500 focus:ring-4 focus:ring-brand-blue/10 dark:focus:ring-brand-yellow/10 focus:border-brand-blue dark:focus:border-brand-yellow focus:bg-white dark:focus:bg-[#161622] outline-none transition-all resize-none ${errors.message ? "border-red-400" : "border-brand-zinc-200 dark:border-white/10"
                         }`}
                     />
                     {errors.message && <span className="text-[10px] font-bold text-red-500 block">{errors.message}</span>}

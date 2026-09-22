@@ -1150,7 +1150,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                         placeholder="Full Name *"
                         value={formData.fullName}
                         onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                        className="contact-input text-xs sm:text-sm"
+                        className="contact-input text-base sm:text-sm"
                       />
                       <input
                         type="email"
@@ -1158,7 +1158,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                         placeholder="Email Address *"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="contact-input text-xs sm:text-sm"
+                        className="contact-input text-base sm:text-sm"
                       />
                     </div>
 
@@ -1168,14 +1168,14 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                         placeholder="Phone Number"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="contact-input text-xs sm:text-sm"
+                        className="contact-input text-base sm:text-sm"
                       />
                       <input
                         type="text"
                         placeholder="Company Name (Optional)"
                         value={formData.company}
                         onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                        className="contact-input text-xs sm:text-sm"
+                        className="contact-input text-base sm:text-sm"
                       />
                     </div>
 
@@ -1183,7 +1183,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                       <ThemedSelect
                         value={formData.service}
                         onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                        className="contact-input !flex text-xs sm:text-sm"
+                        className="contact-input !flex text-base sm:text-sm"
                         options={[service, ...rawServices.filter((s: any) => s.title !== service.title)].map((srv: any) => ({ value: srv.title, label: srv.title }))}
                       />
                     </div>
@@ -1194,7 +1194,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                       placeholder="Tell us about your business goals *"
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="contact-input resize-none text-xs sm:text-sm"
+                      className="contact-input resize-none text-base sm:text-sm"
                     />
 
                     <div className="flex items-center gap-2.5 pt-0.5">

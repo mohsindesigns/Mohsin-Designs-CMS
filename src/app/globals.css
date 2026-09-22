@@ -1116,11 +1116,18 @@
     width: 100%;
     padding: 0.875rem 1.125rem;
     border-radius: 14px;
-    font-size: 0.875rem;
+    /* 16px on mobile so iOS Safari doesn't auto-zoom the page on focus; compact 14px from sm: up. */
+    font-size: 1rem;
     background-color: #F8FAFC;
     border: 1px solid #E2E8F0;
     color: #0F172A;
     transition: all 0.25s ease;
+  }
+
+  @media (min-width: 640px) {
+    .contact-input {
+      font-size: 0.875rem;
+    }
   }
 
   .contact-input:focus {
