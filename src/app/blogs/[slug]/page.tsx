@@ -374,7 +374,7 @@ export default async function BlogPostPage({ params }: Props) {
 
       {/* ── 2. FEATURED COVER IMAGE CONTAINER ────────────────────────── */}
       <div className="mx-auto max-w-6xl px-4 sm:px-6 mt-8 sm:mt-10 relative z-20">
-        <div className="bg-white dark:bg-[#12121e] rounded-[28px] overflow-hidden shadow-xl border border-brand-zinc-200/90 dark:border-white/10 aspect-[21/9] relative group">
+        <div className="bg-white dark:bg-[#12121e] rounded-[28px] overflow-hidden shadow-xl border border-brand-zinc-200/90 dark:border-white/10 aspect-[1200/627] relative group">
           <img
             src={featuredImage}
             alt={post.title}
@@ -568,7 +568,7 @@ export default async function BlogPostPage({ params }: Props) {
                 className="bg-white dark:bg-[#12121e] border border-brand-zinc-200/90 dark:border-white/10 hover:border-brand-blue/60 dark:hover:border-brand-yellow/60 rounded-[28px] overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-400 flex flex-col justify-between group select-none relative block cursor-pointer"
               >
                 <div>
-                  <div className="relative h-56 w-full overflow-hidden bg-brand-light dark:bg-zinc-950 border-b border-brand-zinc-200/80 dark:border-white/10">
+                  <div className="relative aspect-[1200/627] w-full overflow-hidden bg-brand-light dark:bg-zinc-950 border-b border-brand-zinc-200/80 dark:border-white/10">
                     <img
                       src={rPost.image}
                       alt={rPost.title}

@@ -11,11 +11,6 @@ import Link from "@/components/ui/Link";
 import CtaButton from "@/components/ui/CtaButton";
 import { parseMapEmbed } from "@/lib/mapEmbed";
 
-const stripHtml = (html: string) => {
-  if (!html) return "";
-  return html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, "");
-};
-
 // Shared look of the dropdown / mega-menu panels. The nav bar itself is uppercase + bold + wide
 // tracking; panels must reset that or their titles and descriptions become unreadable.
 const PANEL_BASE =
@@ -51,7 +46,7 @@ export default function Navbar() {
 
   const companyLinks = navbar?.companyLinks || [];
   const services = (servicesData.services || []).filter((s: any) =>
-    (s.status === 'published' || s.status === undefined) && s.title && String(s.title).trim()
+    (s.status === 'published' || s.status === undefined) && !s.isTrashed && s.title && String(s.title).trim()
   );
 
   useEffect(() => {
@@ -220,18 +215,13 @@ export default function Navbar() {
                               key={service.slug}
                               href={`/services/${service.slug}`}
                               onClick={handleLinkClick}
-                              className="group flex items-start gap-3.5 rounded-2xl border border-transparent p-3.5 transition-all duration-300 hover:border-brand-blue/15 hover:bg-brand-blue/[0.04] dark:hover:border-brand-yellow/20 dark:hover:bg-brand-yellow/[0.06]"
+                              className="group flex items-center gap-3.5 rounded-2xl border border-transparent p-3.5 transition-all duration-300 hover:border-brand-blue/15 hover:bg-brand-blue/[0.04] dark:hover:border-brand-yellow/20 dark:hover:bg-brand-yellow/[0.06]"
                             >
                               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-blue/10 text-brand-blue transition-all duration-300 group-hover:bg-brand-blue group-hover:text-white group-hover:shadow-lg group-hover:shadow-brand-blue/25 dark:bg-brand-yellow/10 dark:text-brand-yellow dark:group-hover:bg-brand-yellow dark:group-hover:text-brand-dark">
                                 <Icon name={service.icon} className="h-5 w-5" />
                               </span>
-                              <span className="min-w-0">
-                                <span className="block text-[15px] font-bold leading-snug text-brand-dark transition-colors group-hover:text-brand-blue dark:text-white dark:group-hover:text-brand-yellow">
-                                  {service.title}
-                                </span>
-                                <span className="mt-1 block text-[13px] font-normal leading-relaxed text-brand-zinc-600 dark:text-zinc-400 line-clamp-2">
-                                  {stripHtml(service.description)}
-                                </span>
+                              <span className="min-w-0 block text-[15px] font-bold leading-snug text-brand-dark transition-colors group-hover:text-brand-blue dark:text-white dark:group-hover:text-brand-yellow">
+                                {service.title}
                               </span>
                             </Link>
                           ))}
@@ -301,11 +291,6 @@ export default function Navbar() {
                             <h3 className="mt-3 font-heading text-3xl font-black leading-[1.05] tracking-tight text-brand-dark dark:text-white">
                               {menu.title || "Our Locations"}
                             </h3>
-                            {menu.description && (
-                              <p className="mt-3 text-[13px] leading-relaxed text-brand-zinc-600 dark:text-zinc-400">
-                                {stripHtml(menu.description)}
-                              </p>
-                            )}
 
                             <span className="mt-5 block h-[3px] w-9 rounded-full bg-brand-blue dark:bg-brand-yellow" />
 

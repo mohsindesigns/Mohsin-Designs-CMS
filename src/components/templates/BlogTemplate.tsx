@@ -378,8 +378,11 @@ export default function BlogTemplate({
                   className="bg-white dark:bg-[#12121e] border border-brand-zinc-200/90 dark:border-white/10 hover:border-brand-blue/60 dark:hover:border-brand-yellow/60 rounded-[28px] overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-400 flex flex-col justify-between group select-none relative block cursor-pointer"
                 >
                   <div>
-                    {/* Full-Bleed Cover Image Banner */}
-                    <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-brand-light dark:bg-zinc-950 border-b border-brand-zinc-200/80 dark:border-white/10">
+                    {/* Full-Bleed Cover Image Banner - aspect-ratio matches the generated
+                        1200x627 cover graphics exactly, so their baked-in titles never get
+                        cropped by a mismatched fixed-height box (was h-64/h-72 + object-cover,
+                        which sliced the left edge off every title). */}
+                    <div className="relative aspect-[1200/627] w-full overflow-hidden bg-brand-light dark:bg-zinc-950 border-b border-brand-zinc-200/80 dark:border-white/10">
                       <Image
                         src={post.image}
                         alt={post.title}
