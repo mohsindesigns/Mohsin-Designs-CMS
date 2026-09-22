@@ -28,7 +28,7 @@ export default function RichTextRenderer({ content, className = "", stripParagra
     } catch {
       // If the sanitizer itself throws for any reason, fail closed (render
       // nothing) rather than falling back to unsanitized HTML.
-      return"";
+      return "";
     }
   };
 

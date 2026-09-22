@@ -213,7 +213,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
   const pageUrlDisplay = (() => {
     const slug = pageData?.slug?.toString().trim();
-    if (!slug) return"https://mohsindesigns.com";
+    if (!slug) return "https://mohsindesigns.com";
 
     const normalizedSlug = slug.replace(/^\/+|\/+$/g, "");
     if (/^https?:\/\//i.test(normalizedSlug)) return normalizedSlug;

@@ -9,7 +9,7 @@ import RichTextRenderer from "./ui/RichTextRenderer";
 import { Icon } from "../config/icons";
  
 const stripHtml = (html: string) => {
-  if (!html) return"";
+  if (!html) return "";
   return html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, "").trim();
 };
 

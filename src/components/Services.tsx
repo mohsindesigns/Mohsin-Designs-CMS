@@ -294,7 +294,7 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
           
           <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 md:gap-12">
             <div className="space-y-4 max-w-2xl text-center lg:text-left">
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 dark:bg-yellow-400/10 px-4 py-1.5 text-[10px] font-mono font-black uppercase tracking-widest text-brand-yellow dark:text-yellow-400 border border-white/10">
+              <span className="eyebrow-pill-yellow">
                 {services.ctaEyebrow}
               </span>
               <h3 className="font-heading text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight tracking-tight">

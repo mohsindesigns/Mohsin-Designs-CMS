@@ -169,8 +169,8 @@ export default function Hero({ data, content: overrideContent, breadcrumb }: { d
 
             {/* Pill Badge */}
             <motion.div variants={itemVariants} className="inline-flex pointer-events-auto">
-              <span className="inline-flex items-center gap-2 rounded-full bg-brand-accent px-4 py-1.5 text-[10px] font-black tracking-wider uppercase text-white select-none shadow-sm">
-                <Star className="h-3.5 w-3.5 fill-white text-white shrink-0" />
+              <span className="eyebrow-pill select-none shadow-sm">
+                <Star className="h-3.5 w-3.5 fill-current text-current shrink-0" />
                 {badgeText}
               </span>
             </motion.div>

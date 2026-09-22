@@ -184,7 +184,7 @@ export default function BlogSection({
       const clean = p.content.replace(/<[^>]*>?/gm, "").replace(/&nbsp;/g, "").replace(/\s+/g, "").trim();
       if (clean.length > 0) return clean.length > 160 ? clean.slice(0, 157) +"..." : clean;
     }
-    return"";
+    return "";
   };
 
   const getPostReadingTime = (p: any): string => {
@@ -196,7 +196,7 @@ export default function BlogSection({
       const mins = Math.max(1, Math.ceil(words / 200));
       return `${mins} min read`;
     }
-    return"4 min read";
+    return "4 min read";
   };
 
   const getPostCategory = (p: any, idx: number): string => {

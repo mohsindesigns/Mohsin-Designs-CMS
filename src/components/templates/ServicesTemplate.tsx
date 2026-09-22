@@ -331,8 +331,8 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                 <PageBreadcrumbs page={pageData} />
                 {/* Badge */}
                 <div className="flex items-center gap-3">
-                  <span className="inline-flex items-center gap-2 rounded-full bg-brand-accent px-4 py-1.5 text-[10px] font-mono font-black tracking-widest uppercase text-white dark:text-[#080710] shadow-sm">
-                    <span className="h-1.5 w-1.5 rounded-full bg-white dark:bg-[#080710]" />
+                  <span className="eyebrow-pill shadow-sm">
+                    <span className="h-1.5 w-1.5 rounded-full bg-current" />
                     {hero.badgeText}
                   </span>
                   <div className="h-[1px] w-12 bg-gray-300 dark:bg-zinc-700" />
@@ -394,7 +394,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
               className="text-center mb-14 space-y-4"
             >
               <div className="flex justify-center">
-                <span className="inline-flex items-center gap-2 rounded-full bg-[#0306ac]/5 dark:bg-[#e9bd36]/10 border border-[#0306ac]/10 dark:border-[#e9bd36]/20 px-4 py-1.5 text-[10px] font-mono font-bold tracking-widest uppercase text-[#0306ac] dark:text-[#e9bd36]">
+                <span className="eyebrow-pill">
                   {grid.eyebrow}
                 </span>
               </div>
@@ -451,7 +451,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
               <div className="relative z-10 flex flex-col justify-center gap-5 lg:max-w-[62%]">
 
                 {/* Eyebrow */}
-                <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-4 py-1.5 text-[10px] font-mono tracking-widest text-[#E9BD36] font-extrabold uppercase w-fit">
+                <div className="eyebrow-pill-yellow">
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E9BD36] opacity-75" />
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E9BD36]" />

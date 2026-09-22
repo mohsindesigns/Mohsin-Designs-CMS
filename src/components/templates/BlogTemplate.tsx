@@ -315,8 +315,8 @@ export default function BlogTemplate({
             <PageBreadcrumbs page={pageData} />
             {/* Brand Pill Badge */}
             <div className="inline-flex pointer-events-auto">
-              <span className="inline-flex items-center gap-2 rounded-full bg-brand-accent px-4 py-1.5 text-[10px] font-black tracking-wider uppercase text-white dark:text-[#080710] select-none shadow-sm">
-                <Star className="h-3.5 w-3.5 fill-white text-white dark:fill-[#080710] dark:text-[#080710] shrink-0" />
+              <span className="eyebrow-pill select-none shadow-sm">
+                <Star className="h-3.5 w-3.5 fill-current text-current shrink-0" />
                 {hero.badgeText}
               </span>
             </div>
@@ -479,7 +479,7 @@ export default function BlogTemplate({
           <div className="cta-banner-card !shadow-[0_16px_40px_-12px_rgba(3,6,172,0.22)] dark:!shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)]">
             <div className="relative z-10 flex flex-col justify-center gap-6 p-8 sm:p-12 lg:p-14 lg:max-w-[62%]">
               {/* Eyebrow Pill */}
-              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-4 py-1.5 text-[10px] font-mono tracking-widest text-[#E9BD36] font-extrabold uppercase w-fit">
+              <div className="eyebrow-pill-yellow">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E9BD36] opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E9BD36]" />

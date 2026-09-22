@@ -122,12 +122,8 @@ export default function TrustedBrandsSection({ data }: { data?: any }) {
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 rounded-full border border-brand-blue/15 dark:border-brand-yellow/20 bg-brand-blue/5 dark:bg-brand-yellow/5 px-3.5 py-1 text-[10px] font-mono font-black tracking-widest text-brand-blue dark:text-brand-yellow uppercase mb-4 shadow-sm"
+            className="eyebrow-pill mb-4 shadow-sm"
           >
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-blue dark:bg-brand-yellow opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-blue dark:bg-brand-yellow" />
-            </span>
             {badge}
           </motion.div>
         )}

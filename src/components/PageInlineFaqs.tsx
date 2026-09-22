@@ -166,11 +166,7 @@ export default function PageInlineFaqs({
             <div className="flex flex-col gap-4">
               {breadcrumb}
               {/* Category Pill Tag */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary dark:text-yellow-400 text-xs font-bold uppercase tracking-widest self-start">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary dark:bg-yellow-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary dark:bg-yellow-400" />
-                </span>
+              <div className="eyebrow-pill self-start">
                 {sectionTag}
               </div>
               
@@ -201,7 +197,7 @@ export default function PageInlineFaqs({
             {/* Premium Clean Sticky Strategy Session Box */}
             <div className="on-dark-surface relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-[#020485] to-[#010356] dark:from-[#12121e] dark:via-[#0f0f1a] dark:to-[#080710] border border-primary/20 dark:border-white/10 p-5 xs:p-7 text-white shadow-xl group transition-all duration-300">
               <div className="relative z-20 space-y-5">
-                <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-3 py-1 text-[9px] font-mono font-black tracking-wider uppercase text-yellow-400">
+                <span className="eyebrow-pill-yellow">
                   {strategyAudit.badge}
                 </span>
                 <div className="space-y-2">
