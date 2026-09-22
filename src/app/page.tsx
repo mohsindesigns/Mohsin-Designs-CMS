@@ -1,16 +1,16 @@
 export const revalidate = 60; // Cache for 1 minute, updated via revalidatePath in admin panel
 
-import HomeTemplate from "@/components/templates/HomeTemplate";
-import { Metadata } from "next";
-import connectToDatabase from "@/lib/mongodb";
-import SiteContent from "@/models/Content";
-import Page from "@/models/Page";
-import CustomSchemaMarkup from "@/components/CustomSchemaMarkup";
-import { TemplateWrapper } from "@/components/templates/TemplateRegistry";
-import ServiceDetailTemplate from "@/components/templates/ServiceDetailTemplate";
-import { BASE_URL } from "@/lib/constants";
-import { resolveRobotsMetadata } from "@/lib/seo";
-import { getCachedSiteContent } from "@/lib/content";
+import HomeTemplate from"@/components/templates/HomeTemplate";
+import { Metadata } from"next";
+import connectToDatabase from"@/lib/mongodb";
+import SiteContent from"@/models/Content";
+import Page from"@/models/Page";
+import CustomSchemaMarkup from"@/components/CustomSchemaMarkup";
+import { TemplateWrapper } from"@/components/templates/TemplateRegistry";
+import ServiceDetailTemplate from"@/components/templates/ServiceDetailTemplate";
+import { BASE_URL } from"@/lib/constants";
+import { resolveRobotsMetadata } from"@/lib/seo";
+import { getCachedSiteContent } from"@/lib/content";
 
 function getAbsoluteUrl(path: string | undefined) {
   if (!path) return undefined;
@@ -27,8 +27,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const pageUrl = BASE_URL;
 
   let targetSeo: any = {};
-  let fallbackTitle = settings?.siteTitle || "Mohsin Designs";
-  let fallbackDesc = "High-performance web architecture, modern software engineering, and digital growth systems.";
+  let fallbackTitle = settings?.siteTitle ||"Mohsin Designs";
+  let fallbackDesc ="High-performance web architecture, modern software engineering, and digital growth systems.";
 
   if (homepageId) {
     // 1. Check if assigned homepage is a Page
@@ -101,8 +101,8 @@ export async function generateMetadata(): Promise<Metadata> {
       title: targetSeo.ogTitle || finalTitle,
       description: targetSeo.ogDescription || finalDesc,
       url: pageUrl,
-      siteName: settings?.siteTitle || "Mohsin Designs",
-      type: "website",
+      siteName: settings?.siteTitle ||"Mohsin Designs",
+      type:"website",
       images: [
         {
           url: finalImage,
@@ -113,12 +113,12 @@ export async function generateMetadata(): Promise<Metadata> {
       ],
     },
     twitter: {
-      card: "summary_large_image",
+      card:"summary_large_image",
       title: targetSeo.twitterTitle || targetSeo.ogTitle || finalTitle,
       description: targetSeo.twitterDescription || targetSeo.ogDescription || finalDesc,
       images: [finalImage],
-      site: "@MohsinDesigns",
-      creator: "@MohsinDesigns",
+      site:"@MohsinDesigns",
+      creator:"@MohsinDesigns",
     },
     robots: resolveRobotsMetadata(targetSeo, isGlobalNoIndex)
   };

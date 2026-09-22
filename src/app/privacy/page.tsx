@@ -1,9 +1,9 @@
 // app/privacy/page.tsx or src/app/privacy/page.tsx
 "use client";
 
-import PageBreadcrumbs from "@/components/PageBreadcrumbs";
-import { motion } from "framer-motion";
-import { Icon } from "../../config/icons";
+import PageBreadcrumbs from"@/components/PageBreadcrumbs";
+import { motion } from"framer-motion";
+import { Icon } from"../../config/icons";
 
 export default function PrivacyPolicyPage() {
   return (
@@ -25,7 +25,7 @@ export default function PrivacyPolicyPage() {
             <PageBreadcrumbs
               align="center"
               className="mb-6"
-              items={[{ name: "Home", url: "/" }, { name: "Privacy Policy", url: "/privacy/" }]}
+              items={[{ name:"Home", url:"/" }, { name:"Privacy Policy", url:"/privacy/" }]}
             />
             <div className="inline-flex items-center gap-2 bg-primary/5 px-4 py-2 rounded-full border border-primary/10 mb-6">
               <Icon name="Shield" className="w-4 h-4 text-primary" />
@@ -55,9 +55,9 @@ export default function PrivacyPolicyPage() {
                 1. Introduction
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                Mohsin Designs ("we," "our," or "us") operates the website{' '}
+                Mohsin Designs ("we,""our," or"us") operates the website{' '}
                 <a href="https://mohsindesigns.com" className="text-primary hover:underline">mohsindesigns.com</a>{' '}
-                and provides web design, development, and reputation management services, including a Google reviews integration widget and a project-location-review SaaS platform (collectively, the "Services").
+                and provides web design, development, and reputation management services, including a Google reviews integration widget and a project-location-review SaaS platform (collectively, the"Services").
               </p>
               <p className="text-muted-foreground leading-relaxed mb-4">
                 This Privacy Policy explains how we collect, use, store, share, and protect information when you visit our website, use our Services, or connect your Google Business Profile to our platform.
@@ -429,7 +429,7 @@ export default function PrivacyPolicyPage() {
                 13. Changes to This Privacy Policy
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                We may update this Privacy Policy from time to time. We will notify you of material changes by posting the new policy on this page and updating the "Last Updated" date. For significant changes, we may also notify you by email.
+                We may update this Privacy Policy from time to time. We will notify you of material changes by posting the new policy on this page and updating the"Last Updated" date. For significant changes, we may also notify you by email.
               </p>
               <p className="text-muted-foreground leading-relaxed">
                 Your continued use of the Services after changes constitutes acceptance of the updated policy.

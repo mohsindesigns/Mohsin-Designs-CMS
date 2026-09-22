@@ -83,8 +83,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: seo.ogTitle || seo.metaTitle || page.title,
       description: seo.ogDescription || seo.metaDescription,
       url: canonicalUrl,
-      siteName: "Mohsin Designs",
-      type: "website",
+      siteName:"Mohsin Designs",
+      type:"website",
       images: [
         {
           url: getAbsoluteUrl(seo.featuredImage || seo.ogImage) || `${BASE_URL}/logo.png`,
@@ -95,12 +95,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       ],
     },
     twitter: {
-      card: "summary_large_image",
+      card:"summary_large_image",
       title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || page.title,
       description: seo.twitterDescription || seo.ogDescription || seo.metaDescription,
       images: [getAbsoluteUrl(seo.featuredImage || seo.twitterImage || seo.ogImage) || `${BASE_URL}/logo.png`],
-      site: "@MohsinDesigns",
-      creator: "@MohsinDesigns",
+      site:"@MohsinDesigns",
+      creator:"@MohsinDesigns",
     },
   };
 }

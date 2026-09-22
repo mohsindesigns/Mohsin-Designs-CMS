@@ -18,7 +18,7 @@ import CityTemplate from './CityTemplate';
 import IndustryTemplate from './IndustryTemplate';
 import PageInlineFaqs from '../PageInlineFaqs';
 
-import { ContentProvider } from "@/context/ContentContext";
+import { ContentProvider } from"@/context/ContentContext";
 
 export const TEMPLATE_MAP: Record<string, React.ComponentType<any>> = {
   'home': HomeTemplate,

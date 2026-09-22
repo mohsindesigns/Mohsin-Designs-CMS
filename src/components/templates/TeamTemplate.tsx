@@ -1,30 +1,30 @@
 "use client";
 
-import PageBreadcrumbs from "@/components/PageBreadcrumbs";
-import { useRef, useEffect, useState } from "react";
-import { useContent } from "../../hooks/useContent";
-import RichTextRenderer from "../ui/RichTextRenderer";
+import PageBreadcrumbs from"@/components/PageBreadcrumbs";
+import { useRef, useEffect, useState } from"react";
+import { useContent } from"../../hooks/useContent";
+import RichTextRenderer from"../ui/RichTextRenderer";
 import {
   motion,
   useScroll,
   useTransform,
   useInView,
-} from "framer-motion";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import PageInlineFaqs from "@/components/PageInlineFaqs";
+} from"framer-motion";
+import gsap from"gsap";
+import { ScrollTrigger } from"gsap/ScrollTrigger";
+import PageInlineFaqs from"@/components/PageInlineFaqs";
 
-if (typeof window !== "undefined") {
+if (typeof window !=="undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 const Images = {
-  BrandonAnderson: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-  ChrissyLong: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-  Austin: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-  BrandonSales: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-  Allan: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-  Pattern: "https://images.unsplash.com/photo-1502691876148-a84978e59af8?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-  Studio: "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2069&q=80",
+  BrandonAnderson:"https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  ChrissyLong:"https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  Austin:"https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  BrandonSales:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  Allan:"https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  Pattern:"https://images.unsplash.com/photo-1502691876148-a84978e59af8?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+  Studio:"https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2069&q=80",
 };
 
 const Icons = {
@@ -60,12 +60,12 @@ const Icons = {
   ),
 };
 
-const ParallaxLayer = ({ children, speed = 0.1, className = "", sectionRef }: any) => {
+const ParallaxLayer = ({ children, speed = 0.1, className ="", sectionRef }: any) => {
   const ref = useRef<any>(null);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ["start start", "end end"]
+    offset: ["start start","end end"]
   });
   const y = useTransform(scrollYProgress, [0, 1], [0, speed * 50]);
   return (
@@ -79,9 +79,9 @@ const TeamPortrait = ({ image, title, badge1, badge2, alignRight = false }: any)
   const [isHovered, setIsHovered] = useState(false);
   const [imageError, setImageError] = useState(false);
   const ref = useRef<any>(null);
-  const inView = useInView(ref, { once: true, margin: "-50px" });
+  const inView = useInView(ref, { once: true, margin:"-50px" });
 
-  const fallbackImage = "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80";
+  const fallbackImage ="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80";
 
   return (
     <motion.div ref={ref} initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} className={`relative group w-full ${alignRight ? 'lg:ml-auto' : ''}`} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
@@ -93,7 +93,7 @@ const TeamPortrait = ({ image, title, badge1, badge2, alignRight = false }: any)
             alt={title} 
             onError={() => setImageError(true)}
             animate={isHovered ? { scale: 1.05 } : { scale: 1 }} 
-            transition={{ duration: 1.5, ease: "easeOut" }} 
+            transition={{ duration: 1.5, ease:"easeOut" }} 
             className="w-full h-[280px] min-[350px]:h-[380px] sm:h-[450px] lg:h-[550px] object-cover" 
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/10 to-transparent opacity-80" />
@@ -126,13 +126,13 @@ export default function TeamTemplate({ pageData, params }: { pageData?: any, par
   useEffect(() => {
     if (!sectionRef.current || !isClient) return;
     const ctx = gsap.context(() => {
-      gsap.fromTo('.leadership-reveal', { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 1, stagger: 0.15, ease: "power2.out", scrollTrigger: { trigger: sectionRef.current, start: "top 85%", toggleActions: "play none none reverse" } });
+      gsap.fromTo('.leadership-reveal', { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 1, stagger: 0.15, ease:"power2.out", scrollTrigger: { trigger: sectionRef.current, start:"top 85%", toggleActions:"play none none reverse" } });
     }, sectionRef);
     return () => ctx.revert();
   }, [isClient]);
 
-  const rawHeadline = teamData?.section?.headline || "Leadership & Engineering Team";
-  const headlineParts = rawHeadline.includes('with') ? rawHeadline.split('with') : [rawHeadline, ""];
+  const rawHeadline = teamData?.section?.headline ||"Leadership & Engineering Team";
+  const headlineParts = rawHeadline.includes('with') ? rawHeadline.split('with') : [rawHeadline,""];
 
   return (
     <main className="bg-white">
@@ -148,7 +148,7 @@ export default function TeamTemplate({ pageData, params }: { pageData?: any, par
             <PageBreadcrumbs page={pageData} align="center" className="mb-6" />
             <div className="flex items-center justify-center gap-2 sm:gap-3 mb-6">
               <div className="w-6 sm:w-8 h-[2px] bg-gradient-to-r from-blue-300 to-blue-500" />
-              <span className="text-[10px] sm:text-xs font-semibold tracking-[0.2em] uppercase text-blue-600">{teamData?.section?.badge || "Our Leadership"}</span>
+              <span className="text-[10px] sm:text-xs font-semibold tracking-[0.2em] uppercase text-blue-600">{teamData?.section?.badge ||"Our Leadership"}</span>
               <div className="w-6 sm:w-8 h-[2px] bg-gradient-to-r from-blue-500 to-blue-300" />
             </div>
             <h1 className="text-3xl min-[350px]:text-4xl sm:text-4xl lg:text-[42px] font-light text-slate-900 mb-4 leading-tight">
@@ -160,7 +160,7 @@ export default function TeamTemplate({ pageData, params }: { pageData?: any, par
                       {teamData.section.headlineHighlight}
                     </span>
                   )}
-                  {teamData.section.headlineSuffix ? ` ${teamData.section.headlineSuffix}` : ""}
+                  {teamData.section.headlineSuffix ? ` ${teamData.section.headlineSuffix}` :""}
                 </>
               ) : (
                 <>
@@ -183,7 +183,7 @@ export default function TeamTemplate({ pageData, params }: { pageData?: any, par
             const alignRight = index % 2 !== 0;
             return (
               <div key={member.id || index} className="grid lg:grid-cols-12 gap-8 items-center lg:items-start mb-24 sm:mb-32 md:mb-40 relative">
-                <div className={`lg:col-span-7 space-y-8 ${alignRight ? 'order-2 lg:order-1 lg:pr-6' : 'lg:pl-6 order-2 lg:order-2'} leadership-reveal relative z-10 w-full`}>
+                <div className={`lg:col-span-7 min-w-0 space-y-8 ${alignRight ? 'order-2 lg:order-1 lg:pr-6' : 'lg:pl-6 order-2 lg:order-2'} leadership-reveal relative z-10 w-full`}>
                   <div className="bg-white/70 backdrop-blur-xl rounded-[2rem] p-6 sm:p-10 border border-white shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
                       <h3 className="text-2xl sm:text-5xl font-light text-slate-900">
@@ -211,7 +211,7 @@ export default function TeamTemplate({ pageData, params }: { pageData?: any, par
                     </div>
                   </div>
                 </div>
-                <div className={`lg:col-span-5 ${alignRight ? 'order-1 lg:order-2' : 'order-1 lg:order-1'} leadership-reveal lg:sticky lg:top-32 relative z-10 w-full max-w-[400px] lg:max-w-none mx-auto lg:mx-0`}>
+                <div className={`lg:col-span-5 min-w-0 ${alignRight ? 'order-1 lg:order-2' : 'order-1 lg:order-1'} leadership-reveal lg:sticky lg:top-32 relative z-10 w-full max-w-[400px] lg:max-w-none mx-auto lg:mx-0`}>
                   <TeamPortrait
                     image={
                       member.image ? (

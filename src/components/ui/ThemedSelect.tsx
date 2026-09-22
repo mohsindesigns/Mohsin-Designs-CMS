@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
-import { Check, ChevronDown } from "lucide-react";
+import { useEffect, useId, useRef, useState } from"react";
+import { Check, ChevronDown } from"lucide-react";
 
 export interface ThemedSelectOption {
   value: string;
@@ -16,7 +16,7 @@ interface ThemedSelectProps {
   onChange?: (e: { target: { name?: string; value: string } }) => void;
   options: ThemedSelectOption[];
   placeholder?: string;
-  /** Classes for the visible trigger button. Defaults match the site's ".contact-input" field look. */
+  /** Classes for the visible trigger button. Defaults match the site's".contact-input" field look. */
   className?: string;
   required?: boolean;
   disabled?: boolean;
@@ -26,10 +26,10 @@ interface ThemedSelectProps {
 }
 
 const DEFAULT_TRIGGER =
-  "w-full flex items-center justify-between gap-2 rounded-2xl border px-4 py-3.5 text-sm text-left transition-all " +
-  "bg-[#F8FAFC] dark:bg-white/5 border-[#E2E8F0] dark:border-white/10 text-[#0F172A] dark:text-white " +
-  "hover:border-brand-blue/40 dark:hover:border-brand-yellow/40 " +
-  "focus:outline-none focus:border-brand-blue dark:focus:border-brand-yellow focus:ring-4 focus:ring-brand-blue/10 dark:focus:ring-brand-yellow/10";
+"w-full flex items-center justify-between gap-2 rounded-2xl border px-4 py-3.5 text-sm text-left transition-all" +
+"bg-[#F8FAFC] dark:bg-white/5 border-[#E2E8F0] dark:border-white/10 text-[#0F172A] dark:text-white" +
+"hover:border-brand-blue/40 dark:hover:border-brand-yellow/40" +
+"focus:outline-none focus:border-brand-blue dark:focus:border-brand-yellow focus:ring-4 focus:ring-brand-blue/10 dark:focus:ring-brand-yellow/10";
 
 /**
  * Fully custom dropdown - the popup list is our own themed markup, not the browser's
@@ -43,8 +43,8 @@ export default function ThemedSelect({
   defaultValue,
   onChange,
   options,
-  placeholder = "Select an option",
-  className = "",
+  placeholder ="Select an option",
+  className ="",
   required,
   disabled,
   id,
@@ -52,7 +52,7 @@ export default function ThemedSelect({
   onBlur,
 }: ThemedSelectProps) {
   const isControlled = value !== undefined;
-  const [internal, setInternal] = useState(defaultValue ?? "");
+  const [internal, setInternal] = useState(defaultValue ??"");
   const current = isControlled ? value! : internal;
 
   const [open, setOpen] = useState(false);
@@ -70,7 +70,7 @@ export default function ThemedSelect({
       if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key ==="Escape") setOpen(false);
     };
     document.addEventListener("mousedown", onDocClick);
     document.addEventListener("keydown", onKey);
@@ -92,19 +92,19 @@ export default function ThemedSelect({
 
   const handleTriggerKeyDown = (e: React.KeyboardEvent) => {
     if (disabled) return;
-    if (!open && (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Enter" || e.key === " ")) {
+    if (!open && (e.key ==="ArrowDown" || e.key ==="ArrowUp" || e.key ==="Enter" || e.key ==="")) {
       e.preventDefault();
       setOpen(true);
       return;
     }
     if (!open) return;
-    if (e.key === "ArrowDown") {
+    if (e.key ==="ArrowDown") {
       e.preventDefault();
       setActiveIndex((i) => Math.min(options.length - 1, i + 1));
-    } else if (e.key === "ArrowUp") {
+    } else if (e.key ==="ArrowUp") {
       e.preventDefault();
       setActiveIndex((i) => Math.max(0, i - 1));
-    } else if (e.key === "Enter" || e.key === " ") {
+    } else if (e.key ==="Enter" || e.key ==="") {
       e.preventDefault();
       const opt = options[activeIndex];
       if (opt && !opt.disabled) commit(opt.value);
@@ -149,13 +149,13 @@ export default function ThemedSelect({
         onKeyDown={handleTriggerKeyDown}
         onFocus={onFocus}
         onBlur={onBlur}
-        className={`${DEFAULT_TRIGGER} ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"} ${className}`}
+        className={`${DEFAULT_TRIGGER} ${disabled ?"opacity-50 cursor-not-allowed" :"cursor-pointer"} ${className}`}
       >
-        <span className={selected ? "" : "text-brand-zinc-400 dark:text-zinc-500"}>
+        <span className={selected ?"" :"text-brand-zinc-400 dark:text-zinc-500"}>
           {selected ? selected.label : placeholder}
         </span>
         <ChevronDown
-          className={`h-4 w-4 shrink-0 text-brand-zinc-400 dark:text-zinc-500 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          className={`h-4 w-4 shrink-0 text-brand-zinc-400 dark:text-zinc-500 transition-transform duration-200 ${open ?"rotate-180" :""}`}
         />
       </button>
 
@@ -180,12 +180,12 @@ export default function ThemedSelect({
                 onClick={() => !o.disabled && commit(o.value)}
                 className={`flex w-full items-center justify-between gap-2 rounded-xl px-3.5 py-2.5 text-left text-sm transition-colors ${
                   o.disabled
-                    ? "text-brand-zinc-400 dark:text-zinc-600 cursor-not-allowed"
+                    ?"text-brand-zinc-400 dark:text-zinc-600 cursor-not-allowed"
                     : isSelected
-                      ? "bg-brand-blue text-white dark:bg-brand-yellow dark:text-brand-dark font-semibold"
+                      ?"bg-brand-blue text-white dark:bg-brand-yellow dark:text-brand-dark font-semibold"
                       : isActive
-                        ? "bg-brand-blue/10 dark:bg-brand-yellow/10 text-brand-dark dark:text-white"
-                        : "text-brand-dark dark:text-white hover:bg-brand-blue/10 dark:hover:bg-brand-yellow/10"
+                        ?"bg-brand-blue/10 dark:bg-brand-yellow/10 text-brand-dark dark:text-white"
+                        :"text-brand-dark dark:text-white hover:bg-brand-blue/10 dark:hover:bg-brand-yellow/10"
                 }`}
               >
                 <span>{o.label}</span>

@@ -1,22 +1,22 @@
-import { useRef, useEffect } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Image from "next/image";
-import { useContent } from "../hooks/useContent";
+import { useRef, useEffect } from"react";
+import gsap from"gsap";
+import { ScrollTrigger } from"gsap/ScrollTrigger";
+import Image from"next/image";
+import { useContent } from"../hooks/useContent";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Mission = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const content = useContent();
-  const missionImage = content?.about?.teamImage || content?.about?.image?.src || "";
+  const missionImage = content?.about?.teamImage || content?.about?.image?.src ||"";
 
   useEffect(() => {
     if (!sectionRef.current) return;
-    const tl = gsap.timeline({ scrollTrigger: { trigger: sectionRef.current, start: "top 70%" } });
-    tl.fromTo(sectionRef.current.querySelector(".mission-headline"), { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" })
-      .fromTo(sectionRef.current.querySelectorAll(".mission-copy"), { opacity: 0, y: 40 }, { opacity: 1, y: 0, stagger: 0.15, duration: 0.7, ease: "power3.out" }, "-=0.4")
-      .fromTo(sectionRef.current.querySelector(".mission-image"), { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 1.2, ease: "expo.out" }, "-=0.6");
+    const tl = gsap.timeline({ scrollTrigger: { trigger: sectionRef.current, start:"top 70%" } });
+    tl.fromTo(sectionRef.current.querySelector(".mission-headline"), { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.9, ease:"power3.out" })
+      .fromTo(sectionRef.current.querySelectorAll(".mission-copy"), { opacity: 0, y: 40 }, { opacity: 1, y: 0, stagger: 0.15, duration: 0.7, ease:"power3.out" },"-=0.4")
+      .fromTo(sectionRef.current.querySelector(".mission-image"), { clipPath:"inset(0 100% 0 0)" }, { clipPath:"inset(0 0% 0 0)", duration: 1.2, ease:"expo.out" },"-=0.6");
   }, []);
 
   return (
@@ -32,7 +32,7 @@ const Mission = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-primary/50 to-transparent" />
             <div className="absolute bottom-6 left-6 right-6 bg-primary/90 backdrop-blur-sm p-5 border border-primary-foreground/10">
               <div className="grid grid-cols-3 gap-4">
-                {[{ num: "500+", label: "Projects" }, { num: "50+", label: "Years Combined" }, { num: "100%", label: "Insured" }].map((stat) => (
+                {[{ num:"500+", label:"Projects" }, { num:"50+", label:"Years Combined" }, { num:"100%", label:"Insured" }].map((stat) => (
                   <div key={stat.label} className="text-center">
                     <span className="block font-heading text-primary-foreground text-lg font-medium">{stat.num}</span>
                     <span className="font-body text-primary-foreground/80 text-[10px] uppercase tracking-wider">{stat.label}</span>
@@ -49,7 +49,7 @@ const Mission = () => {
           <div className="space-y-6">
             <p className="body-lg text-foreground/90 mission-copy">Mohsin Designs was founded to do more than just build roofs, windows, decks, and siding. We are here to build a movement.</p>
             <p className="body-sm text-muted-foreground mission-copy">Born in St. Charles, Missouri, Mohsin Designs was launched by Brandon Anderson, a U.S. Army veteran who brings battlefield discipline and boardroom precision to every project.</p>
-            <p className="body-sm text-muted-foreground mission-copy italic border-l-2 border-primary/30 pl-4">"We don't just build homes. We restore trust, craftsmanship, and honor to the remodeling industry."</p>
+ <p className="body-sm text-muted-foreground mission-copy border-l-2 border-primary/30 pl-4">"We don't just build homes. We restore trust, craftsmanship, and honor to the remodeling industry."</p>
           </div>
         </div>
       </div>

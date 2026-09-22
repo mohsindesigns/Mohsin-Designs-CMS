@@ -1,13 +1,13 @@
 "use client";
 
-import CtaButton from "@/components/ui/CtaButton";
-import { withTrailingSlash } from "@/lib/url";
-import PageBreadcrumbs from "@/components/PageBreadcrumbs";
-import { useState, useMemo } from "react";
-import Image from "next/image";
-import Link from "@/components/ui/Link";
-import { motion, AnimatePresence } from "framer-motion";
-import * as LucideIcons from "lucide-react";
+import CtaButton from"@/components/ui/CtaButton";
+import { withTrailingSlash } from"@/lib/url";
+import PageBreadcrumbs from"@/components/PageBreadcrumbs";
+import { useState, useMemo } from"react";
+import Image from"next/image";
+import Link from"@/components/ui/Link";
+import { motion, AnimatePresence } from"framer-motion";
+import * as LucideIcons from"lucide-react";
 import {
   Clock,
   ArrowRight,
@@ -29,8 +29,8 @@ import {
   Layers,
   Code,
   Smartphone
-} from "lucide-react";
-import RichTextRenderer from "@/components/ui/RichTextRenderer";
+} from"lucide-react";
+import RichTextRenderer from"@/components/ui/RichTextRenderer";
 
 // Hand-Drawn SVG Brush stroke variants
 const drawVariants = {
@@ -40,7 +40,7 @@ const drawVariants = {
     transition: {
       duration: custom?.duration ?? 0.65,
       delay: custom?.delay ?? 0.45,
-      ease: "easeOut" as any
+      ease:"easeOut" as any
     }
   })
 };
@@ -50,7 +50,7 @@ function DynamicIcon({ name, className }: { name?: string; className?: string })
   if (!name) return <LayoutGrid className={className} />;
   const icons = LucideIcons as any;
   const IconComp = icons[name] || icons[name.charAt(0).toUpperCase() + name.slice(1)] || LayoutGrid;
-  const isValidComponent = typeof IconComp === "function" || (typeof IconComp === "object" && IconComp !== null);
+  const isValidComponent = typeof IconComp ==="function" || (typeof IconComp ==="object" && IconComp !== null);
   if (isValidComponent) {
     return <IconComp className={className} />;
   }
@@ -60,76 +60,76 @@ function DynamicIcon({ name, className }: { name?: string; className?: string })
 // Fallback seed posts if database has no articles yet
 const FALLBACK_POSTS = [
   {
-    _id: "1",
-    id: "1",
-    slug: "nextjs-growth-architecture",
-    title: "How Next.js 16 & Server Actions Compound Organic Search Rankings",
-    categoryKey: "engineering",
-    categoryName: "Technical SEO",
-    badge: "Technical SEO",
-    image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop",
-    date: "Aug 15, 2026",
-    readTime: "6 min read"
+    _id:"1",
+    id:"1",
+    slug:"nextjs-growth-architecture",
+    title:"How Next.js 16 & Server Actions Compound Organic Search Rankings",
+    categoryKey:"engineering",
+    categoryName:"Technical SEO",
+    badge:"Technical SEO",
+    image:"https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop",
+    date:"Aug 15, 2026",
+    readTime:"6 min read"
   },
   {
-    _id: "2",
-    id: "2",
-    slug: "conversion-rate-heuristics",
-    title: "11 Friction Points That Cut B2B SaaS Landing Page Conversions in Half",
-    categoryKey: "cro",
-    categoryName: "Conversion Rate",
-    badge: "Conversion Rate",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop",
-    date: "Aug 10, 2026",
-    readTime: "8 min read"
+    _id:"2",
+    id:"2",
+    slug:"conversion-rate-heuristics",
+    title:"11 Friction Points That Cut B2B SaaS Landing Page Conversions in Half",
+    categoryKey:"cro",
+    categoryName:"Conversion Rate",
+    badge:"Conversion Rate",
+    image:"https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop",
+    date:"Aug 10, 2026",
+    readTime:"8 min read"
   },
   {
-    _id: "3",
-    id: "3",
-    slug: "modern-brand-identity-systems",
-    title: "Building Modern High-Yield Design Systems for Enterprise Scale",
-    categoryKey: "design",
-    categoryName: "UI/UX Architecture",
-    badge: "UI/UX Architecture",
-    image: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=1200&auto=format&fit=crop",
-    date: "Aug 04, 2026",
-    readTime: "5 min read"
+    _id:"3",
+    id:"3",
+    slug:"modern-brand-identity-systems",
+    title:"Building Modern High-Yield Design Systems for Enterprise Scale",
+    categoryKey:"design",
+    categoryName:"UI/UX Architecture",
+    badge:"UI/UX Architecture",
+    image:"https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=1200&auto=format&fit=crop",
+    date:"Aug 04, 2026",
+    readTime:"5 min read"
   },
   {
-    _id: "4",
-    id: "4",
-    slug: "edge-rendering-performance",
-    title: "Core Web Vitals Optimization: Slashing INP and LCP Below 200ms",
-    categoryKey: "engineering",
-    categoryName: "Engineering",
-    badge: "Engineering",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop",
-    date: "Jul 28, 2026",
-    readTime: "7 min read"
+    _id:"4",
+    id:"4",
+    slug:"edge-rendering-performance",
+    title:"Core Web Vitals Optimization: Slashing INP and LCP Below 200ms",
+    categoryKey:"engineering",
+    categoryName:"Engineering",
+    badge:"Engineering",
+    image:"https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop",
+    date:"Jul 28, 2026",
+    readTime:"7 min read"
   },
   {
-    _id: "5",
-    id: "5",
-    slug: "full-funnel-attribution-guide",
-    title: "Multi-Touch Attribution in 2026: Tracking Compounding Lead Velocity",
-    categoryKey: "growth",
-    categoryName: "Growth Strategy",
-    badge: "Growth Strategy",
-    image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1200&auto=format&fit=crop",
-    date: "Jul 20, 2026",
-    readTime: "9 min read"
+    _id:"5",
+    id:"5",
+    slug:"full-funnel-attribution-guide",
+    title:"Multi-Touch Attribution in 2026: Tracking Compounding Lead Velocity",
+    categoryKey:"growth",
+    categoryName:"Growth Strategy",
+    badge:"Growth Strategy",
+    image:"https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1200&auto=format&fit=crop",
+    date:"Jul 20, 2026",
+    readTime:"9 min read"
   },
   {
-    _id: "6",
-    id: "6",
-    slug: "ai-search-generative-optimization",
-    title: "Optimizing Digital Brand Footprints for Google Search Generative Experience",
-    categoryKey: "growth",
-    categoryName: "AI Search",
-    badge: "AI Search",
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop",
-    date: "Jul 12, 2026",
-    readTime: "6 min read"
+    _id:"6",
+    id:"6",
+    slug:"ai-search-generative-optimization",
+    title:"Optimizing Digital Brand Footprints for Google Search Generative Experience",
+    categoryKey:"growth",
+    categoryName:"AI Search",
+    badge:"AI Search",
+    image:"https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop",
+    date:"Jul 12, 2026",
+    readTime:"6 min read"
   }
 ];
 
@@ -148,41 +148,41 @@ export default function BlogTemplate({
   const rawData = pageData?.content?.blogPage || pageData?.content || {};
 
   const hero = {
-    badgeText: rawData.hero?.badgeText || "EXPLORE OUR EDITORIAL // INSIGHTS & STRATEGY",
-    titleLine1: rawData.hero?.titleLine1 || "Modern Engineering &",
-    titleHighlight: rawData.hero?.titleHighlight || "Growth Insights",
-    description: rawData.hero?.description || "Actionable blueprints, architectural deep-dives, and conversion rate science to build compounding market advantage.",
-    heroBgImage: rawData.hero?.heroBgImage || rawData.hero?.backgroundImage || rawData.hero?.bgImage || "",
-    heroBgAlt: rawData.hero?.heroBgAlt || "Blog Header Background",
+    badgeText: rawData.hero?.badgeText ||"EXPLORE OUR EDITORIAL // INSIGHTS & STRATEGY",
+    titleLine1: rawData.hero?.titleLine1 ||"Modern Engineering &",
+    titleHighlight: rawData.hero?.titleHighlight ||"Growth Insights",
+    description: rawData.hero?.description ||"Actionable blueprints, architectural deep-dives, and conversion rate science to build compounding market advantage.",
+    heroBgImage: rawData.hero?.heroBgImage || rawData.hero?.backgroundImage || rawData.hero?.bgImage ||"",
+    heroBgAlt: rawData.hero?.heroBgAlt ||"Blog Header Background",
     ctaPrimary: {
-      label: rawData.hero?.ctaPrimary?.label || "Explore Articles",
-      href: rawData.hero?.ctaPrimary?.href || "#articles"
+      label: rawData.hero?.ctaPrimary?.label ||"Explore Articles",
+      href: rawData.hero?.ctaPrimary?.href ||"#articles"
     },
     ctaSecondary: {
-      label: rawData.hero?.ctaSecondary?.label || "Schedule Strategy Call",
-      href: rawData.hero?.ctaSecondary?.href || "/contact-us"
+      label: rawData.hero?.ctaSecondary?.label ||"Schedule Strategy Call",
+      href: rawData.hero?.ctaSecondary?.href ||"/contact-us"
     }
   };
 
   const ctaBanner = {
-    eyebrow: rawData.ctaBanner?.eyebrow || "READY TO ACCELERATE?",
-    titleIntro: rawData.ctaBanner?.titleIntro || "Let's Build Your Next",
-    titleHighlight: rawData.ctaBanner?.titleHighlight || "Competitive Edge",
-    titleLine2: rawData.ctaBanner?.titleLine2 || "Together.",
-    description: rawData.ctaBanner?.description || "Schedule a free 30-minute technical audit. We'll diagnose bottlenecks in your existing presence and map out a concrete blueprint for compounding growth.",
+    eyebrow: rawData.ctaBanner?.eyebrow ||"READY TO ACCELERATE?",
+    titleIntro: rawData.ctaBanner?.titleIntro ||"Let's Build Your Next",
+    titleHighlight: rawData.ctaBanner?.titleHighlight ||"Competitive Edge",
+    titleLine2: rawData.ctaBanner?.titleLine2 ||"Together.",
+    description: rawData.ctaBanner?.description ||"Schedule a free 30-minute technical audit. We'll diagnose bottlenecks in your existing presence and map out a concrete blueprint for compounding growth.",
     ctaPrimary: {
-      label: rawData.ctaBanner?.ctaPrimary?.label || "Book Strategy Session",
-      href: rawData.ctaBanner?.ctaPrimary?.href || "/contact-us"
+      label: rawData.ctaBanner?.ctaPrimary?.label ||"Book Strategy Session",
+      href: rawData.ctaBanner?.ctaPrimary?.href ||"/contact-us"
     },
     ctaSecondary: {
-      label: rawData.ctaBanner?.ctaSecondary?.label || "Watch Showreel",
-      href: rawData.ctaBanner?.ctaSecondary?.href || "/gallery"
+      label: rawData.ctaBanner?.ctaSecondary?.label ||"Watch Showreel",
+      href: rawData.ctaBanner?.ctaSecondary?.href ||"/gallery"
     },
-    portraitSrc: rawData.ctaBanner?.portraitSrc || "",
-    portraitAlt: rawData.ctaBanner?.portraitAlt || "Mohsin Designs Lead Architect"
+    portraitSrc: rawData.ctaBanner?.portraitSrc ||"",
+    portraitAlt: rawData.ctaBanner?.portraitAlt ||"Mohsin Designs Lead Architect"
   };
 
-  const filterMode = rawData.filterMode || "all";
+  const filterMode = rawData.filterMode ||"all";
   const selectedBlogIds: string[] = Array.isArray(rawData.selectedBlogIds) ? rawData.selectedBlogIds : [];
   const postsPerPage = Number(rawData.postsPerPage) || 6;
 
@@ -204,14 +204,14 @@ export default function BlogTemplate({
   const allFormattedPosts = useMemo(() => {
     return rawPosts.map((p: any, idx: number) => {
       // Resolve category
-      let categoryName = "Article";
-      let categoryKey = "general";
+      let categoryName ="Article";
+      let categoryKey ="general";
       if (Array.isArray(p.categories) && p.categories.length > 0) {
         const firstCat = p.categories[0];
-        categoryName = typeof firstCat === 'object' ? (firstCat.name || firstCat.title || "Article") : String(firstCat);
-        categoryKey = typeof firstCat === 'object' ? (firstCat.slug || firstCat._id || firstCat.name?.toLowerCase().replace(/\s+/g, '-') || "cat") : String(firstCat).toLowerCase().replace(/\s+/g, '-');
+        categoryName = typeof firstCat === 'object' ? (firstCat.name || firstCat.title ||"Article") : String(firstCat);
+        categoryKey = typeof firstCat === 'object' ? (firstCat.slug || firstCat._id || firstCat.name?.toLowerCase().replace(/\s+/g, '-') ||"cat") : String(firstCat).toLowerCase().replace(/\s+/g, '-');
       } else if (p.category) {
-        categoryName = typeof p.category === 'object' ? (p.category.name || "Article") : String(p.category);
+        categoryName = typeof p.category === 'object' ? (p.category.name ||"Article") : String(p.category);
         categoryKey = categoryName.toLowerCase().replace(/\s+/g, '-');
       } else if (p.badge) {
         categoryName = p.badge;
@@ -219,49 +219,49 @@ export default function BlogTemplate({
       }
 
       // Format date
-      let displayDate = p.date || "";
+      let displayDate = p.date ||"";
       if (!displayDate && p.publishedAt) {
         try {
           displayDate = new Date(p.publishedAt).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric"
+            month:"short",
+            day:"numeric",
+            year:"numeric"
           });
         } catch {
-          displayDate = "Recent";
+          displayDate ="Recent";
         }
       }
       if (!displayDate && p.createdAt) {
         try {
           displayDate = new Date(p.createdAt).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric"
+            month:"short",
+            day:"numeric",
+            year:"numeric"
           });
         } catch {
-          displayDate = "Recent";
+          displayDate ="Recent";
         }
       }
-      if (!displayDate) displayDate = "Aug 2026";
+      if (!displayDate) displayDate ="Aug 2026";
 
       // Calculate read time
-      let readTime = p.readTime || "";
+      let readTime = p.readTime ||"";
       if (!readTime && p.content) {
-        const words = String(p.content).replace(/<[^>]*>/g, "").split(/\s+/).length;
+        const words = String(p.content).replace(/<[^>]*>/g,"").split(/\s+/).length;
         const minutes = Math.max(3, Math.ceil(words / 200));
         readTime = `${minutes} min read`;
       }
-      if (!readTime) readTime = "5 min read";
+      if (!readTime) readTime ="5 min read";
 
       return {
         id: p._id || p.id || String(idx),
         _id: p._id || p.id || String(idx),
         slug: p.slug || p._id || String(idx),
-        title: p.title || "Untitled Article",
+        title: p.title ||"Untitled Article",
         categoryKey,
         categoryName,
         badge: p.badge || categoryName,
-        image: p.featuredImage || p.image || p.coverImage || "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop",
+        image: p.featuredImage || p.image || p.coverImage ||"https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop",
         date: displayDate,
         readTime
       };
@@ -270,7 +270,7 @@ export default function BlogTemplate({
 
   // Apply Selective Mode filtering if configured
   const activePosts = useMemo(() => {
-    if (filterMode === "selective" && selectedBlogIds.length > 0) {
+    if (filterMode ==="selective" && selectedBlogIds.length > 0) {
       return allFormattedPosts.filter((p: any) => selectedBlogIds.includes(p.id) || selectedBlogIds.includes(p._id));
     }
     return allFormattedPosts;
@@ -368,7 +368,7 @@ export default function BlogTemplate({
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -16 }}
-              transition={{ duration: 0.28, ease: "easeInOut" }}
+              transition={{ duration: 0.28, ease:"easeInOut" }}
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
             >
               {paginatedPosts.map((post: any) => (
@@ -450,8 +450,8 @@ export default function BlogTemplate({
                     onClick={() => setCurrentPage(num)}
                     className={`w-9 h-9 rounded-full text-xs font-mono font-black flex items-center justify-center transition-all cursor-pointer ${
                       currentPage === num
-                        ? "bg-brand-blue text-white shadow-md shadow-brand-blue/30 dark:bg-brand-yellow dark:text-brand-dark"
-                        : "text-brand-zinc-600 dark:text-zinc-400 hover:bg-brand-zinc-100 dark:hover:bg-zinc-800"
+                        ?"bg-brand-blue text-white shadow-md shadow-brand-blue/30 dark:bg-brand-yellow dark:text-brand-dark"
+                        :"text-brand-zinc-600 dark:text-zinc-400 hover:bg-brand-zinc-100 dark:hover:bg-zinc-800"
                     }`}
                   >
                     {num}
@@ -487,8 +487,8 @@ export default function BlogTemplate({
               {/* Headline */}
               <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.18] tracking-tight text-white">
                 {ctaBanner.titleIntro} <br className="hidden sm:block" />
-                <span className="whitespace-nowrap inline-block">
-                  {ctaBanner.titleLine2}{" "}
+                <span className="inline-block">
+                  {ctaBanner.titleLine2}{""}
                   <span className="relative inline-block">
                     <span className="font-cursive text-[#E9BD36] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
                       {ctaBanner.titleHighlight}

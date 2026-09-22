@@ -1,14 +1,14 @@
 "use client";
 
-import ThemedSelect from "@/components/ui/ThemedSelect";
-import CtaButton from "@/components/ui/CtaButton";
-import { withTrailingSlash } from "@/lib/url";
-import PageBreadcrumbs from "@/components/PageBreadcrumbs";
-import { useState } from "react";
-import Image from "next/image";
-import Link from "@/components/ui/Link";
-import { motion, AnimatePresence } from "framer-motion";
-import * as LucideIcons from "lucide-react";
+import ThemedSelect from"@/components/ui/ThemedSelect";
+import CtaButton from"@/components/ui/CtaButton";
+import { withTrailingSlash } from"@/lib/url";
+import PageBreadcrumbs from"@/components/PageBreadcrumbs";
+import { useState } from"react";
+import Image from"next/image";
+import Link from"@/components/ui/Link";
+import { motion, AnimatePresence } from"framer-motion";
+import * as LucideIcons from"lucide-react";
 import {
   Send,
   Phone,
@@ -21,16 +21,16 @@ import {
   Check,
   ChevronDown,
   Loader2
-} from "lucide-react";
-import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
-import RichTextRenderer from "@/components/ui/RichTextRenderer";
+} from"lucide-react";
+import TurnstileCaptcha from"@/components/ui/TurnstileCaptcha";
+import RichTextRenderer from"@/components/ui/RichTextRenderer";
 
 // Dynamic Lucide Icon Resolver
 function DynamicIcon({ name, className }: { name?: string; className?: string }) {
   if (!name) return <Phone className={className} />;
   const icons = LucideIcons as any;
   const IconComp = icons[name] || icons[name.charAt(0).toUpperCase() + name.slice(1)] || Phone;
-  const isValidComponent = typeof IconComp === "function" || (typeof IconComp === "object" && IconComp !== null);
+  const isValidComponent = typeof IconComp ==="function" || (typeof IconComp ==="object" && IconComp !== null);
   if (isValidComponent) {
     return <IconComp className={className} />;
   }
@@ -38,47 +38,47 @@ function DynamicIcon({ name, className }: { name?: string; className?: string })
 }
 
 const DEFAULT_SERVICES = [
-  "Select a service",
-  "Custom Next.js & React Platform",
-  "Conversion Rate Optimization (CRO)",
-  "Full-Funnel Growth Marketing",
-  "UI/UX Design & Brand System",
-  "Technical Architecture Audit",
-  "General Consultation"
+"Select a service",
+"Custom Next.js & React Platform",
+"Conversion Rate Optimization (CRO)",
+"Full-Funnel Growth Marketing",
+"UI/UX Design & Brand System",
+"Technical Architecture Audit",
+"General Consultation"
 ];
 
 const DEFAULT_METHODS = [
   {
-    id: "phone",
-    icon: "Phone",
-    title: "Direct Phone",
-    info: "+1 (555) 019-2834",
-    sub: "Mon-Fri: 9am-6pm EST",
-    actionHref: "tel:+15550192834"
+    id:"phone",
+    icon:"Phone",
+    title:"Direct Phone",
+    info:"+1 (555) 019-2834",
+    sub:"Mon-Fri: 9am-6pm EST",
+    actionHref:"tel:+15550192834"
   },
   {
-    id: "email",
-    icon: "Mail",
-    title: "Direct Email",
-    info: "hello@mohsindesigns.com",
-    sub: "Response within 24h",
-    actionHref: "mailto:hello@mohsindesigns.com"
+    id:"email",
+    icon:"Mail",
+    title:"Direct Email",
+    info:"hello@mohsindesigns.com",
+    sub:"Response within 24h",
+    actionHref:"mailto:hello@mohsindesigns.com"
   },
   {
-    id: "chat",
-    icon: "MessageSquare",
-    title: "Live WhatsApp",
-    info: "Direct WhatsApp Line",
-    sub: "Fastest response channel",
-    actionHref: "https://wa.me/15550192834"
+    id:"chat",
+    icon:"MessageSquare",
+    title:"Live WhatsApp",
+    info:"Direct WhatsApp Line",
+    sub:"Fastest response channel",
+    actionHref:"https://wa.me/15550192834"
   },
   {
-    id: "calendar",
-    icon: "Calendar",
-    title: "Schedule Call",
-    info: "Book 30-Min Strategy Call",
-    sub: "Instant calendar confirmation",
-    actionHref: "#contact-form"
+    id:"calendar",
+    icon:"Calendar",
+    title:"Schedule Call",
+    info:"Book 30-Min Strategy Call",
+    sub:"Instant calendar confirmation",
+    actionHref:"#contact-form"
   }
 ];
 
@@ -87,16 +87,16 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
   const rawData = pageData?.content?.contactPage || pageData?.content || {};
 
   const hero = {
-    eyebrow: rawData.hero?.eyebrow || rawData.header?.badge || "DIRECT CHANNEL // FAST RESPONSE",
-    titleLine1: rawData.hero?.titleLine1 || "Let's Engineer Your",
-    titleLine2: rawData.hero?.titleLine2 || "Next Big",
-    titleHighlight: rawData.hero?.titleHighlight || rawData.header?.headline || "Advantage.",
-    description: rawData.hero?.description || rawData.header?.description || "Whether you need a full platform build, conversion optimization, or technical advisory, we're here to accelerate your vision.",
-    backgroundImage: rawData.hero?.backgroundImage || rawData.hero?.bgImage || "/portfolio_hero_bg.png",
+    eyebrow: rawData.hero?.eyebrow || rawData.header?.badge ||"DIRECT CHANNEL // FAST RESPONSE",
+    titleLine1: rawData.hero?.titleLine1 ||"Let's Engineer Your",
+    titleLine2: rawData.hero?.titleLine2 ||"Next Big",
+    titleHighlight: rawData.hero?.titleHighlight || rawData.header?.headline ||"Advantage.",
+    description: rawData.hero?.description || rawData.header?.description ||"Whether you need a full platform build, conversion optimization, or technical advisory, we're here to accelerate your vision.",
+    backgroundImage: rawData.hero?.backgroundImage || rawData.hero?.bgImage ||"/portfolio_hero_bg.png",
     form: {
-      title: rawData.hero?.form?.title || "Send Us a Message",
-      submitButton: rawData.hero?.form?.submitButton || "Send Message & Request Proposal",
-      guaranteeText: rawData.hero?.form?.guaranteeText || "⚡ Guaranteed response within 24 hours. Strict NDA & privacy assured.",
+      title: rawData.hero?.form?.title ||"Send Us a Message",
+      submitButton: rawData.hero?.form?.submitButton ||"Send Message & Request Proposal",
+      guaranteeText: rawData.hero?.form?.guaranteeText ||"⚡ Guaranteed response within 24 hours. Strict NDA & privacy assured.",
       services: (rawData.hero?.form?.services && rawData.hero.form.services.length > 0)
         ? rawData.hero.form.services
         : DEFAULT_SERVICES
@@ -104,60 +104,60 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
   };
 
   const contactMethods = {
-    eyebrow: rawData.contactMethods?.eyebrow || "COMMUNICATION CHANNELS",
-    title: rawData.contactMethods?.title || "Other Ways to Connect",
+    eyebrow: rawData.contactMethods?.eyebrow ||"COMMUNICATION CHANNELS",
+    title: rawData.contactMethods?.title ||"Other Ways to Connect",
     methods: (rawData.contactMethods?.methods && rawData.contactMethods.methods.length > 0)
       ? rawData.contactMethods.methods
       : (rawData.infoCards && rawData.infoCards.length > 0)
         ? rawData.infoCards.map((c: any, i: number) => ({
           id: c.type || String(i),
           icon: c.icon || (c.type === 'phone' ? 'Phone' : c.type === 'email' ? 'Mail' : 'MessageSquare'),
-          title: c.title || c.label || "Contact Channel",
-          info: c.value || "",
-          sub: c.sub || c.description || "Direct communication line",
+          title: c.title || c.label ||"Contact Channel",
+          info: c.value ||"",
+          sub: c.sub || c.description ||"Direct communication line",
           actionHref: c.type === 'phone' ? `tel:${c.value}` : c.type === 'email' ? `mailto:${c.value}` : '#contact-form'
         }))
         : DEFAULT_METHODS
   };
 
   const office = {
-    title: rawData.office?.title || "OUR HEADQUARTERS",
-    addressLine1: rawData.office?.addressLine1 || rawData.info?.address || "1540 Broadway, 24th Floor",
-    addressLine2: rawData.office?.addressLine2 || "Times Square, New York, NY 10036",
-    country: rawData.office?.country || "United States",
-    mapEmbedUrl: rawData.office?.mapEmbedUrl || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.217709322237!2d-73.98785312342557!3d40.75797477138596!2m3!1f0!f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25855c6480299%3A0x55194ec5a1ae072e!2sTimes%20Square!5e0!3m2!1sen!2sus!4v1700000000000!5m2!1sen!2sus",
-    mapBadge: rawData.office?.mapBadge || "New York Office",
-    hoursWeekdays: rawData.office?.hoursWeekdays || rawData.info?.hours || "Monday – Friday: 9:00 AM – 6:00 PM EST",
-    hoursWeekends: rawData.office?.hoursWeekends || "Saturday – Sunday: By Appointment",
-    phone: rawData.office?.phone || rawData.info?.phone || "+1 (555) 019-2834",
-    email: rawData.office?.email || rawData.info?.email || "hello@mohsindesigns.com"
+    title: rawData.office?.title ||"OUR HEADQUARTERS",
+    addressLine1: rawData.office?.addressLine1 || rawData.info?.address ||"1540 Broadway, 24th Floor",
+    addressLine2: rawData.office?.addressLine2 ||"Times Square, New York, NY 10036",
+    country: rawData.office?.country ||"United States",
+    mapEmbedUrl: rawData.office?.mapEmbedUrl ||"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.217709322237!2d-73.98785312342557!3d40.75797477138596!2m3!1f0!f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25855c6480299%3A0x55194ec5a1ae072e!2sTimes%20Square!5e0!3m2!1sen!2sus!4v1700000000000!5m2!1sen!2sus",
+    mapBadge: rawData.office?.mapBadge ||"New York Office",
+    hoursWeekdays: rawData.office?.hoursWeekdays || rawData.info?.hours ||"Monday – Friday: 9:00 AM – 6:00 PM EST",
+    hoursWeekends: rawData.office?.hoursWeekends ||"Saturday – Sunday: By Appointment",
+    phone: rawData.office?.phone || rawData.info?.phone ||"+1 (555) 019-2834",
+    email: rawData.office?.email || rawData.info?.email ||"hello@mohsindesigns.com"
   };
 
   const ctaBanner = {
-    eyebrow: rawData.ctaBanner?.eyebrow || "READY TO ACCELERATE?",
-    titleIntro: rawData.ctaBanner?.titleIntro || "Let's Build Your Next",
-    titleHighlight: rawData.ctaBanner?.titleHighlight || "Competitive Edge",
-    titleLine2: rawData.ctaBanner?.titleLine2 || "Together.",
-    description: rawData.ctaBanner?.description || "Schedule a free 30-minute technical audit. We'll diagnose bottlenecks in your existing presence and map out a concrete blueprint for compounding growth.",
+    eyebrow: rawData.ctaBanner?.eyebrow ||"READY TO ACCELERATE?",
+    titleIntro: rawData.ctaBanner?.titleIntro ||"Let's Build Your Next",
+    titleHighlight: rawData.ctaBanner?.titleHighlight ||"Competitive Edge",
+    titleLine2: rawData.ctaBanner?.titleLine2 ||"Together.",
+    description: rawData.ctaBanner?.description ||"Schedule a free 30-minute technical audit. We'll diagnose bottlenecks in your existing presence and map out a concrete blueprint for compounding growth.",
     ctaPrimary: {
-      label: rawData.ctaBanner?.ctaPrimary?.label || "Book Strategy Session",
-      href: rawData.ctaBanner?.ctaPrimary?.href || "#contact-form"
+      label: rawData.ctaBanner?.ctaPrimary?.label ||"Book Strategy Session",
+      href: rawData.ctaBanner?.ctaPrimary?.href ||"#contact-form"
     },
     ctaSecondary: {
-      label: rawData.ctaBanner?.ctaSecondary?.label || "Direct Office Line",
+      label: rawData.ctaBanner?.ctaSecondary?.label ||"Direct Office Line",
       href: rawData.ctaBanner?.ctaSecondary?.href || `tel:${office.phone}`
     },
-    portraitSrc: rawData.ctaBanner?.portraitSrc || "/founder.png",
-    portraitAlt: rawData.ctaBanner?.portraitAlt || "Mohsin Designs Lead Architect"
+    portraitSrc: rawData.ctaBanner?.portraitSrc ||"/founder.png",
+    portraitAlt: rawData.ctaBanner?.portraitAlt ||"Mohsin Designs Lead Architect"
   };
 
   const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    company: "",
-    service: hero.form.services[0] || "Select a service",
-    message: "",
+    fullName:"",
+    email:"",
+    phone:"",
+    company:"",
+    service: hero.form.services[0] ||"Select a service",
+    message:"",
     agreePrivacy: false
   });
 
@@ -192,12 +192,12 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
         setTimeout(() => {
           setSubmitted(false);
           setFormData({
-            fullName: "",
-            email: "",
-            phone: "",
-            company: "",
-            service: hero.form.services[0] || "Select a service",
-            message: "",
+            fullName:"",
+            email:"",
+            phone:"",
+            company:"",
+            service: hero.form.services[0] ||"Select a service",
+            message:"",
             agreePrivacy: false
           });
           setCaptchaToken("");
@@ -212,12 +212,12 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
       setTimeout(() => {
         setSubmitted(false);
         setFormData({
-          fullName: "",
-          email: "",
-          phone: "",
-          company: "",
-          service: hero.form.services[0] || "Select a service",
-          message: "",
+          fullName:"",
+          email:"",
+          phone:"",
+          company:"",
+          service: hero.form.services[0] ||"Select a service",
+          message:"",
           agreePrivacy: false
         });
         setCaptchaToken("");
@@ -255,7 +255,7 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
                 initial={{ opacity: 0, y: 25 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                className="lg:col-span-5 space-y-6 text-left"
+                className="lg:col-span-5 min-w-0 space-y-6 text-left"
               >
                 <PageBreadcrumbs page={pageData} />
                 {/* Eyebrow Badge */}
@@ -270,7 +270,7 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
                 {/* Headline */}
                 <h1 className="font-heading text-3xl sm:text-4xl lg:text-[42px] font-extrabold leading-[1.18] tracking-tight text-brand-dark dark:text-white">
                   {hero.titleLine1} <br />
-                  {hero.titleLine2}{" "}
+                  {hero.titleLine2}{""}
                   <span className="relative inline-block text-brand-blue dark:text-brand-yellow">
                     {hero.titleHighlight}
                     <svg className="absolute -bottom-1.5 left-0 w-full h-3 text-brand-accent opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
@@ -291,7 +291,7 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                className="lg:col-span-7 flex justify-center"
+                className="lg:col-span-7 min-w-0 flex justify-center"
               >
                 <div className="contact-card-glass p-7 sm:p-10 rounded-[32px] shadow-2xl relative border border-brand-zinc-200/90 dark:border-white/10 overflow-hidden w-full max-w-xl">
                   <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-brand-dark dark:text-white mb-6">
@@ -304,7 +304,7 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
                         initial={{ opacity: 0, scale: 0.96 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.96 }}
-                        transition={{ duration: 0.35, ease: "easeOut" }}
+                        transition={{ duration: 0.35, ease:"easeOut" }}
                         className="absolute inset-0 bg-white/98 dark:bg-[#12121e]/98 backdrop-blur-md rounded-[32px] p-8 sm:p-12 flex flex-col items-center justify-center text-center z-30 space-y-4"
                       >
                         <div className="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto border border-emerald-500/20 shadow-lg">
@@ -448,7 +448,7 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
               {contactMethods.methods.map((method: any, mIdx: number) => (
                 <a
                   key={method.id || mIdx}
-                  href={withTrailingSlash(method.actionHref || "#contact-form")}
+                  href={withTrailingSlash(method.actionHref ||"#contact-form")}
                   className="bg-white dark:bg-[#12121e] border border-brand-zinc-200/90 dark:border-white/10 hover:border-brand-blue/60 dark:hover:border-brand-yellow/60 p-6 sm:p-7 rounded-[28px] shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-400 flex flex-col justify-between group cursor-pointer relative overflow-hidden"
                 >
                   <div className="space-y-4">
@@ -480,13 +480,13 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
 
               {/* Left: Custom Styled Embedded Map */}
-              <div className="lg:col-span-7 bg-white dark:bg-[#12121e] border border-brand-zinc-200/90 dark:border-white/10 rounded-[28px] overflow-hidden shadow-lg min-h-[380px] relative group">
+              <div className="lg:col-span-7 min-w-0 bg-white dark:bg-[#12121e] border border-brand-zinc-200/90 dark:border-white/10 rounded-[28px] overflow-hidden shadow-lg min-h-[380px] relative group">
                 <iframe
                   title="Office Location Map"
                   src={office.mapEmbedUrl}
                   width="100%"
                   height="100%"
-                  style={{ border: 0, minHeight: "380px" }}
+                  style={{ border: 0, minHeight:"380px" }}
                   allowFullScreen={false}
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
@@ -496,7 +496,7 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
               </div>
 
               {/* Right: Our Office Card */}
-              <div className="lg:col-span-5 bg-white dark:bg-[#12121e] border border-brand-zinc-200/90 dark:border-white/10 p-7 sm:p-9 rounded-[28px] shadow-lg flex flex-col justify-between space-y-6">
+              <div className="lg:col-span-5 min-w-0 bg-white dark:bg-[#12121e] border border-brand-zinc-200/90 dark:border-white/10 p-7 sm:p-9 rounded-[28px] shadow-lg flex flex-col justify-between space-y-6">
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-brand-blue dark:text-brand-yellow font-mono text-xs font-black uppercase tracking-widest">
                     <MapPin className="w-4 h-4" />
@@ -562,7 +562,7 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
 
                 {/* Headline */}
                 <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.35] tracking-tight text-white">
-                  {ctaBanner.titleIntro}{" "}
+                  {ctaBanner.titleIntro}{""}
                   <span className="relative inline-block">
                     <span className="font-cursive text-[#E9BD36] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
                       {ctaBanner.titleHighlight}
@@ -570,7 +570,7 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
                     <svg className="absolute left-0 bottom-[-2px] w-full h-3 text-[#E9BD36]" viewBox="0 0 100 10" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
                       <path d="M 5 6 C 30 9, 70 9, 95 4" />
                     </svg>
-                  </span>{" "}
+                  </span>{""}
                   <br className="hidden sm:block" />
                   {ctaBanner.titleLine2}
                 </h2>

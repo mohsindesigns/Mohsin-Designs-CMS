@@ -1,15 +1,15 @@
-import { Metadata } from "next";
+import { Metadata } from"next";
 export const revalidate = 60; // Cache for 1 minute
-import { notFound, permanentRedirect } from "next/navigation";
-import CustomSchemaMarkup from "@/components/CustomSchemaMarkup";
-import connectToDatabase from "@/lib/mongodb";
-import SiteContent from "@/models/Content";
-import ServiceDetailTemplate from "@/components/templates/ServiceDetailTemplate";
-import { BASE_URL } from "@/lib/constants";
-import { resolveRobotsMetadata } from "@/lib/seo";
+import { notFound, permanentRedirect } from"next/navigation";
+import CustomSchemaMarkup from"@/components/CustomSchemaMarkup";
+import connectToDatabase from"@/lib/mongodb";
+import SiteContent from"@/models/Content";
+import ServiceDetailTemplate from"@/components/templates/ServiceDetailTemplate";
+import { BASE_URL } from"@/lib/constants";
+import { resolveRobotsMetadata } from"@/lib/seo";
 
-import { getCachedSiteContent } from "@/lib/content";
-import { getResolvedSchemaBlocks } from "@/lib/dynamicSchema";
+import { getCachedSiteContent } from"@/lib/content";
+import { getResolvedSchemaBlocks } from"@/lib/dynamicSchema";
 
 function getAbsoluteUrl(path: string | undefined) {
   if (!path) return undefined;
@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       title: seo.ogTitle || title,
       description: seo.ogDescription || description,
       url: canonicalUrl,
-      type: "article",
+      type:"article",
       publishedTime: publishedIso,
       modifiedTime: modifiedIso,
       images: [
@@ -60,16 +60,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       ]
     },
     twitter: {
-      card: "summary_large_image",
+      card:"summary_large_image",
       title: seo.ogTitle || title,
       description: seo.ogDescription || description,
       images: [seo.ogImage || service.heroImage || `${BASE_URL}/portfolio_hero_bg.png`]
     },
     other: {
-      "article:published_time": publishedIso,
-      "article:modified_time": modifiedIso,
-      "publish-date": publishedIso,
-      "date": publishedIso,
+"article:published_time": publishedIso,
+"article:modified_time": modifiedIso,
+"publish-date": publishedIso,
+"date": publishedIso,
     }
   };
 }
@@ -109,13 +109,13 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
   // Ensure template is set so auto schema resolves ServiceDetail
   if (!service.template) {
-    service.template = "service-detail";
+    service.template ="service-detail";
   }
 
   // --------------------------------------------------------------
   // Resolve dynamic schema blocks (Service, FAQPage, BreadcrumbList)
   // --------------------------------------------------------------
-  const resolvedSchemaBlocks = typeof getResolvedSchemaBlocks === "function"
+  const resolvedSchemaBlocks = typeof getResolvedSchemaBlocks ==="function"
     ? getResolvedSchemaBlocks({
         page: service,
         globalData,

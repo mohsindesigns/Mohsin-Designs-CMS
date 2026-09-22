@@ -1,11 +1,11 @@
 "use client";
 
-import CtaButton from "@/components/ui/CtaButton";
-import { withTrailingSlash } from "@/lib/url";
-import PageBreadcrumbs from "@/components/PageBreadcrumbs";
-import React, { useEffect, useRef } from "react";
-import { motion, useMotionValue, useSpring, useInView } from "framer-motion";
-import * as LucideIcons from "lucide-react";
+import CtaButton from"@/components/ui/CtaButton";
+import { withTrailingSlash } from"@/lib/url";
+import PageBreadcrumbs from"@/components/PageBreadcrumbs";
+import React, { useEffect, useRef } from"react";
+import { motion, useMotionValue, useSpring, useInView } from"framer-motion";
+import * as LucideIcons from"lucide-react";
 import {
   ArrowRight,
   Play,
@@ -17,21 +17,21 @@ import {
   ArrowUpRight,
   Sparkles,
   Star
-} from "lucide-react";
-import Link from "@/components/ui/Link";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import PageInlineFaqs from "@/components/PageInlineFaqs";
-import RichTextRenderer from "@/components/ui/RichTextRenderer";
+} from"lucide-react";
+import Link from"@/components/ui/Link";
+import Image from"next/image";
+import { useRouter } from"next/navigation";
+import PageInlineFaqs from"@/components/PageInlineFaqs";
+import RichTextRenderer from"@/components/ui/RichTextRenderer";
 
 function slugify(text: string): string {
-  if (!text) return "";
+  if (!text) return"";
   return text
     .toLowerCase()
     .trim()
-    .replace(/[^\w\s-]/g, "")
-    .replace(/[\s_-]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+    .replace(/[^\w\s-]/g,"")
+    .replace(/[\s_-]+/g,"-")
+    .replace(/^-+|-+$/g,"");
 }
 
 const drawVariants = {
@@ -41,7 +41,7 @@ const drawVariants = {
     transition: {
       duration: custom?.duration ?? 0.5,
       delay: custom?.delay ?? 0.1,
-      ease: "easeOut" as any
+      ease:"easeOut" as any
     }
   })
 };
@@ -49,15 +49,15 @@ const drawVariants = {
 // ── 3D SPRING COUNTER COMPONENT ──
 function RollerCounter({ value }: { value: string }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const numValue = parseInt(value?.replace(/[^0-9]/g, "") || "0") || 0;
-  const suffix = value?.replace(/[0-9]/g, "") || "";
+  const numValue = parseInt(value?.replace(/[^0-9]/g,"") ||"0") || 0;
+  const suffix = value?.replace(/[0-9]/g,"") ||"";
 
   const motionValue = useMotionValue(0);
   const springValue = useSpring(motionValue, {
     damping: 25,
     stiffness: 80,
   });
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const isInView = useInView(ref, { once: true, margin:"-50px" });
 
   useEffect(() => {
     if (isInView) {
@@ -81,7 +81,7 @@ function RollerCounter({ value }: { value: string }) {
 }
 
 // ── DYNAMIC CURSOR SPOTLIGHT CARD WRAPPER ──
-function SpotlightCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+function SpotlightCard({ children, className ="" }: { children: React.ReactNode; className?: string }) {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -97,7 +97,7 @@ function SpotlightCard({ children, className = "" }: { children: React.ReactNode
       className={`relative overflow-hidden group/spotlight ${className}`}
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
+      viewport={{ once: true, margin:"-100px" }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
     >
       {/* Spotlight Hover Glow Layer */}
@@ -180,7 +180,7 @@ const RedditLogo = () => (
 );
 
 // Dynamic icon resolver helper
-const renderStatIcon = (iconName?: string, defaultIconName: string = "Trophy") => {
+const renderStatIcon = (iconName?: string, defaultIconName: string ="Trophy") => {
   const icons = LucideIcons as any;
   const IconComp = (iconName && icons[iconName]) || icons[defaultIconName] || icons.Trophy;
   return <IconComp className="h-5 w-5" />;
@@ -193,140 +193,140 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
 
   // ── 1. HERO SECTION DATA ──
   const hero = {
-    eyebrow: locationData.hero?.eyebrow || "OUR GLOBAL PRESENCE",
-    titleIntro: locationData.hero?.titleIntro || "Engineered for Growth Across ",
-    titleHighlight: locationData.hero?.titleHighlight || "Global Markets.",
-    description: locationData.hero?.description || "Empowering high-growth businesses and enterprise brands with bespoke web architecture, technical SEO, and conversion science tailored for local dominance.",
-    ctaPrimaryText: locationData.hero?.ctaPrimaryText || "EXPLORE OUR WORK",
-    ctaPrimaryHref: locationData.hero?.ctaPrimaryHref || "/gallery",
-    ctaSecondaryText: locationData.hero?.ctaSecondaryText || "GET FREE STRATEGY",
-    ctaSecondaryHref: locationData.hero?.ctaSecondaryHref || "/contact-us",
-    bgLight: locationData.hero?.bgLight || "/locationhero.png",
-    bgDark: locationData.hero?.bgDark || "/locationherodark.png"
+    eyebrow: locationData.hero?.eyebrow ||"OUR GLOBAL PRESENCE",
+    titleIntro: locationData.hero?.titleIntro ||"Engineered for Growth Across",
+    titleHighlight: locationData.hero?.titleHighlight ||"Global Markets.",
+    description: locationData.hero?.description ||"Empowering high-growth businesses and enterprise brands with bespoke web architecture, technical SEO, and conversion science tailored for local dominance.",
+    ctaPrimaryText: locationData.hero?.ctaPrimaryText ||"EXPLORE OUR WORK",
+    ctaPrimaryHref: locationData.hero?.ctaPrimaryHref ||"/gallery",
+    ctaSecondaryText: locationData.hero?.ctaSecondaryText ||"GET FREE STRATEGY",
+    ctaSecondaryHref: locationData.hero?.ctaSecondaryHref ||"/contact-us",
+    bgLight: locationData.hero?.bgLight ||"/locationhero.png",
+    bgDark: locationData.hero?.bgDark ||"/locationherodark.png"
   };
 
   // ── 2. STATS SECTION DATA ──
   const stats = {
     experience: {
-      value: locationData.stats?.experience?.value || "10+",
-      label: locationData.stats?.experience?.label || "Years Industry Experience",
-      icon: locationData.stats?.experience?.icon || "Trophy"
+      value: locationData.stats?.experience?.value ||"10+",
+      label: locationData.stats?.experience?.label ||"Years Industry Experience",
+      icon: locationData.stats?.experience?.icon ||"Trophy"
     },
     countries: {
-      value: locationData.stats?.countries?.value || "15+",
-      label: locationData.stats?.countries?.label || "Active Geographic Hubs",
-      icon: locationData.stats?.countries?.icon || "MapPin"
+      value: locationData.stats?.countries?.value ||"15+",
+      label: locationData.stats?.countries?.label ||"Active Geographic Hubs",
+      icon: locationData.stats?.countries?.icon ||"MapPin"
     },
     clients: {
-      value: locationData.stats?.clients?.value || "500+",
-      label: locationData.stats?.clients?.label || "Global Brands Powered",
-      icon: locationData.stats?.clients?.icon || "Users"
+      value: locationData.stats?.clients?.value ||"500+",
+      label: locationData.stats?.clients?.label ||"Global Brands Powered",
+      icon: locationData.stats?.clients?.icon ||"Users"
     },
     satisfaction: {
-      value: locationData.stats?.satisfaction?.value || "99.4%",
-      label: locationData.stats?.satisfaction?.label || "Client Satisfaction Rate",
-      icon: locationData.stats?.satisfaction?.icon || "Smile"
+      value: locationData.stats?.satisfaction?.value ||"99.4%",
+      label: locationData.stats?.satisfaction?.label ||"Client Satisfaction Rate",
+      icon: locationData.stats?.satisfaction?.icon ||"Smile"
     }
   };
 
   // ── 3. BRANDS STRIP DATA ──
   const brandsStrip = {
-    heading: locationData.brandsStrip?.heading || "TRUSTED AD PLATFORMS // CERTIFIED NETWORKS",
+    heading: locationData.brandsStrip?.heading ||"TRUSTED AD PLATFORMS // CERTIFIED NETWORKS",
     logos: locationData.brandsStrip?.logos && locationData.brandsStrip.logos.length > 0 ? locationData.brandsStrip.logos : [
-      { name: "Google Ads" },
-      { name: "Meta Business" },
-      { name: "Amazon Ads" },
-      { name: "Microsoft Bing" },
-      { name: "Apple Search" },
-      { name: "eBay Partner" },
-      { name: "Reddit Ads" }
+      { name:"Google Ads" },
+      { name:"Meta Business" },
+      { name:"Amazon Ads" },
+      { name:"Microsoft Bing" },
+      { name:"Apple Search" },
+      { name:"eBay Partner" },
+      { name:"Reddit Ads" }
     ]
   };
 
   // ── 4. COUNTRIES WE SERVE DATA ──
   const defaultCountries = [
     {
-      id: "USA",
-      name: "United States",
-      slug: "usa",
-      pageSlug: "usa",
-      tagline: "NORTH AMERICA HUB",
-      subtitle: "48 States & Major Metros",
-      description: "Delivering enterprise-grade web development, full-stack architecture, and local organic SEO campaigns across premier US markets.",
-      image: "/country_usa.png",
-      flag: "/flag_usa.png",
-      buttonText: "EXPLORE USA LOCATIONS",
+      id:"USA",
+      name:"United States",
+      slug:"usa",
+      pageSlug:"usa",
+      tagline:"NORTH AMERICA HUB",
+      subtitle:"48 States & Major Metros",
+      description:"Delivering enterprise-grade web development, full-stack architecture, and local organic SEO campaigns across premier US markets.",
+      image:"/country_usa.png",
+      flag:"/flag_usa.png",
+      buttonText:"EXPLORE USA LOCATIONS",
       states: [
-        { name: "Texas", pageSlug: "usa/texas" },
-        { name: "California", pageSlug: "usa/california" },
-        { name: "Florida", pageSlug: "usa/florida" },
-        { name: "New York", pageSlug: "usa/new-york" },
-        { name: "Washington", pageSlug: "usa/washington" },
-        { name: "Illinois", pageSlug: "usa/illinois" },
-        { name: "Georgia", pageSlug: "usa/georgia" },
-        { name: "Colorado", pageSlug: "usa/colorado" }
+        { name:"Texas", pageSlug:"usa/texas" },
+        { name:"California", pageSlug:"usa/california" },
+        { name:"Florida", pageSlug:"usa/florida" },
+        { name:"New York", pageSlug:"usa/new-york" },
+        { name:"Washington", pageSlug:"usa/washington" },
+        { name:"Illinois", pageSlug:"usa/illinois" },
+        { name:"Georgia", pageSlug:"usa/georgia" },
+        { name:"Colorado", pageSlug:"usa/colorado" }
       ]
     },
     {
-      id: "AU",
-      name: "Australia",
-      slug: "australia",
-      pageSlug: "australia",
-      tagline: "ASIA-PACIFIC REGION",
-      subtitle: "Sydney, Melbourne & Brisbane",
-      description: "Empowering Australian businesses with sub-second website speed, conversion rate optimization, and custom e-commerce web applications.",
-      image: "/country_au.png",
-      flag: "/flag_au.png",
-      buttonText: "EXPLORE AUSTRALIA",
+      id:"AU",
+      name:"Australia",
+      slug:"australia",
+      pageSlug:"australia",
+      tagline:"ASIA-PACIFIC REGION",
+      subtitle:"Sydney, Melbourne & Brisbane",
+      description:"Empowering Australian businesses with sub-second website speed, conversion rate optimization, and custom e-commerce web applications.",
+      image:"/country_au.png",
+      flag:"/flag_au.png",
+      buttonText:"EXPLORE AUSTRALIA",
       states: [
-        { name: "New South Wales", pageSlug: "australia/nsw" },
-        { name: "Victoria", pageSlug: "australia/victoria" },
-        { name: "Queensland", pageSlug: "australia/queensland" },
-        { name: "Western Australia", pageSlug: "australia/wa" }
+        { name:"New South Wales", pageSlug:"australia/nsw" },
+        { name:"Victoria", pageSlug:"australia/victoria" },
+        { name:"Queensland", pageSlug:"australia/queensland" },
+        { name:"Western Australia", pageSlug:"australia/wa" }
       ]
     },
     {
-      id: "NZ",
-      name: "New Zealand",
-      slug: "new-zealand",
-      pageSlug: "new-zealand",
-      tagline: "OCEANIA EXPANSION",
-      subtitle: "Auckland, Wellington & Christchurch",
-      description: "High-impact digital design systems and growth marketing architecture built specifically for New Zealand's innovative business landscape.",
-      image: "/country_nz.png",
-      flag: "/flag_nz.png",
-      buttonText: "EXPLORE NEW ZEALAND",
+      id:"NZ",
+      name:"New Zealand",
+      slug:"new-zealand",
+      pageSlug:"new-zealand",
+      tagline:"OCEANIA EXPANSION",
+      subtitle:"Auckland, Wellington & Christchurch",
+      description:"High-impact digital design systems and growth marketing architecture built specifically for New Zealand's innovative business landscape.",
+      image:"/country_nz.png",
+      flag:"/flag_nz.png",
+      buttonText:"EXPLORE NEW ZEALAND",
       states: [
-        { name: "Auckland", pageSlug: "new-zealand/auckland" },
-        { name: "Wellington", pageSlug: "new-zealand/wellington" },
-        { name: "Canterbury", pageSlug: "new-zealand/canterbury" }
+        { name:"Auckland", pageSlug:"new-zealand/auckland" },
+        { name:"Wellington", pageSlug:"new-zealand/wellington" },
+        { name:"Canterbury", pageSlug:"new-zealand/canterbury" }
       ]
     }
   ];
 
   const presence = {
-    eyebrow: locationData.presence?.eyebrow || "GLOBAL COVERAGE",
-    titleIntro: locationData.presence?.titleIntro || "Serving High-Growth Brands Across ",
-    titleHighlight: locationData.presence?.titleHighlight || "3 Continents",
-    description: locationData.presence?.description || "Browse our localized service hubs and discover how we engineer high-converting digital assets tailored specifically for regional compliance, language nuances, and target search volume.",
-    cursiveText: locationData.presence?.cursiveText || "Explore Locations",
-    locationsLabel: locationData.presence?.locationsLabel || "ACTIVE REGIONAL LOCATIONS & STATE HUBS",
+    eyebrow: locationData.presence?.eyebrow ||"GLOBAL COVERAGE",
+    titleIntro: locationData.presence?.titleIntro ||"Serving High-Growth Brands Across",
+    titleHighlight: locationData.presence?.titleHighlight ||"3 Continents",
+    description: locationData.presence?.description ||"Browse our localized service hubs and discover how we engineer high-converting digital assets tailored specifically for regional compliance, language nuances, and target search volume.",
+    cursiveText: locationData.presence?.cursiveText ||"Explore Locations",
+    locationsLabel: locationData.presence?.locationsLabel ||"ACTIVE REGIONAL LOCATIONS & STATE HUBS",
     countries: locationData.presence?.countries && locationData.presence.countries.length > 0 ? locationData.presence.countries : defaultCountries
   };
 
   // ── 5. CTA BANNER DATA ──
   const ctaBanner = {
-    eyebrow: locationData.ctaBanner?.eyebrow || "READY FOR LOCAL DOMINANCE?",
-    titleIntro: locationData.ctaBanner?.titleIntro || "Scale Your Organic Revenue in Your ",
-    titleWord1: locationData.ctaBanner?.titleWord1 || "Target Market ",
-    titleWord2: locationData.ctaBanner?.titleWord2 || "Today?",
-    description: locationData.ctaBanner?.description || "Schedule a free technical audit with our lead architect. We'll analyze your existing regional footprint and map out a concrete growth strategy.",
-    ctaPrimaryText: locationData.ctaBanner?.ctaPrimaryText || "BOOK STRATEGY SESSION",
-    ctaPrimaryHref: locationData.ctaBanner?.ctaPrimaryHref || "/contact-us",
-    ctaSecondaryText: locationData.ctaBanner?.ctaSecondaryText || "EXPLORE SHOWREEL",
-    ctaSecondaryHref: locationData.ctaBanner?.ctaSecondaryHref || "/gallery",
-    portraitSrc: locationData.ctaBanner?.portraitSrc || "/founder_portrait_nobg.png",
-    portraitAlt: locationData.ctaBanner?.portraitAlt || "Founder & Lead Architect"
+    eyebrow: locationData.ctaBanner?.eyebrow ||"READY FOR LOCAL DOMINANCE?",
+    titleIntro: locationData.ctaBanner?.titleIntro ||"Scale Your Organic Revenue in Your",
+    titleWord1: locationData.ctaBanner?.titleWord1 ||"Target Market",
+    titleWord2: locationData.ctaBanner?.titleWord2 ||"Today?",
+    description: locationData.ctaBanner?.description ||"Schedule a free technical audit with our lead architect. We'll analyze your existing regional footprint and map out a concrete growth strategy.",
+    ctaPrimaryText: locationData.ctaBanner?.ctaPrimaryText ||"BOOK STRATEGY SESSION",
+    ctaPrimaryHref: locationData.ctaBanner?.ctaPrimaryHref ||"/contact-us",
+    ctaSecondaryText: locationData.ctaBanner?.ctaSecondaryText ||"EXPLORE SHOWREEL",
+    ctaSecondaryHref: locationData.ctaBanner?.ctaSecondaryHref ||"/gallery",
+    portraitSrc: locationData.ctaBanner?.portraitSrc ||"/founder_portrait_nobg.png",
+    portraitAlt: locationData.ctaBanner?.portraitAlt ||"Founder & Lead Architect"
   };
 
   return (
@@ -380,7 +380,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
               initial={{ opacity: 0, y: 25 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="lg:col-span-7 space-y-6 text-left"
+              className="lg:col-span-7 min-w-0 space-y-6 text-left"
             >
               <PageBreadcrumbs page={pageData} />
               {/* Star Badge */}
@@ -421,7 +421,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
             </motion.div>
 
             {/* Right Column */}
-            <div className="lg:col-span-5 hidden lg:block" />
+            <div className="lg:col-span-5 min-w-0 hidden lg:block" />
 
           </div>
         </div>
@@ -437,7 +437,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
             {/* Experience Card */}
             <div className="bg-white dark:bg-[#0c0b18] border border-brand-zinc-200/80 dark:border-white/5 p-6 rounded-[20px] shadow-[0_4px_25px_rgba(0,0,0,0.01)] flex items-center gap-4 hover:-translate-y-1 hover:border-brand-blue/30 dark:hover:border-brand-yellow/30 transition-all duration-300 group">
               <div className="h-11 w-11 rounded-full bg-blue-50 dark:bg-blue-500/10 text-brand-blue dark:text-blue-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-300">
-                {renderStatIcon(stats.experience.icon, "Trophy")}
+                {renderStatIcon(stats.experience.icon,"Trophy")}
               </div>
               <div className="text-left">
                 <span className="block font-heading font-black text-3xl text-brand-dark dark:text-white leading-none">
@@ -450,7 +450,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
             {/* Countries Card */}
             <div className="bg-white dark:bg-[#0c0b18] border border-brand-zinc-200/80 dark:border-white/5 p-6 rounded-[20px] shadow-[0_4px_25px_rgba(0,0,0,0.01)] flex items-center gap-4 hover:-translate-y-1 hover:border-brand-blue/30 dark:hover:border-brand-yellow/30 transition-all duration-300 group">
               <div className="h-11 w-11 rounded-full bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-300">
-                {renderStatIcon(stats.countries.icon, "MapPin")}
+                {renderStatIcon(stats.countries.icon,"MapPin")}
               </div>
               <div className="text-left">
                 <span className="block font-heading font-black text-3xl text-brand-dark dark:text-white leading-none">
@@ -463,7 +463,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
             {/* Clients Card */}
             <div className="bg-white dark:bg-[#0c0b18] border border-brand-zinc-200/80 dark:border-white/5 p-6 rounded-[20px] shadow-[0_4px_25px_rgba(0,0,0,0.01)] flex items-center gap-4 hover:-translate-y-1 hover:border-brand-blue/30 dark:hover:border-brand-yellow/30 transition-all duration-300 group">
               <div className="h-11 w-11 rounded-full bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-300">
-                {renderStatIcon(stats.clients.icon, "Users")}
+                {renderStatIcon(stats.clients.icon,"Users")}
               </div>
               <div className="text-left">
                 <span className="block font-heading font-black text-3xl text-brand-dark dark:text-white leading-none">
@@ -476,7 +476,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
             {/* Satisfaction Card */}
             <div className="bg-white dark:bg-[#0c0b18] border border-brand-zinc-200/80 dark:border-white/5 p-6 rounded-[20px] shadow-[0_4px_25px_rgba(0,0,0,0.01)] flex items-center gap-4 hover:-translate-y-1 hover:border-brand-blue/30 dark:hover:border-brand-yellow/30 transition-all duration-300 group">
               <div className="h-11 w-11 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-300">
-                {renderStatIcon(stats.satisfaction.icon, "Smile")}
+                {renderStatIcon(stats.satisfaction.icon,"Smile")}
               </div>
               <div className="text-left">
                 <span className="block font-heading font-black text-3xl text-brand-dark dark:text-white leading-none">
@@ -507,8 +507,8 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
               {[...Array(3)].map((_, outerIdx) => (
                 <div key={outerIdx} className="flex gap-12 md:gap-16 items-center">
                   {brandsStrip.logos.map((logoItem: any, lIdx: number) => {
-                    const logoName = typeof logoItem === "string" ? logoItem : logoItem?.name || "";
-                    const customImage = typeof logoItem === "object" ? logoItem?.image : null;
+                    const logoName = typeof logoItem ==="string" ? logoItem : logoItem?.name ||"";
+                    const customImage = typeof logoItem ==="object" ? logoItem?.image : null;
 
                     const LogoComponent =
                       logoName.includes("Google") ? GoogleAdsLogo :
@@ -570,8 +570,8 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
               </div>
 
               <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
-                {presence.titleIntro}{" "}
-                <span className="text-brand-blue dark:text-brand-yellow font-serif font-normal italic">
+                {presence.titleIntro}{""}
+ <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
                   {presence.titleHighlight}
                 </span>
               </h2>
@@ -598,30 +598,30 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
             {presence.countries.map((country: any, idx: number) => {
               // Resolve country URL from linked page or slug.
               // Note: a trailing slash was tried here and reverted - Next's default
-              // (trailingSlash unset) 308-redirects a "/usa/" request back to "/usa" anyway,
+              // (trailingSlash unset) 308-redirects a"/usa/" request back to"/usa" anyway,
               // and the only way to make the trailing-slash form canonical is the site-wide
               // trailingSlash:true config, which breaks /admin/login's client-side routing
               // (confirmed via testing). Nesting is still fixed below regardless.
               let cleanCountryUrl = country.pageSlug
                 ? (country.pageSlug.startsWith("/") ? country.pageSlug : `/${country.pageSlug}`)
-                : country.url || (country.slug ? (country.slug.startsWith("/") ? country.slug : `/${country.slug}`) : (country.id === "USA" ? "/usa" : `/${slugify(country.name)}`));
+                : country.url || (country.slug ? (country.slug.startsWith("/") ? country.slug : `/${country.slug}`) : (country.id ==="USA" ?"/usa" : `/${slugify(country.name)}`));
               
-              if (!cleanCountryUrl.endsWith("/")) cleanCountryUrl += "/";
+              if (!cleanCountryUrl.endsWith("/")) cleanCountryUrl +="/";
               const countryUrl = cleanCountryUrl;
 
-              const flagSrc = country.flag || (country.id === "USA" ? "/flag_usa.png" : country.id === "NZ" ? "/flag_nz.png" : "/flag_au.png");
-              const coverImg = country.image || "/country_usa.png";
+              const flagSrc = country.flag || (country.id ==="USA" ?"/flag_usa.png" : country.id ==="NZ" ?"/flag_nz.png" :"/flag_au.png");
+              const coverImg = country.image ||"/country_usa.png";
 
               // Normalize states: Array of objects or strings
               let statesList: { name: string; url: string }[] = [];
               if (Array.isArray(country.states)) {
                 statesList = country.states.map((st: any) => {
-                  if (typeof st === "string") {
+                  if (typeof st ==="string") {
                     const sSlug = slugify(st);
                     const targetUrl = `${countryUrl}${sSlug}/`;
                     return { name: st, url: targetUrl };
                   }
-                  const stName = st.name || "";
+                  const stName = st.name ||"";
                   const stSlugSegment = st.pageSlug
                     ? st.pageSlug.split("/").filter(Boolean).pop()
                     : slugify(stName);
@@ -654,7 +654,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
                         {/* Country Tag Badge */}
                         <div className="absolute top-4 left-4 bg-white/90 dark:bg-[#080710]/90 backdrop-blur-md border border-white/20 dark:border-white/10 px-3 py-1 rounded-full">
                           <span className="text-[10px] font-mono font-black text-brand-blue dark:text-brand-yellow uppercase tracking-wider">
-                            {country.subtitle || "REGIONAL HUB"}
+                            {country.subtitle ||"REGIONAL HUB"}
                           </span>
                         </div>
 
@@ -688,7 +688,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
                               onClick={(e) => e.stopPropagation()}
                               className="inline-flex items-center gap-2 rounded-full bg-brand-blue/10 dark:bg-brand-yellow/10 border border-brand-blue/20 dark:border-brand-yellow/20 px-5 py-2 text-[11px] font-mono font-black uppercase text-brand-blue dark:text-brand-yellow group-hover/card:bg-brand-blue dark:group-hover/card:bg-brand-yellow group-hover/card:text-white dark:group-hover/card:text-[#080710] transition-all duration-300 shrink-0 no-underline"
                             >
-                              <span>{country.buttonText || `EXPLORE ${country.name?.toUpperCase() || "LOCATION"}`}</span>
+                              <span>{country.buttonText || `EXPLORE ${country.name?.toUpperCase() ||"LOCATION"}`}</span>
                               <ArrowUpRight className="h-3.5 w-3.5 shrink-0" />
                             </Link>
                           </div>
@@ -749,7 +749,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
 
               <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.18] tracking-tight text-white">
                 {ctaBanner.titleIntro}
-                <span className="whitespace-nowrap inline-block">
+                <span className="inline-block">
                   {ctaBanner.titleWord1}
                   <span className="relative inline-block">
                     <span className="font-cursive text-[#E9BD36] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">{ctaBanner.titleWord2}</span>
@@ -795,9 +795,9 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
           <PageInlineFaqs
             faqs={pageData.faq}
             faqSchemaMarkup={pageData.faqSchemaMarkup}
-            badge={pageData.faqBadge || "LOCATIONS FAQ"}
-            title={pageData.faqTitle || "Frequently Asked Questions"}
-            subtitle={pageData.faqDescription || "Key answers about our multi-regional design and development services."}
+            badge={pageData.faqBadge ||"LOCATIONS FAQ"}
+            title={pageData.faqTitle ||"Frequently Asked Questions"}
+            subtitle={pageData.faqDescription ||"Key answers about our multi-regional design and development services."}
           />
         </div>
       )}

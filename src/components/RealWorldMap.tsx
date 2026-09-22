@@ -1,9 +1,9 @@
 "use client";
 
-import { withTrailingSlash } from "@/lib/url";
-import React, { useEffect, useRef, useState } from "react";
-import L from "leaflet";
-import { resolveCountryLocation, COUNTRIES_DATABASE } from "@/lib/countryLocations";
+import { withTrailingSlash } from"@/lib/url";
+import React, { useEffect, useRef, useState } from"react";
+import L from"leaflet";
+import { resolveCountryLocation, COUNTRIES_DATABASE } from"@/lib/countryLocations";
 
 interface HubItem {
   id: string;
@@ -26,7 +26,7 @@ export default function RealWorldMap({
   hubs,
   activeHubId,
   onSelectHub,
-  className = ""
+  className =""
 }: RealWorldMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -72,7 +72,7 @@ export default function RealWorldMap({
     });
 
     // Custom modern zoom control in bottom right
-    L.control.zoom({ position: "bottomright" }).addTo(map);
+    L.control.zoom({ position:"bottomright" }).addTo(map);
 
     mapInstanceRef.current = map;
 
@@ -93,13 +93,13 @@ export default function RealWorldMap({
     }
 
     const tileUrl = isDarkMode
-      ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-      : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
+      ?"https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+      :"https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
 
     const newTileLayer = L.tileLayer(tileUrl, {
-      subdomains: "abcd",
+      subdomains:"abcd",
       maxZoom: 19,
-      className: isDarkMode ? "map-tiles-dark" : "map-tiles-light",
+      className: isDarkMode ?"map-tiles-dark" :"map-tiles-light",
     });
 
     newTileLayer.addTo(map);
@@ -136,28 +136,28 @@ export default function RealWorldMap({
       // Light mode: all blue. Dark mode: yellow accents.
       const pinOuterColor = isActive
         ? isDarkMode
-          ? "bg-[#E9BD36] border-[#0306AC] text-[#0306AC]"
-          : "bg-[#0306AC] border-white text-white"
+          ?"bg-[#E9BD36] border-[#0306AC] text-[#0306AC]"
+          :"bg-[#0306AC] border-white text-white"
         : isDarkMode
-        ? "bg-[#0306AC] border-[#E9BD36] text-[#E9BD36]"
-        : "bg-[#0306AC] border-white text-white";
+        ?"bg-[#0306AC] border-[#E9BD36] text-[#E9BD36]"
+        :"bg-[#0306AC] border-white text-white";
 
       const pinDotColor = isDarkMode
-        ? isActive ? "bg-[#0306AC]" : "bg-[#E9BD36]"
-        : "bg-white";
+        ? isActive ?"bg-[#0306AC]" :"bg-[#E9BD36]"
+        :"bg-white";
       const pingRingColor = isDarkMode
-        ? isActive ? "bg-[#E9BD36]/50" : "bg-[#0306AC]/30"
-        : isActive ? "bg-[#0306AC]/40" : "bg-[#0306AC]/20";
+        ? isActive ?"bg-[#E9BD36]/50" :"bg-[#0306AC]/30"
+        : isActive ?"bg-[#0306AC]/40" :"bg-[#0306AC]/20";
 
       const tooltipBg = isDarkMode
-        ? "bg-[#0c0c16] text-white border border-white/10"
-        : "bg-white text-slate-900 border border-slate-200 shadow-xl";
+        ?"bg-[#0c0c16] text-white border border-white/10"
+        :"bg-white text-slate-900 border border-slate-200 shadow-xl";
 
-      const tooltipDot = isDarkMode ? "bg-[#E9BD36]" : "bg-[#0306AC]";
-      const activeRing = isDarkMode ? "ring-[#E9BD36]" : "ring-[#0306AC]";
+      const tooltipDot = isDarkMode ?"bg-[#E9BD36]" :"bg-[#0306AC]";
+      const activeRing = isDarkMode ?"ring-[#E9BD36]" :"ring-[#0306AC]";
 
       const customIcon = L.divIcon({
-        className: "custom-hub-marker",
+        className:"custom-hub-marker",
         html: `
           <div class="relative flex items-center justify-center cursor-pointer group" style="width: 34px; height: 34px; transform: translate(-50%, -50%);">
             <!-- Ping animation ring -->

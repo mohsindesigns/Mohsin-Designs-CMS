@@ -1,9 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
-import Image from "next/image";
-import { useContent } from "../hooks/useContent";
-import RichTextRenderer from "./ui/RichTextRenderer";
+import { motion } from"framer-motion";
+import Image from"next/image";
+import { useContent } from"../hooks/useContent";
+import RichTextRenderer from"./ui/RichTextRenderer";
 
 // Variants for repeating hand-drawn paths animations on scroll
 const drawVariants = {
@@ -13,7 +13,7 @@ const drawVariants = {
     transition: {
       duration: custom?.duration ?? 0.4,
       delay: custom?.delay ?? 0.1,
-      ease: "easeOut" as any
+      ease:"easeOut" as any
     }
   })
 };
@@ -23,24 +23,24 @@ export default function AboutOwnerClean({ data: propData }: { data?: any }) {
   const about = propData || content?.about || (content as any)?.aboutOwner || {};
 
   // Sync CMS fields with fallback defaults
-  const sectionTag = about?.badge || about?.eyebrow || about?.sectionTag || "ABOUT THE OWNER";
-  const titleIntro = about?.headline?.prefix || about?.headlinePrefix || about?.titleIntro || "Leading with Vision,";
-  const titleHighlight = about?.headline?.highlight || about?.headlineHighlight || about?.titleHighlight || "Building with Trust.";
+  const sectionTag = about?.badge || about?.eyebrow || about?.sectionTag ||"ABOUT THE OWNER";
+  const titleIntro = about?.headline?.prefix || about?.headlinePrefix || about?.titleIntro ||"Leading with Vision,";
+  const titleHighlight = about?.headline?.highlight || about?.headlineHighlight || about?.titleHighlight ||"Building with Trust.";
   
   // Rich description from QuillEditor (falls back to plain bio paragraphs for legacy data)
-  const description = about?.description || "";
+  const description = about?.description ||"";
   const legacyBio = about?.bioParagraph1 || about?.bioParagraph2
-    ? `<p><strong>${about?.bioParagraph1 || ""}</strong></p><p>${about?.bioParagraph2 || ""}</p>`
-    : "";
-  const bioContent = description || legacyBio || "<p><strong>I help brands scale dynamically using advanced design and tech systems.</strong></p><p>With over a decade of design experience, we specialize in high-end design systems, custom development, and comprehensive marketing architectures.</p>";
+    ? `<p><strong>${about?.bioParagraph1 ||""}</strong></p><p>${about?.bioParagraph2 ||""}</p>`
+    :"";
+  const bioContent = description || legacyBio ||"<p><strong>I help brands scale dynamically using advanced design and tech systems.</strong></p><p>With over a decade of design experience, we specialize in high-end design systems, custom development, and comprehensive marketing architectures.</p>";
   
   // Only use image if it looks like a real path/URL
-  const rawPortraitSrc = about?.image?.src || (typeof about?.image === 'string' ? about?.image : "") || about?.avatar || about?.teamImage || "";
-  const portraitSrc = rawPortraitSrc.startsWith("/") || rawPortraitSrc.startsWith("http") ? rawPortraitSrc : "";
-  const portraitAlt = about?.image?.alt || about?.imageAlt || "Mohsin Designs Biography";
+  const rawPortraitSrc = about?.image?.src || (typeof about?.image === 'string' ? about?.image :"") || about?.avatar || about?.teamImage ||"";
+  const portraitSrc = rawPortraitSrc.startsWith("/") || rawPortraitSrc.startsWith("http") ? rawPortraitSrc :"";
+  const portraitAlt = about?.image?.alt || about?.imageAlt ||"Mohsin Designs Biography";
   
-  const circleText = about?.circleText || "CREATIVE POWER • MOHSIN DESIGNS •";
-  const circleLetter = about?.circleLetter || "M";
+  const circleText = about?.circleText ||"CREATIVE POWER • MOHSIN DESIGNS •";
+  const circleLetter = about?.circleLetter ||"M";
 
   return (
     <section id="about" className="relative overflow-hidden bg-white dark:bg-[#080710] border-t border-brand-zinc-200 dark:border-white/10 section-y">
@@ -60,7 +60,7 @@ export default function AboutOwnerClean({ data: propData }: { data?: any }) {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false, amount: 0.3 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-5 relative flex justify-center items-center w-full"
+            className="lg:col-span-5 min-w-0 relative flex justify-center items-center w-full"
           >
 
             {/* Ambient background glow */}
@@ -69,7 +69,7 @@ export default function AboutOwnerClean({ data: propData }: { data?: any }) {
             {/* Rotating Monogram Badge in top corner */}
             <motion.div
               animate={{ rotate: 360 }}
-              transition={{ ease: "linear", duration: 24, repeat: Infinity }}
+              transition={{ ease:"linear", duration: 24, repeat: Infinity }}
               className="absolute -top-6 -left-6 h-24 w-24 z-20 select-none pointer-events-none hidden sm:block"
             >
               <svg viewBox="0 0 100 100" className="h-full w-full">
@@ -113,7 +113,7 @@ export default function AboutOwnerClean({ data: propData }: { data?: any }) {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: false, amount: 0.3 }}
-            className="lg:col-span-7 space-y-8 lg:pl-6 z-20 text-center lg:text-left flex flex-col items-center lg:items-start w-full"
+            className="lg:col-span-7 min-w-0 space-y-8 lg:pl-6 z-20 text-center lg:text-left flex flex-col items-center lg:items-start w-full"
           >
 
             {/* Section Tag */}
@@ -128,8 +128,8 @@ export default function AboutOwnerClean({ data: propData }: { data?: any }) {
 
               {/* Header */}
               <h2 className="font-heading text-4xl sm:text-5xl font-black leading-[1.15] text-brand-dark dark:text-white tracking-tight">
-                {titleIntro}{" "}
-                <span className="text-brand-blue dark:text-brand-yellow font-serif font-normal italic">
+                {titleIntro}{""}
+ <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
                   {titleHighlight}
                 </span>
               </h2>

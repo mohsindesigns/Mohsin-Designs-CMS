@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from"react";
+import { motion, AnimatePresence } from"framer-motion";
 import {
   ArrowLeft,
   ArrowRight,
@@ -18,9 +18,9 @@ import {
   Home,
   Zap,
   Award
-} from "lucide-react";
-import { useContent } from "../hooks/useContent";
-import RichTextRenderer from "@/components/ui/RichTextRenderer";
+} from"lucide-react";
+import { useContent } from"../hooks/useContent";
+import RichTextRenderer from"@/components/ui/RichTextRenderer";
 
 const iconMap: Record<string, any> = {
   LayoutGrid,
@@ -38,118 +38,118 @@ const iconMap: Record<string, any> = {
 };
 
 const DEFAULT_PORTFOLIO = {
-  sectionTag: "CASE STUDIES",
-  titleIntro: "Our Recent",
-  titleHighlight: "Masterpieces",
-  description: "A detailed look at some of our premium agency projects and the measurable results we achieved.",
-  swipeHint: "Swipe or drag to navigate",
-  labelCaseStudy: "Case Study",
-  labelChallenge: "The Challenge",
-  labelWhatWeDid: "Our Approach",
-  ariaPrev: "Previous project",
-  ariaNext: "Next project",
+  sectionTag:"CASE STUDIES",
+  titleIntro:"Our Recent",
+  titleHighlight:"Masterpieces",
+  description:"A detailed look at some of our premium agency projects and the measurable results we achieved.",
+  swipeHint:"Swipe or drag to navigate",
+  labelCaseStudy:"Case Study",
+  labelChallenge:"The Challenge",
+  labelWhatWeDid:"Our Approach",
+  ariaPrev:"Previous project",
+  ariaNext:"Next project",
   categories: [
-    { id: "all", label: "All Work", iconName: "LayoutGrid" },
-    { id: "design", label: "UX/UI Design", iconName: "Paintbrush" },
-    { id: "dev", label: "Development", iconName: "Monitor" },
-    { id: "marketing", label: "Marketing", iconName: "TrendingUp" }
+    { id:"all", label:"All Work", iconName:"LayoutGrid" },
+    { id:"design", label:"UX/UI Design", iconName:"Paintbrush" },
+    { id:"dev", label:"Development", iconName:"Monitor" },
+    { id:"marketing", label:"Marketing", iconName:"TrendingUp" }
   ],
   caseStudies: [
     {
-      num: "01",
-      brand: "Veloce SaaS",
-      subtitle: "Enterprise-grade Product Design",
-      challenge: "Veloce needed a modern, highly converting landing page and product dashboard to decrease churn and improve activation rates.",
-      whatWeDid: "We designed a futuristic glassmorphic landing page and fully customized SaaS dashboard with micro-interactions and interactive charts.",
-      categories: ["design", "dev"],
-      glowClass: "from-orange-500/20 via-red-500/10 to-transparent",
+      num:"01",
+      brand:"Veloce SaaS",
+      subtitle:"Enterprise-grade Product Design",
+      challenge:"Veloce needed a modern, highly converting landing page and product dashboard to decrease churn and improve activation rates.",
+      whatWeDid:"We designed a futuristic glassmorphic landing page and fully customized SaaS dashboard with micro-interactions and interactive charts.",
+      categories: ["design","dev"],
+      glowClass:"from-orange-500/20 via-red-500/10 to-transparent",
       screenshot: {
-        logo: "V",
-        brandName: "VELOCE",
-        navHome: "Product",
-        navServices: "Pricing",
-        navCall: "Start Free",
-        tag: "Next-Gen SaaS Platform",
-        title: "Scale Your Velocity",
-        button: "Get Started Now",
-        footerTag: "Trusted by 10k+ developers"
+        logo:"V",
+        brandName:"VELOCE",
+        navHome:"Product",
+        navServices:"Pricing",
+        navCall:"Start Free",
+        tag:"Next-Gen SaaS Platform",
+        title:"Scale Your Velocity",
+        button:"Get Started Now",
+        footerTag:"Trusted by 10k+ developers"
       },
       stats: [
-        { value: "48%", label: "Activation Boost", iconName: "Zap" },
-        { value: "14ms", label: "Core Latency", iconName: "TrendingUp" },
-        { value: "99.9%", label: "Platform Uptime", iconName: "Shield" }
+        { value:"48%", label:"Activation Boost", iconName:"Zap" },
+        { value:"14ms", label:"Core Latency", iconName:"TrendingUp" },
+        { value:"99.9%", label:"Platform Uptime", iconName:"Shield" }
       ]
     },
     {
-      num: "02",
-      brand: "Acme Store",
-      subtitle: "E-Commerce Re-platform & Scale",
-      challenge: "Struggling with slow page loads and high acquisition costs, Acme needed a headless Shopify storefront designed to scale.",
-      whatWeDid: "Created a lightning-fast React storefront and optimized paid ads funnel yielding lower cost-per-acquisition.",
-      categories: ["dev", "marketing"],
-      glowClass: "from-emerald-500/20 via-teal-500/10 to-transparent",
+      num:"02",
+      brand:"Acme Store",
+      subtitle:"E-Commerce Re-platform & Scale",
+      challenge:"Struggling with slow page loads and high acquisition costs, Acme needed a headless Shopify storefront designed to scale.",
+      whatWeDid:"Created a lightning-fast React storefront and optimized paid ads funnel yielding lower cost-per-acquisition.",
+      categories: ["dev","marketing"],
+      glowClass:"from-emerald-500/20 via-teal-500/10 to-transparent",
       screenshot: {
-        logo: "A",
-        brandName: "ACME STORE",
-        subTitle: "Premium Apparel",
-        tag: "Fashion Tech",
-        title: "Summer Collection",
-        price: "$89.00",
-        button: "Shop Now",
-        labelRoas: "Ad Spend ROAS",
-        valueRoas: "5.4x",
-        labelCpa: "Avg. CPA",
-        valueCpa: "$12.50"
+        logo:"A",
+        brandName:"ACME STORE",
+        subTitle:"Premium Apparel",
+        tag:"Fashion Tech",
+        title:"Summer Collection",
+        price:"$89.00",
+        button:"Shop Now",
+        labelRoas:"Ad Spend ROAS",
+        valueRoas:"5.4x",
+        labelCpa:"Avg. CPA",
+        valueCpa:"$12.50"
       },
       stats: [
-        { value: "5.4x", label: "ROAS Increase", iconName: "BarChart3" },
-        { value: "-35%", label: "CPA Reduction", iconName: "TrendingUp" },
-        { value: "98/100", label: "Lighthouse Score", iconName: "Zap" }
+        { value:"5.4x", label:"ROAS Increase", iconName:"BarChart3" },
+        { value:"-35%", label:"CPA Reduction", iconName:"TrendingUp" },
+        { value:"98/100", label:"Lighthouse Score", iconName:"Zap" }
       ]
     },
     {
-      num: "03",
-      brand: "Nova Analytics",
-      subtitle: "Data Visualization & Dashboard UI",
-      challenge: "Users were overwhelmed by complex data models. Nova required a simplified visual representation of multi-source business intelligence.",
-      whatWeDid: "Crafted interactive charts, streamlined navigation pathways, and built real-time streaming data visualizers.",
+      num:"03",
+      brand:"Nova Analytics",
+      subtitle:"Data Visualization & Dashboard UI",
+      challenge:"Users were overwhelmed by complex data models. Nova required a simplified visual representation of multi-source business intelligence.",
+      whatWeDid:"Crafted interactive charts, streamlined navigation pathways, and built real-time streaming data visualizers.",
       categories: ["design"],
-      glowClass: "from-blue-500/20 via-cyan-500/10 to-transparent",
+      glowClass:"from-blue-500/20 via-cyan-500/10 to-transparent",
       screenshot: {
-        logo: "N",
-        brandName: "NOVA",
-        tag: "Analytics",
-        labelDemos: "Monthly Active Users",
-        valueDemos: "142.8k",
-        valuePercent: "+24.2%"
+        logo:"N",
+        brandName:"NOVA",
+        tag:"Analytics",
+        labelDemos:"Monthly Active Users",
+        valueDemos:"142.8k",
+        valuePercent:"+24.2%"
       },
       stats: [
-        { value: "2.4h", label: "Time Saved/Week", iconName: "Users" },
-        { value: "+24%", label: "User Engagement", iconName: "TrendingUp" },
-        { value: "4.9/5", label: "User Rating", iconName: "Award" }
+        { value:"2.4h", label:"Time Saved/Week", iconName:"Users" },
+        { value:"+24%", label:"User Engagement", iconName:"TrendingUp" },
+        { value:"4.9/5", label:"User Rating", iconName:"Award" }
       ]
     },
     {
-      num: "04",
-      brand: "Aether Agency",
-      subtitle: "Immersive Creative Brand Identity",
-      challenge: "Aether wanted an ultra-premium, minimalistic portfolio that showcase their art direction and creative design projects.",
-      whatWeDid: "Engineered an immersive web experience with smooth scroll, SVG-masked imagery, and dark-theme premium aesthetics.",
-      categories: ["design", "marketing"],
-      glowClass: "from-yellow-500/20 via-amber-500/10 to-transparent",
+      num:"04",
+      brand:"Aether Agency",
+      subtitle:"Immersive Creative Brand Identity",
+      challenge:"Aether wanted an ultra-premium, minimalistic portfolio that showcase their art direction and creative design projects.",
+      whatWeDid:"Engineered an immersive web experience with smooth scroll, SVG-masked imagery, and dark-theme premium aesthetics.",
+      categories: ["design","marketing"],
+      glowClass:"from-yellow-500/20 via-amber-500/10 to-transparent",
       screenshot: {
-        brandName: "ÆTHER",
-        navWork: "Work",
-        navPhilosophy: "About",
-        navInquire: "Inquire",
-        tag: "Creative Studio",
-        title: "Immersive Art Direction",
-        photoLabel: "Interactive Exhibition"
+        brandName:"ÆTHER",
+        navWork:"Work",
+        navPhilosophy:"About",
+        navInquire:"Inquire",
+        tag:"Creative Studio",
+        title:"Immersive Art Direction",
+        photoLabel:"Interactive Exhibition"
       },
       stats: [
-        { value: "12+", label: "Design Awards", iconName: "Award" },
-        { value: "2.1s", label: "Fully Interactive", iconName: "Zap" },
-        { value: "99.8%", label: "Positive Sentiment", iconName: "Users" }
+        { value:"12+", label:"Design Awards", iconName:"Award" },
+        { value:"2.1s", label:"Fully Interactive", iconName:"Zap" },
+        { value:"99.8%", label:"Positive Sentiment", iconName:"Users" }
       ]
     }
   ]
@@ -158,7 +158,7 @@ const DEFAULT_PORTFOLIO = {
 const getPortfolioScreenshot = (num: string, study: any) => {
   const s = study.screenshot || {};
   switch (num) {
-    case "01":
+    case"01":
       return (
         <div className="w-full h-full bg-[#FCFCFD] flex flex-col justify-between p-2.5 text-brand-dark font-sans overflow-hidden select-none relative border border-slate-100/50">
           <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/50 to-white/70 pointer-events-none z-30" />
@@ -185,7 +185,7 @@ const getPortfolioScreenshot = (num: string, study: any) => {
           </div>
         </div>
       );
-    case "02":
+    case"02":
       return (
         <div className="w-full h-full bg-[#FCFCFD] flex flex-col justify-between p-2.5 text-brand-dark font-sans overflow-hidden select-none relative border border-slate-100/50">
           <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/50 to-white/70 pointer-events-none z-30" />
@@ -223,7 +223,7 @@ const getPortfolioScreenshot = (num: string, study: any) => {
           </div>
         </div>
       );
-    case "03":
+    case"03":
       return (
         <div className="w-full h-full bg-[#F8FAFC] flex flex-col justify-between p-2.5 text-slate-800 font-sans overflow-hidden select-none relative">
           <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/75 pointer-events-none z-30" />
@@ -258,9 +258,9 @@ const getPortfolioScreenshot = (num: string, study: any) => {
           </div>
         </div>
       );
-    case "04":
+    case"04":
       return (
-        <div className="w-full h-full bg-[#fcfbf9] flex flex-col justify-between p-2.5 text-[#080710] font-serif overflow-hidden select-none relative">
+ <div className="w-full h-full bg-[#fcfbf9] flex flex-col justify-between p-2.5 text-[#080710] font-heading overflow-hidden select-none relative">
           <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/15 pointer-events-none z-30" />
           <div className="flex items-center justify-between border-b border-[#080710]/5 pb-1 mb-1 shrink-0 z-10">
             <span className="text-[7.5px] font-black tracking-widest text-[#080710]">{s.brandName}</span>
@@ -313,7 +313,7 @@ const detailsItemVariants = {
   show: {
     opacity: 1,
     y: 0,
-    transition: { type: "spring", stiffness: 220, damping: 20 }
+    transition: { type:"spring", stiffness: 220, damping: 20 }
   }
 } as const;
 
@@ -333,7 +333,7 @@ const statItemVariants = {
   show: {
     opacity: 1,
     x: 0,
-    transition: { type: "spring", stiffness: 250, damping: 22 }
+    transition: { type:"spring", stiffness: 250, damping: 22 }
   }
 } as const;
 
@@ -364,49 +364,49 @@ export default function Portfolio({ data }: { data?: any }) {
 
   const caseStudies = rawProjects.length > 0
     ? rawProjects.map((p: any, idx: number) => {
-        const num = String(idx + 1).padStart(2, "0");
+        const num = String(idx + 1).padStart(2,"0");
         return {
           num,
-          brand: p.title || p.brand || "",
-          subtitle: p.subtitle || "",
-          challenge: p.challenge || p.desc || p.description || "",
-          whatWeDid: p.approach || p.whatWeDid || "",
+          brand: p.title || p.brand ||"",
+          subtitle: p.subtitle ||"",
+          challenge: p.challenge || p.desc || p.description ||"",
+          whatWeDid: p.approach || p.whatWeDid ||"",
           categories: Array.isArray(p.categories) ? p.categories : (p.category ? [p.category.toLowerCase()] : ["design"]),
           glowClass: p.glowClass || (
-            idx % 4 === 0 ? "from-orange-500/20 via-red-500/10 to-transparent" :
-            idx % 4 === 1 ? "from-emerald-500/20 via-teal-500/10 to-transparent" :
-            idx % 4 === 2 ? "from-blue-500/20 via-cyan-500/10 to-transparent" :
-            "from-yellow-500/20 via-amber-500/10 to-transparent"
+            idx % 4 === 0 ?"from-orange-500/20 via-red-500/10 to-transparent" :
+            idx % 4 === 1 ?"from-emerald-500/20 via-teal-500/10 to-transparent" :
+            idx % 4 === 2 ?"from-blue-500/20 via-cyan-500/10 to-transparent" :
+"from-yellow-500/20 via-amber-500/10 to-transparent"
           ),
           screenshot: p.screenshot || {
-            logo: (p.title || p.brand || "A").charAt(0),
-            brandName: (p.title || p.brand || "").toUpperCase(),
-            tag: p.subtitle || "",
-            title: p.title || "",
-            button: "Learn More",
-            footerTag: "Verified Project",
-            navHome: "Home",
-            navServices: "Services",
-            navCall: "Contact",
-            subTitle: p.subtitle || "",
-            price: "$0",
-            labelRoas: "Growth",
-            valueRoas: p.stats?.[0]?.value || "10x",
-            labelCpa: "Performance",
-            valueCpa: p.stats?.[1]?.value || "Elite",
-            labelDemos: "Users",
-            valueDemos: p.stats?.[2]?.value || "10k",
-            valuePercent: "+100%",
-            navWork: "Work",
-            navPhilosophy: "Philosophy",
-            navInquire: "Inquire",
-            photoLabel: "Case Study View"
+            logo: (p.title || p.brand ||"A").charAt(0),
+            brandName: (p.title || p.brand ||"").toUpperCase(),
+            tag: p.subtitle ||"",
+            title: p.title ||"",
+            button:"Learn More",
+            footerTag:"Verified Project",
+            navHome:"Home",
+            navServices:"Services",
+            navCall:"Contact",
+            subTitle: p.subtitle ||"",
+            price:"$0",
+            labelRoas:"Growth",
+            valueRoas: p.stats?.[0]?.value ||"10x",
+            labelCpa:"Performance",
+            valueCpa: p.stats?.[1]?.value ||"Elite",
+            labelDemos:"Users",
+            valueDemos: p.stats?.[2]?.value ||"10k",
+            valuePercent:"+100%",
+            navWork:"Work",
+            navPhilosophy:"Philosophy",
+            navInquire:"Inquire",
+            photoLabel:"Case Study View"
           },
           stats: p.stats ? p.stats.map((s: any) => ({
             ...s,
             icon: iconMap[s.iconName] || Award
           })) : [],
-          image: p.image || ""
+          image: p.image ||""
         };
       })
     : DEFAULT_PORTFOLIO.caseStudies.map((cs: any) => ({
@@ -419,7 +419,7 @@ export default function Portfolio({ data }: { data?: any }) {
 
   // Filter case studies by active category
   const filteredCaseStudies = caseStudies.filter((item: any) =>
-    activeCategory === "all" ? true : item.categories?.includes(activeCategory)
+    activeCategory ==="all" ? true : item.categories?.includes(activeCategory)
   );
 
   // Ensure active index stays within bounds of filtered items
@@ -449,7 +449,7 @@ export default function Portfolio({ data }: { data?: any }) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, margin: "-100px" }}
+          viewport={{ once: false, margin:"-100px" }}
           transition={{ duration: 0.6 }}
           className="flex flex-col gap-4 mb-6 md:mb-8 text-center items-center max-w-3xl mx-auto"
         >
@@ -461,8 +461,8 @@ export default function Portfolio({ data }: { data?: any }) {
             {portfolio.sectionTag}
           </div>
           <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
-            {portfolio.titleIntro}{" "}
-            <span className="text-brand-blue dark:text-brand-yellow font-serif font-normal italic">
+            {portfolio.titleIntro}{""}
+ <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
               {portfolio.titleHighlight}
             </span>
           </h2>
@@ -476,7 +476,7 @@ export default function Portfolio({ data }: { data?: any }) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, margin: "-80px" }}
+          viewport={{ once: false, margin:"-80px" }}
           transition={{ duration: 0.6, delay: 0.1 }}
           className="w-full max-w-4xl mx-auto mb-8"
         >
@@ -496,10 +496,10 @@ export default function Portfolio({ data }: { data?: any }) {
                     <motion.div
                       layoutId="activeCategoryTab"
                       className="absolute inset-0 bg-brand-blue dark:bg-brand-yellow rounded-full shadow-md z-0"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      transition={{ type:"spring", stiffness: 380, damping: 30 }}
                     />
                   )}
-                  <span className={`relative z-10 flex items-center gap-2 transition-colors duration-300 ${isActive ? "text-white dark:text-[#080710] font-black" : "text-brand-zinc-500 dark:text-zinc-400 hover:text-brand-dark dark:hover:text-white"}`}>
+                  <span className={`relative z-10 flex items-center gap-2 transition-colors duration-300 ${isActive ?"text-white dark:text-[#080710] font-black" :"text-brand-zinc-500 dark:text-zinc-400 hover:text-brand-dark dark:hover:text-white"}`}>
                     <Icon className="h-3.5 w-3.5" />
                     <span>{cat.label}</span>
                   </span>
@@ -547,14 +547,14 @@ export default function Portfolio({ data }: { data?: any }) {
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -15 }}
-                  transition={{ duration: 0.35, ease: "easeInOut" }}
+                  transition={{ duration: 0.35, ease:"easeInOut" }}
                   className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center relative z-10"
                 >
                   {/* Column 1: CSS Laptop Mockup on Fluted Pedestal */}
-                  <div className="lg:col-span-5 flex flex-col justify-end overflow-visible min-h-[190px] xs:min-h-[220px] relative">
+                  <div className="lg:col-span-5 min-w-0 flex flex-col justify-end overflow-visible min-h-[190px] xs:min-h-[220px] relative">
                     <motion.div
                       animate={{ y: [0, -6, 0] }}
-                      transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                      transition={{ repeat: Infinity, duration: 4, ease:"easeInOut" }}
                       whileHover={{ scale: 1.04, transition: { duration: 0.2 } }}
                       className="relative w-full max-w-[280px] xs:max-w-[320px] mx-auto z-10 flex flex-col items-center cursor-pointer group/laptop"
                     >
@@ -567,7 +567,7 @@ export default function Portfolio({ data }: { data?: any }) {
                         transition={{
                           repeat: Infinity,
                           duration: 4,
-                          ease: "easeInOut"
+                          ease:"easeInOut"
                         }}
                         className={`absolute -inset-14 rounded-full blur-[75px] bg-gradient-to-tr ${activeSlide.glowClass} pointer-events-none z-0`}
                       />
@@ -609,7 +609,7 @@ export default function Portfolio({ data }: { data?: any }) {
                   </div>
 
                   {/* Column 2: Detailed Text & Case Metrics */}
-                  <div className="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left">
+                  <div className="lg:col-span-7 min-w-0 flex flex-col items-center lg:items-start text-center lg:text-left">
                     <motion.div
                       variants={detailsContainerVariants}
                       initial="hidden"

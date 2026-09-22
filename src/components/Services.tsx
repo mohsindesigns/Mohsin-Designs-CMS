@@ -1,13 +1,13 @@
 "use client";
 
-import CtaButton from "@/components/ui/CtaButton";
-import { useRef, useState } from "react";
-import { motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
-import Image from "next/image";
-import Link from "@/components/ui/Link";
-import { useContent } from "@/hooks/useContent";
-import RichTextRenderer from "@/components/ui/RichTextRenderer";
+import CtaButton from"@/components/ui/CtaButton";
+import { useRef, useState } from"react";
+import { motion } from"framer-motion";
+import { ArrowLeft, ArrowRight, ArrowUpRight } from"lucide-react";
+import Image from"next/image";
+import Link from"@/components/ui/Link";
+import { useContent } from"@/hooks/useContent";
+import RichTextRenderer from"@/components/ui/RichTextRenderer";
 
 export default function Services({ data: propData, masterCatalog: masterCatalogProp }: { data?: any; masterCatalog?: any[] }) {
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -19,19 +19,19 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
 
   // Map CMS fields with fallbacks
   const services = {
-    sectionTag:    raw?.sectionTag    || raw?.badge                 || "OUR SERVICES",
-    titleIntro:    raw?.titleIntro    || raw?.headline?.prefix      || "What We",
-    titleHighlight:raw?.titleHighlight|| raw?.headline?.highlight   || "Deliver.",
-    description:   raw?.description   || "",
-    ariaPrev:      raw?.ariaPrev      || "Previous service",
-    ariaNext:      raw?.ariaNext      || "Next service",
-    serviceLabel:  raw?.serviceLabel  || "SERVICE",
+    sectionTag:    raw?.sectionTag    || raw?.badge                 ||"OUR SERVICES",
+    titleIntro:    raw?.titleIntro    || raw?.headline?.prefix      ||"What We",
+    titleHighlight:raw?.titleHighlight|| raw?.headline?.highlight   ||"Deliver.",
+    description:   raw?.description   ||"",
+    ariaPrev:      raw?.ariaPrev      ||"Previous service",
+    ariaNext:      raw?.ariaNext      ||"Next service",
+    serviceLabel:  raw?.serviceLabel  ||"SERVICE",
     list:          ((raw?.list || raw?.services || []) as any[]).filter((s: any) => s?.status !== 'draft' && !s?.isTrashed),
-    ctaHeading:    raw?.ctaHeading    || raw?.cta?.heading          || "Need a Custom Architecture or Specialized Solution?",
-    ctaDescription:raw?.ctaDescription|| raw?.cta?.description      || "Discuss your technical requirements directly with our principal engineer. We map out full-funnel architectures and execute with pixel perfection.",
-    ctaButtonText: raw?.ctaButtonText || raw?.cta?.buttonText       || "Schedule Technical Consultation",
-    ctaButtonHref: raw?.ctaButtonHref || raw?.cta?.buttonHref       || "/contact-us",
-    ctaEyebrow:    raw?.ctaEyebrow    || raw?.cta?.eyebrow          || "STRATEGY & SCOPING"
+    ctaHeading:    raw?.ctaHeading    || raw?.cta?.heading          ||"Need a Custom Architecture or Specialized Solution?",
+    ctaDescription:raw?.ctaDescription|| raw?.cta?.description      ||"Discuss your technical requirements directly with our principal engineer. We map out full-funnel architectures and execute with pixel perfection.",
+    ctaButtonText: raw?.ctaButtonText || raw?.cta?.buttonText       ||"Schedule Technical Consultation",
+    ctaButtonHref: raw?.ctaButtonHref || raw?.cta?.buttonHref       ||"/contact-us",
+    ctaEyebrow:    raw?.ctaEyebrow    || raw?.cta?.eyebrow          ||"STRATEGY & SCOPING"
   };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -49,10 +49,10 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
 
   const handleMouseUpOrLeave = () => setIsDragging(false);
 
-  const scroll = (dir: "prev" | "next") => {
+  const scroll = (dir:"prev" |"next") => {
     if (!carouselRef.current) return;
     const card = carouselRef.current.firstElementChild as HTMLElement;
-    if (card) carouselRef.current.scrollBy({ left: (dir === "next" ? 1 : -1) * (card.getBoundingClientRect().width + 24), behavior: "smooth" });
+    if (card) carouselRef.current.scrollBy({ left: (dir ==="next" ? 1 : -1) * (card.getBoundingClientRect().width + 24), behavior:"smooth" });
   };
 
   // Build comprehensive master list of all available global services for robust fallback resolution.
@@ -61,7 +61,7 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
   // can lag behind the real catalog depending on how that page's content was last synced.
   // Deliberately excludes `services.list` here: that field is a separate, legacy top-level
   // default and is not authoritative (it can contain stale/placeholder entries that would
-  // otherwise "match themselves" and defeat the orphaned-entry filter below).
+  // otherwise"match themselves" and defeat the orphaned-entry filter below).
   const anyContent = content as any;
   const masterServices = Array.isArray(masterCatalogProp) && masterCatalogProp.length > 0
     ? masterCatalogProp
@@ -103,7 +103,7 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, margin: "-100px" }}
+          viewport={{ once: false, margin:"-100px" }}
           transition={{ duration: 0.6 }}
           className="flex flex-col gap-4 mb-8 md:mb-12"
         >
@@ -117,8 +117,8 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
 
           <div className="flex items-center justify-between gap-4 w-full">
             <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
-              {services.titleIntro}{" "}
-              <span className="text-brand-blue dark:text-brand-yellow font-serif font-normal italic">
+              {services.titleIntro}{""}
+ <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
                 {services.titleHighlight}
               </span>
             </h2>
@@ -143,11 +143,11 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
           </div>
 
           <RichTextRenderer
-            content={typeof services.description === "string"
+            content={typeof services.description ==="string"
               ? services.description
               : Array.isArray(services.description)
               ? (services.description as string[]).join("")
-              : ""}
+              :""}
             className="text-brand-zinc-500 dark:text-zinc-300 font-medium leading-relaxed text-xs md:text-sm max-w-xl"
           />
         </motion.div>
@@ -161,7 +161,7 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
           onMouseLeave={handleMouseUpOrLeave}
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, margin: "-50px" }}
+          viewport={{ once: false, margin:"-50px" }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
           className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-none w-full -mx-2 px-2 md:mx-0 md:px-0 py-8 carousel-grab select-none"
         >
@@ -176,17 +176,17 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
                   (service?.title && s?.title?.toLowerCase() === service.title?.toLowerCase())
               );
 
-              const title = service?.title || globalService?.title || (typeof service === 'string' ? service : "Service");
-              const desc = service?.desc || service?.description || service?.shortDescription || service?.tagline || globalService?.desc || globalService?.description || globalService?.shortDescription || globalService?.tagline || globalService?.hero?.description || "";
-              const imgSrc = service?.image || service?.overviewImage || service?.heroImage || service?.featuredImage || globalService?.image || globalService?.overviewImage || globalService?.heroImage || globalService?.featuredImage || globalService?.hero?.bgImage || globalService?.hero?.backgroundImage || "";
-              const category = service?.category || service?.tag || globalService?.category || globalService?.tag || "";
-              const slug = service?.slug || globalService?.slug || "";
-              const num = service?.num || String(index + 1).padStart(2, "0");
+              const title = service?.title || globalService?.title || (typeof service === 'string' ? service :"Service");
+              const desc = service?.desc || service?.description || service?.shortDescription || service?.tagline || globalService?.desc || globalService?.description || globalService?.shortDescription || globalService?.tagline || globalService?.hero?.description ||"";
+              const imgSrc = service?.image || service?.overviewImage || service?.heroImage || service?.featuredImage || globalService?.image || globalService?.overviewImage || globalService?.heroImage || globalService?.featuredImage || globalService?.hero?.bgImage || globalService?.hero?.backgroundImage ||"";
+              const category = service?.category || service?.tag || globalService?.category || globalService?.tag ||"";
+              const slug = service?.slug || globalService?.slug ||"";
+              const num = service?.num || String(index + 1).padStart(2,"0");
 
               // A curated pick that matches no real service and carries no image of its
               // own is almost always a stale/orphaned reference (e.g. a deleted service or
               // leftover default) rather than an intentional card — skip it instead of
-              // rendering a blank "No Image" placeholder on the live site.
+              // rendering a blank"No Image" placeholder on the live site.
               if (!globalService && !imgSrc) return null;
 
               return { service, title, desc, imgSrc, category, slug, num };
@@ -197,7 +197,7 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
             return (
               <div key={service?._id || service?.id || index} className="w-[86%] sm:w-[calc(50%-12px)] lg:w-[calc(33.33%-16px)] shrink-0 snap-start">
                 <Link
-                  href={slug ? `/services/${slug}` : "/services"}
+                  href={slug ? `/services/${slug}` :"/services"}
                   className="group relative flex flex-col justify-between rounded-[2rem] border border-brand-blue/20 dark:border-white/10 hover:border-transparent bg-white dark:bg-zinc-900 p-6 xs:p-7 md:p-8 transition-all duration-500 hover:-translate-y-3 h-full min-h-[490px] sm:min-h-[520px] md:min-h-[540px] shadow-[0_2px_20px_rgba(3,6,172,0.04)] hover:shadow-[0_32px_64px_rgba(3,6,172,0.28)] dark:hover:shadow-[0_32px_64px_rgba(233,189,54,0.08)] cursor-pointer card-sweep block no-underline"
                 >
 
@@ -284,7 +284,7 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, margin: "-50px" }}
+          viewport={{ once: false, margin:"-50px" }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className="on-dark-surface mt-16 md:mt-24 relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#0306AC] via-[#020485] to-[#010356] dark:from-[#12121e] dark:via-[#0f0f1a] dark:to-[#080710] border border-brand-blue/20 dark:border-white/10 p-8 sm:p-12 md:p-16 text-white shadow-2xl"
         >

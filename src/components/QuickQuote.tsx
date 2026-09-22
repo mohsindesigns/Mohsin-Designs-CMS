@@ -1,7 +1,7 @@
-import CtaButton from "@/components/ui/CtaButton";
-import ThemedSelect from "@/components/ui/ThemedSelect";
+import CtaButton from"@/components/ui/CtaButton";
+import ThemedSelect from"@/components/ui/ThemedSelect";
 import { useState, useEffect } from 'react';
-import Link from "@/components/ui/Link";
+import Link from"@/components/ui/Link";
 import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '../config/icons';
 import { useContent } from '../hooks/useContent';
@@ -38,11 +38,11 @@ const SMSConsentCheckbox = ({ checked, onChange }: { checked: boolean; onChange:
                     />
                     <motion.div
                         animate={checked ? {
-                            backgroundColor: "hsl(var(--primary))",
-                            borderColor: "hsl(var(--primary))"
+                            backgroundColor:"hsl(var(--primary))",
+                            borderColor:"hsl(var(--primary))"
                         } : {
-                            backgroundColor: "transparent",
-                            borderColor: "hsl(var(--border))"
+                            backgroundColor:"transparent",
+                            borderColor:"hsl(var(--border))"
                         }}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
@@ -55,7 +55,7 @@ const SMSConsentCheckbox = ({ checked, onChange }: { checked: boolean; onChange:
                             <motion.div
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
-                                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                                transition={{ type:"spring", stiffness: 500, damping: 30 }}
                             >
                                 <Icon name="Check" className="w-3 h-3 text-white" />
                             </motion.div>
@@ -248,7 +248,7 @@ ${formData.message}
                 whileHover={{ scale: 1.15 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{
-                    type: "spring",
+                    type:"spring",
                     stiffness: 260,
                     damping: 20,
                     delay: 1
@@ -269,7 +269,7 @@ ${formData.message}
                             duration: 2.5,
                             delay: i * 0.3,
                             repeat: Infinity,
-                            ease: "easeInOut"
+                            ease:"easeInOut"
                         }}
                     />
                 ))}
@@ -295,7 +295,7 @@ ${formData.message}
                                 transition={{
                                     duration: 1.2,
                                     repeat: Infinity,
-                                    ease: "easeOut"
+                                    ease:"easeOut"
                                 }}
                             />
                         ))}
@@ -314,7 +314,7 @@ ${formData.message}
                         rotate: {
                             duration: 0.5,
                             repeat: isHovered ? Infinity : 0,
-                            repeatType: "mirror"
+                            repeatType:"mirror"
                         }
                     }}
                 >
@@ -335,7 +335,7 @@ ${formData.message}
                             rotate: {
                                 duration: 2,
                                 repeat: isHovered ? Infinity : 0,
-                                ease: "linear"
+                                ease:"linear"
                             }
                         }}
                         className="relative z-10"
@@ -351,7 +351,7 @@ ${formData.message}
                         transition={{
                             duration: 1.5,
                             repeat: Infinity,
-                            ease: "easeInOut"
+                            ease:"easeInOut"
                         }}
                     />
 
@@ -361,12 +361,12 @@ ${formData.message}
                                 initial={{ opacity: 0, x: -20, scale: 0.8 }}
                                 animate={{ opacity: 1, x: 0, scale: 1 }}
                                 exit={{ opacity: 0, x: -20, scale: 0.8 }}
-                                transition={{ type: "spring", damping: 15 }}
+                                transition={{ type:"spring", damping: 15 }}
                                 className="absolute right-20 top-1/2 -translate-y-1/2 bg-gradient-to-r from-secondary to-secondary/80 text-white text-sm font-medium px-5 py-2.5 rounded-2xl whitespace-nowrap shadow-2xl border border-primary/30"
                             >
                                 <span className="flex items-center gap-2">
                                     <Icon name="Sparkles" className="w-4 h-4 text-primary" />
-                                    {quickQuote.button?.text || "Get Free Quote"}
+                                    {quickQuote.button?.text ||"Get Free Quote"}
                                     <Icon name="ChevronRight" className="w-4 h-4 text-primary" />
                                 </span>
                                 <div className="absolute right-[-4px] top-1/2 -translate-y-1/2 w-3 h-3 bg-gradient-to-r from-secondary to-secondary/80 rotate-45 border-r border-t border-primary/30" />
@@ -393,7 +393,7 @@ ${formData.message}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.8, y: 50 }}
                                 transition={{
-                                    type: "spring",
+                                    type:"spring",
                                     damping: 25,
                                     stiffness: 300,
                                     mass: 1
@@ -410,7 +410,7 @@ ${formData.message}
                                     transition={{
                                         duration: 3,
                                         repeat: Infinity,
-                                        ease: "easeInOut"
+                                        ease:"easeInOut"
                                     }}
                                 />
 
@@ -432,16 +432,16 @@ ${formData.message}
                                     <AnimatePresence>
                                         {isSuccess && (
                                             <motion.div
-                                                initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
-                                                animate={{ opacity: 1, backdropFilter: "blur(8px)" }}
-                                                exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+                                                initial={{ opacity: 0, backdropFilter:"blur(0px)" }}
+                                                animate={{ opacity: 1, backdropFilter:"blur(8px)" }}
+                                                exit={{ opacity: 0, backdropFilter:"blur(0px)" }}
                                                 className="absolute inset-0 bg-card/90 z-20 flex flex-col items-center justify-center p-8"
                                             >
                                                 <motion.div
                                                     initial={{ scale: 0, rotate: -180 }}
                                                     animate={{ scale: 1, rotate: 0 }}
                                                     transition={{
-                                                        type: "spring",
+                                                        type:"spring",
                                                         damping: 15,
                                                         stiffness: 200
                                                     }}
@@ -486,9 +486,9 @@ ${formData.message}
                                                 >
                                                     <motion.div
                                                         className="h-full bg-primary"
-                                                        initial={{ width: "0%" }}
-                                                        animate={{ width: "100%" }}
-                                                        transition={{ duration: 3, ease: "linear" }}
+                                                        initial={{ width:"0%" }}
+                                                        animate={{ width:"100%" }}
+                                                        transition={{ duration: 3, ease:"linear" }}
                                                     />
                                                 </motion.div>
                                             </motion.div>
@@ -508,10 +508,10 @@ ${formData.message}
                                                 </div>
                                                 <div>
                                                     <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                                                        {quickQuote.title || "Quick Quote"}
+                                                        {quickQuote.title ||"Quick Quote"}
                                                     </h2>
                                                     <div className="text-sm text-muted-foreground">
-                                                        <RichTextRenderer content={quickQuote.description || "Get your free estimate in minutes"} stripParagraphs={true} />
+                                                        <RichTextRenderer content={quickQuote.description ||"Get your free estimate in minutes"} stripParagraphs={true} />
                                                     </div>
                                                 </div>
                                             </div>
@@ -548,7 +548,7 @@ ${formData.message}
                                                             transition={{
                                                                 duration: 2,
                                                                 repeat: Infinity,
-                                                                ease: "easeInOut"
+                                                                ease:"easeInOut"
                                                             }}
                                                         >
                                                             {i}
@@ -563,7 +563,7 @@ ${formData.message}
                                             <div className="absolute top-5 left-0 right-0 h-[2px] bg-border -z-10 hidden md:block">
                                                 <motion.div
                                                     className="h-full bg-primary"
-                                                    initial={{ width: "0%" }}
+                                                    initial={{ width:"0%" }}
                                                     animate={{ width: `${((step - 1) / 2) * 100}%` }}
                                                     transition={{ duration: 0.3 }}
                                                 />
@@ -584,7 +584,7 @@ ${formData.message}
                                                         <div>
                                                             <label className="block text-sm font-medium text-foreground mb-2">
                                                                 <Icon name="User" className="w-4 h-4 inline mr-2 text-primary" />
-                                                                {quickQuote.formLabels?.name || "Your Name"}
+                                                                {quickQuote.formLabels?.name ||"Your Name"}
                                                             </label>
                                                             <input
                                                                 type="text"
@@ -599,7 +599,7 @@ ${formData.message}
                                                         <div>
                                                             <label className="block text-sm font-medium text-foreground mb-2">
                                                                 <Icon name="Mail" className="w-4 h-4 inline mr-2 text-primary" />
-                                                                {quickQuote.formLabels?.email || "Email Address"}
+                                                                {quickQuote.formLabels?.email ||"Email Address"}
                                                             </label>
                                                             <input
                                                                 type="email"
@@ -626,7 +626,7 @@ ${formData.message}
                                                         <div>
                                                             <label className="block text-sm font-medium text-foreground mb-2">
                                                                 <Icon name="Phone" className="w-4 h-4 inline mr-2 text-primary" />
-                                                                {quickQuote.formLabels?.phone || "Phone Number"}
+                                                                {quickQuote.formLabels?.phone ||"Phone Number"}
                                                             </label>
                                                             <input
                                                                 type="tel"
@@ -641,7 +641,7 @@ ${formData.message}
                                                         <div>
                                                             <label className="block text-sm font-medium text-foreground mb-2">
                                                                 <Icon name="Home" className="w-4 h-4 inline mr-2 text-primary" />
-                                                                {quickQuote.formLabels?.projectType || "Project Type"}
+                                                                {quickQuote.formLabels?.projectType ||"Project Type"}
                                                             </label>
                                                             <ThemedSelect
                                                                 name="projectType"
@@ -667,7 +667,7 @@ ${formData.message}
                                                         <div>
                                                             <label className="block text-sm font-medium text-foreground mb-2">
                                                                 <Icon name="MessageSquare" className="w-4 h-4 inline mr-2 text-primary" />
-                                                                {quickQuote.formLabels?.message || "Tell us about your project"}
+                                                                {quickQuote.formLabels?.message ||"Tell us about your project"}
                                                             </label>
                                                             <textarea
                                                                 name="message"
@@ -717,7 +717,7 @@ ${formData.message}
                                                       loading={isSubmitting}
                                                       icon={<Icon name="Send" />}
                                                     >
-                                                      {isSubmitting ? "Sending..." : quickQuote.formLabels?.submit || "Get Quote"}
+                                                      {isSubmitting ?"Sending..." : quickQuote.formLabels?.submit ||"Get Quote"}
                                                     </CtaButton>
                                                 )}
                                             </div>
@@ -729,9 +729,9 @@ ${formData.message}
                                                 className="flex items-center justify-center gap-4 pt-4 text-xs"
                                             >
                                                 {(quickQuote.badges || [
-                                                    { text: "Free estimate", icon: "Check" },
-                                                    { text: "4-8h response", icon: "Clock" },
-                                                    { text: "Veteran owned", icon: "Flag" }
+                                                    { text:"Free estimate", icon:"Check" },
+                                                    { text:"4-8h response", icon:"Clock" },
+                                                    { text:"Veteran owned", icon:"Flag" }
                                                 ]).map((badge: any, idx: number) => (
                                                     <div key={idx} className="flex items-center gap-2">
                                                         <div className="w-1.5 h-1.5 bg-primary rounded-full" />

@@ -1,16 +1,16 @@
 "use client";
 
-import CtaButton from "@/components/ui/CtaButton";
-import ThemedSelect from "@/components/ui/ThemedSelect";
-import { withTrailingSlash } from "@/lib/url";
-import PageBreadcrumbs from "@/components/PageBreadcrumbs";
-import React, { use, useState, useEffect, useRef } from "react";
-import Link from "@/components/ui/Link";
-import Image from "next/image";
-import { notFound } from "next/navigation";
-import { isSafeHref, getValidHref } from "@/lib/utils";
-import { motion, AnimatePresence, useMotionValue, useInView } from "framer-motion";
-import * as LucideIcons from "lucide-react";
+import CtaButton from"@/components/ui/CtaButton";
+import ThemedSelect from"@/components/ui/ThemedSelect";
+import { withTrailingSlash } from"@/lib/url";
+import PageBreadcrumbs from"@/components/PageBreadcrumbs";
+import React, { use, useState, useEffect, useRef } from"react";
+import Link from"@/components/ui/Link";
+import Image from"next/image";
+import { notFound } from"next/navigation";
+import { isSafeHref, getValidHref } from"@/lib/utils";
+import { motion, AnimatePresence, useMotionValue, useInView } from"framer-motion";
+import * as LucideIcons from"lucide-react";
 import {
   ArrowRight,
   MapPin,
@@ -47,15 +47,15 @@ import {
   Layers,
   Home,
   Droplet
-} from "lucide-react";
+} from"lucide-react";
 
-import { useContent } from "@/hooks/useContent";
-import FAQ from "@/components/FAQ";
-import Blog from "@/components/Blog";
-import ServiceArea from "@/components/ServiceArea";
-import PageInlineFaqs from "@/components/PageInlineFaqs";
-import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
-import RichTextRenderer from "@/components/ui/RichTextRenderer";
+import { useContent } from"@/hooks/useContent";
+import FAQ from"@/components/FAQ";
+import Blog from"@/components/Blog";
+import ServiceArea from"@/components/ServiceArea";
+import PageInlineFaqs from"@/components/PageInlineFaqs";
+import TurnstileCaptcha from"@/components/ui/TurnstileCaptcha";
+import RichTextRenderer from"@/components/ui/RichTextRenderer";
 
 // ── Dynamic Icon Map Resolver ──
 const baseIconMap: Record<string, React.ElementType> = {
@@ -92,10 +92,10 @@ const baseIconMap: Record<string, React.ElementType> = {
 
 const iconMap: Record<string, React.ElementType> = new Proxy(baseIconMap, {
   get(target: any, prop: string) {
-    if (typeof prop === "string" && prop in target) return target[prop];
-    if (typeof prop === "string") {
+    if (typeof prop ==="string" && prop in target) return target[prop];
+    if (typeof prop ==="string") {
       const direct = (LucideIcons as any)[prop];
-      if (direct && (typeof direct === "function" || (typeof direct === "object" && direct !== null && (direct as any).$$typeof))) {
+      if (direct && (typeof direct ==="function" || (typeof direct ==="object" && direct !== null && (direct as any).$$typeof))) {
         return direct;
       }
     }
@@ -145,14 +145,14 @@ const drawVariants = {
     transition: {
       duration: custom?.duration ?? 0.5,
       delay: custom?.delay ?? 0.1,
-      ease: "easeOut" as any
+      ease:"easeOut" as any
     }
   })
 };
 
 // ── Digit Ticker Components ──
 const DigitTicker = ({ value }: { value: string | number }) => {
-  const text = String(value ?? "");
+  const text = String(value ??"");
   return (
     <span className="inline-block leading-none tracking-tight text-[#0306AC] dark:text-[#E9BD36]">
       {text}
@@ -161,7 +161,7 @@ const DigitTicker = ({ value }: { value: string | number }) => {
 };
 
 // ── Dynamic Cursor Spotlight Card Wrapper ──
-function SpotlightCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+function SpotlightCard({ children, className ="" }: { children: React.ReactNode; className?: string }) {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -177,7 +177,7 @@ function SpotlightCard({ children, className = "" }: { children: React.ReactNode
       className={`relative overflow-hidden group/spotlight rounded-[28px] ${className}`}
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
+      viewport={{ once: true, margin:"-100px" }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
     >
       <motion.div
@@ -224,22 +224,22 @@ function AnimatedStat({
   percentage: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: false, margin: "-80px" });
-  const [displayed, setDisplayed] = useState(value.replace(/[0-9.]/g, "0"));
+  const isInView = useInView(ref, { once: false, margin:"-80px" });
+  const [displayed, setDisplayed] = useState(value.replace(/[0-9.]/g,"0"));
   const [dotProgress, setDotProgress] = useState(0);
 
   useEffect(() => {
     if (isInView) {
       let numeric = 0;
-      let suffix = "";
+      let suffix ="";
       if (value.includes("/")) {
         const parts = value.split("/");
         numeric = parseFloat(parts[0]);
-        suffix = "/" + parts[1];
+        suffix ="/" + parts[1];
       } else {
         const isPercent = value.includes("%");
-        suffix = isPercent ? "%" : value.replace(/[0-9.]/g, "");
-        numeric = parseFloat(value.replace(/[^0-9.]/g, ""));
+        suffix = isPercent ?"%" : value.replace(/[0-9.]/g,"");
+        numeric = parseFloat(value.replace(/[^0-9.]/g,""));
       }
       const isFloat = value.includes(".");
       const DURATION = 1400;
@@ -265,7 +265,7 @@ function AnimatedStat({
       rafId = requestAnimationFrame(tick);
       return () => cancelAnimationFrame(rafId);
     } else {
-      setDisplayed(value.replace(/[0-9.]/g, "0"));
+      setDisplayed(value.replace(/[0-9.]/g,"0"));
       setDotProgress(0);
     }
   }, [isInView, percentage, value]);
@@ -273,7 +273,7 @@ function AnimatedStat({
   const dotAngle = 2 * Math.PI * dotProgress;
   const dotX = 41 + RADIUS * Math.cos(dotAngle);
   const dotY = 41 + RADIUS * Math.sin(dotAngle);
-  const gradientId = `ringGradient-${label.replace(/[^a-zA-Z0-9]/g, "")}`;
+  const gradientId = `ringGradient-${label.replace(/[^a-zA-Z0-9]/g,"")}`;
 
   return (
     <div ref={ref} className="flex flex-col items-center gap-3">
@@ -369,46 +369,46 @@ const differentiatorsIllustrations = [
 
 const getServiceIcon = (slug: string) => {
   switch (slug) {
-    case "seo": return <Search className="w-5 h-5" />;
-    case "web-design": return <Monitor className="w-5 h-5" />;
-    case "social-media": return <Megaphone className="w-5 h-5" />;
-    case "paid-ads": return <TrendingUp className="w-5 h-5" />;
-    case "branding": return <Palette className="w-5 h-5" />;
-    case "content-marketing": return <PenTool className="w-5 h-5" />;
-    case "e-commerce": return <ShoppingCart className="w-5 h-5" />;
-    case "analytics": return <BarChart2 className="w-5 h-5" />;
+    case"seo": return <Search className="w-5 h-5" />;
+    case"web-design": return <Monitor className="w-5 h-5" />;
+    case"social-media": return <Megaphone className="w-5 h-5" />;
+    case"paid-ads": return <TrendingUp className="w-5 h-5" />;
+    case"branding": return <Palette className="w-5 h-5" />;
+    case"content-marketing": return <PenTool className="w-5 h-5" />;
+    case"e-commerce": return <ShoppingCart className="w-5 h-5" />;
+    case"analytics": return <BarChart2 className="w-5 h-5" />;
     default: return <Sparkles className="w-5 h-5" />;
   }
 };
 
 const getToolDescription = (name: string) => {
   const specs: Record<string, { desc: string; tag: string }> = {
-    "Google Search": { desc: "Indexation audits, keyword position mapping, and search volume gap tracing.", tag: "SEO CORE" },
-    "Google Maps": { desc: "GBP optimization, geographical radius reviews, and local map pack positioning.", tag: "LOCAL SEO" },
-    "Google Business": { desc: "Lead citation indexation and customer review generation workflows.", tag: "REPUTATION" },
-    "Bing Search": { desc: "Secondary index submittals and webmaster console indexing validation.", tag: "SEARCH INDEX" },
-    "React.js": { desc: "Modular, reactive front-end library built for speedy interaction states.", tag: "FRONTEND" },
-    "Next.js": { desc: "Headless rendering backend with automatic static optimization and route pre-fetching.", tag: "CORE DEV" },
-    "Tailwind CSS": { desc: "Utility-first CSS compiler to keep stylesheet sizes down and performance high.", tag: "STYLING" },
-    "Vercel": { desc: "Serverless global edge CDN network offering 99.9% uptime and instant caching.", tag: "EDGE NETWORK" },
-    "Framer Motion": { desc: "Clean React animations library built for hardware-accelerated 60fps renders.", tag: "UX ANIMATIONS" },
-    "Instagram": { desc: "Social asset template curation, reels outreach, and caption formatting setups.", tag: "SOCIAL ENGAGE" },
-    "TikTok": { desc: "Viral video visual scripting, trend syncer, and hook timer calibration.", tag: "VIRAL CAPTURE" },
-    "LinkedIn": { desc: "High-intent corporate networking templates, B2B lead generation lists, and outreach.", tag: "B2B LEADS" },
-    "Google Ads": { desc: "Intent-targeted keyword bidding and negative keyword filters for immediate ROAS.", tag: "PPC SEARCH" },
-    "Meta Ads": { desc: "Lookalike targeting, customer pixel tracking, and retargeting workflows.", tag: "PPC SOCIAL" },
-    "Shopify API": { desc: "Headless storefront catalogs synchronizations, checkout webhooks, and automation.", tag: "E-COMM BACKEND" },
-    "Stripe": { desc: "Encrypt-level single-click credit card payments processing with local currency support.", tag: "GATEWAY" },
-    "Google Analytics 4": { desc: "Server-side tag setup to capture 100% of campaign lead and attribution logs.", tag: "DATA RUN" },
-    "Google Tag Manager": { desc: "Container mapping setup to safely deploy marketing pixels and clicks logs.", tag: "TAG RUN" },
-    "Looker Studio": { desc: "Attribution dashboards compiling all conversion sources into real-time ROI reports.", tag: "REPORTING" },
-    "SEMrush": { desc: "Competitor organic keywords volume checks and domain backlink audits.", tag: "AUDITS" },
-    "Ahrefs": { desc: "Contextual link building directories research and authority ratings checks.", tag: "LINK MAP" },
-    "Klaviyo": { desc: "Behavioral emails flows scripts targeting abandoned carts and user lists.", tag: "RETENTION" }
+"Google Search": { desc:"Indexation audits, keyword position mapping, and search volume gap tracing.", tag:"SEO CORE" },
+"Google Maps": { desc:"GBP optimization, geographical radius reviews, and local map pack positioning.", tag:"LOCAL SEO" },
+"Google Business": { desc:"Lead citation indexation and customer review generation workflows.", tag:"REPUTATION" },
+"Bing Search": { desc:"Secondary index submittals and webmaster console indexing validation.", tag:"SEARCH INDEX" },
+"React.js": { desc:"Modular, reactive front-end library built for speedy interaction states.", tag:"FRONTEND" },
+"Next.js": { desc:"Headless rendering backend with automatic static optimization and route pre-fetching.", tag:"CORE DEV" },
+"Tailwind CSS": { desc:"Utility-first CSS compiler to keep stylesheet sizes down and performance high.", tag:"STYLING" },
+"Vercel": { desc:"Serverless global edge CDN network offering 99.9% uptime and instant caching.", tag:"EDGE NETWORK" },
+"Framer Motion": { desc:"Clean React animations library built for hardware-accelerated 60fps renders.", tag:"UX ANIMATIONS" },
+"Instagram": { desc:"Social asset template curation, reels outreach, and caption formatting setups.", tag:"SOCIAL ENGAGE" },
+"TikTok": { desc:"Viral video visual scripting, trend syncer, and hook timer calibration.", tag:"VIRAL CAPTURE" },
+"LinkedIn": { desc:"High-intent corporate networking templates, B2B lead generation lists, and outreach.", tag:"B2B LEADS" },
+"Google Ads": { desc:"Intent-targeted keyword bidding and negative keyword filters for immediate ROAS.", tag:"PPC SEARCH" },
+"Meta Ads": { desc:"Lookalike targeting, customer pixel tracking, and retargeting workflows.", tag:"PPC SOCIAL" },
+"Shopify API": { desc:"Headless storefront catalogs synchronizations, checkout webhooks, and automation.", tag:"E-COMM BACKEND" },
+"Stripe": { desc:"Encrypt-level single-click credit card payments processing with local currency support.", tag:"GATEWAY" },
+"Google Analytics 4": { desc:"Server-side tag setup to capture 100% of campaign lead and attribution logs.", tag:"DATA RUN" },
+"Google Tag Manager": { desc:"Container mapping setup to safely deploy marketing pixels and clicks logs.", tag:"TAG RUN" },
+"Looker Studio": { desc:"Attribution dashboards compiling all conversion sources into real-time ROI reports.", tag:"REPORTING" },
+"SEMrush": { desc:"Competitor organic keywords volume checks and domain backlink audits.", tag:"AUDITS" },
+"Ahrefs": { desc:"Contextual link building directories research and authority ratings checks.", tag:"LINK MAP" },
+"Klaviyo": { desc:"Behavioral emails flows scripts targeting abandoned carts and user lists.", tag:"RETENTION" }
   };
   return specs[name] || {
-    desc: "Strategic tool configuration customized to scale lead capture and brand authority.",
-    tag: "CAMPAIGN"
+    desc:"Strategic tool configuration customized to scale lead capture and brand authority.",
+    tag:"CAMPAIGN"
   };
 };
 
@@ -431,283 +431,283 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
   // Defaults fallback & normalization
   const service = {
-    title: dbService?.title || "Professional Service",
+    title: dbService?.title ||"Professional Service",
     slug: dbService?.slug || resolvedSlug,
-    tag: dbService?.tag || "Premium Solution",
+    tag: dbService?.tag ||"Premium Solution",
     hero: {
       enabled: dbService?.hero?.enabled,
-      titleIntro: dbService?.hero?.titleIntro || dbService?.heroTitleIntro || dbService?.title || "Transform Your Business With",
-      titleHighlight: dbService?.hero?.titleHighlight || dbService?.heroTitleHighlight || "Expert Solutions",
-      description: dbService?.hero?.description || dbService?.heroDescription || dbService?.description || "High-performance digital engineering and growth architecture tailored to maximize brand equity.",
-      backgroundImage: dbService?.hero?.backgroundImage || dbService?.hero?.bgImage || "/portfolio_hero_bg.png",
-      bgImage: dbService?.hero?.backgroundImage || dbService?.hero?.bgImage || "/portfolio_hero_bg.png",
+      titleIntro: dbService?.hero?.titleIntro || dbService?.heroTitleIntro || dbService?.title ||"Transform Your Business With",
+      titleHighlight: dbService?.hero?.titleHighlight || dbService?.heroTitleHighlight ||"Expert Solutions",
+      description: dbService?.hero?.description || dbService?.heroDescription || dbService?.description ||"High-performance digital engineering and growth architecture tailored to maximize brand equity.",
+      backgroundImage: dbService?.hero?.backgroundImage || dbService?.hero?.bgImage ||"/portfolio_hero_bg.png",
+      bgImage: dbService?.hero?.backgroundImage || dbService?.hero?.bgImage ||"/portfolio_hero_bg.png",
       primaryCta: {
-        text: dbService?.hero?.primaryCta?.text || "Start Your Project",
-        link: dbService?.hero?.primaryCta?.link || "#contact-form"
+        text: dbService?.hero?.primaryCta?.text ||"Start Your Project",
+        link: dbService?.hero?.primaryCta?.link ||"#contact-form"
       },
       secondaryCta: {
-        text: dbService?.hero?.secondaryCta?.text || "Explore Inclusions",
-        link: dbService?.hero?.secondaryCta?.link || "#what-included"
+        text: dbService?.hero?.secondaryCta?.text ||"Explore Inclusions",
+        link: dbService?.hero?.secondaryCta?.link ||"#what-included"
       },
       benefits: (Array.isArray(dbService?.hero?.benefits) && dbService.hero.benefits.length > 0)
         ? dbService.hero.benefits.filter((b: any) => typeof b === 'string' && b.trim().length > 0)
         : (Array.isArray(dbService?.features) && dbService.features.length > 0
           ? dbService.features.filter((b: any) => typeof b === 'string' && b.trim().length > 0)
           : [
-            "Data-Driven Growth Strategies",
-            "Next.js Speed & Performance",
-            "Conversion-Focused Architecture",
-            "Dedicated Support & Real-Time Sync"
+"Data-Driven Growth Strategies",
+"Next.js Speed & Performance",
+"Conversion-Focused Architecture",
+"Dedicated Support & Real-Time Sync"
           ]),
-      formHeading: dbService?.hero?.formHeading || dbService?.hero?.formTitle || "Request a Free Audit",
-      formSubheading: dbService?.hero?.formSubheading || dbService?.hero?.formSubtitle || "Direct architect consultation and custom scope estimation within 24 hours.",
-      formButtonText: dbService?.hero?.formButtonText || dbService?.hero?.btnSubmit || "Request Free Proposal"
+      formHeading: dbService?.hero?.formHeading || dbService?.hero?.formTitle ||"Request a Free Audit",
+      formSubheading: dbService?.hero?.formSubheading || dbService?.hero?.formSubtitle ||"Direct architect consultation and custom scope estimation within 24 hours.",
+      formButtonText: dbService?.hero?.formButtonText || dbService?.hero?.btnSubmit ||"Request Free Proposal"
     },
     clientTrust: {
       enabled: dbService?.clientTrust?.enabled,
-      heading: dbService?.clientTrust?.heading || "ENTERPRISE PLATFORMS WE INTEGRATE & ACCELERATE",
+      heading: dbService?.clientTrust?.heading ||"ENTERPRISE PLATFORMS WE INTEGRATE & ACCELERATE",
       logos: (Array.isArray(dbService?.clientTrust?.logos) && dbService.clientTrust.logos.length > 0)
         ? dbService.clientTrust.logos
         : (Array.isArray(dbService?.clientTrust) && dbService.clientTrust.length > 0
           ? dbService.clientTrust
           : [
-            { name: "Google Ads" },
-            { name: "Meta Business" },
-            { name: "Amazon Ads" },
-            { name: "Bing Ads" },
-            { name: "Apple Search" }
+            { name:"Google Ads" },
+            { name:"Meta Business" },
+            { name:"Amazon Ads" },
+            { name:"Bing Ads" },
+            { name:"Apple Search" }
           ])
     },
     whatIncluded: {
       enabled: dbService?.whatIncluded?.enabled,
-      eyebrow: dbService?.whatIncluded?.eyebrow || "03 // CORE CAPABILITIES",
-      titleIntro: dbService?.whatIncluded?.titleIntro || "What's Included in",
-      titleHighlight: dbService?.whatIncluded?.titleHighlight || "Our Delivery",
-      description: dbService?.whatIncluded?.description || "",
+      eyebrow: dbService?.whatIncluded?.eyebrow ||"03 // CORE CAPABILITIES",
+      titleIntro: dbService?.whatIncluded?.titleIntro ||"What's Included in",
+      titleHighlight: dbService?.whatIncluded?.titleHighlight ||"Our Delivery",
+      description: dbService?.whatIncluded?.description ||"",
       pillars: (Array.isArray(dbService?.whatIncluded?.pillars) && dbService.whatIncluded.pillars.length > 0)
         ? dbService.whatIncluded.pillars.map((p: any) => ({
-          title: p.title || p.name || "",
-          desc: p.desc || p.description || "",
+          title: p.title || p.name ||"",
+          desc: p.desc || p.description ||"",
           features: Array.isArray(p.features)
             ? p.features.filter((f: any) => typeof f === 'string' && f.trim().length > 0)
             : []
         }))
         : [
           {
-            title: "Strategic Discovery & Architecture",
-            desc: "Deep analysis of existing infrastructure, competitor positioning, and high-impact revenue paths.",
-            features: ["Technical Infrastructure Audit", "Competitor Matrix Analysis", "Custom Scope Blueprint"]
+            title:"Strategic Discovery & Architecture",
+            desc:"Deep analysis of existing infrastructure, competitor positioning, and high-impact revenue paths.",
+            features: ["Technical Infrastructure Audit","Competitor Matrix Analysis","Custom Scope Blueprint"]
           },
           {
-            title: "High-Performance Execution",
-            desc: "Implementation powered by clean modular code, fast edge rendering, and conversion-optimized UI/UX.",
-            features: ["Precision Development", "Conversion Rate Optimization", "Automated QA Protocols"]
+            title:"High-Performance Execution",
+            desc:"Implementation powered by clean modular code, fast edge rendering, and conversion-optimized UI/UX.",
+            features: ["Precision Development","Conversion Rate Optimization","Automated QA Protocols"]
           },
           {
-            title: "Attribution & Scalable Growth",
-            desc: "Continuous monitoring, live telemetry tracking, and iterative growth loops to ensure positive ROI.",
-            features: ["Real-time Data Dashboards", "A/B Multivariate Testing", "Ongoing Growth Support"]
+            title:"Attribution & Scalable Growth",
+            desc:"Continuous monitoring, live telemetry tracking, and iterative growth loops to ensure positive ROI.",
+            features: ["Real-time Data Dashboards","A/B Multivariate Testing","Ongoing Growth Support"]
           }
         ]
     },
     strategy: {
       enabled: dbService?.strategy?.enabled,
-      eyebrow: dbService?.strategy?.eyebrow || "04 // STRATEGIC APPROACH",
-      titleIntro: dbService?.strategy?.titleIntro || "Engineered For",
-      titleHighlight: dbService?.strategy?.titleHighlight || "Compounding Impact",
-      description: dbService?.strategy?.description || "A custom implementation plan targeting bottlenecks and compounding acquisition flows.",
+      eyebrow: dbService?.strategy?.eyebrow ||"04 // STRATEGIC APPROACH",
+      titleIntro: dbService?.strategy?.titleIntro ||"Engineered For",
+      titleHighlight: dbService?.strategy?.titleHighlight ||"Compounding Impact",
+      description: dbService?.strategy?.description ||"A custom implementation plan targeting bottlenecks and compounding acquisition flows.",
       components: (Array.isArray(dbService?.strategy?.components) && dbService.strategy.components.length > 0)
         ? dbService.strategy.components.map((c: any, idx: number) => ({
           num: c.num || `0${idx + 1}`,
-          title: c.title || "",
-          desc: c.desc || c.description || ""
+          title: c.title ||"",
+          desc: c.desc || c.description ||""
         }))
         : [
-          { num: "01", title: "Diagnostic Audit & Benchmark", desc: "We isolate inefficiencies, crawl errors, and technical bottlenecks before deploying capital." },
-          { num: "02", title: "High-Intent Positioning Map", desc: "Prioritizing high-margin conversions and capturing immediate commercial purchase intent." },
-          { num: "03", title: "Systemic Deployment & Scale", desc: "Launching verified updates across digital touchpoints to capture maximum market share." }
+          { num:"01", title:"Diagnostic Audit & Benchmark", desc:"We isolate inefficiencies, crawl errors, and technical bottlenecks before deploying capital." },
+          { num:"02", title:"High-Intent Positioning Map", desc:"Prioritizing high-margin conversions and capturing immediate commercial purchase intent." },
+          { num:"03", title:"Systemic Deployment & Scale", desc:"Launching verified updates across digital touchpoints to capture maximum market share." }
         ]
     },
     benefits: {
       enabled: dbService?.benefits?.enabled,
-      eyebrow: dbService?.benefits?.eyebrow || "05 // MEASURABLE OUTCOMES",
-      titleIntro: dbService?.benefits?.titleIntro || "Key Business",
-      titleHighlight: dbService?.benefits?.titleHighlight || "Advantages",
-      description: dbService?.benefits?.description || "",
-      outcomeText: dbService?.benefits?.outcomeText || "Guaranteed Outcome",
+      eyebrow: dbService?.benefits?.eyebrow ||"05 // MEASURABLE OUTCOMES",
+      titleIntro: dbService?.benefits?.titleIntro ||"Key Business",
+      titleHighlight: dbService?.benefits?.titleHighlight ||"Advantages",
+      description: dbService?.benefits?.description ||"",
+      outcomeText: dbService?.benefits?.outcomeText ||"Guaranteed Outcome",
       list: (Array.isArray(dbService?.benefits?.list) && dbService.benefits.list.length > 0)
         ? dbService.benefits.list.map((b: any) => ({
-          metric: b.metric || "",
-          title: b.title || "",
-          desc: b.desc || b.description || "",
-          tag: b.tag || b.num || "",
-          iconName: b.iconName || b.icon || "TrendingUp",
-          outcomeText: b.outcomeText || dbService?.benefits?.outcomeText || ""
+          metric: b.metric ||"",
+          title: b.title ||"",
+          desc: b.desc || b.description ||"",
+          tag: b.tag || b.num ||"",
+          iconName: b.iconName || b.icon ||"TrendingUp",
+          outcomeText: b.outcomeText || dbService?.benefits?.outcomeText ||""
         }))
         : (Array.isArray(dbService?.benefits?.items) && dbService.benefits.items.length > 0
           ? dbService.benefits.items.map((b: any) => ({
-            metric: b.metric || "",
-            title: b.title || "",
-            desc: b.desc || b.description || "",
-            tag: b.tag || b.num || "",
-            iconName: b.iconName || b.icon || "TrendingUp",
-            outcomeText: b.outcomeText || dbService?.benefits?.outcomeText || ""
+            metric: b.metric ||"",
+            title: b.title ||"",
+            desc: b.desc || b.description ||"",
+            tag: b.tag || b.num ||"",
+            iconName: b.iconName || b.icon ||"TrendingUp",
+            outcomeText: b.outcomeText || dbService?.benefits?.outcomeText ||""
           }))
           : (Array.isArray(dbService?.benefits) && dbService.benefits.length > 0 && typeof dbService.benefits[0] === 'object'
             ? dbService.benefits.map((b: any) => ({
-              metric: b.metric || "",
-              title: b.title || "",
-              desc: b.desc || b.description || "",
-              tag: b.tag || b.num || "",
-              iconName: b.iconName || b.icon || "TrendingUp",
-              outcomeText: b.outcomeText || ""
+              metric: b.metric ||"",
+              title: b.title ||"",
+              desc: b.desc || b.description ||"",
+              tag: b.tag || b.num ||"",
+              iconName: b.iconName || b.icon ||"TrendingUp",
+              outcomeText: b.outcomeText ||""
             }))
             : [
-              { title: "Organic Visibility", desc: "Accelerating discovery on top search engines through clean structured code.", iconName: "TrendingUp", outcomeText: "Guaranteed Outcome" },
-              { title: "Conversion Yield", desc: "Frictionless UX funnels designed specifically to capture and convert leads.", iconName: "Target", outcomeText: "Guaranteed Outcome" },
-              { title: "Reliability & Uptime", desc: "Enterprise infrastructure built on modern serverless edge architecture.", iconName: "ShieldCheck", outcomeText: "Guaranteed Outcome" },
-              { title: "Load Performance", desc: "Lightning fast asset delivery boosting Core Web Vitals and SEO rankings.", iconName: "Zap", outcomeText: "Guaranteed Outcome" }
+              { title:"Organic Visibility", desc:"Accelerating discovery on top search engines through clean structured code.", iconName:"TrendingUp", outcomeText:"Guaranteed Outcome" },
+              { title:"Conversion Yield", desc:"Frictionless UX funnels designed specifically to capture and convert leads.", iconName:"Target", outcomeText:"Guaranteed Outcome" },
+              { title:"Reliability & Uptime", desc:"Enterprise infrastructure built on modern serverless edge architecture.", iconName:"ShieldCheck", outcomeText:"Guaranteed Outcome" },
+              { title:"Load Performance", desc:"Lightning fast asset delivery boosting Core Web Vitals and SEO rankings.", iconName:"Zap", outcomeText:"Guaranteed Outcome" }
             ]))
     },
     process: {
       enabled: dbService?.process?.enabled,
-      eyebrow: dbService?.process?.eyebrow || "06 // IMPLEMENTATION ROADMAP",
-      titleIntro: dbService?.process?.titleIntro || "Our Step-by-Step",
-      titleHighlight: dbService?.process?.titleHighlight || "Roadmap",
-      description: dbService?.process?.description || "We orchestrate campaigns sequentially, guaranteeing structured code deliverables and auditable checkpoints at each stage of your roadmap.",
-      calloutTag: dbService?.process?.calloutTag || "",
-      calloutText: dbService?.process?.calloutText || "",
+      eyebrow: dbService?.process?.eyebrow ||"06 // IMPLEMENTATION ROADMAP",
+      titleIntro: dbService?.process?.titleIntro ||"Our Step-by-Step",
+      titleHighlight: dbService?.process?.titleHighlight ||"Roadmap",
+      description: dbService?.process?.description ||"We orchestrate campaigns sequentially, guaranteeing structured code deliverables and auditable checkpoints at each stage of your roadmap.",
+      calloutTag: dbService?.process?.calloutTag ||"",
+      calloutText: dbService?.process?.calloutText ||"",
       steps: (Array.isArray(dbService?.process?.steps) && dbService.process.steps.length > 0)
         ? dbService.process.steps.map((p: any, idx: number) => ({
           title: p.title || p.name || `Sprint 0${idx + 1}`,
-          desc: p.desc || p.description || "",
+          desc: p.desc || p.description ||"",
           phaseTag: p.phaseTag || p.badge || p.tag || `PHASE 0${idx + 1} // SPRINT`,
           deliverables: Array.isArray(p.deliverables)
             ? p.deliverables.filter((d: any) => typeof d === 'string' && d.trim().length > 0)
             : [],
-          footerLeft: p.footerLeft || "",
-          footerRight: p.footerRight || ""
+          footerLeft: p.footerLeft ||"",
+          footerRight: p.footerRight ||""
         }))
         : (Array.isArray(dbService?.process) && dbService.process.length > 0
           ? dbService.process.map((p: any, idx: number) => ({
-            title: p.title || p.name || "Milestone",
-            desc: p.desc || p.description || "Structured sprint execution.",
+            title: p.title || p.name ||"Milestone",
+            desc: p.desc || p.description ||"Structured sprint execution.",
             phaseTag: p.phaseTag || p.badge || `PHASE 0${idx + 1} // SPRINT`,
             deliverables: Array.isArray(p.deliverables)
               ? p.deliverables.filter((d: any) => typeof d === 'string' && d.trim().length > 0)
               : [],
-            footerLeft: p.footerLeft || "",
-            footerRight: p.footerRight || ""
+            footerLeft: p.footerLeft ||"",
+            footerRight: p.footerRight ||""
           }))
           : [
             {
-              title: "Discovery & Technical Diagnostics",
-              desc: "Full audit of your digital ecosystem, tech stack, and user funnels.",
-              phaseTag: "PHASE 01 // SPRINT",
-              deliverables: ["Technical Stack Audit", "Competitor Benchmark"],
-              footerLeft: "Architecture Discovery",
-              footerRight: "Verified Milestone"
+              title:"Discovery & Technical Diagnostics",
+              desc:"Full audit of your digital ecosystem, tech stack, and user funnels.",
+              phaseTag:"PHASE 01 // SPRINT",
+              deliverables: ["Technical Stack Audit","Competitor Benchmark"],
+              footerLeft:"Architecture Discovery",
+              footerRight:"Verified Milestone"
             },
             {
-              title: "Architecture & Production Build",
-              desc: "Structuring high-converting user flows and component hierarchies.",
-              phaseTag: "PHASE 02 // SPRINT",
-              deliverables: ["Modular Component Hierarchy", "Responsive Interface"],
-              footerLeft: "Core Development",
-              footerRight: "Verified Milestone"
+              title:"Architecture & Production Build",
+              desc:"Structuring high-converting user flows and component hierarchies.",
+              phaseTag:"PHASE 02 // SPRINT",
+              deliverables: ["Modular Component Hierarchy","Responsive Interface"],
+              footerLeft:"Core Development",
+              footerRight:"Verified Milestone"
             },
             {
-              title: "Verification & Quality Assurance",
-              desc: "Multi-device cross-browser testing and performance stress audits.",
-              phaseTag: "PHASE 03 // SPRINT",
-              deliverables: ["Performance Stress Audit", "Cross-Device Validation"],
-              footerLeft: "Quality Assurance",
-              footerRight: "Verified Milestone"
+              title:"Verification & Quality Assurance",
+              desc:"Multi-device cross-browser testing and performance stress audits.",
+              phaseTag:"PHASE 03 // SPRINT",
+              deliverables: ["Performance Stress Audit","Cross-Device Validation"],
+              footerLeft:"Quality Assurance",
+              footerRight:"Verified Milestone"
             },
             {
-              title: "Deployment & Growth Scaling",
-              desc: "Live rollout with custom telemetry and continuous optimizations.",
-              phaseTag: "PHASE 04 // SPRINT",
-              deliverables: ["Edge CDN Deployment", "Live Telemetry Setup"],
-              footerLeft: "Production Launch",
-              footerRight: "Verified Milestone"
+              title:"Deployment & Growth Scaling",
+              desc:"Live rollout with custom telemetry and continuous optimizations.",
+              phaseTag:"PHASE 04 // SPRINT",
+              deliverables: ["Edge CDN Deployment","Live Telemetry Setup"],
+              footerLeft:"Production Launch",
+              footerRight:"Verified Milestone"
             }
           ])
     },
     results: {
       enabled: dbService?.results?.enabled,
-      eyebrow: dbService?.results?.eyebrow || "07 // PROVEN PERFORMANCE",
-      titleIntro: dbService?.results?.titleIntro || "Real-World",
-      titleHighlight: dbService?.results?.titleHighlight || "Impact & ROI",
-      description: dbService?.results?.description || "Verifiable metric indicators driven by precise performance scaling and custom coding.",
-      caseStudiesEyebrow: dbService?.results?.caseStudiesEyebrow || "Featured Case Studies",
+      eyebrow: dbService?.results?.eyebrow ||"07 // PROVEN PERFORMANCE",
+      titleIntro: dbService?.results?.titleIntro ||"Real-World",
+      titleHighlight: dbService?.results?.titleHighlight ||"Impact & ROI",
+      description: dbService?.results?.description ||"Verifiable metric indicators driven by precise performance scaling and custom coding.",
+      caseStudiesEyebrow: dbService?.results?.caseStudiesEyebrow ||"Featured Case Studies",
       caseStudies: (() => {
         if (Array.isArray(dbService?.results?.caseStudies) && dbService.results.caseStudies.length > 0) {
           return dbService.results.caseStudies.map((cs: any) => ({
-            title: cs.title || "",
-            challenge: cs.challenge || cs.desc || "",
-            strategy: cs.strategy || "",
-            outcome: cs.outcome || cs.metric || "",
-            outcomeLabel: cs.outcomeLabel || "Verified Outcome",
-            desc: cs.desc || "",
-            iconName: cs.iconName || cs.icon || ""
+            title: cs.title ||"",
+            challenge: cs.challenge || cs.desc ||"",
+            strategy: cs.strategy ||"",
+            outcome: cs.outcome || cs.metric ||"",
+            outcomeLabel: cs.outcomeLabel ||"Verified Outcome",
+            desc: cs.desc ||"",
+            iconName: cs.iconName || cs.icon ||""
           }));
         }
         if (dbService?.results?.caseStudy && (dbService.results.caseStudy.title || dbService.results.caseStudy.metric || dbService.results.caseStudy.desc)) {
           return [{
-            title: dbService.results.caseStudy.title || "Featured Case Study",
-            challenge: dbService.results.caseStudy.desc || "Overcoming legacy bottlenecks with custom architecture.",
-            strategy: dbService.results.caseStudy.strategy || "Engineered scalable architecture with streamlined conversion pathways.",
-            outcome: dbService.results.caseStudy.metric || "+240% Growth",
-            outcomeLabel: dbService.results.caseStudy.outcomeLabel || "Campaign Outcome",
-            desc: dbService.results.caseStudy.desc || "",
-            iconName: dbService.results.caseStudy.iconName || dbService.results.caseStudy.icon || ""
+            title: dbService.results.caseStudy.title ||"Featured Case Study",
+            challenge: dbService.results.caseStudy.desc ||"Overcoming legacy bottlenecks with custom architecture.",
+            strategy: dbService.results.caseStudy.strategy ||"Engineered scalable architecture with streamlined conversion pathways.",
+            outcome: dbService.results.caseStudy.metric ||"+240% Growth",
+            outcomeLabel: dbService.results.caseStudy.outcomeLabel ||"Campaign Outcome",
+            desc: dbService.results.caseStudy.desc ||"",
+            iconName: dbService.results.caseStudy.iconName || dbService.results.caseStudy.icon ||""
           }];
         }
         return [
           {
-            title: "Enterprise Brand Growth",
-            challenge: "Outdated legacy site experiencing slow load speeds and declining conversions.",
-            strategy: "Engineered headless architecture with streamlined conversion pathways.",
-            outcome: "+240% Qualified Inbound Inquiries",
-            outcomeLabel: "Campaign Outcome",
-            desc: "",
-            iconName: ""
+            title:"Enterprise Brand Growth",
+            challenge:"Outdated legacy site experiencing slow load speeds and declining conversions.",
+            strategy:"Engineered headless architecture with streamlined conversion pathways.",
+            outcome:"+240% Qualified Inbound Inquiries",
+            outcomeLabel:"Campaign Outcome",
+            desc:"",
+            iconName:""
           },
           {
-            title: "Commercial Multi-Location Reach",
-            challenge: "Fragmented map listings and poor regional organic rankings.",
-            strategy: "Deployed localized landing architecture and high-authority citation schema.",
-            outcome: "+410% Map Pack Actions",
-            outcomeLabel: "Campaign Outcome",
-            desc: "",
-            iconName: ""
+            title:"Commercial Multi-Location Reach",
+            challenge:"Fragmented map listings and poor regional organic rankings.",
+            strategy:"Deployed localized landing architecture and high-authority citation schema.",
+            outcome:"+410% Map Pack Actions",
+            outcomeLabel:"Campaign Outcome",
+            desc:"",
+            iconName:""
           }
         ];
       })(),
       metrics: (Array.isArray(dbService?.results?.metrics) && dbService.results.metrics.length > 0)
         ? dbService.results.metrics.map((m: any, idx: number) => ({
-          value: m.value || "",
-          label: m.label || "",
-          desc: m.desc || m.subtext || "",
+          value: m.value ||"",
+          label: m.label ||"",
+          desc: m.desc || m.subtext ||"",
           tag: m.tag || `M0${idx + 1}`,
-          iconName: m.iconName || m.icon || "Trophy"
+          iconName: m.iconName || m.icon ||"Trophy"
         }))
         : [
-          { value: "450%", label: "TRAFFIC GROWTH", desc: "Average organic session boost across 12-month engagements.", tag: "M01", iconName: "TrendingUp" },
-          { value: "3.8x", label: "ROI MULTIPLIER", desc: "Documented revenue acceleration from attributed funnels.", tag: "M02", iconName: "Target" },
-          { value: "99%", label: "CLIENT RETENTION", desc: "Long-term client partnerships built on consistent delivery.", tag: "M03", iconName: "ShieldCheck" },
-          { value: "24/7", label: "SUPPORT SYNC", desc: "Continuous uptime and real-time response capability.", tag: "M04", iconName: "Zap" }
+          { value:"450%", label:"TRAFFIC GROWTH", desc:"Average organic session boost across 12-month engagements.", tag:"M01", iconName:"TrendingUp" },
+          { value:"3.8x", label:"ROI MULTIPLIER", desc:"Documented revenue acceleration from attributed funnels.", tag:"M02", iconName:"Target" },
+          { value:"99%", label:"CLIENT RETENTION", desc:"Long-term client partnerships built on consistent delivery.", tag:"M03", iconName:"ShieldCheck" },
+          { value:"24/7", label:"SUPPORT SYNC", desc:"Continuous uptime and real-time response capability.", tag:"M04", iconName:"Zap" }
         ]
     },
     industries: {
       enabled: dbService?.industries?.enabled,
-      eyebrow: dbService?.industries?.eyebrow || "08 // SECTORS WE ACCELERATE",
-      titleIntro: dbService?.industries?.titleIntro || "Industries",
-      titleHighlight: dbService?.industries?.titleHighlight || "We Specialize In",
-      description: dbService?.industries?.description || "Every industry has distinct compliance, customer acquisition funnels, and technical requirements. We tailor our engineering to your exact vertical.",
-      footerLeft: dbService?.industries?.footerLeft || "",
-      footerRight: dbService?.industries?.footerRight || "",
+      eyebrow: dbService?.industries?.eyebrow ||"08 // SECTORS WE ACCELERATE",
+      titleIntro: dbService?.industries?.titleIntro ||"Industries",
+      titleHighlight: dbService?.industries?.titleHighlight ||"We Specialize In",
+      description: dbService?.industries?.description ||"Every industry has distinct compliance, customer acquisition funnels, and technical requirements. We tailor our engineering to your exact vertical.",
+      footerLeft: dbService?.industries?.footerLeft ||"",
+      footerRight: dbService?.industries?.footerRight ||"",
       list: (() => {
         const rawList = Array.isArray(dbService?.industries?.list) && dbService.industries.list.length > 0
           ? dbService.industries.list
@@ -719,105 +719,105 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
         if (rawList.length > 0) {
           return rawList.map((ind: any) => {
-            const title = ind.title || ind.name || "";
+            const title = ind.title || ind.name ||"";
             const words = String(title).trim().split(/\s+/).filter(Boolean);
             const autoAbbr = words.length > 1
               ? (words[0][0] + words[1][0]).toUpperCase()
-              : (words[0] ? words[0].slice(0, 2).toUpperCase() : "IN");
+              : (words[0] ? words[0].slice(0, 2).toUpperCase() :"IN");
             return {
               title: title,
-              desc: ind.desc || ind.description || "",
-              iconName: ind.iconName || ind.icon || "Building2",
+              desc: ind.desc || ind.description ||"",
+              iconName: ind.iconName || ind.icon ||"Building2",
               watermark: ind.watermark || autoAbbr,
-              footerLeft: ind.footerLeft || "",
-              footerRight: ind.footerRight || "",
-              link: ind.link || ind.href || ind.url || ""
+              footerLeft: ind.footerLeft ||"",
+              footerRight: ind.footerRight ||"",
+              link: ind.link || ind.href || ind.url ||""
             };
           });
         }
 
         return [
-          { title: "Home Services & Contracting", desc: "Roofing, decking, remodeling, and local trade contractors scaling regional territories.", iconName: "Building2", watermark: "HS", footerLeft: "", footerRight: "", link: "" },
-          { title: "Technology & SaaS", desc: "Fast-growth software startups and tech firms demanding high conversion rates.", iconName: "Cpu", watermark: "TS", footerLeft: "", footerRight: "", link: "" },
-          { title: "Commercial Real Estate", desc: "Property developers, architectural firms, and luxury real estate agencies.", iconName: "Building2", watermark: "CR", footerLeft: "", footerRight: "", link: "" },
-          { title: "E-Commerce & Retail", desc: "Direct-to-consumer and B2B brands scaling transactions with seamless checkout.", iconName: "ShoppingCart", watermark: "EC", footerLeft: "", footerRight: "", link: "" }
+          { title:"Home Services & Contracting", desc:"Roofing, decking, remodeling, and local trade contractors scaling regional territories.", iconName:"Building2", watermark:"HS", footerLeft:"", footerRight:"", link:"" },
+          { title:"Technology & SaaS", desc:"Fast-growth software startups and tech firms demanding high conversion rates.", iconName:"Cpu", watermark:"TS", footerLeft:"", footerRight:"", link:"" },
+          { title:"Commercial Real Estate", desc:"Property developers, architectural firms, and luxury real estate agencies.", iconName:"Building2", watermark:"CR", footerLeft:"", footerRight:"", link:"" },
+          { title:"E-Commerce & Retail", desc:"Direct-to-consumer and B2B brands scaling transactions with seamless checkout.", iconName:"ShoppingCart", watermark:"EC", footerLeft:"", footerRight:"", link:"" }
         ];
       })()
     },
     tools: {
       enabled: dbService?.tools?.enabled,
-      eyebrow: dbService?.tools?.eyebrow || "09 // TECH STACK",
-      titleIntro: dbService?.tools?.titleIntro || "Modern",
-      titleHighlight: dbService?.tools?.titleHighlight || "Frameworks & Tools",
-      description: dbService?.tools?.description || "High-performance frameworks and analytics systems driving client ROI metrics.",
+      eyebrow: dbService?.tools?.eyebrow ||"09 // TECH STACK",
+      titleIntro: dbService?.tools?.titleIntro ||"Modern",
+      titleHighlight: dbService?.tools?.titleHighlight ||"Frameworks & Tools",
+      description: dbService?.tools?.description ||"High-performance frameworks and analytics systems driving client ROI metrics.",
       list: (() => {
         if (Array.isArray(dbService?.tools?.list) && dbService.tools.list.length > 0) {
           return dbService.tools.list.map((t: any) => ({
-            name: t.name || t.title || "Tool",
-            tag: t.tag || "CORE DEV",
-            desc: t.desc || t.description || "",
-            iconName: t.iconName || t.icon || "Cpu"
+            name: t.name || t.title ||"Tool",
+            tag: t.tag ||"CORE DEV",
+            desc: t.desc || t.description ||"",
+            iconName: t.iconName || t.icon ||"Cpu"
           }));
         }
         if (Array.isArray(dbService?.tools?.items) && dbService.tools.items.length > 0) {
           return dbService.tools.items.map((t: any) => ({
-            name: t.name || t.title || "Tool",
-            tag: t.tag || "CORE DEV",
-            desc: t.desc || t.description || "",
-            iconName: t.iconName || t.icon || "Cpu"
+            name: t.name || t.title ||"Tool",
+            tag: t.tag ||"CORE DEV",
+            desc: t.desc || t.description ||"",
+            iconName: t.iconName || t.icon ||"Cpu"
           }));
         }
         if (Array.isArray(dbService?.tools?.categories) && dbService.tools.categories.length > 0) {
           return dbService.tools.categories.flatMap((cat: any) => {
-            const catName = cat.category || cat.name || "TOOL";
+            const catName = cat.category || cat.name ||"TOOL";
             const items = Array.isArray(cat.items) ? cat.items : (Array.isArray(cat.tools) ? cat.tools : []);
             return items.map((item: any) => {
               if (typeof item === 'string') {
                 const spec = getToolDescription(item);
-                return { name: item, tag: catName, desc: spec.desc, iconName: "Cpu" };
+                return { name: item, tag: catName, desc: spec.desc, iconName:"Cpu" };
               }
               return {
-                name: item.name || item.title || "Tool",
+                name: item.name || item.title ||"Tool",
                 tag: item.tag || catName,
-                desc: item.desc || item.description || "",
-                iconName: item.iconName || item.icon || "Cpu"
+                desc: item.desc || item.description ||"",
+                iconName: item.iconName || item.icon ||"Cpu"
               };
             });
           });
         }
         if (Array.isArray(dbService?.tools) && dbService.tools.length > 0) {
           return dbService.tools.map((t: any) => ({
-            name: t.name || t.title || "Tool",
-            tag: t.tag || "CORE DEV",
-            desc: t.desc || t.description || "",
-            iconName: t.iconName || t.icon || "Cpu"
+            name: t.name || t.title ||"Tool",
+            tag: t.tag ||"CORE DEV",
+            desc: t.desc || t.description ||"",
+            iconName: t.iconName || t.icon ||"Cpu"
           }));
         }
         return [
-          { name: "Next.js", iconName: "Monitor", tag: "CORE DEV", desc: "Headless rendering backend with automatic static optimization and route pre-fetching." },
-          { name: "React.js", iconName: "Cpu", tag: "FRONTEND", desc: "Modular, reactive front-end library built for speedy interaction states." },
-          { name: "Tailwind CSS", iconName: "Palette", tag: "STYLING", desc: "Utility-first CSS compiler to keep stylesheet sizes down and performance high." },
-          { name: "Vercel", iconName: "Globe", tag: "EDGE NETWORK", desc: "Serverless global edge CDN network offering 99.9% uptime and instant caching." }
+          { name:"Next.js", iconName:"Monitor", tag:"CORE DEV", desc:"Headless rendering backend with automatic static optimization and route pre-fetching." },
+          { name:"React.js", iconName:"Cpu", tag:"FRONTEND", desc:"Modular, reactive front-end library built for speedy interaction states." },
+          { name:"Tailwind CSS", iconName:"Palette", tag:"STYLING", desc:"Utility-first CSS compiler to keep stylesheet sizes down and performance high." },
+          { name:"Vercel", iconName:"Globe", tag:"EDGE NETWORK", desc:"Serverless global edge CDN network offering 99.9% uptime and instant caching." }
         ];
       })()
     },
     whyChooseUs: {
       enabled: dbService?.whyChooseUs?.enabled,
-      eyebrow: dbService?.whyChooseUs?.eyebrow || "10 // OUR ADVANTAGE",
-      titleIntro: dbService?.whyChooseUs?.titleIntro || "Why Leaders Choose",
-      titleHighlight: dbService?.whyChooseUs?.titleHighlight || "Mohsin Designs",
-      description: dbService?.whyChooseUs?.description || "We design fully custom solutions engineered around revenue metrics, performance, and transparency.",
+      eyebrow: dbService?.whyChooseUs?.eyebrow ||"10 // OUR ADVANTAGE",
+      titleIntro: dbService?.whyChooseUs?.titleIntro ||"Why Leaders Choose",
+      titleHighlight: dbService?.whyChooseUs?.titleHighlight ||"Mohsin Designs",
+      description: dbService?.whyChooseUs?.description ||"We design fully custom solutions engineered around revenue metrics, performance, and transparency.",
       stats: (Array.isArray(dbService?.whyChooseUs?.stats) && dbService.whyChooseUs.stats.length > 0)
         ? dbService.whyChooseUs.stats.map((st: any) => ({
-          value: st.value || "",
-          label: st.label || "",
-          sublabel: st.sublabel || "",
-          percentage: typeof st.percentage === "number" ? st.percentage : undefined
+          value: st.value ||"",
+          label: st.label ||"",
+          sublabel: st.sublabel ||"",
+          percentage: typeof st.percentage ==="number" ? st.percentage : undefined
         }))
         : [
-          { value: "100%", label: "PERFORMANCE", sublabel: "Next.js Headless\nSpeed Optimization", percentage: 1.0 },
-          { value: "4.5x", label: "AVERAGE ROI", sublabel: "Attributed Leads\nGrowth Scaling", percentage: 0.9 },
-          { value: "24/7", label: "DATA SYNC", sublabel: "Live Tracking\nReal-time Reports", percentage: 0.85 }
+          { value:"100%", label:"PERFORMANCE", sublabel:"Next.js Headless\nSpeed Optimization", percentage: 1.0 },
+          { value:"4.5x", label:"AVERAGE ROI", sublabel:"Attributed Leads\nGrowth Scaling", percentage: 0.9 },
+          { value:"24/7", label:"DATA SYNC", sublabel:"Live Tracking\nReal-time Reports", percentage: 0.85 }
         ],
       list: (() => {
         const rawList = Array.isArray(dbService?.whyChooseUs?.list) && dbService.whyChooseUs.list.length > 0
@@ -833,123 +833,123 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
         if (rawList.length > 0) {
           return rawList.map((item: any, idx: number) => ({
             tag: item.tag || `Differentiator 0${idx + 1}`,
-            title: item.title || item.name || "",
-            desc: item.desc || item.description || "",
-            icon: item.icon || item.iconName || "CheckCircle2",
-            image: item.image || ""
+            title: item.title || item.name ||"",
+            desc: item.desc || item.description ||"",
+            icon: item.icon || item.iconName ||"CheckCircle2",
+            image: item.image ||""
           }));
         }
 
         return [
-          { title: "Engineered For Speed & ROI", desc: "We write clean, high-performance code with zero bloated themes or brittle templates.", tag: "Differentiator 01", icon: "CheckCircle2", image: "" },
-          { title: "Direct Strategic Communication", desc: "No junior middlemen — work directly with senior architects dedicated to your vision.", tag: "Differentiator 02", icon: "CheckCircle2", image: "" },
-          { title: "Transparent Telemetry & Ownership", desc: "Full ownership of your code, design assets, and marketing data at every step.", tag: "Differentiator 03", icon: "CheckCircle2", image: "" },
-          { title: "Compounding Growth Systems", desc: "Solutions designed to build continuous momentum that outperforms competitors over time.", tag: "Differentiator 04", icon: "CheckCircle2", image: "" }
+          { title:"Engineered For Speed & ROI", desc:"We write clean, high-performance code with zero bloated themes or brittle templates.", tag:"Differentiator 01", icon:"CheckCircle2", image:"" },
+          { title:"Direct Strategic Communication", desc:"No junior middlemen — work directly with senior architects dedicated to your vision.", tag:"Differentiator 02", icon:"CheckCircle2", image:"" },
+          { title:"Transparent Telemetry & Ownership", desc:"Full ownership of your code, design assets, and marketing data at every step.", tag:"Differentiator 03", icon:"CheckCircle2", image:"" },
+          { title:"Compounding Growth Systems", desc:"Solutions designed to build continuous momentum that outperforms competitors over time.", tag:"Differentiator 04", icon:"CheckCircle2", image:"" }
         ];
       })()
     },
     pricing: {
       enabled: dbService?.pricing?.enabled,
-      eyebrow: dbService?.pricing?.eyebrow || "11 // TRANSPARENT TIERS",
-      titleIntro: dbService?.pricing?.titleIntro || "Scalable Growth",
-      titleHighlight: dbService?.pricing?.titleHighlight || "Investment Packages",
-      description: dbService?.pricing?.description || "",
+      eyebrow: dbService?.pricing?.eyebrow ||"11 // TRANSPARENT TIERS",
+      titleIntro: dbService?.pricing?.titleIntro ||"Scalable Growth",
+      titleHighlight: dbService?.pricing?.titleHighlight ||"Investment Packages",
+      description: dbService?.pricing?.description ||"",
       plans: (Array.isArray(dbService?.pricing?.plans) && dbService.pricing.plans.length > 0)
         ? dbService.pricing.plans.map((p: any) => ({
-          name: p.name || "",
-          tag: p.tag || "",
-          desc: p.desc || p.description || "",
-          price: p.price || "",
-          period: p.period || "",
+          name: p.name ||"",
+          tag: p.tag ||"",
+          desc: p.desc || p.description ||"",
+          price: p.price ||"",
+          period: p.period ||"",
           isPopular: !!(p.isPopular || p.popular),
           isCustom: !!(p.isCustom || p.custom),
-          badgeText: p.badgeText || (p.isPopular || p.popular ? "Most Popular" : p.isCustom || p.custom ? "Custom Scoped" : ""),
-          ctaText: p.ctaText || "Select Plan",
-          ctaLink: p.ctaLink || "",
+          badgeText: p.badgeText || (p.isPopular || p.popular ?"Most Popular" : p.isCustom || p.custom ?"Custom Scoped" :""),
+          ctaText: p.ctaText ||"Select Plan",
+          ctaLink: p.ctaLink ||"",
           features: Array.isArray(p.features)
             ? p.features.filter((f: any) => typeof f === 'string' && f.trim().length > 0)
             : []
         }))
         : [
           {
-            name: "Sprint Tier",
-            desc: "Targeted execution for focused optimization and rapid turnaround.",
-            price: "$2,450",
-            period: "sprint",
+            name:"Sprint Tier",
+            desc:"Targeted execution for focused optimization and rapid turnaround.",
+            price:"$2,450",
+            period:"sprint",
             isPopular: false,
             isCustom: false,
-            badgeText: "",
-            ctaText: "Select Sprint",
-            features: ["Full Technical Diagnostic", "Core Feature Implementation", "Speed & Security Hardening", "2 Weeks Dedicated Support"]
+            badgeText:"",
+            ctaText:"Select Sprint",
+            features: ["Full Technical Diagnostic","Core Feature Implementation","Speed & Security Hardening","2 Weeks Dedicated Support"]
           },
           {
-            name: "Growth Tier",
-            desc: "Complete comprehensive solution built to dominate competitive markets.",
-            price: "$4,850",
-            period: "project",
+            name:"Growth Tier",
+            desc:"Complete comprehensive solution built to dominate competitive markets.",
+            price:"$4,850",
+            period:"project",
             isPopular: true,
             isCustom: false,
-            badgeText: "Most Popular",
-            ctaText: "Start Growth Plan",
-            features: ["End-to-End Custom Build", "Conversion Rate Optimization", "Custom Analytics & Tracking", "SEO & Speed Maxima", "30 Days Hypercare Support"]
+            badgeText:"Most Popular",
+            ctaText:"Start Growth Plan",
+            features: ["End-to-End Custom Build","Conversion Rate Optimization","Custom Analytics & Tracking","SEO & Speed Maxima","30 Days Hypercare Support"]
           },
           {
-            name: "Enterprise Tier",
-            desc: "Custom architected multi-location and enterprise-grade infrastructure.",
-            price: "Custom",
-            period: "custom scope",
+            name:"Enterprise Tier",
+            desc:"Custom architected multi-location and enterprise-grade infrastructure.",
+            price:"Custom",
+            period:"custom scope",
             isPopular: false,
             isCustom: true,
-            badgeText: "Custom Scoped",
-            ctaText: "Request Scope",
-            features: ["Unlimited Dynamic Architecture", "Headless CMS Integration", "Dedicated Lead Engineering", "Priority SLA & SLA Support"]
+            badgeText:"Custom Scoped",
+            ctaText:"Request Scope",
+            features: ["Unlimited Dynamic Architecture","Headless CMS Integration","Dedicated Lead Engineering","Priority SLA & SLA Support"]
           }
         ]
     },
     faqs: (Array.isArray(dbService?.faqs) && dbService.faqs.length > 0)
-      ? dbService.faqs.map((f: any) => ({ question: f.question || f.q || "", answer: f.answer || f.a || "", category: f.category || "" }))
+      ? dbService.faqs.map((f: any) => ({ question: f.question || f.q ||"", answer: f.answer || f.a ||"", category: f.category ||"" }))
       : (Array.isArray(dbService?.faq) && dbService.faq.length > 0
-        ? dbService.faq.map((f: any) => ({ question: f.question || f.q || "", answer: f.answer || f.a || "", category: f.category || "" }))
+        ? dbService.faq.map((f: any) => ({ question: f.question || f.q ||"", answer: f.answer || f.a ||"", category: f.category ||"" }))
         : [
-          { question: "How quickly can we get started?", answer: "We typically onboard new projects within 3-5 business days following the initial strategy discovery call." },
-          { question: "Do you offer ongoing support and updates?", answer: "Yes, we provide flexible retainer and maintenance support options to ensure your platform remains fast, secure, and continuously optimized." },
-          { question: "Will I have complete ownership of all assets?", answer: "100%. You retain full ownership of all code, design files, domains, and analytics accounts upon project completion." }
+          { question:"How quickly can we get started?", answer:"We typically onboard new projects within 3-5 business days following the initial strategy discovery call." },
+          { question:"Do you offer ongoing support and updates?", answer:"Yes, we provide flexible retainer and maintenance support options to ensure your platform remains fast, secure, and continuously optimized." },
+          { question:"Will I have complete ownership of all assets?", answer:"100%. You retain full ownership of all code, design files, domains, and analytics accounts upon project completion." }
         ]),
     faqSection: {
       enabled: dbService?.faqSection?.enabled,
-      sectionTag: dbService?.faqBadge || dbService?.faqSection?.sectionTag || "14 // FREQUENTLY ASKED",
-      titleIntro: dbService?.faqTitleIntro !== undefined ? dbService?.faqTitleIntro : (dbService?.faqSection?.titleIntro ?? "Service "),
-      titleHighlight: dbService?.faqTitleHighlight || dbService?.faqSection?.titleHighlight || dbService?.faqTitle || "Frequently Asked Questions",
-      description: dbService?.faqDescription || dbService?.faqSection?.description || ""
+      sectionTag: dbService?.faqBadge || dbService?.faqSection?.sectionTag ||"14 // FREQUENTLY ASKED",
+      titleIntro: dbService?.faqTitleIntro !== undefined ? dbService?.faqTitleIntro : (dbService?.faqSection?.titleIntro ??"Service"),
+      titleHighlight: dbService?.faqTitleHighlight || dbService?.faqSection?.titleHighlight || dbService?.faqTitle ||"Frequently Asked Questions",
+      description: dbService?.faqDescription || dbService?.faqSection?.description ||""
     },
     strategyAudit: {
-      badge: dbService?.strategyAudit?.badge || "FREE ARCHITECTURE AUDIT",
-      title: dbService?.strategyAudit?.title || "Have a complex custom build in mind?",
-      desc: dbService?.strategyAudit?.desc || "Book a 30-minute high-level technical strategy session with our lead engineer.",
-      button: dbService?.strategyAudit?.button || "Book Architecture Call",
-      href: dbService?.strategyAudit?.href || "#contact"
+      badge: dbService?.strategyAudit?.badge ||"FREE ARCHITECTURE AUDIT",
+      title: dbService?.strategyAudit?.title ||"Have a complex custom build in mind?",
+      desc: dbService?.strategyAudit?.desc ||"Book a 30-minute high-level technical strategy session with our lead engineer.",
+      button: dbService?.strategyAudit?.button ||"Book Architecture Call",
+      href: dbService?.strategyAudit?.href ||"#contact"
     },
     finalCta: {
       enabled: dbService?.finalCta?.enabled,
-      eyebrow: dbService?.finalCta?.eyebrow ?? dbService?.finalCta?.badge ?? "READY TO ACCELERATE?",
-      titleIntro: dbService?.finalCta?.titleIntro || "Let's Build Your Next",
-      titleHighlight: dbService?.finalCta?.titleHighlight || "Competitive Edge",
-      titleLine2: dbService?.finalCta?.titleLine2 || "",
-      description: dbService?.finalCta?.description !== undefined ? dbService.finalCta.description : "Schedule a free strategic consultation. We'll audit your existing presence and map out a concrete blueprint for scalable growth.",
-      primaryCtaText: dbService?.finalCta?.primaryCtaText || dbService?.finalCta?.primaryCta?.text || dbService?.finalCta?.btnText || "Schedule Discovery Session",
-      primaryCtaLink: dbService?.finalCta?.primaryCtaLink || dbService?.finalCta?.primaryCta?.link || dbService?.finalCta?.btnLink || "#contact-form",
-      secondaryCtaText: dbService?.finalCta?.secondaryCtaText || dbService?.finalCta?.secondaryCta?.text || "",
-      secondaryCtaLink: dbService?.finalCta?.secondaryCtaLink || dbService?.finalCta?.secondaryCta?.link || "/contact-us",
-      founderImage: dbService?.finalCta?.founderImage || dbService?.finalCta?.image || dbService?.finalCta?.backgroundImage || dbService?.finalCta?.bgImage || "/founder_portrait_nobg.png"
+      eyebrow: dbService?.finalCta?.eyebrow ?? dbService?.finalCta?.badge ??"READY TO ACCELERATE?",
+      titleIntro: dbService?.finalCta?.titleIntro ||"Let's Build Your Next",
+      titleHighlight: dbService?.finalCta?.titleHighlight ||"Competitive Edge",
+      titleLine2: dbService?.finalCta?.titleLine2 ||"",
+      description: dbService?.finalCta?.description !== undefined ? dbService.finalCta.description :"Schedule a free strategic consultation. We'll audit your existing presence and map out a concrete blueprint for scalable growth.",
+      primaryCtaText: dbService?.finalCta?.primaryCtaText || dbService?.finalCta?.primaryCta?.text || dbService?.finalCta?.btnText ||"Schedule Discovery Session",
+      primaryCtaLink: dbService?.finalCta?.primaryCtaLink || dbService?.finalCta?.primaryCta?.link || dbService?.finalCta?.btnLink ||"#contact-form",
+      secondaryCtaText: dbService?.finalCta?.secondaryCtaText || dbService?.finalCta?.secondaryCta?.text ||"",
+      secondaryCtaLink: dbService?.finalCta?.secondaryCtaLink || dbService?.finalCta?.secondaryCta?.link ||"/contact-us",
+      founderImage: dbService?.finalCta?.founderImage || dbService?.finalCta?.image || dbService?.finalCta?.backgroundImage || dbService?.finalCta?.bgImage ||"/founder_portrait_nobg.png"
     },
     blogSection: dbService?.blogSection,
     serviceArea: dbService?.serviceArea,
     recommendedSection: {
       enabled: dbService?.recommendedSection?.enabled,
-      eyebrow: dbService?.recommendedSection?.eyebrow || "11 // RECOMMENDATION",
-      titleIntro: dbService?.recommendedSection?.titleIntro || "Services That Pair",
-      titleHighlight: dbService?.recommendedSection?.titleHighlight || "Perfect Together",
-      description: dbService?.recommendedSection?.description || "Scale faster by pairing multi-channel growth campaigns and high-performance visual coding solutions."
+      eyebrow: dbService?.recommendedSection?.eyebrow ||"11 // RECOMMENDATION",
+      titleIntro: dbService?.recommendedSection?.titleIntro ||"Services That Pair",
+      titleHighlight: dbService?.recommendedSection?.titleHighlight ||"Perfect Together",
+      description: dbService?.recommendedSection?.description ||"Scale faster by pairing multi-channel growth campaigns and high-performance visual coding solutions."
     }
   };
 
@@ -957,23 +957,23 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
   const scrollLeft = () => {
     if (sliderRef.current) {
-      sliderRef.current.scrollBy({ left: -360, behavior: "smooth" });
+      sliderRef.current.scrollBy({ left: -360, behavior:"smooth" });
     }
   };
 
   const scrollRight = () => {
     if (sliderRef.current) {
-      sliderRef.current.scrollBy({ left: 360, behavior: "smooth" });
+      sliderRef.current.scrollBy({ left: 360, behavior:"smooth" });
     }
   };
 
   const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    company: "",
+    fullName:"",
+    email:"",
+    phone:"",
+    company:"",
     service: service.title,
-    message: "",
+    message:"",
     agreePrivacy: false
   });
   const [captchaToken, setCaptchaToken] = useState<string>("");
@@ -994,9 +994,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
           company: formData.company,
           service: formData.service || service.title,
           message: formData.message,
-          type: "Service Detail Consultation",
+          type:"Service Detail Consultation",
           captchaToken: captchaToken,
-          source: typeof window !== "undefined" ? window.location.pathname : `/services/${service.slug}`
+          source: typeof window !=="undefined" ? window.location.pathname : `/services/${service.slug}`
         })
       });
     } catch (err) {
@@ -1005,12 +1005,12 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
     setTimeout(() => {
       setSubmitted(false);
       setFormData({
-        fullName: "",
-        email: "",
-        phone: "",
-        company: "",
+        fullName:"",
+        email:"",
+        phone:"",
+        company:"",
         service: service.title,
-        message: "",
+        message:"",
         agreePrivacy: false
       });
       setCaptchaToken("");
@@ -1036,7 +1036,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
         <section className="pt-28 md:pt-36 lg:pt-40 pb-16 lg:pb-24 relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10">
           <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
             <img
-              src={service.hero?.backgroundImage || service.hero?.bgImage || "/portfolio_hero_bg.png"}
+              src={service.hero?.backgroundImage || service.hero?.bgImage ||"/portfolio_hero_bg.png"}
               alt="Hero Background"
               className="w-full h-full object-cover object-right opacity-100 dark:opacity-60"
             />
@@ -1051,19 +1051,19 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 initial={{ opacity: 0, y: 25 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                className="lg:col-span-7 space-y-6 text-left"
+                className="lg:col-span-7 min-w-0 space-y-6 text-left"
               >
                 {/* Breadcrumbs */}
                 <PageBreadcrumbs
                   items={[
-                    { name: "Home", url: "/" },
-                    { name: "Services", url: "/services/" },
-                    { name: service.title, url: "#" },
+                    { name:"Home", url:"/" },
+                    { name:"Services", url:"/services/" },
+                    { name: service.title, url:"#" },
                   ]}
                 />
 
                 <h1 className="font-heading text-3xl xs:text-3xl sm:text-4xl lg:text-[40px] font-black tracking-tight leading-[1.18] text-brand-dark dark:text-white max-w-2xl">
-                  {service.hero.titleIntro}{" "}
+                  {service.hero.titleIntro}{""}
                   <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                     {service.hero.titleHighlight}
                     <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
@@ -1097,8 +1097,8 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
                 {/* CTA Buttons */}
                 <div className="flex flex-wrap items-center gap-4 pt-4">
-                  <CtaButton href={service.hero.primaryCta?.link || "#contact-form"}>{service.hero.primaryCta?.text || "Start Your Project"}</CtaButton>
-                  <CtaButton href={service.hero.secondaryCta?.link || "#what-included"} variant="secondary">{service.hero.secondaryCta?.text || "Explore Inclusions"}</CtaButton>
+                  <CtaButton href={service.hero.primaryCta?.link ||"#contact-form"}>{service.hero.primaryCta?.text ||"Start Your Project"}</CtaButton>
+                  <CtaButton href={service.hero.secondaryCta?.link ||"#what-included"} variant="secondary">{service.hero.secondaryCta?.text ||"Explore Inclusions"}</CtaButton>
                 </div>
               </motion.div>
 
@@ -1107,12 +1107,12 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                className="lg:col-span-5 flex justify-center lg:justify-end w-full"
+                className="lg:col-span-5 min-w-0 flex justify-center lg:justify-end w-full"
               >
                 <div id="contact-form" className="contact-card-glass p-4.5 xs:p-6 sm:p-7 rounded-[24px] xs:rounded-[30px] shadow-2xl relative border border-brand-zinc-200/95 dark:border-white/10 overflow-hidden w-full max-w-[390px]">
                   <div className="mb-4 text-left">
                     <h2 className="font-heading text-xl sm:text-2xl font-extrabold text-brand-dark dark:text-white leading-tight">
-                      {service.hero.formHeading || "Request a Free Audit"}
+                      {service.hero.formHeading ||"Request a Free Audit"}
                     </h2>
                     {service.hero.formSubheading && (
                       <p className="text-xs font-sans text-brand-zinc-500 dark:text-zinc-400 mt-1 leading-snug">
@@ -1219,7 +1219,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                     />
 
                     <CtaButton type="submit" fullWidth icon={<Send />}>
-                      {service.hero.formButtonText || "Request Free Proposal"}
+                      {service.hero.formButtonText ||"Request Free Proposal"}
                     </CtaButton>
                   </form>
                 </div>
@@ -1246,7 +1246,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 {[...Array(3)].map((_, outerIdx) => (
                   <div key={outerIdx} className="flex gap-12 md:gap-16 items-center">
                     {service.clientTrust.logos.map((logoItem: any, lIdx: number) => {
-                      const logoName = String(logoItem.name || "");
+                      const logoName = String(logoItem.name ||"");
                       const CustomIcon = logoItem.icon && iconMap[logoItem.icon] ? iconMap[logoItem.icon] : null;
 
                       return (
@@ -1254,7 +1254,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                           {logoItem.image ? (
                             <img
                               src={logoItem.image}
-                              alt={logoItem.name || "Logo"}
+                              alt={logoItem.name ||"Logo"}
                               className="h-5 w-auto object-contain shrink-0 filter drop-shadow-sm max-w-[120px]"
                             />
                           ) : CustomIcon ? (
@@ -1315,7 +1315,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 </div>
               )}
               <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
-                {service.whatIncluded.titleIntro}{" "}
+                {service.whatIncluded.titleIntro}{""}
                 <span className="relative inline-block text-brand-blue dark:text-brand-accent pb-1 ml-1 font-black">
                   {service.whatIncluded.titleHighlight}
                   <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
@@ -1342,7 +1342,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               {service.whatIncluded.pillars.map((pillar: any, idx: number) => (
                 <SpotlightCard key={idx} className="bg-zinc-50/80 dark:bg-[#0c0b18] border border-brand-zinc-200/80 dark:border-white/10 p-5 xs:p-7 sm:p-8 flex flex-col justify-between h-full min-h-[260px] sm:min-h-[300px] hover:shadow-2xl hover:border-brand-blue/60 dark:hover:border-brand-yellow/60 transition-all duration-300 relative overflow-hidden group">
                   <div className="space-y-4">
-                    <span className="font-serif italic text-4xl sm:text-5xl font-black text-brand-zinc-200 dark:text-white/10 group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-500 leading-none select-none">
+ <span className="font-cursive text-4xl sm:text-5xl font-black text-brand-zinc-200 dark:text-white/10 group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-500 leading-none select-none">
                       0{idx + 1}
                     </span>
                     <div className="space-y-2 text-left">
@@ -1383,11 +1383,11 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
 
               {/* Left Column Sticky info */}
-              <div className="lg:col-span-5 lg:sticky lg:top-28 self-start space-y-4 text-left">
+              <div className="lg:col-span-5 min-w-0 lg:sticky lg:top-28 self-start space-y-4 text-left">
                 <span className="eyebrow-pill">{service.strategy.eyebrow}</span>
                 <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12] max-w-sm">
-                  {service.strategy.titleIntro}{" "}
-                  <span className="text-brand-blue dark:text-brand-yellow font-serif font-normal italic">
+                  {service.strategy.titleIntro}{""}
+ <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
                     {service.strategy.titleHighlight}
                   </span>
                 </h2>
@@ -1397,13 +1397,13 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               </div>
 
               {/* Right Column Staggered List (Scrollable) */}
-              <div className="lg:col-span-7 space-y-8 text-left">
+              <div className="lg:col-span-7 min-w-0 space-y-8 text-left">
                 {service.strategy.components.map((comp: any, idx: number) => (
                   <div
                     key={idx}
                     className="flex gap-6 sm:gap-8 items-start border-b border-brand-zinc-200/80 dark:border-white/5 pb-8 last:border-none last:pb-0 group"
                   >
-                    <span className="font-serif italic text-4xl sm:text-5xl font-black text-brand-zinc-200 dark:text-white/10 group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-500 leading-none select-none">
+ <span className="font-cursive text-4xl sm:text-5xl font-black text-brand-zinc-200 dark:text-white/10 group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-500 leading-none select-none">
                       {comp.num || `0${idx + 1}`}
                     </span>
 
@@ -1442,7 +1442,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 </div>
               )}
               <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
-                {service.benefits.titleIntro}{" "}
+                {service.benefits.titleIntro}{""}
                 <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                   {service.benefits.titleHighlight}
                   <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
@@ -1514,11 +1514,11 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
 
               {/* Left Sticky Panel */}
-              <div className="lg:col-span-5 lg:sticky lg:top-28 self-start space-y-4 text-left">
+              <div className="lg:col-span-5 min-w-0 lg:sticky lg:top-28 self-start space-y-4 text-left">
                 {service.process.eyebrow && <span className="eyebrow-pill">{service.process.eyebrow}</span>}
                 <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12] max-w-sm">
-                  {service.process.titleIntro}{" "}
-                  <span className="text-brand-blue dark:text-brand-yellow font-serif font-normal italic">
+                  {service.process.titleIntro}{""}
+ <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
                     {service.process.titleHighlight}
                   </span>
                 </h2>
@@ -1540,7 +1540,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               </div>
 
               {/* Right Column: Process Cards */}
-              <div className="lg:col-span-7 space-y-6 text-left relative pl-1">
+              <div className="lg:col-span-7 min-w-0 space-y-6 text-left relative pl-1">
                 {service.process.steps.map((step: any, idx: number) => {
                   const deliverables = Array.isArray(step.deliverables)
                     ? step.deliverables.filter((d: any) => typeof d === 'string' && d.trim().length > 0)
@@ -1554,7 +1554,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                       <div className="space-y-4">
                         {/* Top Header */}
                         <div className="flex items-center justify-between pb-3.5 border-b border-brand-zinc-150 dark:border-white/5">
-                          <span className="font-serif italic text-3xl font-black text-brand-zinc-200 dark:text-white/10 group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-300 leading-none select-none">
+ <span className="font-cursive text-3xl font-black text-brand-zinc-200 dark:text-white/10 group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-300 leading-none select-none">
                             0{idx + 1}
                           </span>
                           <span className="font-mono text-[8.5px] font-black tracking-widest text-[#0306AC] dark:text-[#E9BD36] bg-brand-blue/5 dark:bg-[#E9BD36]/10 px-3 py-1 rounded-full uppercase">
@@ -1573,7 +1573,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
                         {step.image && (
                           <div className="w-full h-40 sm:h-48 rounded-2xl overflow-hidden border border-brand-zinc-200 dark:border-white/10 my-3">
-                            <img src={step.image} alt={step.title || ""} className="w-full h-full object-cover" />
+                            <img src={step.image} alt={step.title ||""} className="w-full h-full object-cover" />
                           </div>
                         )}
 
@@ -1594,8 +1594,8 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
                       {(step.footerLeft || step.footerRight) && (
                         <div className="pt-4 mt-5 border-t border-brand-zinc-150 dark:border-white/5 flex items-center justify-between text-brand-zinc-400 dark:text-zinc-555 font-mono text-[8px] font-bold uppercase tracking-widest">
-                          <span>{step.footerLeft || ""}</span>
-                          <span>{step.footerRight || ""}</span>
+                          <span>{step.footerLeft ||""}</span>
+                          <span>{step.footerRight ||""}</span>
                         </div>
                       )}
                     </SpotlightCard>
@@ -1617,12 +1617,12 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
 
               {/* Left side text & Dynamic Case switcher */}
-              <div className="lg:col-span-5 text-left space-y-6 lg:sticky lg:top-28">
+              <div className="lg:col-span-5 min-w-0 text-left space-y-6 lg:sticky lg:top-28">
                 <div className="space-y-4">
                   {service.results.eyebrow && <span className="eyebrow-pill">{service.results.eyebrow}</span>}
                   <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl font-black text-brand-dark dark:text-white leading-[1.15]">
                     {service.results.titleIntro}
-                    <span className="text-brand-blue dark:text-brand-yellow font-serif font-normal italic block mt-1">
+ <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal block mt-1">
                       {service.results.titleHighlight}
                     </span>
                   </h2>
@@ -1635,7 +1635,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 <div className="space-y-4 pt-4 border-t border-brand-zinc-200 dark:border-white/15 w-full">
                   <div className="flex items-center justify-between gap-4">
                     <h4 className="font-mono text-[9px] font-black uppercase text-brand-zinc-400 tracking-widest">
-                      {service.results.caseStudiesEyebrow || "Featured Case Studies"}
+                      {service.results.caseStudiesEyebrow ||"Featured Case Studies"}
                     </h4>
                   </div>
 
@@ -1646,8 +1646,8 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                         key={idx}
                         onClick={() => setActiveCaseIdx(idx)}
                         className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${activeCaseIdx === idx
-                            ? "bg-brand-blue dark:bg-brand-yellow text-white dark:text-[#080710] shadow-sm scale-[1.02]"
-                            : "bg-white dark:bg-[#12121e] border border-brand-zinc-200 dark:border-white/10 text-brand-zinc-600 dark:text-zinc-400 hover:border-brand-blue/30 hover:text-brand-blue dark:hover:text-brand-yellow"
+                            ?"bg-brand-blue dark:bg-brand-yellow text-white dark:text-[#080710] shadow-sm scale-[1.02]"
+                            :"bg-white dark:bg-[#12121e] border border-brand-zinc-200 dark:border-white/10 text-brand-zinc-600 dark:text-zinc-400 hover:border-brand-blue/30 hover:text-brand-blue dark:hover:text-brand-yellow"
                           }`}
                       >
                         {cs.title || `Case 0${idx + 1}`}
@@ -1703,7 +1703,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                             {(cs.outcome || cs.outcomeLabel) && (
                               <div className="flex items-center justify-between pt-3 border-t border-brand-zinc-150 dark:border-white/5">
                                 <span className="font-mono text-[9px] uppercase tracking-wider text-brand-zinc-400">
-                                  {cs.outcomeLabel || "Verified Outcome"}
+                                  {cs.outcomeLabel ||"Verified Outcome"}
                                 </span>
                                 <span className="font-mono text-xs font-black text-brand-blue dark:text-brand-yellow">
                                   {cs.outcome}
@@ -1719,7 +1719,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               </div>
 
               {/* Right side stats counters */}
-              <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
+              <div className="lg:col-span-7 min-w-0 grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
                 {service.results.metrics.map((metric: any, idx: number) => {
                   const MetricIcon = (metric.iconName && iconMap[metric.iconName]) || (metric.icon && iconMap[metric.icon]) || Trophy;
                   return (
@@ -1784,7 +1784,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 </div>
               )}
               <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
-                {service.industries.titleIntro}{" "}
+                {service.industries.titleIntro}{""}
                 <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                   {service.industries.titleHighlight}
                   <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
@@ -1812,7 +1812,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 const defaultIcons = [Building2, Cpu, Building2, ShoppingCart, Briefcase, Star];
                 const IndustryIcon = (ind.iconName && iconMap[ind.iconName]) || defaultIcons[idx % defaultIcons.length] || Building2;
 
-                const words = String(ind.title || "").split(" ");
+                const words = String(ind.title ||"").split("");
                 const abbreviation = ind.watermark || words.map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
                 const rawHref = ind.link || ind.href || ind.url;
                 const validHref = getValidHref(rawHref);
@@ -1821,10 +1821,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 return (
                   <SpotlightCard
                     key={idx}
-                    className={`bg-white dark:bg-[#0c0b18] border border-slate-200/80 dark:border-white/10 p-6 sm:p-8 rounded-[28px] hover:shadow-2xl hover:border-blue-600/30 dark:hover:border-yellow-400/30 transition-all duration-500 flex flex-col justify-between min-h-[250px] relative group text-left overflow-hidden ${validHref ? "cursor-pointer" : ""}`}
+                    className={`bg-white dark:bg-[#0c0b18] border border-slate-200/80 dark:border-white/10 p-6 sm:p-8 rounded-[28px] hover:shadow-2xl hover:border-blue-600/30 dark:hover:border-yellow-400/30 transition-all duration-500 flex flex-col justify-between min-h-[250px] relative group text-left overflow-hidden ${validHref ?"cursor-pointer" :""}`}
                   >
                     {/* Floating Watermark */}
-                    <span className="absolute top-5 right-7 font-serif italic text-6xl sm:text-7xl font-black text-slate-100 dark:text-white/[0.04] select-none pointer-events-none transition-transform duration-500 group-hover:scale-110">
+ <span className="absolute top-5 right-7 font-heading text-6xl sm:text-7xl font-black text-slate-100 dark:text-white/[0.04] select-none pointer-events-none transition-transform duration-500 group-hover:scale-110">
                       {abbreviation}
                     </span>
 
@@ -1840,7 +1840,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                             <Link
                               href={validHref}
                               className="hover:underline focus:outline-none after:absolute after:inset-0 after:z-10 inline-flex items-center gap-1.5"
-                              {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                              {...(isExternal ? { target:"_blank", rel:"noopener noreferrer" } : {})}
                             >
                               <span>{ind.title}</span>
                               <span className="inline-block transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-[#0306AC] dark:text-[#E9BD36]">↗</span>
@@ -1857,8 +1857,8 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
                     {(ind.footerLeft || ind.footerRight || service.industries.footerLeft || service.industries.footerRight) && (
                       <div className="pt-4 mt-6 border-t border-[#0306AC]/25 dark:border-white/10 flex items-center justify-between text-[#0306AC]/80 dark:text-yellow-400/80 font-mono text-[9px] font-bold uppercase tracking-widest relative z-20">
-                        <span>{ind.footerLeft || service.industries.footerLeft || ""}</span>
-                        <span>{ind.footerRight || service.industries.footerRight || ""}</span>
+                        <span>{ind.footerLeft || service.industries.footerLeft ||""}</span>
+                        <span>{ind.footerRight || service.industries.footerRight ||""}</span>
                       </div>
                     )}
                   </SpotlightCard>
@@ -1879,7 +1879,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               <div className="space-y-3">
                 {service.tools.eyebrow && <span className="eyebrow-pill">{service.tools.eyebrow}</span>}
                 <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl font-black text-brand-dark dark:text-white tracking-tight leading-tight">
-                  {service.tools.titleIntro}{" "}
+                  {service.tools.titleIntro}{""}
                   <span className="text-brand-blue dark:text-brand-yellow ml-1 font-black">
                     {service.tools.titleHighlight}
                   </span>
@@ -1947,7 +1947,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       {/* ── 10. WHY CHOOSE US (Sticky Left, Scroll Right Differentiators) ── */}
       {(service as any).whyChooseUs?.enabled !== false && (
         <section className="relative overflow-x-clip border-b border-brand-zinc-200 dark:border-white/10 section-y">
-          <div className="absolute inset-0 opacity-[0.022] pointer-events-none" style={{ backgroundImage: "radial-gradient(#0306AC 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
+          <div className="absolute inset-0 opacity-[0.022] pointer-events-none" style={{ backgroundImage:"radial-gradient(#0306AC 1px, transparent 1px)", backgroundSize:"24px 24px" }} />
 
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
             <div className="flex flex-col lg:flex-row lg:items-start gap-12 lg:gap-0">
@@ -1957,8 +1957,8 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 <div className="space-y-4">
                   {service.whyChooseUs.eyebrow && <span className="eyebrow-pill">{service.whyChooseUs.eyebrow}</span>}
                   <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white leading-[1.15] tracking-tight">
-                    {service.whyChooseUs.titleIntro}{" "}
-                    <span className="text-brand-blue dark:text-brand-yellow font-serif font-normal italic">
+                    {service.whyChooseUs.titleIntro}{""}
+ <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
                       {service.whyChooseUs.titleHighlight}
                     </span>
                   </h2>
@@ -1976,12 +1976,12 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                         label={st.label}
                         sublabel={st.sublabel}
                         percentage={(() => {
-                          if (typeof st.percentage === "number") return st.percentage;
+                          if (typeof st.percentage ==="number") return st.percentage;
                           // Auto-derive percentage from value string
-                          const raw = String(st.value || "0").replace(/[^0-9.]/g, "");
+                          const raw = String(st.value ||"0").replace(/[^0-9.]/g,"");
                           const num = parseFloat(raw);
                           if (isNaN(num) || num === 0) return 0.85;
-                          // If value ends with %, use it directly (e.g. "11%" → 0.11)
+                          // If value ends with %, use it directly (e.g."11%" → 0.11)
                           if (String(st.value).includes("%")) return Math.min(num / 100, 1);
                           // Otherwise cap to 0.9 as a visual fallback
                           return Math.min(num / 100, 0.95);
@@ -2029,7 +2029,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                         <div className="hidden md:block shrink-0 w-[140px] h-[88px] rounded-2xl border border-brand-blue/10 bg-gradient-to-br from-brand-blue/4 to-transparent overflow-hidden group-hover:border-brand-blue/20 group-hover:from-brand-blue/8 transition-all duration-400">
                           <div className="w-full h-full group-hover:scale-[1.03] transition-transform duration-400 origin-center flex items-center justify-center">
                             {item.image ? (
-                              <img src={item.image} alt={item.title || ""} className="w-full h-full object-cover" />
+                              <img src={item.image} alt={item.title ||""} className="w-full h-full object-cover" />
                             ) : (
                               <div className="w-full h-full p-2">
                                 {differentiatorsIllustrations[idx % differentiatorsIllustrations.length]}
@@ -2052,8 +2052,8 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       {/* ── 10.5 PRICING PLANS ── */}
       {((service as any).pricing?.enabled === true && service.pricing && Array.isArray(service.pricing.plans) && service.pricing.plans.length > 0) && (() => {
         const pricingPlanCount = service.pricing.plans.length;
-        const pricingLgColsClass = pricingPlanCount >= 4 ? "lg:grid-cols-4" : pricingPlanCount === 3 ? "lg:grid-cols-3" : pricingPlanCount === 2 ? "lg:grid-cols-2" : "lg:grid-cols-1";
-        const pricingMdColsClass = pricingPlanCount === 1 ? "md:grid-cols-1" : "md:grid-cols-2";
+        const pricingLgColsClass = pricingPlanCount >= 4 ?"lg:grid-cols-4" : pricingPlanCount === 3 ?"lg:grid-cols-3" : pricingPlanCount === 2 ?"lg:grid-cols-2" :"lg:grid-cols-1";
+        const pricingMdColsClass = pricingPlanCount === 1 ?"md:grid-cols-1" :"md:grid-cols-2";
         return (
         <section className="relative overflow-hidden bg-zinc-50/5 dark:bg-[#0c0b18]/5 border-b border-brand-zinc-200 dark:border-white/10 section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
@@ -2070,7 +2070,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 </div>
               )}
               <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
-                {service.pricing.titleIntro}{" "}
+                {service.pricing.titleIntro}{""}
                 <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                   {service.pricing.titleHighlight}
                   <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
@@ -2102,21 +2102,21 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                   <SpotlightCard
                     key={idx}
                     className={`bg-white/45 dark:bg-[#0c0b18]/45 backdrop-blur-xl border transition-all duration-500 flex flex-col justify-between h-full p-6 xs:p-7 sm:p-8 rounded-[28px] group relative overflow-hidden ${isPopular
-                        ? "border-brand-blue/70 dark:border-brand-yellow/70 shadow-[0_20px_50px_rgba(3,6,172,0.08)] dark:shadow-[0_20px_50px_rgba(233,189,54,0.06)] scale-[1.01] lg:scale-[1.03] z-20"
-                        : "border-brand-zinc-200/90 dark:border-white/5 shadow-md hover:border-brand-blue/30 dark:hover:border-brand-yellow/30"
+                        ?"border-brand-blue/70 dark:border-brand-yellow/70 shadow-[0_20px_50px_rgba(3,6,172,0.08)] dark:shadow-[0_20px_50px_rgba(233,189,54,0.06)] scale-[1.01] lg:scale-[1.03] z-20"
+                        :"border-brand-zinc-200/90 dark:border-white/5 shadow-md hover:border-brand-blue/30 dark:hover:border-brand-yellow/30"
                       }`}
                   >
                     {(plan.badgeText || isPopular || isCustom) && (
                       <div className={`absolute top-0 right-0 font-mono text-[8px] font-black uppercase tracking-widest px-3 py-1.5 rounded-bl-2xl shadow-sm z-20 ${isCustom
-                          ? "bg-emerald-500 text-white"
-                          : "bg-brand-blue dark:bg-brand-yellow text-white dark:text-brand-dark"
+                          ?"bg-emerald-500 text-white"
+                          :"bg-brand-blue dark:bg-brand-yellow text-white dark:text-brand-dark"
                         }`}>
-                        {plan.badgeText || (isPopular ? "Most Popular" : isCustom ? "Custom Scoped" : "")}
+                        {plan.badgeText || (isPopular ?"Most Popular" : isCustom ?"Custom Scoped" :"")}
                       </div>
                     )}
 
                     {/* Dynamic Ambient Glow inside the card */}
-                    <div className={`absolute -bottom-16 -right-16 w-32 h-32 rounded-full blur-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none -z-10 ${isPopular ? "bg-brand-blue dark:bg-brand-yellow" : "bg-blue-400 dark:bg-amber-400"
+                    <div className={`absolute -bottom-16 -right-16 w-32 h-32 rounded-full blur-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none -z-10 ${isPopular ?"bg-brand-blue dark:bg-brand-yellow" :"bg-blue-400 dark:bg-amber-400"
                       }`} />
 
                     <div className="space-y-6 text-left relative z-10">
@@ -2157,11 +2157,11 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
                     <div className="pt-6 mt-8 border-t border-brand-zinc-200/80 dark:border-white/5 w-full relative z-10">
                       <CtaButton
-                        href={plan.ctaLink || `/contact?service=${service.slug}&plan=${encodeURIComponent(plan.name || "")}`}
-                        variant={isPopular ? "primary" : "secondary"}
+                        href={plan.ctaLink || `/contact?service=${service.slug}&plan=${encodeURIComponent(plan.name ||"")}`}
+                        variant={isPopular ?"primary" :"secondary"}
                         fullWidth
                       >
-                        {plan.ctaText || "Select Plan"}
+                        {plan.ctaText ||"Select Plan"}
                       </CtaButton>
                     </div>
 
@@ -2188,8 +2188,8 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                   </div>
                 )}
                 <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
-                  {service.recommendedSection.titleIntro}{" "}
-                  <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-2 font-black font-serif italic font-normal">
+                  {service.recommendedSection.titleIntro}{""}
+ <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-2 font-black font-cursive font-normal">
                     {service.recommendedSection.titleHighlight}
                   </span>
                 </h2>
@@ -2222,7 +2222,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             <div
               ref={sliderRef}
               className="flex gap-6 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory pt-6 pb-6 px-3 scroll-smooth"
-              style={{ WebkitOverflowScrolling: "touch" }}
+              style={{ WebkitOverflowScrolling:"touch" }}
             >
               {recommendedServices.map((recSrv: any, idx: number) => (
                 <Link
@@ -2248,7 +2248,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                         {recSrv.title}
                       </h3>
                       <div className="text-[12.5px] font-sans text-brand-zinc-555 dark:text-zinc-400 leading-relaxed font-normal">
-                        <RichTextRenderer content={recSrv.heroDescription || recSrv.description || "High-impact growth strategies designed to accelerate conversions."} />
+                        <RichTextRenderer content={recSrv.heroDescription || recSrv.description ||"High-impact growth strategies designed to accelerate conversions."} />
                       </div>
                     </div>
 
@@ -2297,10 +2297,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                   ? dbService.faq
                   : (service.faqs || [])}
             faqSchemaMarkup={pageData?.content?.faqSchemaMarkup || dbService?.faqSchemaMarkup}
-            badge={dbService?.faqBadge || service.faqSection?.sectionTag || "14 // FREQUENTLY ASKED"}
+            badge={dbService?.faqBadge || service.faqSection?.sectionTag ||"14 // FREQUENTLY ASKED"}
             titleIntro={dbService?.faqTitleIntro !== undefined ? dbService?.faqTitleIntro : service.faqSection?.titleIntro}
-            titleHighlight={dbService?.faqTitleHighlight || service.faqSection?.titleHighlight || "Frequently Asked Questions"}
-            description={dbService?.faqDescription || service.faqSection?.description || ""}
+            titleHighlight={dbService?.faqTitleHighlight || service.faqSection?.titleHighlight ||"Frequently Asked Questions"}
+            description={dbService?.faqDescription || service.faqSection?.description ||""}
             data={pageData?.content || dbService || service}
           />
         </section>
@@ -2326,7 +2326,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 </div>
 
                 <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-[46px] font-black leading-[1.25] tracking-tight text-white">
-                  {service.finalCta.titleIntro}{" "}
+                  {service.finalCta.titleIntro}{""}
                   <span className="relative inline-block">
                     <span className="font-cursive text-[#E9BD36] text-3xl sm:text-4xl lg:text-[46px] font-normal pl-1">
                       {service.finalCta.titleHighlight}
@@ -2352,10 +2352,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
                 <div className="flex flex-wrap items-center gap-4 pt-2">
                   {service.finalCta.primaryCtaText && (
-                    <CtaButton href={service.finalCta.primaryCtaLink || "#contact-form"}>{service.finalCta.primaryCtaText}</CtaButton>
+                    <CtaButton href={service.finalCta.primaryCtaLink ||"#contact-form"}>{service.finalCta.primaryCtaText}</CtaButton>
                   )}
                   {service.finalCta.secondaryCtaText && (
-                    <CtaButton href={service.finalCta.secondaryCtaLink || "/contact-us"} variant="secondary">{service.finalCta.secondaryCtaText}</CtaButton>
+                    <CtaButton href={service.finalCta.secondaryCtaLink ||"/contact-us"} variant="secondary">{service.finalCta.secondaryCtaText}</CtaButton>
                   )}
                 </div>
               </div>
@@ -2364,7 +2364,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 <div className="absolute bottom-0 w-[320px] h-[320px] bg-gradient-to-t from-[#020485] to-[#0408d9] rounded-full opacity-90 border border-white/20 shadow-2xl" />
                 <div className="relative z-10 w-[280px] h-[370px] self-end drop-shadow-2xl overflow-hidden rounded-t-[32px] border-t border-l border-r border-white/25 shadow-2xl">
                   <img
-                    src={service.finalCta.founderImage || "/founder_portrait_nobg.png"}
+                    src={service.finalCta.founderImage ||"/founder_portrait_nobg.png"}
                     alt="Founder Strategy Session"
                     className="w-full h-full object-cover object-top filter contrast-[1.05]"
                   />

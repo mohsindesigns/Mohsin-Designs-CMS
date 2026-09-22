@@ -1,14 +1,14 @@
 "use client";
 
-import CtaButton from "@/components/ui/CtaButton";
-import { withTrailingSlash } from "@/lib/url";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ArrowUpRight, MapPin, Globe } from "lucide-react";
-import { useState } from "react";
-import dynamic from "next/dynamic";
-import { useContent } from "@/hooks/useContent";
-import { resolveCountryLocation, COUNTRIES_DATABASE } from "@/lib/countryLocations";
-import RichTextRenderer from "@/components/ui/RichTextRenderer";
+import CtaButton from"@/components/ui/CtaButton";
+import { withTrailingSlash } from"@/lib/url";
+import { motion, AnimatePresence } from"framer-motion";
+import { ArrowRight, ArrowUpRight, MapPin, Globe } from"lucide-react";
+import { useState } from"react";
+import dynamic from"next/dynamic";
+import { useContent } from"@/hooks/useContent";
+import { resolveCountryLocation, COUNTRIES_DATABASE } from"@/lib/countryLocations";
+import RichTextRenderer from"@/components/ui/RichTextRenderer";
 
 // Dynamic import with SSR disabled for Leaflet map
 const RealWorldMap = dynamic(() => import("@/components/RealWorldMap"), {
@@ -26,27 +26,27 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
   const content = useContent();
   const serviceArea = overrideData || content.serviceArea || {};
 
-  const sectionTag = serviceArea.sectionTag || "GLOBAL COVERAGE";
-  const titleIntro = serviceArea.titleIntro || "Serving Clients";
-  const titleHighlight = serviceArea.titleHighlight || "Worldwide";
-  const description = serviceArea.description || "With distributed engineering hubs and round-the-clock availability, we partner with industry leaders across North America, Europe, the Middle East, and Asia-Pacific.";
-  const ctaText = serviceArea.ctaText || "Schedule Global Consultation";
-  const ctaHref = serviceArea.ctaHref || serviceArea.ctaLink || "#contact-form";
+  const sectionTag = serviceArea.sectionTag ||"GLOBAL COVERAGE";
+  const titleIntro = serviceArea.titleIntro ||"Serving Clients";
+  const titleHighlight = serviceArea.titleHighlight ||"Worldwide";
+  const description = serviceArea.description ||"With distributed engineering hubs and round-the-clock availability, we partner with industry leaders across North America, Europe, the Middle East, and Asia-Pacific.";
+  const ctaText = serviceArea.ctaText ||"Schedule Global Consultation";
+  const ctaHref = serviceArea.ctaHref || serviceArea.ctaLink ||"#contact-form";
 
   // Auto-enrich hubs with geocoded coordinates & timezone if missing
   const rawHubs: any[] = Array.isArray(serviceArea.hubs) && serviceArea.hubs.length > 0 ? serviceArea.hubs : [
-    { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", link: "/locations" },
-    { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", link: "/locations" },
-    { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", link: "/locations" },
-    { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", link: "/locations" },
-    { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET", link: "/locations" },
-    { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET", link: "/locations" },
-    { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET", link: "/locations" },
-    { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET", link: "/locations" },
-    { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET", link: "/locations" },
-    { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT", link: "/locations" },
-    { id: "bh", name: "Bahrain", focus: "MENA Regional Hub", timezone: "AST", link: "/locations" },
-    { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST", link: "/locations" }
+    { id:"us", name:"United States", focus:"Architecture & Design", timezone:"EST / PST", link:"/locations" },
+    { id:"ca", name:"Canada", focus:"Cloud & Security", timezone:"EST", link:"/locations" },
+    { id:"uk", name:"United Kingdom", focus:"Fintech & Enterprise UI", timezone:"GMT", link:"/locations" },
+    { id:"de", name:"Germany", focus:"High Performance Web", timezone:"CET", link:"/locations" },
+    { id:"fr", name:"France", focus:"Branding & Strategy", timezone:"CET", link:"/locations" },
+    { id:"es", name:"Spain", focus:"Frontend Development", timezone:"CET", link:"/locations" },
+    { id:"it", name:"Italy", focus:"Creative Design", timezone:"CET", link:"/locations" },
+    { id:"at", name:"Austria", focus:"Mobile Apps & API", timezone:"CET", link:"/locations" },
+    { id:"be", name:"Belgium", focus:"Digital Platforms", timezone:"CET", link:"/locations" },
+    { id:"br", name:"Brazil", focus:"Latin America Hub", timezone:"BRT", link:"/locations" },
+    { id:"bh", name:"Bahrain", focus:"MENA Regional Hub", timezone:"AST", link:"/locations" },
+    { id:"au", name:"Australia", focus:"APAC Delivery", timezone:"AEST", link:"/locations" }
   ];
 
   const hubs = rawHubs
@@ -57,10 +57,10 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
       return {
         id: hub.id || `hub-${idx}`,
         name: hub.name,
-        focus: hub.focus || "Global Partner Delivery",
-        timezone: hub.timezone || resolved.timezone || "UTC",
+        focus: hub.focus ||"Global Partner Delivery",
+        timezone: hub.timezone || resolved.timezone ||"UTC",
         // Fall back to the general locations page so a chip is never a dead click
-        link: hub.link || hub.href || hub.url || "/locations",
+        link: hub.link || hub.href || hub.url ||"/locations",
         lat: hub.lat || dbData?.lat || resolved.lat || 20,
         lng: hub.lng || dbData?.lng || resolved.lng || 0,
       };
@@ -77,7 +77,7 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
         <div className="flex flex-col lg:grid lg:grid-cols-12 gap-10 lg:gap-16 items-start lg:items-center">
 
           {/* ── Left Column: Narrative & Hub Chips ── */}
-          <div className="w-full lg:col-span-5 flex flex-col items-center lg:items-start text-center lg:text-left gap-6">
+          <div className="w-full lg:col-span-5 min-w-0 flex flex-col items-center lg:items-start text-center lg:text-left gap-6">
 
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary dark:text-yellow-400 text-xs font-bold uppercase tracking-widest self-center lg:self-start">
               <span className="relative flex h-2 w-2">
@@ -88,8 +88,8 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
             </div>
 
             <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-[1.15]">
-              {titleIntro}{" "}
-              <span className="text-primary dark:text-yellow-400 font-serif font-normal italic">
+              {titleIntro}{""}
+ <span className="text-primary dark:text-yellow-400 font-cursive font-normal">
                 {titleHighlight}
               </span>
             </h2>
@@ -118,16 +118,16 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
                     whileTap={{ scale: 0.96 }}
                     className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-bold tracking-wide transition-all duration-200 cursor-pointer select-none focus:outline-none ${
                       isActive
-                        ? "border-[#0306AC] dark:border-[#E9BD36] bg-[#EFF6FF] dark:bg-[#E9BD36]/15 text-[#0306AC] dark:text-[#E9BD36] shadow-sm"
-                        : "border-slate-200 dark:border-white/10 text-slate-700 dark:text-zinc-300 hover:border-[#0306AC] dark:hover:border-[#E9BD36] hover:bg-[#EFF6FF] dark:hover:bg-[#E9BD36]/10 hover:text-[#0306AC] dark:hover:text-[#E9BD36]"
+                        ?"border-[#0306AC] dark:border-[#E9BD36] bg-[#EFF6FF] dark:bg-[#E9BD36]/15 text-[#0306AC] dark:text-[#E9BD36] shadow-sm"
+                        :"border-slate-200 dark:border-white/10 text-slate-700 dark:text-zinc-300 hover:border-[#0306AC] dark:hover:border-[#E9BD36] hover:bg-[#EFF6FF] dark:hover:bg-[#E9BD36]/10 hover:text-[#0306AC] dark:hover:text-[#E9BD36]"
                     }`}
                     aria-pressed={isActive}
                   >
                     <MapPin
                       className={`shrink-0 transition-colors duration-250 h-2.5 w-2.5 ${
                         isActive
-                          ? "text-[#0306AC] dark:text-[#E9BD36]"
-                          : "text-slate-400 dark:text-zinc-500"
+                          ?"text-[#0306AC] dark:text-[#E9BD36]"
+                          :"text-slate-400 dark:text-zinc-500"
                       }`}
                       strokeWidth={3}
                     />
@@ -149,7 +149,7 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -6 }}
-                    transition={{ duration: 0.2, ease: "easeOut" }}
+                    transition={{ duration: 0.2, ease:"easeOut" }}
                     className="w-full flex items-center gap-3.5 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#161622] px-4 py-2.5 shadow-lg shadow-slate-900/5 dark:shadow-black/40 transition-colors"
                   >
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#0306AC] text-white dark:bg-[#E9BD36] dark:text-[#080710] shadow-sm transition-colors">
@@ -192,7 +192,7 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
           </div>
 
           {/* ── Right Column: Real Interactive World Map ── */}
-          <div className="w-full lg:col-span-7 bg-white dark:bg-[#12121e] border border-slate-200 dark:border-white/10 rounded-2xl sm:rounded-3xl p-2 sm:p-4 shadow-xl relative overflow-hidden">
+          <div className="w-full lg:col-span-7 min-w-0 bg-white dark:bg-[#12121e] border border-slate-200 dark:border-white/10 rounded-2xl sm:rounded-3xl p-2 sm:p-4 shadow-xl relative overflow-hidden">
             <div className="w-full h-[380px] sm:h-[460px] rounded-xl overflow-hidden relative">
               <RealWorldMap
                 hubs={hubs}

@@ -1,26 +1,26 @@
 "use client";
 
-import CtaButton from "@/components/ui/CtaButton";
-import ThemedSelect from "@/components/ui/ThemedSelect";
-import PageBreadcrumbs from "@/components/PageBreadcrumbs";
+import CtaButton from"@/components/ui/CtaButton";
+import ThemedSelect from"@/components/ui/ThemedSelect";
+import PageBreadcrumbs from"@/components/PageBreadcrumbs";
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Upload, Send, Briefcase, FileText, User, Mail, Phone, CheckCircle, ArrowRight } from 'lucide-react';
-import { useContent } from "../../hooks/useContent";
+import { useContent } from"../../hooks/useContent";
 import RichTextRenderer from '../ui/RichTextRenderer';
-import PageInlineFaqs from "@/components/PageInlineFaqs";
-import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
+import PageInlineFaqs from"@/components/PageInlineFaqs";
+import TurnstileCaptcha from"@/components/ui/TurnstileCaptcha";
 
 const Images = {
-  Pattern: "https://images.unsplash.com/photo-1502691876148-a84978e59af8?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+  Pattern:"https://images.unsplash.com/photo-1502691876148-a84978e59af8?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
 };
 
-const ParallaxLayer = ({ children, speed = 0.1, className = "", sectionRef }: any) => {
+const ParallaxLayer = ({ children, speed = 0.1, className ="", sectionRef }: any) => {
   const ref = useRef<any>(null);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ["start start", "end end"]
+    offset: ["start start","end end"]
   });
   const y = useTransform(scrollYProgress, [0, 1], [0, speed * 50]);
   return (
@@ -53,15 +53,15 @@ export default function CareersTemplate({ pageData, params }: { pageData?: any, 
     setIsSubmitting(true);
     setErrorMsg(null);
     const formData = new FormData(e.currentTarget);
-    formData.append("type", "Job Application");
-    formData.append("_subject", "New Job Application - Mohsin Designs");
+    formData.append("type","Job Application");
+    formData.append("_subject","New Job Application - Mohsin Designs");
     if (captchaToken) {
       formData.append("captchaToken", captchaToken);
     }
 
     try {
       const response = await fetch("/api/send", {
-        method: "POST",
+        method:"POST",
         body: formData,
       });
       const data = await response.json().catch(() => ({}));
@@ -71,7 +71,7 @@ export default function CareersTemplate({ pageData, params }: { pageData?: any, 
       } else {
         // Log the specific error from API
         console.error("API Submission Error:", data.error, data.details);
-        throw new Error(data.error || "Form submission failed");
+        throw new Error(data.error ||"Form submission failed");
       }
     } catch (error: any) {
       console.error("Career form fallback triggered:", error);
@@ -122,13 +122,13 @@ ${message}
             <PageBreadcrumbs page={pageData} align="center" className="mb-6" />
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-center gap-3 mb-6">
               <div className="w-8 h-[2px] bg-gradient-to-r from-blue-300 to-blue-500" />
-              <span className="text-xs font-medium tracking-[0.2em] uppercase text-blue-600">{careersData?.section?.badge || "Join Mohsin Designs"}</span>
+              <span className="text-xs font-medium tracking-[0.2em] uppercase text-blue-600">{careersData?.section?.badge ||"Join Mohsin Designs"}</span>
               <div className="w-8 h-[2px] bg-gradient-to-r from-blue-500 to-blue-300" />
             </motion.div>
             <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-3xl sm:text-4xl md:text-[40px] lg:text-[44px] font-light text-slate-900 mb-6 leading-tight">
               {(() => {
-                const rawHeadline = careersData?.section?.headline || "Build the Future with Us";
-                const parts = rawHeadline.includes('with') ? rawHeadline.split('with') : [rawHeadline, ""];
+                const rawHeadline = careersData?.section?.headline ||"Build the Future with Us";
+                const parts = rawHeadline.includes('with') ? rawHeadline.split('with') : [rawHeadline,""];
                 return (
                   <>
                     {parts[0]} {parts[1] ? <br /> : null}
@@ -170,7 +170,7 @@ ${message}
                       <input type="email" name="email" required className="w-full px-5 py-4 bg-slate-50/50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
                     </div>
                     <div className="space-y-3">
-                      <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2"><Phone className="w-4 h-4 text-blue-500" />{careersData?.labels?.phone || "Phone Number"}</label>
+                      <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2"><Phone className="w-4 h-4 text-blue-500" />{careersData?.labels?.phone ||"Phone Number"}</label>
                       <input type="tel" name="phone" required className="w-full px-5 py-4 bg-slate-50/50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
                     </div>
                   </div>
@@ -182,7 +182,7 @@ ${message}
                       name="role"
                       required
                       className="!rounded-xl bg-slate-50/50"
-                      placeholder={careersData?.labels?.roleSelector || "Select a Position"}
+                      placeholder={careersData?.labels?.roleSelector ||"Select a Position"}
                       options={(careersData?.roles || []).map((role: any) => ({ value: role.value, label: role.label }))}
                     />
                   </div>
@@ -191,7 +191,7 @@ ${message}
                   <div className="space-y-3">
                     <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2">
                       <FileText className="w-4 h-4 text-blue-500" />
-                      {careersData?.labels?.attachment || "CV / RESUME (PDF)"}
+                      {careersData?.labels?.attachment ||"CV / RESUME (PDF)"}
                     </label>
                     <div className="relative group">
                       <input
@@ -202,7 +202,7 @@ ${message}
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                       />
                       <div className="w-full px-5 py-4 bg-slate-50/50 border border-dashed rounded-xl flex items-center justify-between group-hover:border-blue-400 transition-all">
-                        <span className="text-slate-500 font-medium">{fileName || careersData?.labels?.attachmentPlaceholder || "Upload your resume (PDF)..."}</span>
+                        <span className="text-slate-500 font-medium">{fileName || careersData?.labels?.attachmentPlaceholder ||"Upload your resume (PDF)..."}</span>
                         <Upload className="w-5 h-5 text-slate-400 group-hover:text-blue-500" />
                       </div>
                     </div>

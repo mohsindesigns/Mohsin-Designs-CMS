@@ -1,11 +1,11 @@
 "use client";
 
-import CtaButton from "@/components/ui/CtaButton";
-import PageBreadcrumbs from "@/components/PageBreadcrumbs";
-import React, { useState } from "react";
-import Link from "@/components/ui/Link";
-import Image from "next/image";
-import { motion } from "framer-motion";
+import CtaButton from"@/components/ui/CtaButton";
+import PageBreadcrumbs from"@/components/PageBreadcrumbs";
+import React, { useState } from"react";
+import Link from"@/components/ui/Link";
+import Image from"next/image";
+import { motion } from"framer-motion";
 import {
   ArrowRight,
   Star,
@@ -38,12 +38,12 @@ import {
   TreePine,
   Layers,
   Sparkles
-} from "lucide-react";
-import * as LucideIcons from "lucide-react";
-import { useContent } from "../../hooks/useContent";
-import BlogSection from "../sections/BlogSection";
-import PageInlineFaqs from "@/components/PageInlineFaqs";
-import RichTextRenderer from "@/components/ui/RichTextRenderer";
+} from"lucide-react";
+import * as LucideIcons from"lucide-react";
+import { useContent } from"../../hooks/useContent";
+import BlogSection from"../sections/BlogSection";
+import PageInlineFaqs from"@/components/PageInlineFaqs";
+import RichTextRenderer from"@/components/ui/RichTextRenderer";
 
 // ── Icon resolver ─────────────────────────────────────────────────────────────
 const iconMap: Record<string, React.ElementType> = {
@@ -86,7 +86,7 @@ const drawVariants = {
     transition: {
       duration: custom?.duration ?? 0.4,
       delay: custom?.delay ?? 0.1,
-      ease: "easeOut" as const,
+      ease:"easeOut" as const,
     },
   }),
 };
@@ -95,7 +95,7 @@ const drawVariants = {
 function ServiceCard({
   card,
   index,
-  ctaText = "Explore Inclusions",
+  ctaText ="Explore Inclusions",
 }: {
   card: {
     id: string;
@@ -110,7 +110,7 @@ function ServiceCard({
   ctaText?: string;
 }) {
   const Icon = iconMap[card.iconName] || Search;
-  const [coords, setCoords] = useState({ x: "50%", y: "50%" });
+  const [coords, setCoords] = useState({ x:"50%", y:"50%" });
 
   // Calculate cursor position for interactive card spotlight
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -120,7 +120,7 @@ function ServiceCard({
     setCoords({ x: `${x}%`, y: `${y}%` });
   };
 
-  const formattedNum = (index + 1).toString().padStart(2, "0");
+  const formattedNum = (index + 1).toString().padStart(2,"0");
 
   return (
     <Link href={`/services/${card.slug}`} className="w-full flex">
@@ -128,7 +128,7 @@ function ServiceCard({
         initial={{ opacity: 0, y: 32 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.55, delay: index * 0.07, ease: "easeOut" }}
+        transition={{ duration: 0.55, delay: index * 0.07, ease:"easeOut" }}
         onMouseMove={handleMouseMove}
         style={{
           ["--x" as any]: coords.x,
@@ -156,13 +156,13 @@ function ServiceCard({
         <div
           className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0 dark:hidden"
           style={{
-            background: "radial-gradient(circle 120px at var(--x) var(--y), rgba(3, 6, 172, 0.05), transparent 80%)",
+            background:"radial-gradient(circle 120px at var(--x) var(--y), rgba(3, 6, 172, 0.05), transparent 80%)",
           }}
         />
         <div
           className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0 hidden dark:block"
           style={{
-            background: "radial-gradient(circle 120px at var(--x) var(--y), rgba(233, 189, 54, 0.06), transparent 80%)",
+            background:"radial-gradient(circle 120px at var(--x) var(--y), rgba(233, 189, 54, 0.06), transparent 80%)",
           }}
         />
 
@@ -237,45 +237,45 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
   const content = pageData?.content || {};
 
   const hero = {
-    badgeText: content.hero?.badgeText || "ENGINEERED FOR COMPOUNDING ROI",
-    titleIntro: content.hero?.titleIntro || "High-Performance Growth &",
-    titleHighlight: content.hero?.titleHighlight || "Digital Architecture",
-    description: content.hero?.description || "From custom Next.js platforms to full-funnel acquisition engines, we design, engineer, and scale market-leading digital products that dominate competitive categories.",
-    bgImage: content.hero?.bgImage || content.hero?.backgroundImage || "/portfolio_hero_bg.png",
+    badgeText: content.hero?.badgeText ||"ENGINEERED FOR COMPOUNDING ROI",
+    titleIntro: content.hero?.titleIntro ||"High-Performance Growth &",
+    titleHighlight: content.hero?.titleHighlight ||"Digital Architecture",
+    description: content.hero?.description ||"From custom Next.js platforms to full-funnel acquisition engines, we design, engineer, and scale market-leading digital products that dominate competitive categories.",
+    bgImage: content.hero?.bgImage || content.hero?.backgroundImage ||"/portfolio_hero_bg.png",
     ctaPrimary: {
-      label: content.hero?.ctaPrimary?.label || "Schedule Strategy Call",
-      href: content.hero?.ctaPrimary?.href || "/contact-us",
+      label: content.hero?.ctaPrimary?.label ||"Schedule Strategy Call",
+      href: content.hero?.ctaPrimary?.href ||"/contact-us",
     },
     ctaSecondary: {
-      label: content.hero?.ctaSecondary?.label || "Explore Inclusions",
-      href: content.hero?.ctaSecondary?.href || "#services-grid",
+      label: content.hero?.ctaSecondary?.label ||"Explore Inclusions",
+      href: content.hero?.ctaSecondary?.href ||"#services-grid",
     },
   };
 
   const grid = {
-    eyebrow: content.grid?.eyebrow || "OUR CORE CAPABILITIES",
-    titleIntro: content.grid?.titleIntro || "Engineered Services For",
-    titleHighlight: content.grid?.titleHighlight || "Compounding Growth",
-    subtext: content.grid?.subtext || "Every service is built on scalable modern engineering, conversion rate science, and relentless performance standards.",
-    ctaText: content.grid?.ctaText || "Explore Scope & Inclusions",
+    eyebrow: content.grid?.eyebrow ||"OUR CORE CAPABILITIES",
+    titleIntro: content.grid?.titleIntro ||"Engineered Services For",
+    titleHighlight: content.grid?.titleHighlight ||"Compounding Growth",
+    subtext: content.grid?.subtext ||"Every service is built on scalable modern engineering, conversion rate science, and relentless performance standards.",
+    ctaText: content.grid?.ctaText ||"Explore Scope & Inclusions",
   };
 
   const ctaBanner = {
-    eyebrow: content.ctaBanner?.eyebrow || "READY TO ACCELERATE?",
-    titleIntro: content.ctaBanner?.titleIntro || "Let's Build Your Next",
-    titleHighlight: content.ctaBanner?.titleHighlight || "Competitive Edge",
-    titleLine2: content.ctaBanner?.titleLine2 || "Together.",
-    description: content.ctaBanner?.description || "Schedule a free 30-minute technical audit. We'll diagnose bottlenecks in your existing presence and map out a concrete blueprint for compounding growth.",
+    eyebrow: content.ctaBanner?.eyebrow ||"READY TO ACCELERATE?",
+    titleIntro: content.ctaBanner?.titleIntro ||"Let's Build Your Next",
+    titleHighlight: content.ctaBanner?.titleHighlight ||"Competitive Edge",
+    titleLine2: content.ctaBanner?.titleLine2 ||"Together.",
+    description: content.ctaBanner?.description ||"Schedule a free 30-minute technical audit. We'll diagnose bottlenecks in your existing presence and map out a concrete blueprint for compounding growth.",
     ctaPrimary: {
-      label: content.ctaBanner?.ctaPrimary?.label || "Book Strategy Session",
-      href: content.ctaBanner?.ctaPrimary?.href || "/contact-us",
+      label: content.ctaBanner?.ctaPrimary?.label ||"Book Strategy Session",
+      href: content.ctaBanner?.ctaPrimary?.href ||"/contact-us",
     },
     ctaSecondary: {
-      label: content.ctaBanner?.ctaSecondary?.label || "Direct Office Line",
-      href: content.ctaBanner?.ctaSecondary?.href || "/contact-us",
+      label: content.ctaBanner?.ctaSecondary?.label ||"Direct Office Line",
+      href: content.ctaBanner?.ctaSecondary?.href ||"/contact-us",
     },
-    portraitSrc: content.ctaBanner?.portraitSrc || "/founder.png",
-    portraitAlt: content.ctaBanner?.portraitAlt || "Mohsin Designs Lead Architect",
+    portraitSrc: content.ctaBanner?.portraitSrc ||"/founder.png",
+    portraitAlt: content.ctaBanner?.portraitAlt ||"Mohsin Designs Lead Architect",
   };
 
   // Get service inventory list from database
@@ -283,17 +283,17 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
     ? content.globalServices
     : (Array.isArray(content?.services) && content.services.length > 0 ? content.services : []);
 
-  const activeServices = rawServices.filter((s: any) => s.status !== "draft" && !s.isTrashed);
+  const activeServices = rawServices.filter((s: any) => s.status !=="draft" && !s.isTrashed);
 
   // Map each service to cards format
   const cards = activeServices.map((s: any, idx: number) => ({
-    id: (idx + 1).toString().padStart(2, "0"),
-    iconName: s.icon || "Search",
-    tag: s.tag || "Premium Solution",
-    title: s.title || "Service Offering",
-    desc: s.hero?.description || s.description || "High-performance digital engineering and growth architecture tailored to maximize brand equity.",
-    features: s.hero?.benefits || s.features || (s.whatIncluded?.pillars ? s.whatIncluded.pillars.map((p: any) => p.title) : ["Custom Scope Blueprint", "Conversion Rate Optimization", "Dedicated SLA Support"]),
-    slug: s.slug || s.title?.toLowerCase().replace(/[^a-z0-9 ]/g, "").replace(/\s+/g, "-"),
+    id: (idx + 1).toString().padStart(2,"0"),
+    iconName: s.icon ||"Search",
+    tag: s.tag ||"Premium Solution",
+    title: s.title ||"Service Offering",
+    desc: s.hero?.description || s.description ||"High-performance digital engineering and growth architecture tailored to maximize brand equity.",
+    features: s.hero?.benefits || s.features || (s.whatIncluded?.pillars ? s.whatIncluded.pillars.map((p: any) => p.title) : ["Custom Scope Blueprint","Conversion Rate Optimization","Dedicated SLA Support"]),
+    slug: s.slug || s.title?.toLowerCase().replace(/[^a-z0-9 ]/g,"").replace(/\s+/g,"-"),
   }));
 
   return (
@@ -311,7 +311,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
           {/* Full background bleed image */}
           <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
             <img
-              src={hero.bgImage || "/portfolio_hero_bg.png"}
+              src={hero.bgImage ||"/portfolio_hero_bg.png"}
               alt="Services Background"
               className="w-full h-full object-cover object-right opacity-100 dark:opacity-60"
             />
@@ -326,7 +326,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                 initial={{ opacity: 0, y: 25 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] as any }}
-                className="lg:col-span-8 space-y-6 text-left"
+                className="lg:col-span-8 min-w-0 space-y-6 text-left"
               >
                 <PageBreadcrumbs page={pageData} />
                 {/* Badge */}
@@ -340,7 +340,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
 
                 {/* Headline */}
                 <h1 className="font-heading text-3xl xs:text-3xl sm:text-4xl lg:text-[42px] font-black tracking-tight leading-[1.18] text-gray-900 dark:text-white max-w-3xl">
-                  {hero.titleIntro}{" "}
+                  {hero.titleIntro}{""}
                   <span className="relative inline-block text-[#0306ac] dark:text-[#e9bd36] pb-1 ml-1">
                     {hero.titleHighlight}
                     <svg
@@ -390,7 +390,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
+              transition={{ duration: 0.6, ease:"easeOut" }}
               className="text-center mb-14 space-y-4"
             >
               <div className="flex justify-center">
@@ -399,7 +399,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                 </span>
               </div>
               <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.12] text-gray-900 dark:text-white">
-                {grid.titleIntro}{" "}
+                {grid.titleIntro}{""}
                 <span className="relative inline-block text-[#0306ac] dark:text-[#e9bd36] pb-1 ml-1">
                   {grid.titleHighlight}
                   <svg
@@ -444,7 +444,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
+              transition={{ duration: 0.7, ease:"easeOut" }}
               className="on-dark-surface relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#0306ac] via-[#020485] to-[#010252] text-white p-8 sm:p-12 lg:p-14 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-8"
             >
               {/* Left text column */}
@@ -461,7 +461,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
 
                 {/* Headline */}
                 <h2 className="font-heading text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.35] tracking-tight text-white">
-                  {ctaBanner.titleIntro}{" "}
+                  {ctaBanner.titleIntro}{""}
                   <span className="relative inline-block">
                     <span className="font-cursive text-[#E9BD36] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
                       {ctaBanner.titleHighlight}
@@ -476,7 +476,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                     >
                       <path d="M 5 6 C 30 9, 70 9, 95 4" />
                     </svg>
-                  </span>{" "}
+                  </span>{""}
                   {ctaBanner.titleLine2}
                 </h2>
 
@@ -498,8 +498,8 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                 <div className="absolute bottom-0 w-[300px] h-[300px] bg-gradient-to-t from-[#020485] to-[#0408d9] rounded-full opacity-90 border border-white/20 shadow-2xl" />
                 <div className="relative z-10 w-[260px] h-[340px] self-end drop-shadow-2xl overflow-hidden rounded-t-[32px] border-t border-l border-r border-white/25 shadow-2xl bg-[#010252]">
                   <Image
-                    src={ctaBanner.portraitSrc || "/founder.png"}
-                    alt={ctaBanner.portraitAlt || "Lead Architect"}
+                    src={ctaBanner.portraitSrc ||"/founder.png"}
+                    alt={ctaBanner.portraitAlt ||"Lead Architect"}
                     width={300}
                     height={380}
                     className="w-full h-full object-cover object-top filter contrast-[1.05]"

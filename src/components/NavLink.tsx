@@ -1,10 +1,10 @@
 "use client";
 
-import { withTrailingSlash } from "@/lib/url";
-import Link from "@/components/ui/Link";
-import { usePathname } from "next/navigation";
-import { forwardRef } from "react";
-import { cn } from "@/lib/utils";
+import { withTrailingSlash } from"@/lib/url";
+import Link from"@/components/ui/Link";
+import { usePathname } from"next/navigation";
+import { forwardRef } from"react";
+import { cn } from"@/lib/utils";
 
 interface NavLinkProps {
   href: string;
@@ -17,7 +17,7 @@ interface NavLinkProps {
 const NavLink = forwardRef<HTMLAnchorElement, NavLinkProps>(
   ({ className, activeClassName, href, children, ...props }, ref) => {
     const pathname = usePathname();
-    const isActive = withTrailingSlash(pathname || "") === withTrailingSlash(href);
+    const isActive = withTrailingSlash(pathname ||"") === withTrailingSlash(href);
 
     return (
       <Link
@@ -32,6 +32,6 @@ const NavLink = forwardRef<HTMLAnchorElement, NavLinkProps>(
   }
 );
 
-NavLink.displayName = "NavLink";
+NavLink.displayName ="NavLink";
 
 export { NavLink };

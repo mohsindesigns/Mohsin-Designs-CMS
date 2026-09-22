@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from"react";
 
 export default function InteractiveBackground() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -24,8 +24,8 @@ export default function InteractiveBackground() {
     const handleMouseMove = (e: MouseEvent) => {
       latestX = e.clientX;
       latestY = e.clientY;
-      if (el && el.getAttribute("data-hovered") !== "true") {
-        el.setAttribute("data-hovered", "true");
+      if (el && el.getAttribute("data-hovered") !=="true") {
+        el.setAttribute("data-hovered","true");
       }
       if (!rafId.current) {
         rafId.current = requestAnimationFrame(updatePosition);
@@ -34,7 +34,7 @@ export default function InteractiveBackground() {
 
     const handleMouseLeave = () => {
       if (el) {
-        el.setAttribute("data-hovered", "false");
+        el.setAttribute("data-hovered","false");
       }
     };
 
@@ -54,8 +54,8 @@ export default function InteractiveBackground() {
       className="fixed inset-0 pointer-events-none z-0 overflow-hidden bg-white dark:bg-[#080710] transition-colors duration-300 group/bg"
       style={
         {
-          "--mouse-x": "-9999px",
-          "--mouse-y": "-9999px",
+"--mouse-x":"-9999px",
+"--mouse-y":"-9999px",
         } as React.CSSProperties
       }
     >
@@ -64,17 +64,17 @@ export default function InteractiveBackground() {
       <div className="absolute bottom-[20%] right-[10%] h-[600px] w-[600px] rounded-full bg-brand-accent/[0.025] blur-3xl animate-blob-float-global-delayed" />
       <div
         className="absolute top-[50%] left-[40%] h-[500px] w-[500px] rounded-full bg-brand-blue/[0.01] blur-3xl animate-blob-float-global"
-        style={{ animationDelay: "8s" }}
+        style={{ animationDelay:"8s" }}
       />
 
       {/* Interactive mouse-following cursor blob */}
       <div
         className="absolute w-[500px] h-[500px] rounded-full blur-3xl transition-opacity duration-300 opacity-0 [[data-hovered='true']_&]:opacity-100"
         style={{
-          background: "var(--background-mouse-glow)",
-          left: "calc(var(--mouse-x) - 250px)",
-          top: "calc(var(--mouse-y) - 250px)",
-          willChange: "left, top",
+          background:"var(--background-mouse-glow)",
+          left:"calc(var(--mouse-x) - 250px)",
+          top:"calc(var(--mouse-y) - 250px)",
+          willChange:"left, top",
         }}
       />
 
@@ -83,8 +83,8 @@ export default function InteractiveBackground() {
         className="absolute inset-0 opacity-25"
         style={{
           backgroundImage:
-            "radial-gradient(var(--background-grid-dot-color) 1.5px, transparent 1.5px)",
-          backgroundSize: "32px 32px",
+"radial-gradient(var(--background-grid-dot-color) 1.5px, transparent 1.5px)",
+          backgroundSize:"32px 32px",
         }}
       />
 
@@ -93,12 +93,12 @@ export default function InteractiveBackground() {
         className="absolute inset-0 transition-opacity duration-300 opacity-0 [[data-hovered='true']_&]:opacity-100"
         style={{
           backgroundImage:
-            "radial-gradient(var(--background-spotlight-color) 1.5px, transparent 1.5px)",
-          backgroundSize: "32px 32px",
+"radial-gradient(var(--background-spotlight-color) 1.5px, transparent 1.5px)",
+          backgroundSize:"32px 32px",
           maskImage:
-            "radial-gradient(200px circle at var(--mouse-x) var(--mouse-y), black, transparent)",
+"radial-gradient(200px circle at var(--mouse-x) var(--mouse-y), black, transparent)",
           WebkitMaskImage:
-            "radial-gradient(200px circle at var(--mouse-x) var(--mouse-y), black, transparent)",
+"radial-gradient(200px circle at var(--mouse-x) var(--mouse-y), black, transparent)",
         }}
       />
 
@@ -107,8 +107,8 @@ export default function InteractiveBackground() {
         className="absolute inset-0 opacity-[0.08]"
         style={{
           backgroundImage:
-            "linear-gradient(to right, var(--background-grid-line-color) 1px, transparent 1px), linear-gradient(to bottom, var(--background-grid-line-color) 1px, transparent 1px)",
-          backgroundSize: "64px 64px",
+"linear-gradient(to right, var(--background-grid-line-color) 1px, transparent 1px), linear-gradient(to bottom, var(--background-grid-line-color) 1px, transparent 1px)",
+          backgroundSize:"64px 64px",
         }}
       />
 
@@ -117,12 +117,12 @@ export default function InteractiveBackground() {
         className="absolute inset-0 transition-opacity duration-300 opacity-0 [[data-hovered='true']_&]:opacity-100"
         style={{
           backgroundImage:
-            "linear-gradient(to right, var(--background-grid-hover-line-color) 1px, transparent 1px), linear-gradient(to bottom, var(--background-grid-hover-line-color) 1px, transparent 1px)",
-          backgroundSize: "64px 64px",
+"linear-gradient(to right, var(--background-grid-hover-line-color) 1px, transparent 1px), linear-gradient(to bottom, var(--background-grid-hover-line-color) 1px, transparent 1px)",
+          backgroundSize:"64px 64px",
           maskImage:
-            "radial-gradient(240px circle at var(--mouse-x) var(--mouse-y), black, transparent)",
+"radial-gradient(240px circle at var(--mouse-x) var(--mouse-y), black, transparent)",
           WebkitMaskImage:
-            "radial-gradient(240px circle at var(--mouse-x) var(--mouse-y), black, transparent)",
+"radial-gradient(240px circle at var(--mouse-x) var(--mouse-y), black, transparent)",
         }}
       />
 

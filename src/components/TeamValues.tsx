@@ -1,9 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { BadgeCheck, Scale, Gem, Zap, Target, Sparkles, TrendingUp, ShieldCheck } from "lucide-react";
-import { useContent } from "../hooks/useContent";
-import RichTextRenderer from "./ui/RichTextRenderer";
+import { motion } from"framer-motion";
+import { BadgeCheck, Scale, Gem, Zap, Target, Sparkles, TrendingUp, ShieldCheck } from"lucide-react";
+import { useContent } from"../hooks/useContent";
+import RichTextRenderer from"./ui/RichTextRenderer";
 
 const iconMap: Record<string, any> = {
   BadgeCheck,

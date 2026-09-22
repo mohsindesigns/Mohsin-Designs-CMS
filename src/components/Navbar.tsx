@@ -1,39 +1,39 @@
 "use client";
 
-import { withTrailingSlash } from "@/lib/url";
-import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ArrowUpRight, MapPin, Menu, X, Star, Sun, Moon } from "lucide-react";
-import { Icon } from "../config/icons";
-import { useContent } from "../hooks/useContent";
-import Image from "next/image";
-import Link from "@/components/ui/Link";
-import CtaButton from "@/components/ui/CtaButton";
-import { parseMapEmbed } from "@/lib/mapEmbed";
+import { withTrailingSlash } from"@/lib/url";
+import { useState, useEffect, useRef } from"react";
+import { motion, AnimatePresence } from"framer-motion";
+import { ArrowRight, ArrowUpRight, MapPin, Menu, X, Star, Sun, Moon } from"lucide-react";
+import { Icon } from"../config/icons";
+import { useContent } from"../hooks/useContent";
+import Image from"next/image";
+import Link from"@/components/ui/Link";
+import CtaButton from"@/components/ui/CtaButton";
+import { parseMapEmbed } from"@/lib/mapEmbed";
 
 const stripHtml = (html: string) => {
-  if (!html) return "";
-  return html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ");
+  if (!html) return"";
+  return html.replace(/<[^>]*>/g,"").replace(/&nbsp;/g,"");
 };
 
 // Shared look of the dropdown / mega-menu panels. The nav bar itself is uppercase + bold + wide
 // tracking; panels must reset that or their titles and descriptions become unreadable.
 const PANEL_BASE =
-  "absolute left-1/2 top-full mt-3 max-w-[calc(100vw-3rem)] overflow-hidden rounded-3xl border border-brand-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#12121e] text-left font-sans text-sm font-normal normal-case tracking-normal text-brand-dark dark:text-white shadow-[0_30px_70px_-20px_rgba(3,6,172,0.28)] dark:shadow-[0_30px_70px_-20px_rgba(0,0,0,0.7)] pointer-events-auto";
+"absolute left-1/2 top-full mt-3 max-w-[calc(100vw-3rem)] overflow-hidden rounded-3xl border border-brand-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#12121e] text-left font-sans text-sm font-normal normal-case tracking-normal text-brand-dark dark:text-white shadow-[0_30px_70px_-20px_rgba(3,6,172,0.28)] dark:shadow-[0_30px_70px_-20px_rgba(0,0,0,0.7)] pointer-events-auto";
 
-type MapSource = { kind: "embed" | "image" | "none"; value: string };
+type MapSource = { kind:"embed" |"image" |"none"; value: string };
 
 // Which map to show in the Locations dropdown: the hovered location's own map if it has one,
 // otherwise the dropdown's default (embed or image).
 function resolveLocationMap(menu: any, item?: any): MapSource {
   const itemEmbed = parseMapEmbed(item?.mapEmbed);
-  if (itemEmbed) return { kind: "embed", value: itemEmbed };
-  if (item?.mapImage) return { kind: "image", value: item.mapImage };
+  if (itemEmbed) return { kind:"embed", value: itemEmbed };
+  if (item?.mapImage) return { kind:"image", value: item.mapImage };
   const menuEmbed = parseMapEmbed(menu?.mapEmbed);
-  if (menu?.mapType === "image" && menu?.mapImage) return { kind: "image", value: menu.mapImage };
-  if (menuEmbed) return { kind: "embed", value: menuEmbed };
-  if (menu?.mapImage) return { kind: "image", value: menu.mapImage };
-  return { kind: "none", value: "" };
+  if (menu?.mapType ==="image" && menu?.mapImage) return { kind:"image", value: menu.mapImage };
+  if (menuEmbed) return { kind:"embed", value: menuEmbed };
+  if (menu?.mapImage) return { kind:"image", value: menu.mapImage };
+  return { kind:"none", value:"" };
 }
 
 export default function Navbar() {
@@ -113,7 +113,7 @@ export default function Navbar() {
       <motion.div 
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        transition={{ duration: 0.5, ease:"easeOut" }}
         className="mx-auto max-w-7xl rounded-full border border-brand-zinc-200/80 dark:border-white/10 bg-white/80 dark:bg-[#12121e]/80 px-3 sm:px-6 py-2.5 sm:py-3 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md flex items-center justify-between pointer-events-auto"
       >
         {/* Brand Logo - Supporting dynamic image & fallback premium styling */}
@@ -123,13 +123,13 @@ export default function Navbar() {
               {/* Light-theme logo (navbar.logo). Falls back to the dark one if only that is set. */}
               <img
                 src={navbar.logo || navbar.logoDark}
-                alt={settings.siteTitle || "Mohsin Designs Logo"}
+                alt={settings.siteTitle ||"Mohsin Designs Logo"}
                 className="object-contain w-full h-full max-h-10 dark:hidden"
               />
               {/* Dark-theme logo (navbar.logoDark). Falls back to the light one. */}
               <img
                 src={navbar.logoDark || navbar.logo}
-                alt={settings.siteTitle || "Mohsin Designs Logo"}
+                alt={settings.siteTitle ||"Mohsin Designs Logo"}
                 loading="lazy"
                 className="object-contain w-full h-full max-h-10 hidden dark:block"
               />
@@ -138,7 +138,7 @@ export default function Navbar() {
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="relative flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full bg-brand-blue shadow-md border border-brand-blue/10">
                 <span className="font-sans font-black text-white text-sm sm:text-base leading-none">
-                  {navbar.logoLetter || (settings.siteTitle ? settings.siteTitle.charAt(0) : "M")}
+                  {navbar.logoLetter || (settings.siteTitle ? settings.siteTitle.charAt(0) :"M")}
                 </span>
                 <div className="absolute -top-0.5 -right-0.5 h-3 w-3 sm:h-3.5 sm:w-3.5 rounded-full bg-brand-accent flex items-center justify-center border border-white">
                   <Star className="h-1.5 w-1.5 sm:h-2 sm:w-2 fill-brand-dark text-brand-dark" />
@@ -146,10 +146,10 @@ export default function Navbar() {
               </div>
               <div className="flex flex-col">
                 <span className="font-sans font-black text-xs sm:text-base tracking-tight text-brand-dark dark:text-white leading-none">
-                  {navbar.logoText || "MOHSIN"}
+                  {navbar.logoText ||"MOHSIN"}
                 </span>
                 <span className="font-sans font-bold text-[7.5px] sm:text-[8.5px] tracking-[0.2em] text-brand-blue dark:text-brand-yellow uppercase leading-none mt-1">
-                  {navbar.logoSub || "DESIGNS"}
+                  {navbar.logoSub ||"DESIGNS"}
                 </span>
               </div>
             </div>
@@ -185,9 +185,9 @@ export default function Navbar() {
                   <AnimatePresence>
                     {isOpen && services.length > 0 && (
                       <motion.div
-                        initial={{ opacity: 0, y: 15, x: "-50%" }}
-                        animate={{ opacity: 1, y: 0, x: "-50%" }}
-                        exit={{ opacity: 0, y: 10, x: "-50%" }}
+                        initial={{ opacity: 0, y: 15, x:"-50%" }}
+                        animate={{ opacity: 1, y: 0, x:"-50%" }}
+                        exit={{ opacity: 0, y: 10, x:"-50%" }}
                         onMouseEnter={handleMegaMenuMouseEnter}
                         onMouseLeave={handleMegaMenuMouseLeave}
                         className={`${PANEL_BASE} w-[960px]`}
@@ -197,10 +197,10 @@ export default function Navbar() {
                         <div className="flex items-end justify-between gap-6 px-8 pt-7 pb-3">
                           <div>
                             <p className="text-[11px] font-mono font-bold uppercase tracking-[0.18em] text-brand-blue dark:text-brand-yellow">
-                              {link.megaMenuEyebrow || "Our Services"}
+                              {link.megaMenuEyebrow ||"Our Services"}
                             </p>
                             <h3 className="mt-1.5 font-heading text-2xl font-black leading-tight tracking-tight text-brand-dark dark:text-white">
-                              {link.megaMenuTitle || "Everything you need to grow"}
+                              {link.megaMenuTitle ||"Everything you need to grow"}
                             </h3>
                           </div>
                           <Link
@@ -240,10 +240,10 @@ export default function Navbar() {
                         {/* Footer strip */}
                         <div className="flex items-center justify-between gap-6 border-t border-brand-zinc-200/80 bg-brand-blue/[0.03] px-8 py-4 dark:border-white/10 dark:bg-white/[0.03]">
                           <p className="text-[13px] font-medium text-brand-zinc-600 dark:text-zinc-300">
-                            {link.megaMenuFooterText || "Not sure which service fits? Talk to our team - the first consultation is free."}
+                            {link.megaMenuFooterText ||"Not sure which service fits? Talk to our team - the first consultation is free."}
                           </p>
-                          <CtaButton size="sm" href={navbar.ctaLink || "/contact-us"} onClick={handleLinkClick}>
-                            {navbar.ctaText || "Book Now"}
+                          <CtaButton size="sm" href={navbar.ctaLink ||"/contact-us"} onClick={handleLinkClick}>
+                            {navbar.ctaText ||"Book Now"}
                           </CtaButton>
                         </div>
                       </motion.div>
@@ -283,9 +283,9 @@ export default function Navbar() {
                   <AnimatePresence>
                     {isOpen && (
                       <motion.div
-                        initial={{ opacity: 0, y: 15, x: "-50%" }}
-                        animate={{ opacity: 1, y: 0, x: "-50%" }}
-                        exit={{ opacity: 0, y: 10, x: "-50%" }}
+                        initial={{ opacity: 0, y: 15, x:"-50%" }}
+                        animate={{ opacity: 1, y: 0, x:"-50%" }}
+                        exit={{ opacity: 0, y: 10, x:"-50%" }}
                         onMouseEnter={handleMegaMenuMouseEnter}
                         onMouseLeave={handleMegaMenuMouseLeave}
                         className={`${PANEL_BASE} w-[900px]`}
@@ -296,10 +296,10 @@ export default function Navbar() {
                           <div className="col-span-5 flex flex-col p-7">
                             <p className="flex items-center gap-1.5 text-[11px] font-mono font-bold uppercase tracking-[0.18em] text-brand-blue dark:text-brand-yellow">
                               <MapPin className="h-3.5 w-3.5" />
-                              {menu.eyebrow || "Where we work"}
+                              {menu.eyebrow ||"Where we work"}
                             </p>
                             <h3 className="mt-2 font-heading text-2xl font-black leading-tight tracking-tight text-brand-dark dark:text-white">
-                              {menu.title || "Our locations"}
+                              {menu.title ||"Our locations"}
                             </h3>
                             {menu.description && (
                               <p className="mt-2 text-[13px] leading-relaxed text-brand-zinc-600 dark:text-zinc-400">
@@ -354,7 +354,7 @@ export default function Navbar() {
 
                           {/* Right: map / image */}
                           <div className="relative col-span-7 min-h-[400px] bg-brand-blue/[0.05] dark:bg-white/[0.04]">
-                            {map.kind === "embed" ? (
+                            {map.kind ==="embed" ? (
                               <iframe
                                 key={map.value}
                                 src={map.value}
@@ -364,7 +364,7 @@ export default function Navbar() {
                                 sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
                                 className="absolute inset-0 h-full w-full border-0 dark:[filter:invert(0.92)_hue-rotate(180deg)_contrast(0.9)]"
                               />
-                            ) : map.kind === "image" ? (
+                            ) : map.kind ==="image" ? (
                               <img key={map.value} src={map.value} alt={`${caption} map`} className="absolute inset-0 h-full w-full object-cover" />
                             ) : (
                               <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-brand-blue/40 dark:text-brand-yellow/40">
@@ -443,7 +443,7 @@ export default function Navbar() {
           >
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
-          <CtaButton href={navbar.ctaLink || "/contact-us"}>{navbar.ctaText || "Book Now"}</CtaButton>
+          <CtaButton href={navbar.ctaLink ||"/contact-us"}>{navbar.ctaText ||"Book Now"}</CtaButton>
         </div>
 
         {/* Mobile: Theme toggle + hamburger */}
@@ -458,7 +458,7 @@ export default function Navbar() {
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="rounded-full p-2 text-brand-dark dark:text-white hover:bg-brand-zinc-100 dark:hover:bg-white/10 transition-colors"
-            aria-label={navbar.ariaToggleMenu || "Toggle Menu"}
+            aria-label={navbar.ariaToggleMenu ||"Toggle Menu"}
           >
             {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
@@ -511,9 +511,9 @@ export default function Navbar() {
                     {(isMegaMenu || isLocations || hasSubLinks) && isExpanded && (
                       <motion.div
                         initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
+                        animate={{ height:"auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                        transition={{ duration: 0.3, ease:"easeInOut" }}
                         className="overflow-hidden"
                       >
                         <div className="pl-4 flex flex-col gap-2.5 mb-2 border-l border-brand-blue/20 ml-2 mt-1">
@@ -560,7 +560,7 @@ export default function Navbar() {
               );
             })}
             <hr className="border-brand-zinc-100 dark:border-white/10" />
-            <CtaButton href={navbar.ctaLink || "/contact-us"} onClick={handleLinkClick} fullWidth>{navbar.ctaText || "Book Now"}</CtaButton>
+            <CtaButton href={navbar.ctaLink ||"/contact-us"} onClick={handleLinkClick} fullWidth>{navbar.ctaText ||"Book Now"}</CtaButton>
           </nav>
         </motion.div>
       )}

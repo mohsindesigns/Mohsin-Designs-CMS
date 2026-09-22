@@ -1,24 +1,24 @@
-import Page from "@/models/Page";
+import Page from"@/models/Page";
 export const revalidate = 60; // Cache for 1 minute
-import { Metadata } from "next";
-import connectToDatabase from "@/lib/mongodb";
-import SiteContent from "@/models/Content";
-import CustomSchemaMarkup from "@/components/CustomSchemaMarkup";
-import { BASE_URL } from "@/lib/constants";
-import { resolveRobotsMetadata } from "@/lib/seo";
-import { getResolvedSchemaBlocks } from "@/lib/dynamicSchema";
+import { Metadata } from"next";
+import connectToDatabase from"@/lib/mongodb";
+import SiteContent from"@/models/Content";
+import CustomSchemaMarkup from"@/components/CustomSchemaMarkup";
+import { BASE_URL } from"@/lib/constants";
+import { resolveRobotsMetadata } from"@/lib/seo";
+import { getResolvedSchemaBlocks } from"@/lib/dynamicSchema";
 
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
   
-  // Try to find the page in MongoDB Page collection first (slug: "locations" or "location")
+  // Try to find the page in MongoDB Page collection first (slug:"locations" or"location")
   const pageDoc = await Page.findOne({
-    slug: { $in: ["locations", "location"] },
+    slug: { $in: ["locations","location"] },
     status: 'published',
     isTrashed: { $ne: true }
   }).lean() as any;
 
-  const content = await SiteContent.findOne({ key: "complete_data" }).lean() as any;
+  const content = await SiteContent.findOne({ key:"complete_data" }).lean() as any;
   const globalData = content?.data || {};
   const isGlobalNoIndex = !!globalData?.settings?.globalNoIndex;
 
@@ -31,9 +31,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
   const metaTitle = seo.metaTitle || 
                     (locationData?.hero?.titleIntro && locationData?.hero?.titleHighlight ? `${locationData.hero.titleIntro} ${locationData.hero.titleHighlight}` : null) ||
-                    "Global Service Locations & Regional Hubs | Mohsin Designs";
+"Global Service Locations & Regional Hubs | Mohsin Designs";
 
-  const metaDescription = seo.metaDescription || locationData?.hero?.description || "Browse our localized service hubs and discover how we engineer high-converting digital assets across premier global markets.";
+  const metaDescription = seo.metaDescription || locationData?.hero?.description ||"Browse our localized service hubs and discover how we engineer high-converting digital assets across premier global markets.";
 
   return {
     metadataBase: new URL(BASE_URL),
@@ -48,12 +48,12 @@ export async function generateMetadata(): Promise<Metadata> {
       title: seo.ogTitle || seo.metaTitle || metaTitle,
       description: seo.ogDescription || metaDescription,
       url: pageUrl,
-      siteName: "Mohsin Designs",
-      type: "website",
+      siteName:"Mohsin Designs",
+      type:"website",
       images: seo.featuredImage ? [{ url: seo.featuredImage }] : [],
     },
     twitter: {
-      card: "summary_large_image",
+      card:"summary_large_image",
       title: seo.twitterTitle || seo.ogTitle || metaTitle,
       description: seo.twitterDescription || seo.ogDescription || metaDescription,
       images: [seo.featuredImage || seo.twitterImage || seo.ogImage].filter(Boolean) as string[],
@@ -67,12 +67,12 @@ export default async function LocationsPage() {
 
   // Find the page in MongoDB Page collection
   const pageDoc = await Page.findOne({
-    slug: { $in: ["locations", "location"] },
+    slug: { $in: ["locations","location"] },
     status: 'published',
     isTrashed: { $ne: true }
   }).lean();
 
-  const content = await SiteContent.findOne({ key: "complete_data" }).lean() as any;
+  const content = await SiteContent.findOne({ key:"complete_data" }).lean() as any;
   const globalData = content?.data || {};
 
   const page = pageDoc ? JSON.parse(JSON.stringify(pageDoc)) : null;
@@ -80,16 +80,16 @@ export default async function LocationsPage() {
 
   const title = page?.seo?.metaTitle || 
                 (locationData?.hero?.titleIntro && locationData?.hero?.titleHighlight ? `${locationData.hero.titleIntro} ${locationData.hero.titleHighlight}` : null) ||
-                "Our Global Locations";
+"Our Global Locations";
 
   const description = page?.seo?.metaDescription || 
                       locationData?.hero?.description || 
-                      "Explore our international locations and regional service areas.";
+"Explore our international locations and regional service areas.";
 
   const effectivePage = page || {
-    title: title || "Our Global Locations",
-    template: "location",
-    slug: "locations",
+    title: title ||"Our Global Locations",
+    template:"location",
+    slug:"locations",
     seo: { metaTitle: title, metaDescription: description },
     content: {
       locationPage: locationData,
@@ -100,7 +100,7 @@ export default async function LocationsPage() {
   const resolvedSchemaBlocks = getResolvedSchemaBlocks({
     page: effectivePage,
     globalData,
-    slug: "locations"
+    slug:"locations"
   });
 
   const { TemplateWrapper } = await import('@/components/templates/TemplateRegistry');
@@ -111,7 +111,7 @@ export default async function LocationsPage() {
       <TemplateWrapper
         templateName="location"
         pageData={{
-          ...(page || { title: "Locations Hub", template: "location", slug: "locations" }),
+          ...(page || { title:"Locations Hub", template:"location", slug:"locations" }),
           content: {
             ...globalData,
             ...(page?.content || {}),

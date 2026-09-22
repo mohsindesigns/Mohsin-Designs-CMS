@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
-import { useRef, useEffect, useState } from "react";
+import { motion, useInView } from"framer-motion";
+import { useRef, useEffect, useState } from"react";
 import {
   Sparkles,
   Terminal,
@@ -17,18 +17,18 @@ import {
   CheckCircle2,
   Rocket,
   Image as ImageIcon
-} from "lucide-react";
-import { useContent } from "@/hooks/useContent";
-import RichTextRenderer from "@/components/ui/RichTextRenderer";
+} from"lucide-react";
+import { useContent } from"@/hooks/useContent";
+import RichTextRenderer from"@/components/ui/RichTextRenderer";
 
 // ── Animated Circular Stat ────────────────────────────────────
 const RADIUS = 34;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 function AnimatedStat({
-  value = "0",
-  label = "",
-  sublabel = "",
+  value ="0",
+  label ="",
+  sublabel ="",
   percentage = 0.8,
 }: {
   value: string;
@@ -37,17 +37,17 @@ function AnimatedStat({
   percentage: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: false, margin: "-80px" });
-  const [displayed, setDisplayed] = useState(String(value || "").replace(/[0-9.]/g, "0"));
+  const isInView = useInView(ref, { once: false, margin:"-80px" });
+  const [displayed, setDisplayed] = useState(String(value ||"").replace(/[0-9.]/g,"0"));
   const [dotProgress, setDotProgress] = useState(0);
 
   useEffect(() => {
     if (isInView) {
-      const valStr = String(value || "0");
+      const valStr = String(value ||"0");
       const isFloat = valStr.includes(".");
       const isPercent = valStr.includes("%");
-      const suffix = isPercent ? "%" : valStr.replace(/[0-9.]/g, "");
-      const numeric = parseFloat(valStr.replace(/[^0-9.]/g, "")) || 0;
+      const suffix = isPercent ?"%" : valStr.replace(/[0-9.]/g,"");
+      const numeric = parseFloat(valStr.replace(/[^0-9.]/g,"")) || 0;
       const DURATION = 1400;
       const DELAY = 150;
       const startTime = performance.now() + DELAY;
@@ -71,7 +71,7 @@ function AnimatedStat({
       rafId = requestAnimationFrame(tick);
       return () => cancelAnimationFrame(rafId);
     } else {
-      setDisplayed(String(value || "0").replace(/[0-9.]/g, "0"));
+      setDisplayed(String(value ||"0").replace(/[0-9.]/g,"0"));
       setDotProgress(0);
     }
   }, [isInView, percentage, value]);
@@ -81,7 +81,7 @@ function AnimatedStat({
   const dotX = 41 + RADIUS * Math.cos(dotAngle);
   const dotY = 41 + RADIUS * Math.sin(dotAngle);
 
-  const gradientId = `ringGradient-${String(label || "stat").replace(/[^a-zA-Z0-9]/g, "")}`;
+  const gradientId = `ringGradient-${String(label ||"stat").replace(/[^a-zA-Z0-9]/g,"")}`;
 
   return (
     <div ref={ref} className="flex flex-col items-center gap-3">
@@ -119,7 +119,7 @@ function AnimatedStat({
             fill="var(--color-brand-accent)"
             stroke="white"
             strokeWidth="1.5"
-            style={{ filter: "var(--svg-dot-shadow)" }}
+            style={{ filter:"var(--svg-dot-shadow)" }}
           />
         </svg>
         {/* Number */}
@@ -158,33 +158,33 @@ export default function HowWeWork({ data: overrideData }: { data?: any }) {
   const content = useContent();
   const rawWhyChoose = overrideData || content.whyChooseUs || {};
 
-  const sectionTag = rawWhyChoose.sectionTag || rawWhyChoose.section?.badge || "HOW WE WORK";
-  const titleIntro = rawWhyChoose.titleIntro || rawWhyChoose.section?.headlinePrefix || "Engineered For";
-  const titleHighlight = rawWhyChoose.titleHighlight || rawWhyChoose.section?.headlineHighlight || "Peak Performance";
-  const subtext = rawWhyChoose.subtext || rawWhyChoose.section?.description || "We combine precision design, rock-solid engineering, and conversion strategy to build digital experiences that deliver real, measurable growth.";
+  const sectionTag = rawWhyChoose.sectionTag || rawWhyChoose.section?.badge ||"HOW WE WORK";
+  const titleIntro = rawWhyChoose.titleIntro || rawWhyChoose.section?.headlinePrefix ||"Engineered For";
+  const titleHighlight = rawWhyChoose.titleHighlight || rawWhyChoose.section?.headlineHighlight ||"Peak Performance";
+  const subtext = rawWhyChoose.subtext || rawWhyChoose.section?.description ||"We combine precision design, rock-solid engineering, and conversion strategy to build digital experiences that deliver real, measurable growth.";
 
   const rawStats = Array.isArray(rawWhyChoose.stats) && rawWhyChoose.stats.length > 0 ? rawWhyChoose.stats : [
-    { value: "99.8%", label: "Satisfaction", sublabel: "Verified Reviews", percentage: 0.99 },
-    { value: "10x", label: "Speed Increase", sublabel: "Faster Load Times", percentage: 0.95 },
-    { value: "<24h", label: "Turnaround", sublabel: "Average Response", percentage: 0.9 }
+    { value:"99.8%", label:"Satisfaction", sublabel:"Verified Reviews", percentage: 0.99 },
+    { value:"10x", label:"Speed Increase", sublabel:"Faster Load Times", percentage: 0.95 },
+    { value:"<24h", label:"Turnaround", sublabel:"Average Response", percentage: 0.9 }
   ];
 
   const rawReasons = Array.isArray(rawWhyChoose.reasons) && rawWhyChoose.reasons.length > 0 
     ? rawWhyChoose.reasons 
     : (Array.isArray(rawWhyChoose.features) && rawWhyChoose.features.length > 0 
         ? rawWhyChoose.features.map((f: any, idx: number) => ({
-            num: String(idx + 1).padStart(2, "0"),
+            num: String(idx + 1).padStart(2,"0"),
             title: f.title,
             desc: f.description,
-            iconName: f.icon || "Sparkles",
-            image: f.image || ""
+            iconName: f.icon ||"Sparkles",
+            image: f.image ||""
           }))
         : [
-            { num: "01", title: "Strategy & Discovery", desc: "Deep analysis of your market, competitors, and audience to lay the foundation for high-conversion outcomes.", iconName: "Sparkles", image: "" },
-            { num: "02", title: "Custom UX/UI & Prototyping", desc: "Bespoke, brand-aligned interfaces crafted with pixel precision and optimized for seamless user journeys.", iconName: "Terminal", image: "" },
-            { num: "03", title: "High-Speed Clean Development", desc: "Modern, performant code built on scalable architectures with ultra-fast page speeds and airtight security.", iconName: "Zap", image: "" },
-            { num: "04", title: "Conversion Optimization & SEO", desc: "Built-in technical SEO, structured data markup, and high-impact conversion funnels that drive revenue.", iconName: "TrendingUp", image: "" },
-            { num: "05", title: "Ongoing Partnership & Support", desc: "Continuous proactive monitoring, performance audits, and rapid updates to keep you ahead of the competition.", iconName: "HeartHandshake", image: "" }
+            { num:"01", title:"Strategy & Discovery", desc:"Deep analysis of your market, competitors, and audience to lay the foundation for high-conversion outcomes.", iconName:"Sparkles", image:"" },
+            { num:"02", title:"Custom UX/UI & Prototyping", desc:"Bespoke, brand-aligned interfaces crafted with pixel precision and optimized for seamless user journeys.", iconName:"Terminal", image:"" },
+            { num:"03", title:"High-Speed Clean Development", desc:"Modern, performant code built on scalable architectures with ultra-fast page speeds and airtight security.", iconName:"Zap", image:"" },
+            { num:"04", title:"Conversion Optimization & SEO", desc:"Built-in technical SEO, structured data markup, and high-impact conversion funnels that drive revenue.", iconName:"TrendingUp", image:"" },
+            { num:"05", title:"Ongoing Partnership & Support", desc:"Continuous proactive monitoring, performance audits, and rapid updates to keep you ahead of the competition.", iconName:"HeartHandshake", image:"" }
           ]);
 
   const reasons = rawReasons.map((r: any) => ({
@@ -201,8 +201,8 @@ export default function HowWeWork({ data: overrideData }: { data?: any }) {
       <div
         className="absolute inset-0 opacity-[0.03] pointer-events-none"
         style={{
-          backgroundImage: "radial-gradient(#0306AC 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
+          backgroundImage:"radial-gradient(#0306AC 1px, transparent 1px)",
+          backgroundSize:"24px 24px",
         }}
       />
 
@@ -229,8 +229,8 @@ export default function HowWeWork({ data: overrideData }: { data?: any }) {
 
               {/* Heading */}
               <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white leading-[1.15] tracking-tight">
-                {titleIntro}{" "}
-                <span className="text-primary dark:text-yellow-400 font-serif font-normal italic">
+                {titleIntro}{""}
+ <span className="text-primary dark:text-yellow-400 font-cursive font-normal">
                   {titleHighlight}
                 </span>
               </h2>
@@ -269,7 +269,7 @@ export default function HowWeWork({ data: overrideData }: { data?: any }) {
                   key={index}
                   initial={{ opacity: 0, x: 20 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: false, margin: "-50px" }}
+                  viewport={{ once: false, margin:"-50px" }}
                   transition={{
                     duration: 0.55,
                     ease: [0.16, 1, 0.3, 1],
@@ -294,7 +294,7 @@ export default function HowWeWork({ data: overrideData }: { data?: any }) {
                       {/* Text */}
                       <div className="flex-1 min-w-0 space-y-1.5">
                         <span className="font-mono text-[10px] font-black text-primary dark:text-yellow-400 tracking-widest">
-                          {reason.num || String(index + 1).padStart(2, "0")}
+                          {reason.num || String(index + 1).padStart(2,"0")}
                         </span>
                         <h3 className="font-heading font-extrabold text-[1.1rem] text-slate-900 dark:text-white group-hover:text-primary dark:group-hover:text-yellow-400 transition-colors duration-300 leading-snug">
                           {reason.title}
@@ -311,7 +311,7 @@ export default function HowWeWork({ data: overrideData }: { data?: any }) {
                       {reason.image ? (
                         <img
                           src={reason.image}
-                          alt={reason.title || "Step Image"}
+                          alt={reason.title ||"Step Image"}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                       ) : (

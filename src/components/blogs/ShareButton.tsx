@@ -1,6 +1,6 @@
 'use client';
 
-import CtaButton from "@/components/ui/CtaButton";
+import CtaButton from"@/components/ui/CtaButton";
 import { Share2, Check } from 'lucide-react';
 import { useState } from 'react';
 

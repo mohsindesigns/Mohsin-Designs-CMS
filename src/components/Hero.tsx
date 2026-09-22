@@ -1,19 +1,19 @@
 "use client";
 
-import CtaButton from "@/components/ui/CtaButton";
-import { withTrailingSlash } from "@/lib/url";
-import { useRef, useEffect, type ReactNode } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, ArrowUpRight, Star } from "lucide-react";
-import Image from "next/image";
-import { useContent } from "../hooks/useContent";
-import { Icon } from "../config/icons";
-import RichTextRenderer from "./ui/RichTextRenderer";
+import CtaButton from"@/components/ui/CtaButton";
+import { withTrailingSlash } from"@/lib/url";
+import { useRef, useEffect, type ReactNode } from"react";
+import { motion, useScroll, useTransform } from"framer-motion";
+import { ArrowRight, ArrowUpRight, Star } from"lucide-react";
+import Image from"next/image";
+import { useContent } from"../hooks/useContent";
+import { Icon } from"../config/icons";
+import RichTextRenderer from"./ui/RichTextRenderer";
 
 const clipVariants = {
-  hidden: { width: "0%" },
+  hidden: { width:"0%" },
   visible: (custom: { delay: number; duration: number }) => ({
-    width: "100%",
+    width:"100%",
     transition: {
       duration: custom?.duration ?? 0.85,
       delay: custom?.delay ?? 0.5,
@@ -27,35 +27,35 @@ export default function Hero({ data, content: overrideContent, breadcrumb }: { d
   const hero = data || overrideContent || content.hero;
 
   // Extract variables with proper default fallbacks for CMS dynamicity
-  const badgeText = hero?.badge ?? hero?.badgeText ?? "Trusted by 3,000+ US Businesses";
-  const titleLine1 = hero?.titleLine1 !== undefined ? hero.titleLine1 : (hero?.headline || "Digital Marketing & Design");
-  const titleConnector = hero?.titleConnector !== undefined ? hero.titleConnector : "";
-  const titleLine2 = hero?.titleLine2 !== undefined ? hero.titleLine2 : (hero?.headlineHighlight || "Built to Grow Your Brand");
-  const description = hero?.description !== undefined ? hero.description : "High-performance digital engineering, branding, SEO, and web design.";
+  const badgeText = hero?.badge ?? hero?.badgeText ??"Trusted by 3,000+ US Businesses";
+  const titleLine1 = hero?.titleLine1 !== undefined ? hero.titleLine1 : (hero?.headline ||"Digital Marketing & Design");
+  const titleConnector = hero?.titleConnector !== undefined ? hero.titleConnector :"";
+  const titleLine2 = hero?.titleLine2 !== undefined ? hero.titleLine2 : (hero?.headlineHighlight ||"Built to Grow Your Brand");
+  const description = hero?.description !== undefined ? hero.description :"High-performance digital engineering, branding, SEO, and web design.";
   
   // Resolve buttons dynamically from CMS array or fallback to defaults
   const buttonsList = (Array.isArray(hero?.buttons) && hero.buttons.length > 0)
     ? hero.buttons
     : [
         {
-          text: hero?.ctaPrimaryText || "Get Estimate",
-          href: hero?.ctaPrimaryHref || "/contact-us",
-          icon: hero?.ctaPrimaryIcon || "ArrowRight",
+          text: hero?.ctaPrimaryText ||"Get Estimate",
+          href: hero?.ctaPrimaryHref ||"/contact-us",
+          icon: hero?.ctaPrimaryIcon ||"ArrowRight",
           primary: true,
         },
         {
-          text: hero?.ctaSecondaryText || "Our Services",
-          href: hero?.ctaSecondaryHref || "/services",
-          icon: hero?.ctaSecondaryIcon || "ArrowUpRight",
+          text: hero?.ctaSecondaryText ||"Our Services",
+          href: hero?.ctaSecondaryHref ||"/services",
+          icon: hero?.ctaSecondaryIcon ||"ArrowUpRight",
           primary: false,
         },
       ];
   
-  const circleText = hero?.circleText || "VETERAN OWNED • VETERAN OPERATED •";
-  const circleLetter = hero?.circleLetter || "M";
-  const imageSrc = hero?.image || hero?.imageSrc || (Array.isArray(hero?.images) ? hero.images[0] : hero?.images) || hero?.bgImage || hero?.backgroundImage || hero?.heroImage || "";
-  const imageAlt = hero?.imageAlt || hero?.bgImageAlt || "Mohsin Designs Showcase";
-  const marqueeItems = (hero?.marqueeItems || ["Roofing", "Siding", "Windows", "Decks"]) as string[];
+  const circleText = hero?.circleText ||"VETERAN OWNED • VETERAN OPERATED •";
+  const circleLetter = hero?.circleLetter ||"M";
+  const imageSrc = hero?.image || hero?.imageSrc || (Array.isArray(hero?.images) ? hero.images[0] : hero?.images) || hero?.bgImage || hero?.backgroundImage || hero?.heroImage ||"";
+  const imageAlt = hero?.imageAlt || hero?.bgImageAlt ||"Mohsin Designs Showcase";
+  const marqueeItems = (hero?.marqueeItems || ["Roofing","Siding","Windows","Decks"]) as string[];
 
   const { scrollY } = useScroll();
   const yText = useTransform(scrollY, [0, 1000], [0, 95]);
@@ -159,7 +159,7 @@ export default function Hero({ data, content: overrideContent, breadcrumb }: { d
             whileInView="visible"
             viewport={{ once: false, amount: 0.15 }}
             style={{ y: yText }}
-            className="lg:col-span-7 space-y-6 text-center lg:text-left flex flex-col items-center lg:items-start will-change-transform pb-4 pointer-events-auto"
+            className="lg:col-span-7 min-w-0 space-y-6 text-center lg:text-left flex flex-col items-center lg:items-start will-change-transform pb-4 pointer-events-auto"
           >
             {breadcrumb && (
               <motion.div variants={itemVariants} className="pointer-events-auto">
@@ -181,11 +181,11 @@ export default function Hero({ data, content: overrideContent, breadcrumb }: { d
               className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-[50px] font-semibold leading-[1.15] tracking-tight text-brand-dark dark:text-white select-none"
             >
               {titleLine1}
-              {titleConnector && titleConnector.trim() ? ` ${titleConnector.trim()}` : ""}
+              {titleConnector && titleConnector.trim() ? ` ${titleConnector.trim()}` :""}
               <br />
               <motion.span
                 whileHover="hover"
-                className="text-brand-blue dark:text-brand-yellow relative inline-block whitespace-nowrap pointer-events-auto cursor-pointer"
+                className="text-brand-blue dark:text-brand-yellow relative inline-block pointer-events-auto cursor-pointer"
               >
                 {titleLine2}
                 {/* Custom animated hand-drawn SVG underline with gradient and hover interaction */}
@@ -229,7 +229,7 @@ export default function Hero({ data, content: overrideContent, breadcrumb }: { d
                     strokeLinecap="round"
                     clipPath="url(#underlineClip1)"
                     variants={{
-                      hover: { y: 2.2, x: 1, scaleX: 1.025, transition: { type: "spring", stiffness: 350, damping: 14 } }
+                      hover: { y: 2.2, x: 1, scaleX: 1.025, transition: { type:"spring", stiffness: 350, damping: 14 } }
                     }}
                   />
                   {/* Secondary organic textured baseline accent */}
@@ -242,7 +242,7 @@ export default function Hero({ data, content: overrideContent, breadcrumb }: { d
                     opacity="0.85"
                     clipPath="url(#underlineClip2)"
                     variants={{
-                      hover: { y: 3.2, x: 1.2, scaleX: 1.035, transition: { type: "spring", stiffness: 350, damping: 14 } }
+                      hover: { y: 3.2, x: 1.2, scaleX: 1.035, transition: { type:"spring", stiffness: 350, damping: 14 } }
                     }}
                   />
                 </svg>
@@ -264,16 +264,16 @@ export default function Hero({ data, content: overrideContent, breadcrumb }: { d
                 className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2 w-full sm:w-auto"
               >
                 {buttonsList.map((btn: any, idx: number) => {
-                  const btnText = btn.text || btn.label || btn.title || (idx === 0 ? "Get Estimate" : "Our Services");
-                  const btnHref = btn.href || btn.link || btn.url || (idx === 0 ? "/contact-us" : "/services");
-                  const btnIcon = btn.icon || btn.iconName || (idx === 0 ? "ArrowRight" : "ArrowUpRight");
+                  const btnText = btn.text || btn.label || btn.title || (idx === 0 ?"Get Estimate" :"Our Services");
+                  const btnHref = btn.href || btn.link || btn.url || (idx === 0 ?"/contact-us" :"/services");
+                  const btnIcon = btn.icon || btn.iconName || (idx === 0 ?"ArrowRight" :"ArrowUpRight");
                   const isPrimary = btn.primary !== undefined ? Boolean(btn.primary) : idx === 0;
 
                   return (
                     <CtaButton
                       key={idx}
                       href={btnHref}
-                      variant={isPrimary ? "primary" : "secondary"}
+                      variant={isPrimary ?"primary" :"secondary"}
                       className="pointer-events-auto"
                       icon={btnIcon ? <Icon name={btnIcon} /> : false}
                     >
@@ -295,14 +295,14 @@ export default function Hero({ data, content: overrideContent, breadcrumb }: { d
               style={{ y: yGraphic }}
               transition={{
                 duration: 0.6,
-                ease: "easeOut"
+                ease:"easeOut"
               }}
-              className="lg:col-span-5 relative hidden lg:flex justify-center items-end mt-6 lg:mt-0 z-10 cursor-pointer pointer-events-auto w-full will-change-transform"
+              className="lg:col-span-5 min-w-0 relative hidden lg:flex justify-center items-end mt-6 lg:mt-0 z-10 cursor-pointer pointer-events-auto w-full will-change-transform"
             >
               {/* Rotating Circle Badge */}
               <motion.div
                 animate={{ rotate: 360 }}
-                transition={{ ease: "linear", duration: 20, repeat: Infinity }}
+                transition={{ ease:"linear", duration: 20, repeat: Infinity }}
                 className="absolute -top-4 -right-4 h-24 w-24 z-20 hidden sm:block select-none pointer-events-none"
               >
                 <svg viewBox="0 0 100 100" className="h-full w-full">

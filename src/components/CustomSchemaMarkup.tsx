@@ -1,4 +1,4 @@
-import React from "react";
+import React from"react";
 
 /**
  * Extracts and cleans JSON-LD blocks from user-provided schema data.
@@ -21,7 +21,7 @@ export function extractSchemaBlocks(rawSchema: any): string[] {
   }
 
   // If plain object, stringify it
-  if (typeof rawSchema === "object") {
+  if (typeof rawSchema ==="object") {
     try {
       return [JSON.stringify(rawSchema)];
     } catch {
@@ -29,7 +29,7 @@ export function extractSchemaBlocks(rawSchema: any): string[] {
     }
   }
 
-  if (typeof rawSchema !== "string") return [];
+  if (typeof rawSchema !=="string") return [];
   const trimmed = rawSchema.trim();
   if (!trimmed) return [];
 
@@ -61,14 +61,14 @@ interface CustomSchemaMarkupProps {
 // field's raw markup, or pieces of otherwise-harmless text from SEPARATE
 // fields that only become a real tag once concatenated together in the
 // serialized JSON) from ever being interpreted as HTML: no tag, including
-// "</script>", can begin without a literal "<" character, so escaping every
-// "<" to its unicode equivalent closes this class of script-breakout
+//"</script>", can begin without a literal"<" character, so escaping every
+//"<" to its unicode equivalent closes this class of script-breakout
 // regardless of which upstream field(s) the dangerous text came from. This
 // is the standard mitigation for embedding untrusted JSON inside a real
 // <script> tag (rather than trying to sanitize every source field that
 // might eventually be concatenated into one JSON blob).
 function escapeForScriptTag(json: string): string {
-  return json.replace(/</g, "\\u003C");
+  return json.replace(/</g,"\\u003C");
 }
 
 export default function CustomSchemaMarkup({ schema, schemaData }: CustomSchemaMarkupProps) {

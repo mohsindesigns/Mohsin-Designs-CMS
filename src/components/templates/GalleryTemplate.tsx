@@ -1,11 +1,11 @@
 "use client";
 
-import CtaButton from "@/components/ui/CtaButton";
-import PageBreadcrumbs from "@/components/PageBreadcrumbs";
-import React, { useMemo } from "react";
-import Image from "next/image";
-import Link from "@/components/ui/Link";
-import { motion } from "framer-motion";
+import CtaButton from"@/components/ui/CtaButton";
+import PageBreadcrumbs from"@/components/PageBreadcrumbs";
+import React, { useMemo } from"react";
+import Image from"next/image";
+import Link from"@/components/ui/Link";
+import { motion } from"framer-motion";
 import {
   ArrowRight,
   Star,
@@ -22,10 +22,10 @@ import {
   Palette,
   Share2,
   Award
-} from "lucide-react";
-import * as LucideIcons from "lucide-react";
-import PageInlineFaqs from "@/components/PageInlineFaqs";
-import RichTextRenderer from "@/components/ui/RichTextRenderer";
+} from"lucide-react";
+import * as LucideIcons from"lucide-react";
+import PageInlineFaqs from"@/components/PageInlineFaqs";
+import RichTextRenderer from"@/components/ui/RichTextRenderer";
 
 // Hand-Drawn SVG Brush stroke variants
 const drawVariants = {
@@ -35,7 +35,7 @@ const drawVariants = {
     transition: {
       duration: custom?.duration ?? 0.65,
       delay: custom?.delay ?? 0.45,
-      ease: "easeOut" as any
+      ease:"easeOut" as any
     }
   })
 };
@@ -54,87 +54,87 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
 
   // ── 1. HERO SECTION DATA ───────────────────────────────────────────────
   const hero = {
-    badge: galleryPage.hero?.badge || galleryPage.header?.badge || "OUR PORTFOLIO",
-    titlePrefix: galleryPage.hero?.titlePrefix || galleryPage.header?.titlePrefix || "Creative Work.",
-    titleHighlight: galleryPage.hero?.titleHighlight || galleryPage.header?.titleHighlight || "Real Results.",
-    subtitle: galleryPage.hero?.subtitle || galleryPage.header?.description || "Explore our latest projects — beautifully designed, strategically built, and focused on growing brands online.",
+    badge: galleryPage.hero?.badge || galleryPage.header?.badge ||"OUR PORTFOLIO",
+    titlePrefix: galleryPage.hero?.titlePrefix || galleryPage.header?.titlePrefix ||"Creative Work.",
+    titleHighlight: galleryPage.hero?.titleHighlight || galleryPage.header?.titleHighlight ||"Real Results.",
+    subtitle: galleryPage.hero?.subtitle || galleryPage.header?.description ||"Explore our latest projects — beautifully designed, strategically built, and focused on growing brands online.",
     ctaPrimary: {
-      label: galleryPage.hero?.ctaPrimary?.label || "GET A FREE CONSULTATION",
-      href: galleryPage.hero?.ctaPrimary?.href || "#contact"
+      label: galleryPage.hero?.ctaPrimary?.label ||"GET A FREE CONSULTATION",
+      href: galleryPage.hero?.ctaPrimary?.href ||"#contact"
     },
     ctaSecondary: {
-      label: galleryPage.hero?.ctaSecondary?.label || "EXPLORE WORK",
-      href: galleryPage.hero?.ctaSecondary?.href || "#projects"
+      label: galleryPage.hero?.ctaSecondary?.label ||"EXPLORE WORK",
+      href: galleryPage.hero?.ctaSecondary?.href ||"#projects"
     },
-    backgroundImage: galleryPage.hero?.backgroundImage || "/portfolio_hero_bg.png"
+    backgroundImage: galleryPage.hero?.backgroundImage ||"/portfolio_hero_bg.png"
   };
 
   // ── 2. PORTFOLIO PROJECTS DATA ─────────────────────────────────────────
   const defaultProjects = [
     {
-      id: "1",
-      badge: "Web Design",
-      brand: "Moshin Designs – Creative Agency",
-      subtitle: "Modern, responsive and high-performing website built for a leading agency.",
-      image: "/portfolio_card_1.png",
-      tag: "+320% Traffic",
-      tech: ["Next.js 15", "TailwindCSS", "Framer Motion"],
-      link: "/contact-us"
+      id:"1",
+      badge:"Web Design",
+      brand:"Moshin Designs – Creative Agency",
+      subtitle:"Modern, responsive and high-performing website built for a leading agency.",
+      image:"/portfolio_card_1.png",
+      tag:"+320% Traffic",
+      tech: ["Next.js 15","TailwindCSS","Framer Motion"],
+      link:"/contact-us"
     },
     {
-      id: "2",
-      badge: "UI/UX Design",
-      brand: "Fintech Dashboard UI",
-      subtitle: "Clean, modern and intuitive interface design for financial services.",
-      image: "/portfolio_card_2.png",
-      tag: "4.9x ROAS",
-      tech: ["Figma UI", "System Kit", "Dashboard"],
-      link: "/contact-us"
+      id:"2",
+      badge:"UI/UX Design",
+      brand:"Fintech Dashboard UI",
+      subtitle:"Clean, modern and intuitive interface design for financial services.",
+      image:"/portfolio_card_2.png",
+      tag:"4.9x ROAS",
+      tech: ["Figma UI","System Kit","Dashboard"],
+      link:"/contact-us"
     },
     {
-      id: "3",
-      badge: "Web Design",
-      brand: "E-Commerce Store",
-      subtitle: "Visually stunning and conversion-focused online store for a fashion brand.",
-      image: "/portfolio_card_3.png",
-      tag: "+185% Leads",
-      tech: ["Shopify Pro", "React", "E-Commerce"],
-      link: "/contact-us"
+      id:"3",
+      badge:"Web Design",
+      brand:"E-Commerce Store",
+      subtitle:"Visually stunning and conversion-focused online store for a fashion brand.",
+      image:"/portfolio_card_3.png",
+      tag:"+185% Leads",
+      tech: ["Shopify Pro","React","E-Commerce"],
+      link:"/contact-us"
     },
     {
-      id: "4",
-      badge: "Logo Design",
-      brand: "Brand Identity – Nexus Solutions",
-      subtitle: "A timeless and professional logo design for a global tech company.",
-      image: "/portfolio_card_4.png",
-      tag: "100% Custom",
-      tech: ["Branding", "Vector Art", "Brand Book"],
-      link: "/contact-us"
+      id:"4",
+      badge:"Logo Design",
+      brand:"Brand Identity – Nexus Solutions",
+      subtitle:"A timeless and professional logo design for a global tech company.",
+      image:"/portfolio_card_4.png",
+      tag:"100% Custom",
+      tech: ["Branding","Vector Art","Brand Book"],
+      link:"/contact-us"
     },
     {
-      id: "5",
-      badge: "Social Media",
-      brand: "Digital Marketing Campaign",
-      subtitle: "Creative social media visuals that build engagement and trust.",
-      image: "/portfolio_card_5.png",
-      tag: "+450% Reach",
-      tech: ["Social Media", "Marketing", "3D Motion"],
-      link: "/contact-us"
+      id:"5",
+      badge:"Social Media",
+      brand:"Digital Marketing Campaign",
+      subtitle:"Creative social media visuals that build engagement and trust.",
+      image:"/portfolio_card_5.png",
+      tag:"+450% Reach",
+      tech: ["Social Media","Marketing","3D Motion"],
+      link:"/contact-us"
     },
     {
-      id: "6",
-      badge: "Web Design",
-      brand: "Real Estate Website",
-      subtitle: "Elegant and modern website for a real estate company.",
-      image: "/portfolio_card_6.png",
-      tag: "Top #1 Rank",
-      tech: ["Next.js", "SEO Pro", "Real Estate"],
-      link: "/contact-us"
+      id:"6",
+      badge:"Web Design",
+      brand:"Real Estate Website",
+      subtitle:"Elegant and modern website for a real estate company.",
+      image:"/portfolio_card_6.png",
+      tag:"Top #1 Rank",
+      tech: ["Next.js","SEO Pro","Real Estate"],
+      link:"/contact-us"
     }
   ];
 
-  const projectMode = galleryPage.projectMode || "custom";
-  const rawProjects = projectMode === "existing"
+  const projectMode = galleryPage.projectMode ||"custom";
+  const rawProjects = projectMode ==="existing"
     ? (galleryPage.selectedProjects && galleryPage.selectedProjects.length > 0 ? galleryPage.selectedProjects : pageContent.portfolio?.projects || defaultProjects)
     : (galleryPage.projects && galleryPage.projects.length > 0 ? galleryPage.projects : pageContent.portfolio?.projects || defaultProjects);
 
@@ -144,7 +144,7 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
       let techList: string[] = [];
       if (Array.isArray(p.tech)) {
         techList = p.tech;
-      } else if (typeof p.tech === "string" && p.tech.trim()) {
+      } else if (typeof p.tech ==="string" && p.tech.trim()) {
         techList = p.tech.split(",").map((t: string) => t.trim()).filter(Boolean);
       } else if (p.tags && Array.isArray(p.tags)) {
         techList = p.tags;
@@ -152,13 +152,13 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
 
       return {
         id: p.id || p._id || String(idx + 1),
-        badge: p.badge || p.category || "Project",
+        badge: p.badge || p.category ||"Project",
         brand: p.brand || p.title || `Project #${idx + 1}`,
-        subtitle: p.subtitle || p.desc || p.description || "",
-        image: p.image || "/portfolio_card_1.png",
-        tag: p.tag || p.outcome || "+300% Growth",
-        tech: techList.length > 0 ? techList : ["Next.js", "TailwindCSS", "SEO"],
-        link: p.link || "#contact"
+        subtitle: p.subtitle || p.desc || p.description ||"",
+        image: p.image ||"/portfolio_card_1.png",
+        tag: p.tag || p.outcome ||"+300% Growth",
+        tech: techList.length > 0 ? techList : ["Next.js","TailwindCSS","SEO"],
+        link: p.link ||"#contact"
       };
     });
   }, [rawProjects]);
@@ -166,60 +166,60 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
   // ── 3. CREATIVE PROCESS SECTION DATA ───────────────────────────────────
   const defaultProcessSteps = [
     {
-      step: "01",
-      tag: "PHASE 01",
-      title: "Discovery & Strategy",
-      desc: "Deep research into brand goals, target demographics, and market positioning.",
-      icon: "Lightbulb"
+      step:"01",
+      tag:"PHASE 01",
+      title:"Discovery & Strategy",
+      desc:"Deep research into brand goals, target demographics, and market positioning.",
+      icon:"Lightbulb"
     },
     {
-      step: "02",
-      tag: "PHASE 02",
-      title: "UI/UX Design System",
-      desc: "Crafting wireframes, responsive layouts, and interactive design prototypes.",
-      icon: "PenTool"
+      step:"02",
+      tag:"PHASE 02",
+      title:"UI/UX Design System",
+      desc:"Crafting wireframes, responsive layouts, and interactive design prototypes.",
+      icon:"PenTool"
     },
     {
-      step: "03",
-      tag: "PHASE 03",
-      title: "Full-Stack Build",
-      desc: "Engineering high-speed, mobile-optimized, SEO-ready web architecture.",
-      icon: "Code"
+      step:"03",
+      tag:"PHASE 03",
+      title:"Full-Stack Build",
+      desc:"Engineering high-speed, mobile-optimized, SEO-ready web architecture.",
+      icon:"Code"
     },
     {
-      step: "04",
-      tag: "PHASE 04",
-      title: "Launch & Growth",
-      desc: "Flawless deployment, speed optimization, and automated conversion tracking.",
-      icon: "Rocket"
+      step:"04",
+      tag:"PHASE 04",
+      title:"Launch & Growth",
+      desc:"Flawless deployment, speed optimization, and automated conversion tracking.",
+      icon:"Rocket"
     }
   ];
 
   const processSection = {
-    badge: galleryPage.process?.badge || "OUR CREATIVE PROCESS",
-    titlePrefix: galleryPage.process?.titlePrefix || "From Concept to ",
-    titleHighlight: galleryPage.process?.titleHighlight || "Impact",
-    subtitle: galleryPage.process?.subtitle || "A proven 4-step framework engineered for maximum conversion and brand authority.",
+    badge: galleryPage.process?.badge ||"OUR CREATIVE PROCESS",
+    titlePrefix: galleryPage.process?.titlePrefix ||"From Concept to",
+    titleHighlight: galleryPage.process?.titleHighlight ||"Impact",
+    subtitle: galleryPage.process?.subtitle ||"A proven 4-step framework engineered for maximum conversion and brand authority.",
     steps: galleryPage.process?.steps && galleryPage.process.steps.length > 0 ? galleryPage.process.steps : defaultProcessSteps
   };
 
   // ── 4. BOTTOM SIGNATURE CTA BANNER DATA ─────────────────────────────────
   const ctaBanner = {
-    eyebrow: galleryPage.ctaBanner?.eyebrow || "LET'S BUILD SOMETHING GREAT",
-    titleIntro: galleryPage.ctaBanner?.titleIntro || "Ready to Launch Your",
-    titleHighlight: galleryPage.ctaBanner?.titleHighlight || "Next Big Project",
-    titleCursive: galleryPage.ctaBanner?.titleCursive || "Today?",
-    description: galleryPage.ctaBanner?.description || "Let's turn your vision into a stunning digital reality. Get in touch for a custom strategy, competitive pricing, and fast execution.",
+    eyebrow: galleryPage.ctaBanner?.eyebrow ||"LET'S BUILD SOMETHING GREAT",
+    titleIntro: galleryPage.ctaBanner?.titleIntro ||"Ready to Launch Your",
+    titleHighlight: galleryPage.ctaBanner?.titleHighlight ||"Next Big Project",
+    titleCursive: galleryPage.ctaBanner?.titleCursive ||"Today?",
+    description: galleryPage.ctaBanner?.description ||"Let's turn your vision into a stunning digital reality. Get in touch for a custom strategy, competitive pricing, and fast execution.",
     ctaPrimary: {
-      label: galleryPage.ctaBanner?.ctaPrimary?.label || "START YOUR PROJECT",
-      href: galleryPage.ctaBanner?.ctaPrimary?.href || "/contact-us"
+      label: galleryPage.ctaBanner?.ctaPrimary?.label ||"START YOUR PROJECT",
+      href: galleryPage.ctaBanner?.ctaPrimary?.href ||"/contact-us"
     },
     ctaSecondary: {
-      label: galleryPage.ctaBanner?.ctaSecondary?.label || "GET FREE ESTIMATE",
-      href: galleryPage.ctaBanner?.ctaSecondary?.href || "/contact-us"
+      label: galleryPage.ctaBanner?.ctaSecondary?.label ||"GET FREE ESTIMATE",
+      href: galleryPage.ctaBanner?.ctaSecondary?.href ||"/contact-us"
     },
-    portraitSrc: galleryPage.ctaBanner?.portraitSrc || "/founder_portrait_nobg.png",
-    portraitAlt: galleryPage.ctaBanner?.portraitAlt || "Founder & Creative Director"
+    portraitSrc: galleryPage.ctaBanner?.portraitSrc ||"/founder_portrait_nobg.png",
+    portraitAlt: galleryPage.ctaBanner?.portraitAlt ||"Founder & Creative Director"
   };
 
   return (
@@ -438,9 +438,9 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
             <PageInlineFaqs
               faqs={pageData.faq}
               faqSchemaMarkup={pageData.faqSchemaMarkup}
-              badge={pageData.faqBadge || "PORTFOLIO FAQ"}
-              title={pageData.faqTitle || "Frequently Asked Questions"}
-              subtitle={pageData.faqDescription || "Key queries about our design and development deliverables."}
+              badge={pageData.faqBadge ||"PORTFOLIO FAQ"}
+              title={pageData.faqTitle ||"Frequently Asked Questions"}
+              subtitle={pageData.faqDescription ||"Key queries about our design and development deliverables."}
             />
           </div>
         )}
@@ -462,8 +462,8 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
               {/* Title with Cursive Accent */}
               <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.18] tracking-tight text-white">
                 {ctaBanner.titleIntro} <br />
-                <span className="whitespace-nowrap inline-block">
-                  {ctaBanner.titleHighlight}{" "}
+                <span className="inline-block">
+                  {ctaBanner.titleHighlight}{""}
                   <span className="relative inline-block">
                     <span className="font-cursive text-[#E9BD36] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
                       {ctaBanner.titleCursive}

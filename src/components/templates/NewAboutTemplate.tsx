@@ -1,13 +1,13 @@
 "use client";
 
-import CtaButton from "@/components/ui/CtaButton";
-import { withTrailingSlash } from "@/lib/url";
-import PageBreadcrumbs from "@/components/PageBreadcrumbs";
-import { motion } from "framer-motion";
-import { useRef, useEffect, useState } from "react";
-import Image from "next/image";
-import Link from "@/components/ui/Link";
-import { getValidHref } from "@/lib/utils";
+import CtaButton from"@/components/ui/CtaButton";
+import { withTrailingSlash } from"@/lib/url";
+import PageBreadcrumbs from"@/components/PageBreadcrumbs";
+import { motion } from"framer-motion";
+import { useRef, useEffect, useState } from"react";
+import Image from"next/image";
+import Link from"@/components/ui/Link";
+import { getValidHref } from"@/lib/utils";
 import {
   ArrowRight,
   Play,
@@ -37,9 +37,9 @@ import {
   Handshake,
   TrendingUp,
   Zap
-} from "lucide-react";
-import { useContent } from "@/hooks/useContent";
-import RichTextRenderer from "@/components/ui/RichTextRenderer";
+} from"lucide-react";
+import { useContent } from"@/hooks/useContent";
+import RichTextRenderer from"@/components/ui/RichTextRenderer";
 
 // ── Drawing Animation for Hand-Drawn SVG Underlines ────────────────
 const drawVariants = {
@@ -49,7 +49,7 @@ const drawVariants = {
     transition: {
       duration: custom?.duration ?? 0.4,
       delay: custom?.delay ?? 0.1,
-      ease: "easeOut" as any
+      ease:"easeOut" as any
     }
   })
 };
@@ -60,8 +60,8 @@ const TickerDigit = ({ digit }: { digit: number }) => {
     <span
       className="relative inline-block overflow-hidden select-none"
       style={{
-        width: "0.58em",
-        height: "1em"
+        width:"0.58em",
+        height:"1em"
       }}
     >
       <motion.span
@@ -70,7 +70,7 @@ const TickerDigit = ({ digit }: { digit: number }) => {
         whileInView={{ y: `-${digit}em` }}
         viewport={{ once: true }}
         transition={{
-          type: "spring",
+          type:"spring",
           stiffness: 45,
           damping: 12,
           mass: 0.8,
@@ -82,8 +82,8 @@ const TickerDigit = ({ digit }: { digit: number }) => {
             key={num}
             className="flex items-center justify-center leading-none bg-clip-text text-transparent bg-gradient-to-r from-brand-blue to-blue-500 dark:from-brand-yellow dark:to-amber-400"
             style={{
-              height: "1em",
-              WebkitBackgroundClip: "text"
+              height:"1em",
+              WebkitBackgroundClip:"text"
             }}
           >
             {num}
@@ -104,7 +104,7 @@ const DigitTicker = ({ value }: { value: number }) => {
             <span
               key={idx}
               className="leading-none bg-clip-text text-transparent bg-gradient-to-r from-brand-blue to-blue-500 dark:from-brand-yellow dark:to-amber-400"
-              style={{ WebkitBackgroundClip: "text" }}
+              style={{ WebkitBackgroundClip:"text" }}
             >
               {digit}
             </span>
@@ -119,10 +119,10 @@ const DigitTicker = ({ value }: { value: number }) => {
 // Shows the WHOLE image whatever its shape: the sharp image is contained (never cropped)
 // on top of a blurred copy of itself, so there are no empty bars either.
 // Parent must be `relative` + `overflow-hidden` with a fixed height/aspect.
-const FullImage = ({ src, alt, className = "" }: { src: string; alt?: string; className?: string }) => (
+const FullImage = ({ src, alt, className ="" }: { src: string; alt?: string; className?: string }) => (
   <>
     <img src={src} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-70 blur-2xl pointer-events-none" />
-    <img src={src} alt={alt || ""} className={`relative h-full w-full object-contain ${className}`} />
+    <img src={src} alt={alt ||""} className={`relative h-full w-full object-contain ${className}`} />
   </>
 );
 
@@ -159,19 +159,19 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
     const full = { ...matchedMaster, ...item };
 
-    const title = full.title || full.name || "";
-    const category = (full.category && full.category !== "DIGITAL ENGINEERING")
+    const title = full.title || full.name ||"";
+    const category = (full.category && full.category !=="DIGITAL ENGINEERING")
       ? full.category
-      : (full.tag || (full.badge && full.badge !== "CORE CAPABILITY" ? full.badge : "") || "");
-    const badge = (full.badge && full.badge !== "CORE CAPABILITY" && full.badge !== category)
+      : (full.tag || (full.badge && full.badge !=="CORE CAPABILITY" ? full.badge :"") ||"");
+    const badge = (full.badge && full.badge !=="CORE CAPABILITY" && full.badge !== category)
       ? full.badge
-      : (full.tag && full.tag !== category ? full.tag : "");
+      : (full.tag && full.tag !== category ? full.tag :"");
     // Prefer the LIVE master service's image over the frozen per-page snapshot (`item`) so that
     // updating a service's image in the Services admin is reflected here without re-selecting it.
     // Fall back to the stored snapshot only when there's no live master match (manually-added stage).
     const image = matchedMaster.image || matchedMaster.hero?.bgImage || matchedMaster.hero?.backgroundImage || matchedMaster.deepDive?.image || matchedMaster.overviewImage || matchedMaster.caseStudy?.image
-      || full.image || full.hero?.bgImage || full.hero?.backgroundImage || full.deepDive?.image || full.overviewImage || full.caseStudy?.image || "";
-    const desc = full.desc || full.description || full.hero?.description || full.tagline || full.shortDescription || full.deepDive?.desc || "";
+      || full.image || full.hero?.bgImage || full.hero?.backgroundImage || full.deepDive?.image || full.overviewImage || full.caseStudy?.image ||"";
+    const desc = full.desc || full.description || full.hero?.description || full.tagline || full.shortDescription || full.deepDive?.desc ||"";
     const deliverables = Array.isArray(full.deliverables) && full.deliverables.length > 0
       ? full.deliverables
       : (Array.isArray(full.hero?.benefits) && full.hero.benefits.length > 0
@@ -183,8 +183,8 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
             : [])));
     const navTitle = full.navTitle || title;
     const navTag = full.navTag || (category ? category.toUpperCase() : `STAGE 0${idx + 1}`);
-    const iconName = full.iconName || full.icon || "Code";
-    const slug = full.slug || "";
+    const iconName = full.iconName || full.icon ||"Code";
+    const slug = full.slug ||"";
 
     return {
       id: full.id || `0${idx + 1}`,
@@ -255,7 +255,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
           const topEntry = visible[0];
           const id = topEntry.target.getAttribute("id");
           if (id) {
-            const numStr = id.replace("service-stage-", "");
+            const numStr = id.replace("service-stage-","");
             const idx = parseInt(numStr, 10) - 1;
             if (!isNaN(idx) && idx >= 0) {
               setActiveService(idx);
@@ -264,7 +264,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
         }
       },
       {
-        rootMargin: "-10% 0px -30% 0px",
+        rootMargin:"-10% 0px -30% 0px",
         threshold: [0.1, 0.3, 0.5],
       }
     );
@@ -299,7 +299,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                 initial={{ opacity: 0, y: 25 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="lg:col-span-6 space-y-6 text-left"
+                className="lg:col-span-6 min-w-0 space-y-6 text-left"
               >
                 <PageBreadcrumbs page={pageData} />
                 {hero.badgeText && (
@@ -312,9 +312,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                 )}
 
                 <h1 className="font-heading text-3xl sm:text-4xl lg:text-[42px] font-black tracking-tight leading-[1.18] text-brand-dark dark:text-white max-w-xl">
-                  {hero.titleIntro || "Architecting Digital Products With "}
+                  {hero.titleIntro ||"Architecting Digital Products With"}
                   <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1">
-                    {hero.titleHighlight || "Zero Fluff & Pure Precision."}
+                    {hero.titleHighlight ||"Zero Fluff & Pure Precision."}
                     <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
                       <motion.path
                         d="M 2 5 Q 50 1.5, 98 3.5 C 99 3.5, 99 4.5, 98 5 Q 50 7, 2 5.5 Z"
@@ -337,16 +337,16 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                 <div className="flex flex-wrap items-center gap-4 pt-2">
                   {hero.ctaPrimaryText && (
-                    <CtaButton href={hero.ctaPrimaryHref || "#"}>{hero.ctaPrimaryText}</CtaButton>
+                    <CtaButton href={hero.ctaPrimaryHref ||"#"}>{hero.ctaPrimaryText}</CtaButton>
                   )}
 
                   {hero.ctaSecondaryText && (
-                    <CtaButton href={hero.ctaSecondaryHref || "#"} variant="secondary" icon={<Play className="fill-current ml-0.5" />}>{hero.ctaSecondaryText}</CtaButton>
+                    <CtaButton href={hero.ctaSecondaryHref ||"#"} variant="secondary" icon={<Play className="fill-current ml-0.5" />}>{hero.ctaSecondaryText}</CtaButton>
                   )}
                 </div>
               </motion.div>
 
-              <div className="lg:col-span-6 relative w-full h-[320px] sm:h-[420px] md:h-[480px] lg:h-[520px] flex items-center justify-center pt-8 lg:pt-0">
+              <div className="lg:col-span-6 min-w-0 relative w-full h-[320px] sm:h-[420px] md:h-[480px] lg:h-[520px] flex items-center justify-center pt-8 lg:pt-0">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.98, y: 15 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -356,7 +356,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   {hero.heroImage ? (
                     <img
                       src={hero.heroImage}
-                      alt={hero.heroImageAlt || "About Hero"}
+                      alt={hero.heroImageAlt ||"About Hero"}
                       className="w-full h-full object-contain filter drop-shadow-2xl"
                     />
                   ) : null}
@@ -372,7 +372,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
         <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/10 dark:bg-white/[0.005] section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-stretch">
-              <div className="lg:col-span-4 flex flex-col justify-between self-stretch text-left">
+              <div className="lg:col-span-4 min-w-0 flex flex-col justify-between self-stretch text-left">
                 <div className="w-full space-y-4">
                   {stats.eyebrow && (
                     <div className="eyebrow-pill">
@@ -385,9 +385,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   )}
 
                   <h2 className="font-heading text-3xl sm:text-4xl font-black tracking-tight leading-[1.12] text-brand-dark dark:text-white">
-                    {stats.titleIntro || "Compound Growth & "}
-                    <span className="text-brand-blue dark:text-brand-yellow font-serif font-normal italic">
-                      {stats.titleHighlight || "Measurable ROI"}
+                    {stats.titleIntro ||"Compound Growth &"}
+ <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
+                      {stats.titleHighlight ||"Measurable ROI"}
                     </span>
                   </h2>
 
@@ -402,7 +402,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                 {Array.isArray(stats.expertiseList) && stats.expertiseList.length > 0 && (
                   <div className="pt-6 mt-8 border-t border-brand-zinc-100 dark:border-white/5 w-full select-none">
                     <span className="text-[7.5px] font-mono tracking-widest text-brand-blue dark:text-brand-yellow uppercase font-black block mb-3">
-                      {stats.expertiseHeader || "CORE DISCIPLINES"}
+                      {stats.expertiseHeader ||"CORE DISCIPLINES"}
                     </span>
                     <div className="grid grid-cols-2 gap-y-3.5 gap-x-6">
                       {stats.expertiseList.map((item: any, idx: number) => (
@@ -416,7 +416,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                 )}
               </div>
 
-              <div className="lg:col-span-8 grid grid-cols-2 gap-x-12 gap-y-12 sm:gap-x-16 border-t lg:border-t-0 lg:border-l border-brand-zinc-200/60 dark:border-white/5 pt-10 lg:pt-0 lg:pl-16">
+              <div className="lg:col-span-8 min-w-0 grid grid-cols-2 gap-x-12 gap-y-12 sm:gap-x-16 border-t lg:border-t-0 lg:border-l border-brand-zinc-200/60 dark:border-white/5 pt-10 lg:pt-0 lg:pl-16">
                 {(Array.isArray(stats.metrics) ? stats.metrics : []).map((metric: any, idx: number) => {
                   const MetricIcon = getIcon(metric.iconName, Globe);
                   return (
@@ -461,7 +461,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
-              <div className="lg:col-span-6 space-y-10 text-left">
+              <div className="lg:col-span-6 min-w-0 space-y-10 text-left">
                 <div className="space-y-4">
                   {whoWeAre.eyebrow && (
                     <div className="eyebrow-pill">
@@ -474,9 +474,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   )}
 
                   <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
-                    {whoWeAre.titleIntro || "Built by Engineers, "}
-                    <span className="text-[#0306AC] dark:text-[#E9BD36] font-serif font-normal italic">
-                      {whoWeAre.titleHighlight || "Guided by Craft."}
+                    {whoWeAre.titleIntro ||"Built by Engineers,"}
+ <span className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+                      {whoWeAre.titleHighlight ||"Guided by Craft."}
                     </span>
                   </h2>
 
@@ -514,13 +514,13 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                 )}
               </div>
 
-              <div className="lg:col-span-6 relative h-[380px] sm:h-[480px] w-full flex items-center justify-center select-none">
+              <div className="lg:col-span-6 min-w-0 relative h-[380px] sm:h-[480px] w-full flex items-center justify-center select-none">
                 <div className="relative w-full h-full max-w-[480px]">
                   {whoWeAre.imgAbstract && (
                     <div className="absolute left-4 top-4 w-[60%] aspect-[1.1] rounded-2xl overflow-hidden border border-brand-zinc-200 dark:border-white/5 shadow-md bg-brand-dark -z-10">
                       <img
                         src={whoWeAre.imgAbstract}
-                        alt={whoWeAre.imgAbstractAlt || "Abstract Design"}
+                        alt={whoWeAre.imgAbstractAlt ||"Abstract Design"}
                         className="w-full h-full object-cover opacity-60 dark:opacity-80"
                       />
                     </div>
@@ -528,14 +528,14 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                   {whoWeAre.imgWorkspace && (
                     <div className="absolute left-[15%] top-[15%] w-[70%] aspect-[1.3] rounded-2xl overflow-hidden border border-brand-zinc-200 dark:border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.06)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] bg-white dark:bg-[#12121e]">
-                      <FullImage src={whoWeAre.imgWorkspace} alt={whoWeAre.imgWorkspaceAlt || "Team Workspace"} />
+                      <FullImage src={whoWeAre.imgWorkspace} alt={whoWeAre.imgWorkspaceAlt ||"Team Workspace"} />
                       <div className="absolute inset-0 bg-linear-grid-blue-4 opacity-[0.02] [background-size:16px_16px]" />
                     </div>
                   )}
 
                   {whoWeAre.imgUiDetail && (
                     <div className="absolute right-2 bottom-6 w-[55%] aspect-[1.28] rounded-2xl overflow-hidden border border-[#0306AC]/15 dark:border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.12)] dark:shadow-[0_30px_60px_rgba(0,0,0,0.5)] bg-white dark:bg-[#12121e]">
-                      <FullImage src={whoWeAre.imgUiDetail} alt={whoWeAre.imgUiDetailAlt || "UI Detail"} />
+                      <FullImage src={whoWeAre.imgUiDetail} alt={whoWeAre.imgUiDetailAlt ||"UI Detail"} />
                       <div className="absolute inset-0 bg-gradient-to-tr from-[#0306AC]/10 to-transparent mix-blend-overlay pointer-events-none" />
                     </div>
                   )}
@@ -579,9 +579,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
               )}
 
               <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
-                {philosophy.titleIntro || "The Three Principles That "}
-                <span className="text-[#0306AC] dark:text-[#E9BD36] font-serif font-normal italic">
-                  {philosophy.titleHighlight || "Drive Our Work"}
+                {philosophy.titleIntro ||"The Three Principles That"}
+ <span className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+                  {philosophy.titleHighlight ||"Drive Our Work"}
                 </span>
               </h2>
             </div>
@@ -590,21 +590,21 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
               {/* Mission */}
               {philosophy.mission && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center group">
-                  <div className="lg:col-span-5 flex flex-col justify-center space-y-6 text-left order-2 lg:order-1">
+                  <div className="lg:col-span-5 min-w-0 flex flex-col justify-center space-y-6 text-left order-2 lg:order-1">
                     <div className="flex items-center gap-4">
-                      <span className="font-serif italic text-5xl sm:text-6xl font-black text-brand-zinc-200 dark:text-white/10 group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors duration-500 leading-none select-none">
-                        {philosophy.mission.num || "01"}
+ <span className="font-cursive text-5xl sm:text-6xl font-black text-brand-zinc-200 dark:text-white/10 group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors duration-500 leading-none select-none">
+                        {philosophy.mission.num ||"01"}
                       </span>
                       <div className="h-[1px] w-8 bg-[#0306AC]/20 dark:bg-white/10" />
                       <span className="text-[8.5px] font-mono tracking-widest text-[#0306AC] dark:text-[#E9BD36] font-black uppercase">
-                        {philosophy.mission.label || "CORE MISSION"}
+                        {philosophy.mission.label ||"CORE MISSION"}
                       </span>
                     </div>
 
                     <h3 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-black text-brand-dark dark:text-white leading-[1.15] tracking-tight">
-                      {(philosophy.mission.titleIntro || "Eliminating Technical Debt Through ").trimEnd()}{" "}
-                      <span className="font-serif italic text-[#0306AC] dark:text-[#E9BD36] font-light">
-                        {philosophy.mission.titleHighlight || "Intentional Design"}
+                      {(philosophy.mission.titleIntro ||"Eliminating Technical Debt Through").trimEnd()}{""}
+ <span className="font-cursive text-[#0306AC] dark:text-[#E9BD36] font-light">
+                        {philosophy.mission.titleHighlight ||"Intentional Design"}
                       </span>
                     </h3>
 
@@ -616,7 +616,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                     )}
 
                     {philosophy.mission.quote && (
-                      <div className="pl-4 border-l-2 border-[#0306AC] dark:border-[#E9BD36] italic text-xs font-serif text-brand-dark dark:text-zinc-200 py-0.5">
+ <div className="pl-4 border-l-2 border-[#0306AC] dark:border-[#E9BD36] text-xs font-heading text-brand-dark dark:text-zinc-200 py-0.5">
                         {philosophy.mission.quote}
                       </div>
                     )}
@@ -633,10 +633,10 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                     )}
                   </div>
 
-                  <div className="lg:col-span-7 order-1 lg:order-2">
+                  <div className="lg:col-span-7 min-w-0 order-1 lg:order-2">
                     <div className="aspect-[1.45] w-full rounded-[32px] overflow-hidden border border-brand-zinc-200/80 dark:border-white/10 shadow-sm relative bg-[#090812]">
                       {philosophy.mission.imgSrc && (
-                        <FullImage src={philosophy.mission.imgSrc} alt={philosophy.mission.imgAlt || "Mission"} className="group-hover:scale-[1.03] transition-transform duration-700 pointer-events-none" />
+                        <FullImage src={philosophy.mission.imgSrc} alt={philosophy.mission.imgAlt ||"Mission"} className="group-hover:scale-[1.03] transition-transform duration-700 pointer-events-none" />
                       )}
                       {philosophy.mission.badgeLatency && (
                         <div className="absolute top-5 right-5 bg-black/70 backdrop-blur-md border border-white/15 px-4 py-2 rounded-2xl flex items-center gap-3 shadow-xl select-none">
@@ -656,10 +656,10 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
               {/* Vision */}
               {philosophy.vision && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center group">
-                  <div className="lg:col-span-7">
+                  <div className="lg:col-span-7 min-w-0">
                     <div className="aspect-[1.45] w-full rounded-[32px] overflow-hidden border border-brand-zinc-200/80 dark:border-white/10 shadow-sm relative bg-[#090812]">
                       {philosophy.vision.imgSrc && (
-                        <FullImage src={philosophy.vision.imgSrc} alt={philosophy.vision.imgAlt || "Vision"} className="group-hover:scale-[1.03] transition-transform duration-700 pointer-events-none" />
+                        <FullImage src={philosophy.vision.imgSrc} alt={philosophy.vision.imgAlt ||"Vision"} className="group-hover:scale-[1.03] transition-transform duration-700 pointer-events-none" />
                       )}
                       {philosophy.vision.badgeAccessibility && (
                         <div className="absolute bottom-5 left-5 bg-black/70 backdrop-blur-md border border-white/15 px-4 py-2 rounded-2xl flex items-center gap-3 shadow-xl select-none">
@@ -674,21 +674,21 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                     </div>
                   </div>
 
-                  <div className="lg:col-span-5 flex flex-col justify-center space-y-6 text-left">
+                  <div className="lg:col-span-5 min-w-0 flex flex-col justify-center space-y-6 text-left">
                     <div className="flex items-center gap-4">
-                      <span className="font-serif italic text-5xl sm:text-6xl font-black text-brand-zinc-200 dark:text-white/10 group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors duration-500 leading-none select-none">
-                        {philosophy.vision.num || "02"}
+ <span className="font-cursive text-5xl sm:text-6xl font-black text-brand-zinc-200 dark:text-white/10 group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors duration-500 leading-none select-none">
+                        {philosophy.vision.num ||"02"}
                       </span>
                       <div className="h-[1px] w-8 bg-[#0306AC]/20 dark:bg-white/10" />
                       <span className="text-[8.5px] font-mono tracking-widest text-[#0306AC] dark:text-[#E9BD36] font-black uppercase">
-                        {philosophy.vision.label || "GLOBAL VISION"}
+                        {philosophy.vision.label ||"GLOBAL VISION"}
                       </span>
                     </div>
 
                     <h3 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-black text-brand-dark dark:text-white leading-[1.15] tracking-tight">
-                      {(philosophy.vision.titleIntro || "Setting the Global Standard in ").trimEnd()}{" "}
-                      <span className="font-serif italic text-[#0306AC] dark:text-[#E9BD36] font-light">
-                        {philosophy.vision.titleHighlight || "Modern Web Engineering"}
+                      {(philosophy.vision.titleIntro ||"Setting the Global Standard in").trimEnd()}{""}
+ <span className="font-cursive text-[#0306AC] dark:text-[#E9BD36] font-light">
+                        {philosophy.vision.titleHighlight ||"Modern Web Engineering"}
                       </span>
                     </h3>
 
@@ -700,7 +700,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                     )}
 
                     {philosophy.vision.quote && (
-                      <div className="pl-4 border-l-2 border-[#0306AC] dark:border-[#E9BD36] italic text-xs font-serif text-brand-dark dark:text-zinc-200 py-0.5">
+ <div className="pl-4 border-l-2 border-[#0306AC] dark:border-[#E9BD36] text-xs font-heading text-brand-dark dark:text-zinc-200 py-0.5">
                         {philosophy.vision.quote}
                       </div>
                     )}
@@ -722,21 +722,21 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
               {/* Values */}
               {philosophy.values && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center group">
-                  <div className="lg:col-span-5 flex flex-col justify-center space-y-6 text-left order-2 lg:order-1">
+                  <div className="lg:col-span-5 min-w-0 flex flex-col justify-center space-y-6 text-left order-2 lg:order-1">
                     <div className="flex items-center gap-4">
-                      <span className="font-serif italic text-5xl sm:text-6xl font-black text-brand-zinc-200 dark:text-white/10 group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors duration-500 leading-none select-none">
-                        {philosophy.values.num || "03"}
+ <span className="font-cursive text-5xl sm:text-6xl font-black text-brand-zinc-200 dark:text-white/10 group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors duration-500 leading-none select-none">
+                        {philosophy.values.num ||"03"}
                       </span>
                       <div className="h-[1px] w-8 bg-[#0306AC]/20 dark:bg-white/10" />
                       <span className="text-[8.5px] font-mono tracking-widest text-[#0306AC] dark:text-[#E9BD36] font-black uppercase">
-                        {philosophy.values.label || "SHARED VALUES"}
+                        {philosophy.values.label ||"SHARED VALUES"}
                       </span>
                     </div>
 
                     <h3 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-black text-brand-dark dark:text-white leading-[1.15] tracking-tight">
-                      {(philosophy.values.titleIntro || "Radical Transparency & ").trimEnd()}{" "}
-                      <span className="font-serif italic text-[#0306AC] dark:text-[#E9BD36] font-light">
-                        {philosophy.values.titleHighlight || "Relentless Ownership"}
+                      {(philosophy.values.titleIntro ||"Radical Transparency &").trimEnd()}{""}
+ <span className="font-cursive text-[#0306AC] dark:text-[#E9BD36] font-light">
+                        {philosophy.values.titleHighlight ||"Relentless Ownership"}
                       </span>
                     </h3>
 
@@ -748,7 +748,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                     )}
 
                     {philosophy.values.quote && (
-                      <div className="pl-4 border-l-2 border-[#0306AC] dark:border-[#E9BD36] italic text-xs font-serif text-brand-dark dark:text-zinc-200 py-0.5">
+ <div className="pl-4 border-l-2 border-[#0306AC] dark:border-[#E9BD36] text-xs font-heading text-brand-dark dark:text-zinc-200 py-0.5">
                         {philosophy.values.quote}
                       </div>
                     )}
@@ -765,10 +765,10 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                     )}
                   </div>
 
-                  <div className="lg:col-span-7 order-1 lg:order-2">
+                  <div className="lg:col-span-7 min-w-0 order-1 lg:order-2">
                     <div className="aspect-[1.45] w-full rounded-[32px] overflow-hidden border border-brand-zinc-200/80 dark:border-white/10 shadow-sm relative bg-[#090812]">
                       {philosophy.values.imgSrc && (
-                        <FullImage src={philosophy.values.imgSrc} alt={philosophy.values.imgAlt || "Values"} className="group-hover:scale-[1.03] transition-transform duration-700 pointer-events-none" />
+                        <FullImage src={philosophy.values.imgSrc} alt={philosophy.values.imgAlt ||"Values"} className="group-hover:scale-[1.03] transition-transform duration-700 pointer-events-none" />
                       )}
                       {philosophy.values.badgeSync && (
                         <div className="absolute top-5 left-5 bg-black/70 backdrop-blur-md border border-white/15 px-4 py-2 rounded-2xl flex items-center gap-3 shadow-xl select-none">
@@ -804,12 +804,12 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                       const el = document.getElementById(`service-stage-${item.id || idx + 1}`);
                       if (el) {
                         const y = el.getBoundingClientRect().top + window.pageYOffset - 110;
-                        window.scrollTo({ top: y, behavior: "smooth" });
+                        window.scrollTo({ top: y, behavior:"smooth" });
                       }
                     }}
                     className={`px-3.5 py-1.5 rounded-full text-xs font-mono font-bold shrink-0 flex items-center gap-2 transition-all duration-300 ${isActive
-                      ? "bg-[#0306AC] text-white dark:bg-[#E9BD36] dark:text-brand-dark shadow-md"
-                      : "bg-zinc-100 text-brand-zinc-600 dark:bg-white/5 dark:text-zinc-400"
+                      ?"bg-[#0306AC] text-white dark:bg-[#E9BD36] dark:text-brand-dark shadow-md"
+                      :"bg-zinc-100 text-brand-zinc-600 dark:bg-white/5 dark:text-zinc-400"
                       }`}
                   >
                     <span>{item.id || `0${idx + 1}`}</span>
@@ -822,7 +822,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
             <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
                 {/* Sticky Nav */}
-                <div className="hidden lg:block lg:col-span-5 lg:sticky lg:top-24 self-start z-20">
+                <div className="hidden lg:block lg:col-span-5 min-w-0 lg:sticky lg:top-24 self-start z-20">
                   <div className="p-6 sm:p-7 rounded-[32px] bg-zinc-50/90 dark:bg-[#0c0b18]/90 border border-brand-zinc-200/80 dark:border-white/10 shadow-2xl backdrop-blur-xl space-y-5 text-left relative overflow-hidden">
                     <div className="space-y-3">
                       {servicesDirectory.eyebrow && (
@@ -836,9 +836,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                       )}
 
                       <h2 className="font-heading text-2xl sm:text-3xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
-                        {servicesDirectory.titleIntro || "Full-Spectrum Digital "}
-                        <span className="text-[#0306AC] dark:text-[#E9BD36] font-serif font-normal italic">
-                          {servicesDirectory.titleHighlight || "Engineering Services"}
+                        {servicesDirectory.titleIntro ||"Full-Spectrum Digital"}
+ <span className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+                          {servicesDirectory.titleHighlight ||"Engineering Services"}
                         </span>
                       </h2>
                     </div>
@@ -851,25 +851,25 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                             key={item.id || idx}
                             href={withTrailingSlash(`#service-stage-${item.id || idx + 1}`)}
                             className={`py-2.5 px-3.5 rounded-2xl flex items-center justify-between transition-all duration-300 group relative ${isActive
-                              ? "bg-[#0306AC] text-white dark:bg-[#E9BD36] dark:text-[#080710] shadow-xl scale-[1.02] font-bold"
-                              : "hover:bg-zinc-200/60 dark:hover:bg-white/5 text-brand-zinc-600 dark:text-zinc-400"
+                              ?"bg-[#0306AC] text-white dark:bg-[#E9BD36] dark:text-[#080710] shadow-xl scale-[1.02] font-bold"
+                              :"hover:bg-zinc-200/60 dark:hover:bg-white/5 text-brand-zinc-600 dark:text-zinc-400"
                               }`}
                             onClick={(e) => {
                               e.preventDefault();
                               setActiveService(idx);
                               const el = document.getElementById(`service-stage-${item.id || idx + 1}`);
-                              if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+                              if (el) el.scrollIntoView({ behavior:"smooth", block:"center" });
                             }}
                           >
                             <div className="flex items-center gap-3">
-                              <span className={`font-serif italic text-xs font-black transition-colors ${isActive ? "text-[#E9BD36] dark:text-[#080710]" : "text-brand-zinc-400 dark:text-zinc-400"}`}>{item.id || `0${idx + 1}`}</span>
+ <span className={`font-heading text-xs font-black transition-colors ${isActive ?"text-[#E9BD36] dark:text-[#080710]" :"text-brand-zinc-400 dark:text-zinc-400"}`}>{item.id || `0${idx + 1}`}</span>
                               <span className="font-heading text-xs tracking-tight">{item.navTitle || item.title}</span>
                             </div>
                             <div className="flex items-center gap-2">
                               {item.navTag && (
-                                <span className={`text-[8.5px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full transition-colors ${isActive ? "bg-white/20 text-white dark:bg-black/15 dark:text-[#080710]" : "bg-black/5 dark:bg-white/10 text-brand-zinc-550 dark:text-zinc-300"}`}>{item.navTag}</span>
+                                <span className={`text-[8.5px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full transition-colors ${isActive ?"bg-white/20 text-white dark:bg-black/15 dark:text-[#080710]" :"bg-black/5 dark:bg-white/10 text-brand-zinc-550 dark:text-zinc-300"}`}>{item.navTag}</span>
                               )}
-                              <ArrowRight className={`h-3.5 w-3.5 transition-transform ${isActive ? "translate-x-1 opacity-100 text-[#E9BD36] dark:text-[#080710]" : "opacity-30 group-hover:opacity-100"}`} />
+                              <ArrowRight className={`h-3.5 w-3.5 transition-transform ${isActive ?"translate-x-1 opacity-100 text-[#E9BD36] dark:text-[#080710]" :"opacity-30 group-hover:opacity-100"}`} />
                             </div>
                           </a>
                         );
@@ -878,14 +878,14 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                     {servicesDirectory.consultationBtnText && (
                       <div className="pt-2 border-t border-brand-zinc-200/80 dark:border-white/10">
-                        <CtaButton href={servicesDirectory.consultationBtnHref || "#contact"} fullWidth>{servicesDirectory.consultationBtnText}</CtaButton>
+                        <CtaButton href={servicesDirectory.consultationBtnHref ||"#contact"} fullWidth>{servicesDirectory.consultationBtnText}</CtaButton>
                       </div>
                     )}
                   </div>
                 </div>
 
                 {/* Stages List */}
-                <div className="lg:col-span-7 space-y-10 sm:space-y-14 lg:space-y-16 text-left">
+                <div className="lg:col-span-7 min-w-0 space-y-10 sm:space-y-14 lg:space-y-16 text-left">
                   {stagesList.map((stage: any, idx: number) => {
                     const StageIcon = getIcon(stage.iconName, Palette);
                     return (
@@ -896,7 +896,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <span className="font-serif italic text-2xl font-black text-[#0306AC] dark:text-[#E9BD36]">{stage.id || `0${idx + 1}`}</span>
+ <span className="font-cursive text-2xl font-black text-[#0306AC] dark:text-[#E9BD36]">{stage.id || `0${idx + 1}`}</span>
                             {stage.category ? (
                               <>
                                 <div className="h-[1px] w-6 bg-brand-zinc-300 dark:bg-white/20" />
@@ -942,8 +942,8 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                             </div>
                           )}
 
-                          <a href={withTrailingSlash(servicesDirectory.getStartedHref || (stage.slug ? `/services/${stage.slug}` : "#contact"))} className="inline-flex items-center gap-2 text-xs font-mono font-black text-brand-dark dark:text-white group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors">
-                            <span>{servicesDirectory.getStartedText || "Explore Service"}</span>
+                          <a href={withTrailingSlash(servicesDirectory.getStartedHref || (stage.slug ? `/services/${stage.slug}` :"#contact"))} className="inline-flex items-center gap-2 text-xs font-mono font-black text-brand-dark dark:text-white group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors">
+                            <span>{servicesDirectory.getStartedText ||"Explore Service"}</span>
                             <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                           </a>
                         </div>
@@ -972,9 +972,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   </div>
                 )}
                 <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
-                  {methodology.titleIntro || "Engineering Precision From "}
-                  <span className="text-[#0306AC] dark:text-[#E9BD36] font-serif font-normal italic">
-                    {methodology.titleHighlight || "Concept to Production"}
+                  {methodology.titleIntro ||"Engineering Precision From"}
+ <span className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+                    {methodology.titleHighlight ||"Concept to Production"}
                   </span>
                 </h2>
               </div>
@@ -997,14 +997,14 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                       key={process.step || idx}
                       initial={{ opacity: 0, y: 30 }}
                       whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true, margin: "-50px" }}
+                      viewport={{ once: true, margin:"-50px" }}
                       transition={{ duration: 0.5, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
                       className="rounded-[36px] bg-zinc-50/90 dark:bg-[#0c0b18] border border-brand-zinc-200/80 dark:border-white/10 p-8 sm:p-9 text-brand-dark dark:text-white flex flex-col justify-between space-y-6 group hover:border-[#0306AC]/60 dark:hover:border-[#E9BD36]/60 transition-all duration-500 shadow-sm relative overflow-hidden"
                     >
                       <div className="space-y-6 relative z-10">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <span className="font-serif italic text-4xl font-black text-[#0306AC] dark:text-[#E9BD36]">{process.step || `0${idx + 1}`}</span>
+ <span className="font-cursive text-4xl font-black text-[#0306AC] dark:text-[#E9BD36]">{process.step || `0${idx + 1}`}</span>
                             <div className="h-[1px] w-6 bg-brand-zinc-300 dark:bg-white/20" />
                             <span className="text-[9px] font-mono font-bold text-brand-zinc-400 dark:text-zinc-500 uppercase tracking-widest">{process.badge}</span>
                           </div>
@@ -1025,8 +1025,8 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                       {Array.isArray(process.deliverables) && process.deliverables.length > 0 && (
                         <div className="pt-5 border-t border-brand-zinc-200/70 dark:border-white/10 space-y-3 mt-4 relative z-10">
                           <div className="flex items-center justify-between">
-                            <span className="text-[9px] font-mono font-bold text-brand-zinc-400 dark:text-zinc-500 uppercase tracking-wider block">{methodology.deliverablesLabel || "DELIVERABLES"}</span>
-                            <span className="text-[9px] font-mono font-bold text-[#0306AC] dark:text-[#E9BD36] uppercase tracking-wider">{methodology.stepLabelPrefix || "STAGE"} {idx + 1} OF {methodology.steps.length}</span>
+                            <span className="text-[9px] font-mono font-bold text-brand-zinc-400 dark:text-zinc-500 uppercase tracking-wider block">{methodology.deliverablesLabel ||"DELIVERABLES"}</span>
+                            <span className="text-[9px] font-mono font-bold text-[#0306AC] dark:text-[#E9BD36] uppercase tracking-wider">{methodology.stepLabelPrefix ||"STAGE"} {idx + 1} OF {methodology.steps.length}</span>
                           </div>
                           <div className="flex flex-wrap gap-1.5">
                             {process.deliverables.map((del: string, dIdx: number) => (
@@ -1063,9 +1063,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   </div>
                 )}
                 <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
-                  {domainExpertise.titleIntro || "Deep Experience Across "}
-                  <span className="text-[#0306AC] dark:text-[#E9BD36] font-serif font-normal italic">
-                    {domainExpertise.titleHighlight || "Diverse Industries"}
+                  {domainExpertise.titleIntro ||"Deep Experience Across"}
+ <span className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+                    {domainExpertise.titleHighlight ||"Diverse Industries"}
                   </span>
                 </h2>
               </div>
@@ -1092,16 +1092,16 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                       key={domain.id || idx}
                       initial={{ opacity: 0, y: 30 }}
                       whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true, margin: "-50px" }}
+                      viewport={{ once: true, margin:"-50px" }}
                       transition={{ duration: 0.5, delay: idx * 0.06, ease: [0.16, 1, 0.3, 1] }}
-                      className={`rounded-[32px] bg-zinc-50/90 dark:bg-[#0c0b18] border border-brand-zinc-200/80 dark:border-white/10 p-6 sm:p-7 flex flex-col justify-between space-y-6 group hover:border-[#0306AC]/60 dark:hover:border-[#E9BD36]/60 transition-all duration-500 shadow-sm relative overflow-hidden ${validHref ? "cursor-pointer" : ""}`}
+                      className={`rounded-[32px] bg-zinc-50/90 dark:bg-[#0c0b18] border border-brand-zinc-200/80 dark:border-white/10 p-6 sm:p-7 flex flex-col justify-between space-y-6 group hover:border-[#0306AC]/60 dark:hover:border-[#E9BD36]/60 transition-all duration-500 shadow-sm relative overflow-hidden ${validHref ?"cursor-pointer" :""}`}
                     >
                       <div className="space-y-5 relative z-10">
                         <div className="flex items-center justify-between">
                           <div className="h-12 w-12 rounded-2xl bg-[#0306AC]/10 dark:bg-white/10 border border-[#0306AC]/15 dark:border-white/15 flex items-center justify-center text-[#0306AC] dark:text-[#E9BD36] group-hover:scale-110 transition-all duration-300 shadow-md">
                             <DomainIcon className="h-5 w-5" />
                           </div>
-                          <span className="font-serif italic text-2xl font-black text-brand-zinc-300 dark:text-zinc-600 group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors">{domain.id || `0${idx + 1}`}</span>
+ <span className="font-cursive text-2xl font-black text-brand-zinc-300 dark:text-zinc-600 group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors">{domain.id || `0${idx + 1}`}</span>
                         </div>
 
                         <div className="space-y-2">
@@ -1110,7 +1110,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                               <Link
                                 href={validHref}
                                 className="hover:underline focus:outline-none after:absolute after:inset-0 after:z-10 inline-flex items-center gap-1.5"
-                                {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                                {...(isExternal ? { target:"_blank", rel:"noopener noreferrer" } : {})}
                               >
                                 <span>{domain.title}</span>
                                 <span className="inline-block transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-[#0306AC] dark:text-[#E9BD36]">↗</span>
@@ -1161,9 +1161,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
               )}
 
               <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
-                {whyChooseUs.titleIntro || "Why Visionary Leaders "}
-                <span className="text-[#0306AC] dark:text-[#E9BD36] font-serif font-normal italic">
-                  {whyChooseUs.titleHighlight || "Choose Mohsin Designs"}
+                {whyChooseUs.titleIntro ||"Why Visionary Leaders"}
+ <span className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+                  {whyChooseUs.titleHighlight ||"Choose Mohsin Designs"}
                 </span>
               </h2>
 
@@ -1176,28 +1176,28 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-              <div className="lg:col-span-4 relative flex justify-center z-10">
+              <div className="lg:col-span-4 min-w-0 relative flex justify-center z-10">
                 <div className="relative w-full rounded-[36px] overflow-hidden bg-brand-blue border border-brand-blue shadow-2xl p-8 sm:p-9 flex flex-col justify-between min-h-[460px] lg:min-h-[520px] z-10">
                   <div className="max-w-[220px] space-y-1.5 z-10 text-left">
                     <div className="h-[2.5px] w-7 bg-brand-yellow mb-4" />
-                    <p className="text-white text-sm sm:text-base font-semibold leading-snug tracking-tight">{whyChooseUs.blueCardLine1 || "Direct Founder"}</p>
-                    <p className="text-brand-yellow text-lg sm:text-xl font-extrabold leading-none pt-1">{whyChooseUs.blueCardLine2 || "Architecture & Execution"}</p>
+                    <p className="text-white text-sm sm:text-base font-semibold leading-snug tracking-tight">{whyChooseUs.blueCardLine1 ||"Direct Founder"}</p>
+                    <p className="text-brand-yellow text-lg sm:text-xl font-extrabold leading-none pt-1">{whyChooseUs.blueCardLine2 ||"Architecture & Execution"}</p>
                   </div>
 
                   {whyChooseUs.blueCardImage && (
                     <div className="relative mt-8 -mx-8 sm:-mx-9 -mb-8 sm:-mb-9 rounded-b-[36px] overflow-hidden shadow-inner h-64 sm:h-72 lg:h-80">
-                      <FullImage src={whyChooseUs.blueCardImage} alt={whyChooseUs.blueCardImageAlt || "Feature"} />
+                      <FullImage src={whyChooseUs.blueCardImage} alt={whyChooseUs.blueCardImageAlt ||"Feature"} />
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="lg:col-span-8 relative z-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-left">
+              <div className="lg:col-span-8 min-w-0 relative z-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-left">
                 {(Array.isArray(whyChooseUs.features) ? whyChooseUs.features : []).map((feat: any, idx: number) => {
                   const FeatIcon = getIcon(feat.iconName, Target);
                   return (
                     <div key={idx} className="p-7 rounded-[24px] bg-white dark:bg-[#0c0b18] border border-brand-zinc-200/70 dark:border-white/10 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col items-start justify-between min-h-[220px] group">
-                      <div className={`h-14 w-14 rounded-full flex items-center justify-center ${feat.iconBg === "amber" ? "bg-amber-50/80 dark:bg-amber-500/10 text-amber-500 dark:text-[#E9BD36]" : "bg-blue-50/80 dark:bg-white/5 text-[#0306AC] dark:text-[#E9BD36]"} group-hover:scale-110 transition-transform`}>
+                      <div className={`h-14 w-14 rounded-full flex items-center justify-center ${feat.iconBg ==="amber" ?"bg-amber-50/80 dark:bg-amber-500/10 text-amber-500 dark:text-[#E9BD36]" :"bg-blue-50/80 dark:bg-white/5 text-[#0306AC] dark:text-[#E9BD36]"} group-hover:scale-110 transition-transform`}>
                         <FeatIcon className="h-6 w-6" />
                       </div>
                       <div>
@@ -1222,15 +1222,15 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
         <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
-              <div className="lg:col-span-5 flex justify-center">
+              <div className="lg:col-span-5 min-w-0 flex justify-center">
                 {executiveLeadership.portraitSrc && (
                   <div className="relative aspect-[4/5] w-full max-w-[440px] rounded-[32px] overflow-hidden shadow-2xl border border-brand-zinc-200/60 dark:border-white/10 group">
-                    <FullImage src={executiveLeadership.portraitSrc} alt={executiveLeadership.portraitAlt || "Founder"} className="group-hover:scale-[1.03] transition-transform duration-700 pointer-events-none" />
+                    <FullImage src={executiveLeadership.portraitSrc} alt={executiveLeadership.portraitAlt ||"Founder"} className="group-hover:scale-[1.03] transition-transform duration-700 pointer-events-none" />
                   </div>
                 )}
               </div>
 
-              <div className="lg:col-span-7 space-y-8 text-left">
+              <div className="lg:col-span-7 min-w-0 space-y-8 text-left">
                 <div className="space-y-4">
                   {executiveLeadership.eyebrow && (
                     <div className="eyebrow-pill">
@@ -1243,9 +1243,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   )}
 
                   <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
-                    {executiveLeadership.titleIntro || "Driven by Vision, "}
-                    <span className="text-[#0306AC] dark:text-[#E9BD36] font-serif font-normal italic">
-                      {executiveLeadership.titleHighlight || "Grounded in Craft"}
+                    {executiveLeadership.titleIntro ||"Driven by Vision,"}
+ <span className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+                      {executiveLeadership.titleHighlight ||"Grounded in Craft"}
                     </span>
                   </h2>
                 </div>
@@ -1264,7 +1264,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   <div className="grid grid-cols-3 gap-8 border-t border-brand-zinc-200/80 dark:border-white/10 pt-8">
                     {executiveLeadership.metrics.map((m: any, idx: number) => (
                       <div key={idx} className="space-y-1 text-left">
-                        <div className="font-serif italic text-4xl sm:text-5xl font-black text-[#0306AC] dark:text-[#E9BD36]">{m.value}</div>
+ <div className="font-cursive text-4xl sm:text-5xl font-black text-[#0306AC] dark:text-[#E9BD36]">{m.value}</div>
                         <span className="text-[10px] font-mono font-bold text-brand-dark dark:text-white uppercase tracking-wider block">{m.label}</span>
                       </div>
                     ))}
@@ -1307,11 +1307,11 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                 )}
 
                 <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.18] tracking-tight text-white">
-                  {ctaBanner.titleIntro || "Let's Engineer Something "}
-                  <span className="whitespace-nowrap inline-block">
-                    {ctaBanner.titleWord1 || "Truly "}
+                  {ctaBanner.titleIntro ||"Let's Engineer Something"}
+                  <span className="inline-block">
+                    {ctaBanner.titleWord1 ||"Truly"}
                     <span className="relative inline-block">
-                      <span className="font-cursive text-[#E9BD36] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">{ctaBanner.titleWord2 || "Remarkable."}</span>
+                      <span className="font-cursive text-[#E9BD36] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">{ctaBanner.titleWord2 ||"Remarkable."}</span>
                       <svg className="absolute left-0 bottom-[-2px] w-full h-3 text-[#E9BD36]" viewBox="0 0 100 10" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
                         <path d="M 5 6 C 30 9, 70 9, 95 4" />
                       </svg>
@@ -1328,11 +1328,11 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                 <div className="flex items-center gap-4 flex-wrap pt-2">
                   {ctaBanner.ctaPrimaryText && (
-                    <CtaButton href={ctaBanner.ctaPrimaryHref || "#contact"}>{ctaBanner.ctaPrimaryText}</CtaButton>
+                    <CtaButton href={ctaBanner.ctaPrimaryHref ||"#contact"}>{ctaBanner.ctaPrimaryText}</CtaButton>
                   )}
 
                   {ctaBanner.ctaSecondaryText && (
-                    <CtaButton href={ctaBanner.ctaSecondaryHref || "#"} variant="secondary" icon={<Play className="fill-current ml-0.5" />}>{ctaBanner.ctaSecondaryText}</CtaButton>
+                    <CtaButton href={ctaBanner.ctaSecondaryHref ||"#"} variant="secondary" icon={<Play className="fill-current ml-0.5" />}>{ctaBanner.ctaSecondaryText}</CtaButton>
                   )}
                 </div>
               </div>
@@ -1341,7 +1341,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                 <div className="absolute bottom-0 w-[320px] h-[320px] bg-gradient-to-t from-[#020485] to-[#0408d9] rounded-full opacity-90 border border-white/20 shadow-2xl" />
                 {ctaBanner.portraitSrc && (
                   <div className="relative z-10 w-[280px] h-[370px] self-end drop-shadow-2xl overflow-hidden rounded-t-[32px] border-t border-l border-r border-white/25 shadow-2xl">
-                    <Image src={ctaBanner.portraitSrc} alt={ctaBanner.portraitAlt || "Portrait"} width={320} height={420} className="w-full h-full object-cover object-top filter contrast-[1.05]" />
+                    <Image src={ctaBanner.portraitSrc} alt={ctaBanner.portraitAlt ||"Portrait"} width={320} height={420} className="w-full h-full object-cover object-top filter contrast-[1.05]" />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#010356]/80 via-transparent to-transparent pointer-events-none" />
                   </div>
                 )}
@@ -1407,9 +1407,9 @@ function ReviewsCarousel({ reviewsData }: { reviewsData: any }) {
           )}
 
           <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15] max-w-2xl">
-            {reviewsData.titleIntro || "Trusted by Founders, "}
-            <span className="text-[#0306AC] dark:text-[#E9BD36] font-serif font-normal italic">
-              {reviewsData.titleHighlight || "Loved by Engineering Teams"}
+            {reviewsData.titleIntro ||"Trusted by Founders,"}
+ <span className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+              {reviewsData.titleHighlight ||"Loved by Engineering Teams"}
             </span>
           </h2>
 
@@ -1426,9 +1426,9 @@ function ReviewsCarousel({ reviewsData }: { reviewsData: any }) {
                 <Star key={i} className="h-3.5 w-3.5 fill-current" />
               ))}
             </div>
-            <span className="font-bold text-brand-dark dark:text-white">{reviewsData.ratingValue || "5.0 / 5.0"}</span>
+            <span className="font-bold text-brand-dark dark:text-white">{reviewsData.ratingValue ||"5.0 / 5.0"}</span>
             <span className="text-zinc-300 dark:text-white/20">|</span>
-            <span className="text-brand-zinc-600 dark:text-zinc-300 font-medium">{reviewsData.ratingSub || "Verified Reviews"}</span>
+            <span className="text-brand-zinc-600 dark:text-zinc-300 font-medium">{reviewsData.ratingSub ||"Verified Reviews"}</span>
           </div>
         </div>
 
@@ -1453,7 +1453,7 @@ function ReviewsCarousel({ reviewsData }: { reviewsData: any }) {
 
                     <RichTextRenderer
                       content={r.quote}
-                      className="text-xs sm:text-sm font-sans font-medium text-brand-zinc-700 dark:text-zinc-200 leading-relaxed italic pt-1"
+ className="text-xs sm:text-sm font-sans font-medium text-brand-zinc-700 dark:text-zinc-200 leading-relaxed pt-1"
                     />
 
                     {r.impact && (
@@ -1466,8 +1466,8 @@ function ReviewsCarousel({ reviewsData }: { reviewsData: any }) {
 
                   <div className="pt-5 border-t border-brand-zinc-200/80 dark:border-white/10 mt-6 relative z-10">
                     <div className="flex items-center gap-3.5 text-left">
-                      <div className="h-10 w-10 rounded-full flex items-center justify-center font-heading font-black text-xs shadow-md shrink-0 border border-white/20" style={{ backgroundColor: r.accent === "#E9BD36" ? "#E9BD36" : "#0306AC", color: r.accent === "#E9BD36" ? "#080710" : "#ffffff" }}>
-                        {r.initial || (r.name ? r.name.charAt(0) : "M")}
+                      <div className="h-10 w-10 rounded-full flex items-center justify-center font-heading font-black text-xs shadow-md shrink-0 border border-white/20" style={{ backgroundColor: r.accent ==="#E9BD36" ?"#E9BD36" :"#0306AC", color: r.accent ==="#E9BD36" ?"#080710" :"#ffffff" }}>
+                        {r.initial || (r.name ? r.name.charAt(0) :"M")}
                       </div>
                       <div>
                         <span className="block text-xs font-heading font-black text-brand-dark dark:text-white uppercase tracking-wider leading-none">{r.name}</span>
@@ -1501,7 +1501,7 @@ function ReviewsCarousel({ reviewsData }: { reviewsData: any }) {
 
                     <RichTextRenderer
                       content={r.quote}
-                      className="text-xs sm:text-sm font-sans font-medium text-brand-zinc-700 dark:text-zinc-200 leading-relaxed italic pt-1"
+ className="text-xs sm:text-sm font-sans font-medium text-brand-zinc-700 dark:text-zinc-200 leading-relaxed pt-1"
                     />
 
                     {r.impact && (
@@ -1514,8 +1514,8 @@ function ReviewsCarousel({ reviewsData }: { reviewsData: any }) {
 
                   <div className="pt-5 border-t border-brand-zinc-200/80 dark:border-white/10 mt-6 relative z-10">
                     <div className="flex items-center gap-3.5 text-left">
-                      <div className="h-10 w-10 rounded-full flex items-center justify-center font-heading font-black text-xs shadow-md shrink-0 border border-white/20" style={{ backgroundColor: r.accent === "#E9BD36" ? "#E9BD36" : "#0306AC", color: r.accent === "#E9BD36" ? "#080710" : "#ffffff" }}>
-                        {r.initial || (r.name ? r.name.charAt(0) : "M")}
+                      <div className="h-10 w-10 rounded-full flex items-center justify-center font-heading font-black text-xs shadow-md shrink-0 border border-white/20" style={{ backgroundColor: r.accent ==="#E9BD36" ?"#E9BD36" :"#0306AC", color: r.accent ==="#E9BD36" ?"#080710" :"#ffffff" }}>
+                        {r.initial || (r.name ? r.name.charAt(0) :"M")}
                       </div>
                       <div>
                         <span className="block text-xs font-heading font-black text-brand-dark dark:text-white uppercase tracking-wider leading-none">{r.name}</span>

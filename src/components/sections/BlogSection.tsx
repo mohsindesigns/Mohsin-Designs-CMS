@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
-import Image from "next/image";
-import Link from "@/components/ui/Link";
-import { useContent } from "@/hooks/useContent";
-import RichTextRenderer from "@/components/ui/RichTextRenderer";
+import { useState, useEffect } from"react";
+import { motion } from"framer-motion";
+import { ArrowRight, ArrowUpRight } from"lucide-react";
+import Image from"next/image";
+import Link from"@/components/ui/Link";
+import { useContent } from"@/hooks/useContent";
+import RichTextRenderer from"@/components/ui/RichTextRenderer";
 
 interface BlogPost {
   _id?: string;
@@ -41,77 +41,77 @@ export default function BlogSection({
   description,
   posts: propPosts,
   data: overrideData,
-  viewAllLink = "/blogs"
+  viewAllLink ="/blogs"
 }: BlogSectionProps) {
   const content = useContent();
   const rawBlog = overrideData || content.blogSection || {};
 
   // Headers and narrative defaults
-  const sectionTag = rawBlog.sectionTag || subtitle || rawBlog.subtitle || "LATEST ARTICLES & INSIGHTS";
+  const sectionTag = rawBlog.sectionTag || subtitle || rawBlog.subtitle ||"LATEST ARTICLES & INSIGHTS";
   
   // Clean dynamic heading without unwanted hardcoded prefixes
   const explicitIntro = rawBlog.titleIntro !== undefined ? rawBlog.titleIntro : undefined;
   const explicitHighlight = title || rawBlog.titleHighlight || rawBlog.title;
 
-  let titleIntro = "";
-  let titleHighlight = "";
+  let titleIntro ="";
+  let titleHighlight ="";
 
   if (explicitIntro !== undefined && explicitIntro.trim()) {
     titleIntro = explicitIntro.trim();
-    titleHighlight = (explicitHighlight || "").trim();
+    titleHighlight = (explicitHighlight ||"").trim();
   } else if (explicitHighlight && explicitHighlight.trim()) {
-    titleIntro = "";
+    titleIntro ="";
     titleHighlight = explicitHighlight.trim();
   } else {
-    titleIntro = "Thinking, Strategies &";
-    titleHighlight = "Industry Insights";
+    titleIntro ="Thinking, Strategies &";
+    titleHighlight ="Industry Insights";
   }
 
-  const descText = rawBlog.description || description || "";
-  const featuredLabel = "Read More";
-  const dateSeparator = rawBlog.dateSeparator || " • ";
+  const descText = rawBlog.description || description ||"";
+  const featuredLabel ="Read More";
+  const dateSeparator = rawBlog.dateSeparator ||" •";
 
   // Fallback demo posts if no posts are found
   const defaultPosts: BlogPost[] = [
     {
-      _id: "demo-1",
-      title: "Building High-Conversion SaaS Landing Pages with Next.js 15 & Framer Motion",
-      slug: "building-high-conversion-saas-landing-pages",
-      image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop",
-      excerpt: "A comprehensive deep dive into sub-second page loads, micro-animations that convert, and scalable architecture patterns for modern SaaS.",
-      date: "Oct 24, 2026",
-      category: "Engineering",
-      readTime: "5 min read"
+      _id:"demo-1",
+      title:"Building High-Conversion SaaS Landing Pages with Next.js 15 & Framer Motion",
+      slug:"building-high-conversion-saas-landing-pages",
+      image:"https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop",
+      excerpt:"A comprehensive deep dive into sub-second page loads, micro-animations that convert, and scalable architecture patterns for modern SaaS.",
+      date:"Oct 24, 2026",
+      category:"Engineering",
+      readTime:"5 min read"
     },
     {
-      _id: "demo-2",
-      title: "The Architecture of World-Class Design Systems in 2026",
-      slug: "architecture-of-world-class-design-systems",
-      image: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=800&auto=format&fit=crop",
-      excerpt: "How unified component tokens and strict accessibility audits transform team velocity.",
-      date: "Oct 18, 2026",
-      category: "UI/UX Design",
-      readTime: "4 min read"
+      _id:"demo-2",
+      title:"The Architecture of World-Class Design Systems in 2026",
+      slug:"architecture-of-world-class-design-systems",
+      image:"https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=800&auto=format&fit=crop",
+      excerpt:"How unified component tokens and strict accessibility audits transform team velocity.",
+      date:"Oct 18, 2026",
+      category:"UI/UX Design",
+      readTime:"4 min read"
     },
     {
-      _id: "demo-3",
-      title: "Optimizing Core Web Vitals for Enterprise Applications",
-      slug: "optimizing-core-web-vitals-for-enterprise",
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop",
-      excerpt: "Eliminating layout shifts, mastering dynamic hydration, and hitting 99+ Lighthouse scores.",
-      date: "Oct 12, 2026",
-      category: "Performance",
-      readTime: "6 min read"
+      _id:"demo-3",
+      title:"Optimizing Core Web Vitals for Enterprise Applications",
+      slug:"optimizing-core-web-vitals-for-enterprise",
+      image:"https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop",
+      excerpt:"Eliminating layout shifts, mastering dynamic hydration, and hitting 99+ Lighthouse scores.",
+      date:"Oct 12, 2026",
+      category:"Performance",
+      readTime:"6 min read"
     },
     {
-      _id: "demo-4",
-      title: "From Figma to Production: A Frictionless Developer Workflow",
-      slug: "from-figma-to-production-workflow",
-      image: "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?q=80&w=800&auto=format&fit=crop",
-      excerpt: "Bridging the designer-developer divide with automated token pipelines and live specs.",
-      date: "Oct 05, 2026",
-      category: "Workflow",
-      readTime: "3 min read"
+      _id:"demo-4",
+      title:"From Figma to Production: A Frictionless Developer Workflow",
+      slug:"from-figma-to-production-workflow",
+      image:"https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?q=80&w=800&auto=format&fit=crop",
+      excerpt:"Bridging the designer-developer divide with automated token pipelines and live specs.",
+      date:"Oct 05, 2026",
+      category:"Workflow",
+      readTime:"3 min read"
     }
   ];
 
@@ -167,52 +167,52 @@ export default function BlogSection({
 
   // Helper to extract clean text from blog post content or SEO description
   const getPostExcerpt = (p: any): string => {
-    if (p.excerpt && typeof p.excerpt === "string" && p.excerpt.trim().length > 0) {
+    if (p.excerpt && typeof p.excerpt ==="string" && p.excerpt.trim().length > 0) {
       return p.excerpt.trim();
     }
-    if (p.seo?.metaDescription && typeof p.seo.metaDescription === "string" && p.seo.metaDescription.trim().length > 0) {
+    if (p.seo?.metaDescription && typeof p.seo.metaDescription ==="string" && p.seo.metaDescription.trim().length > 0) {
       return p.seo.metaDescription.trim();
     }
-    if (p.seo?.ogDescription && typeof p.seo.ogDescription === "string" && p.seo.ogDescription.trim().length > 0) {
+    if (p.seo?.ogDescription && typeof p.seo.ogDescription ==="string" && p.seo.ogDescription.trim().length > 0) {
       return p.seo.ogDescription.trim();
     }
-    if (p.description && typeof p.description === "string" && p.description.trim().length > 0) {
-      const clean = p.description.replace(/<[^>]*>?/gm, "").replace(/&nbsp;/g, " ").trim();
-      if (clean.length > 0) return clean.length > 160 ? clean.slice(0, 157) + "..." : clean;
+    if (p.description && typeof p.description ==="string" && p.description.trim().length > 0) {
+      const clean = p.description.replace(/<[^>]*>?/gm,"").replace(/&nbsp;/g,"").trim();
+      if (clean.length > 0) return clean.length > 160 ? clean.slice(0, 157) +"..." : clean;
     }
-    if (p.content && typeof p.content === "string") {
-      const clean = p.content.replace(/<[^>]*>?/gm, "").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
-      if (clean.length > 0) return clean.length > 160 ? clean.slice(0, 157) + "..." : clean;
+    if (p.content && typeof p.content ==="string") {
+      const clean = p.content.replace(/<[^>]*>?/gm,"").replace(/&nbsp;/g,"").replace(/\s+/g,"").trim();
+      if (clean.length > 0) return clean.length > 160 ? clean.slice(0, 157) +"..." : clean;
     }
-    return "";
+    return"";
   };
 
   const getPostReadingTime = (p: any): string => {
     if (p.readTime) return p.readTime;
     if (p.readingTime) return p.readingTime;
-    if (p.content && typeof p.content === "string") {
-      const text = p.content.replace(/<[^>]*>?/gm, "").replace(/&nbsp;/g, " ").trim();
+    if (p.content && typeof p.content ==="string") {
+      const text = p.content.replace(/<[^>]*>?/gm,"").replace(/&nbsp;/g,"").trim();
       const words = text.split(/\s+/).filter(Boolean).length;
       const mins = Math.max(1, Math.ceil(words / 200));
       return `${mins} min read`;
     }
-    return "4 min read";
+    return"4 min read";
   };
 
   const getPostCategory = (p: any, idx: number): string => {
-    if (typeof p.category === "string" && p.category.trim()) return p.category.trim();
+    if (typeof p.category ==="string" && p.category.trim()) return p.category.trim();
     if (Array.isArray(p.categories) && p.categories.length > 0) {
       const first = p.categories[0];
-      if (typeof first === "string" && first.trim()) return first.trim();
-      if (first && typeof first === "object" && first.name) return first.name;
+      if (typeof first ==="string" && first.trim()) return first.trim();
+      if (first && typeof first ==="object" && first.name) return first.name;
     }
-    return defaultPosts[idx % defaultPosts.length].category || "Article";
+    return defaultPosts[idx % defaultPosts.length].category ||"Article";
   };
 
   // Normalize post fields
   const posts = activePosts.map((p, idx) => {
     let cat = getPostCategory(p, idx);
-    let formattedDate = p.date || (p.publishedAt ? new Date(p.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Recent");
+    let formattedDate = p.date || (p.publishedAt ? new Date(p.publishedAt).toLocaleDateString("en-US", { month:"short", day:"numeric", year:"numeric" }) :"Recent");
     let reading = getPostReadingTime(p);
     let img = p.featuredImage || p.image || defaultPosts[idx % defaultPosts.length].image!;
     let href = p.link || (p.slug ? `/blogs/${p.slug}` : `/blogs/${p._id || idx}`);
@@ -220,11 +220,11 @@ export default function BlogSection({
 
     return {
       id: p._id || p.id || `post-${idx}`,
-      title: p.title || (idx === 0 && rawBlog.featuredTitle ? rawBlog.featuredTitle : "Untitled Post"),
+      title: p.title || (idx === 0 && rawBlog.featuredTitle ? rawBlog.featuredTitle :"Untitled Post"),
       link: href,
       image: p.featuredImage || p.image || (idx === 0 && rawBlog.featuredImage ? rawBlog.featuredImage : img),
       excerpt: extractedExcerpt,
-      category: cat || (idx === 0 && rawBlog.featuredCategory ? rawBlog.featuredCategory : "Article"),
+      category: cat || (idx === 0 && rawBlog.featuredCategory ? rawBlog.featuredCategory :"Article"),
       date: formattedDate,
       readTime: reading
     };
@@ -282,7 +282,7 @@ export default function BlogSection({
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin:"-100px" }}
           transition={{ duration: 0.6 }}
           className="flex flex-col gap-4 mb-16"
         >
@@ -296,8 +296,8 @@ export default function BlogSection({
           <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-[1.15]">
             {titleIntro ? (
               <>
-                {titleIntro}{" "}
-                <span className="text-primary dark:text-yellow-400 font-serif font-normal italic">
+                {titleIntro}{""}
+ <span className="text-primary dark:text-yellow-400 font-cursive font-normal">
                   {titleHighlight}
                 </span>
               </>
@@ -317,13 +317,13 @@ export default function BlogSection({
         {/* Asymmetrical Split Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
 
-          {/* Left Column: Featured Post (lg:col-span-7) */}
+          {/* Left Column: Featured Post (lg:col-span-7 min-w-0) */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
+            viewport={{ once: true, margin:"-50px" }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-7"
+            className="lg:col-span-7 min-w-0"
           >
             {posts[0] && (
               <Link
@@ -376,13 +376,13 @@ export default function BlogSection({
             )}
           </motion.div>
 
-          {/* Right Column: Recent Posts List (lg:col-span-5) */}
+          {/* Right Column: Recent Posts List (lg:col-span-5 min-w-0) */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
+            viewport={{ once: true, margin:"-50px" }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
-            className="lg:col-span-5 space-y-6"
+            className="lg:col-span-5 min-w-0 space-y-6"
           >
             {posts.slice(1).map((post: any, idx: number) => (
               <Link
