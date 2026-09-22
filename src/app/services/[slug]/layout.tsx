@@ -29,7 +29,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description = seo.metaDescription || seo.description;
 
   return {
-    title,
+    title: {
+      absolute: title,
+    },
     description,
     robots: resolveRobotsMetadata(seo, isGlobalNoIndex),
     alternates: {
