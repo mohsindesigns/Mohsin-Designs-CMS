@@ -463,7 +463,7 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
               <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.18] tracking-tight text-white">
                 {ctaBanner.titleIntro} <br />
                 <span className="inline-block">
-                  {ctaBanner.titleHighlight}{""}
+                  {ctaBanner.titleHighlight}{" "}
                   <span className="relative inline-block">
                     <span className="font-cursive text-[#E9BD36] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
                       {ctaBanner.titleCursive}

@@ -53,7 +53,7 @@ export default function CtaButton(props: CtaButtonProps) {
 
   const classes = [VARIANT_CLASS[variant], SIZE_CLASS[size], fullWidth ? "w-full" : "", className]
     .filter(Boolean)
-    .join("");
+    .join(" ");
 
   const chip =
     loading ? (

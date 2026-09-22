@@ -55,9 +55,9 @@ export default function PrivacyPolicyPage() {
                 1. Introduction
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                Mohsin Designs ("we, ""our, " or"us") operates the website{' '}
+                Mohsin Designs ("we," "our," or "us") operates the website{' '}
                 <a href="https://mohsindesigns.com" className="text-primary hover:underline">mohsindesigns.com</a>{' '}
-                and provides web design, development, and reputation management services, including a Google reviews integration widget and a project-location-review SaaS platform (collectively, the"Services").
+                and provides web design, development, and reputation management services, including a Google reviews integration widget and a project-location-review SaaS platform (collectively, the "Services").
               </p>
               <p className="text-muted-foreground leading-relaxed mb-4">
                 This Privacy Policy explains how we collect, use, store, share, and protect information when you visit our website, use our Services, or connect your Google Business Profile to our platform.

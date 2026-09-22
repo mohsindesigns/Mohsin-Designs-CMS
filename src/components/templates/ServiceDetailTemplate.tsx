@@ -1063,7 +1063,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 />
 
                 <h1 className="font-heading text-3xl xs:text-3xl sm:text-4xl lg:text-[40px] font-black tracking-tight leading-[1.18] text-brand-dark dark:text-white max-w-2xl">
-                  {service.hero.titleIntro}{""}
+                  {service.hero.titleIntro}{" "}
                   <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                     {service.hero.titleHighlight}
                     <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
@@ -1315,7 +1315,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 </div>
               )}
               <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
-                {service.whatIncluded.titleIntro}{""}
+                {service.whatIncluded.titleIntro}{" "}
                 <span className="relative inline-block text-brand-blue dark:text-brand-accent pb-1 ml-1 font-black">
                   {service.whatIncluded.titleHighlight}
                   <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
@@ -1386,7 +1386,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               <div className="lg:col-span-5 min-w-0 lg:sticky lg:top-28 self-start space-y-4 text-left">
                 <span className="eyebrow-pill">{service.strategy.eyebrow}</span>
                 <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12] max-w-sm">
-                  {service.strategy.titleIntro}{""}
+                  {service.strategy.titleIntro}{" "}
  <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
                     {service.strategy.titleHighlight}
                   </span>
@@ -1442,7 +1442,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 </div>
               )}
               <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
-                {service.benefits.titleIntro}{""}
+                {service.benefits.titleIntro}{" "}
                 <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                   {service.benefits.titleHighlight}
                   <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
@@ -1517,7 +1517,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               <div className="lg:col-span-5 min-w-0 lg:sticky lg:top-28 self-start space-y-4 text-left">
                 {service.process.eyebrow && <span className="eyebrow-pill">{service.process.eyebrow}</span>}
                 <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12] max-w-sm">
-                  {service.process.titleIntro}{""}
+                  {service.process.titleIntro}{" "}
  <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
                     {service.process.titleHighlight}
                   </span>
@@ -1784,7 +1784,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 </div>
               )}
               <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
-                {service.industries.titleIntro}{""}
+                {service.industries.titleIntro}{" "}
                 <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                   {service.industries.titleHighlight}
                   <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
@@ -1812,7 +1812,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 const defaultIcons = [Building2, Cpu, Building2, ShoppingCart, Briefcase, Star];
                 const IndustryIcon = (ind.iconName && iconMap[ind.iconName]) || defaultIcons[idx % defaultIcons.length] || Building2;
 
-                const words = String(ind.title || "").split("");
+                const words = String(ind.title || "").split(" ");
                 const abbreviation = ind.watermark || words.map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
                 const rawHref = ind.link || ind.href || ind.url;
                 const validHref = getValidHref(rawHref);
@@ -1879,7 +1879,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               <div className="space-y-3">
                 {service.tools.eyebrow && <span className="eyebrow-pill">{service.tools.eyebrow}</span>}
                 <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl font-black text-brand-dark dark:text-white tracking-tight leading-tight">
-                  {service.tools.titleIntro}{""}
+                  {service.tools.titleIntro}{" "}
                   <span className="text-brand-blue dark:text-brand-yellow ml-1 font-black">
                     {service.tools.titleHighlight}
                   </span>
@@ -1957,7 +1957,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 <div className="space-y-4">
                   {service.whyChooseUs.eyebrow && <span className="eyebrow-pill">{service.whyChooseUs.eyebrow}</span>}
                   <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white leading-[1.15] tracking-tight">
-                    {service.whyChooseUs.titleIntro}{""}
+                    {service.whyChooseUs.titleIntro}{" "}
  <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
                       {service.whyChooseUs.titleHighlight}
                     </span>
@@ -2070,7 +2070,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 </div>
               )}
               <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
-                {service.pricing.titleIntro}{""}
+                {service.pricing.titleIntro}{" "}
                 <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                   {service.pricing.titleHighlight}
                   <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
@@ -2188,7 +2188,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                   </div>
                 )}
                 <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
-                  {service.recommendedSection.titleIntro}{""}
+                  {service.recommendedSection.titleIntro}{" "}
  <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-2 font-black font-cursive font-normal">
                     {service.recommendedSection.titleHighlight}
                   </span>
@@ -2326,7 +2326,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 </div>
 
                 <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-[46px] font-black leading-[1.25] tracking-tight text-white">
-                  {service.finalCta.titleIntro}{""}
+                  {service.finalCta.titleIntro}{" "}
                   <span className="relative inline-block">
                     <span className="font-cursive text-[#E9BD36] text-3xl sm:text-4xl lg:text-[46px] font-normal pl-1">
                       {service.finalCta.titleHighlight}

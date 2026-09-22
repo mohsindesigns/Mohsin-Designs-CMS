@@ -398,13 +398,13 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
               )}
 
               <h1 className="font-heading text-3xl sm:text-3xl md:text-[36px] lg:text-[40px] font-black leading-[1.18] tracking-tight text-brand-dark dark:text-white">
-                {hero.titleIntro}{""}
+                {hero.titleIntro}{" "}
                 <span className="relative inline-block text-[#0306AC] dark:text-[#E9BD36]">
  <span className="font-heading font-normal">{hero.titleHighlight}</span>
                   <svg className="absolute left-0 bottom-[-2px] w-full h-3 text-brand-accent" viewBox="0 0 100 10" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
                     <path d="M 5 6 C 30 9, 70 9, 95 4" />
                   </svg>
-                </span>{""}
+                </span>{" "}
                 {hero.titleSuffix}
               </h1>
 

@@ -140,7 +140,7 @@ export default function TrustedBrandsSection({ data }: { data?: any }) {
           transition={{ delay: 0.1 }}
           className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-black text-brand-dark dark:text-white tracking-tight leading-tight"
         >
-          {titleIntro}{""}
+          {titleIntro}{" "}
           <span className="relative inline-block text-brand-blue dark:text-brand-yellow font-normal font-cursive text-3xl sm:text-4xl lg:text-[46px] ml-1">
             {titleHighlight}
           </span>

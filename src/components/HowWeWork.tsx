@@ -229,7 +229,7 @@ export default function HowWeWork({ data: overrideData }: { data?: any }) {
 
               {/* Heading */}
               <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white leading-[1.15] tracking-tight">
-                {titleIntro}{""}
+                {titleIntro}{" "}
  <span className="text-primary dark:text-yellow-400 font-cursive font-normal">
                   {titleHighlight}
                 </span>

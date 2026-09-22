@@ -122,7 +122,7 @@ export default function IndustriesSection({ data }: IndustriesSectionProps) {
           )}
 
           <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
-            {industries.titleIntro}{""}
+            {industries.titleIntro}{" "}
             <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
               {industries.titleHighlight}
               <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
@@ -149,7 +149,7 @@ export default function IndustriesSection({ data }: IndustriesSectionProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {industries.list.map((ind: any, idx: number) => {
             const FallbackIcon = defaultIcons[idx % defaultIcons.length];
-            const words = String(ind.title || "").split("");
+            const words = String(ind.title || "").split(" ");
             const abbreviation = ind.watermark || words.map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
             const rawHref = ind.link || ind.href || ind.url;
             const validHref = getValidHref(rawHref);

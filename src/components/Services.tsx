@@ -117,7 +117,7 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
 
           <div className="flex items-center justify-between gap-4 w-full">
             <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
-              {services.titleIntro}{""}
+              {services.titleIntro}{" "}
  <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
                 {services.titleHighlight}
               </span>
@@ -146,7 +146,7 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
             content={typeof services.description ==="string"
               ? services.description
               : Array.isArray(services.description)
-              ? (services.description as string[]).join("")
+              ? (services.description as string[]).join(" ")
               : ""}
             className="text-brand-zinc-500 dark:text-zinc-300 font-medium leading-relaxed text-xs md:text-sm max-w-xl"
           />

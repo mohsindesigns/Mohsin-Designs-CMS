@@ -313,7 +313,7 @@ export default function Footer() {
                   : "text-white/20 dark:text-white/[0.06] hover:text-brand-yellow dark:hover:text-brand-yellow pointer-events-auto"
               }`}
             >
-              {letter ==="" ? "\u00A0" : letter}
+              {letter === " " ? "\u00A0" : letter}
             </motion.span>
           ))}
         </motion.span>

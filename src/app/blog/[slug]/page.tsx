@@ -627,7 +627,7 @@ export default async function BlogPostPage({ params }: Props) {
             <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.18] tracking-tight text-white">
               {detailCtaBanner.titleIntro} <br className="hidden sm:block" />
               <span className="inline-block">
-                {detailCtaBanner.titleLine2}{""}
+                {detailCtaBanner.titleLine2}{" "}
                 <span className="relative inline-block">
                   <span className="font-cursive text-[#E9BD36] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
                     {detailCtaBanner.titleHighlight}

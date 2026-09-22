@@ -92,19 +92,19 @@ export default function ThemedSelect({
 
   const handleTriggerKeyDown = (e: React.KeyboardEvent) => {
     if (disabled) return;
-    if (!open && (e.key ==="ArrowDown" || e.key ==="ArrowUp" || e.key ==="Enter" || e.key ==="")) {
+    if (!open && (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Enter" || e.key === " ")) {
       e.preventDefault();
       setOpen(true);
       return;
     }
     if (!open) return;
-    if (e.key ==="ArrowDown") {
+    if (e.key === "ArrowDown") {
       e.preventDefault();
       setActiveIndex((i) => Math.min(options.length - 1, i + 1));
-    } else if (e.key ==="ArrowUp") {
+    } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setActiveIndex((i) => Math.max(0, i - 1));
-    } else if (e.key ==="Enter" || e.key ==="") {
+    } else if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       const opt = options[activeIndex];
       if (opt && !opt.disabled) commit(opt.value);

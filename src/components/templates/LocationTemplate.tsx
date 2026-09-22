@@ -570,7 +570,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
               </div>
 
               <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
-                {presence.titleIntro}{""}
+                {presence.titleIntro}{" "}
  <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
                   {presence.titleHighlight}
                 </span>

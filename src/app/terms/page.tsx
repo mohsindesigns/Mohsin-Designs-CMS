@@ -57,7 +57,7 @@ export default function TermsPage() {
               <p className="text-muted-foreground leading-relaxed mb-4">
                 Welcome to Mohsin Designs. These Terms of Service ("Terms") govern your access to and use of the website{' '}
                 <a href="https://mohsindesigns.com" className="text-primary hover:underline">mohsindesigns.com</a>{' '}
-                and any related services, including our review integration widget, dashboards, and SaaS products (collectively, the"Services") provided by Mohsin Designs ("we, ""us, " or"our").
+                and any related services, including our review integration widget, dashboards, and SaaS products (collectively, the "Services") provided by Mohsin Designs ("we," "us," or "our").
               </p>
               <p className="text-muted-foreground leading-relaxed">
                 By accessing or using the Services, you agree to be bound by these Terms. If you do not agree, do not use the Services.
@@ -73,7 +73,7 @@ export default function TermsPage() {
               <ul className="space-y-2 text-muted-foreground">
                 <li className="flex items-start gap-2">
                   <Icon name="Check" className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-                  <span><span className="font-medium text-foreground">"User, ""you, " or"your"</span> refers to anyone who accesses or uses the Services</span>
+                  <span><span className="font-medium text-foreground">"User," "you," or "your"</span> refers to anyone who accesses or uses the Services</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Icon name="Check" className="w-4 h-4 text-primary mt-1 flex-shrink-0" />

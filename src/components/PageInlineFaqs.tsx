@@ -178,7 +178,7 @@ export default function PageInlineFaqs({
               <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-[1.15]">
                 {titleIntro ? (
                   <>
-                    {titleIntro}{""}
+                    {titleIntro}{" "}
  <span className="text-primary dark:text-yellow-400 font-cursive font-normal">
                       {titleHighlight}
                     </span>

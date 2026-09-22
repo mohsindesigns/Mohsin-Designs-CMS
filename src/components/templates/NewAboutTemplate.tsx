@@ -602,7 +602,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                     </div>
 
                     <h3 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-black text-brand-dark dark:text-white leading-[1.15] tracking-tight">
-                      {(philosophy.mission.titleIntro || "Eliminating Technical Debt Through").trimEnd()}{""}
+                      {(philosophy.mission.titleIntro || "Eliminating Technical Debt Through").trimEnd()}{" "}
  <span className="font-cursive text-[#0306AC] dark:text-[#E9BD36] font-light">
                         {philosophy.mission.titleHighlight || "Intentional Design"}
                       </span>
@@ -686,7 +686,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                     </div>
 
                     <h3 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-black text-brand-dark dark:text-white leading-[1.15] tracking-tight">
-                      {(philosophy.vision.titleIntro || "Setting the Global Standard in").trimEnd()}{""}
+                      {(philosophy.vision.titleIntro || "Setting the Global Standard in").trimEnd()}{" "}
  <span className="font-cursive text-[#0306AC] dark:text-[#E9BD36] font-light">
                         {philosophy.vision.titleHighlight || "Modern Web Engineering"}
                       </span>
@@ -734,7 +734,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                     </div>
 
                     <h3 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-black text-brand-dark dark:text-white leading-[1.15] tracking-tight">
-                      {(philosophy.values.titleIntro || "Radical Transparency &").trimEnd()}{""}
+                      {(philosophy.values.titleIntro || "Radical Transparency &").trimEnd()}{" "}
  <span className="font-cursive text-[#0306AC] dark:text-[#E9BD36] font-light">
                         {philosophy.values.titleHighlight || "Relentless Ownership"}
                       </span>

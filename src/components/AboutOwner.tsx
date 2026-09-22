@@ -240,7 +240,7 @@ export default function AboutOwner() {
 
               {/* Header */}
               <h2 className="font-heading text-4xl sm:text-5xl font-black leading-[1.15] text-brand-dark dark:text-white tracking-tight">
-                {titleIntro}{""}
+                {titleIntro}{" "}
  <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
                   {titleHighlight}
                 </span>

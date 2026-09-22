@@ -30,9 +30,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const seo = page?.seo || galleryData?.seo || {};
   const pageUrl = `${BASE_URL}/gallery/`;
 
-  const heroTitle = (galleryData?.hero?.titlePrefix ? [galleryData.hero.titlePrefix, galleryData.hero.titleHighlight].filter(Boolean).join("") : null) ||
-                    galleryData?.header?.title || 
-                    [galleryData?.header?.titlePrefix, galleryData?.header?.titleHighlight, galleryData?.header?.titleSuffix].filter(Boolean).join("");
+  const heroTitle = (galleryData?.hero?.titlePrefix ? [galleryData.hero.titlePrefix, galleryData.hero.titleHighlight].filter(Boolean).join(" ") : null) ||
+                    galleryData?.header?.title ||
+                    [galleryData?.header?.titlePrefix, galleryData?.header?.titleHighlight, galleryData?.header?.titleSuffix].filter(Boolean).join(" ");
 
   const metaTitle = seo.metaTitle || heroTitle || "Creative Work. Real Results. | Our Portfolio";
 
@@ -84,11 +84,11 @@ export default async function GalleryPage() {
   const galleryData = page?.content?.galleryPage || globalData?.galleryPage || {};
   const portfolioData = page?.content?.portfolio || globalData?.portfolio || {};
 
-  const title = page?.seo?.metaTitle || 
-                (galleryData?.hero?.titlePrefix ? [galleryData.hero.titlePrefix, galleryData.hero.titleHighlight].filter(Boolean).join("") : null) ||
-                galleryData?.header?.title || 
-                [galleryData?.header?.titlePrefix, galleryData?.header?.titleHighlight, galleryData?.header?.titleSuffix].filter(Boolean).join("") || 
-"Our Portfolio";
+  const title = page?.seo?.metaTitle ||
+                (galleryData?.hero?.titlePrefix ? [galleryData.hero.titlePrefix, galleryData.hero.titleHighlight].filter(Boolean).join(" ") : null) ||
+                galleryData?.header?.title ||
+                [galleryData?.header?.titlePrefix, galleryData?.header?.titleHighlight, galleryData?.header?.titleSuffix].filter(Boolean).join(" ") ||
+                "Our Portfolio";
 
   const description = page?.seo?.metaDescription || 
                       galleryData?.hero?.subtitle ||

@@ -340,7 +340,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
 
                 {/* Headline */}
                 <h1 className="font-heading text-3xl xs:text-3xl sm:text-4xl lg:text-[42px] font-black tracking-tight leading-[1.18] text-gray-900 dark:text-white max-w-3xl">
-                  {hero.titleIntro}{""}
+                  {hero.titleIntro}{" "}
                   <span className="relative inline-block text-[#0306ac] dark:text-[#e9bd36] pb-1 ml-1">
                     {hero.titleHighlight}
                     <svg
@@ -399,7 +399,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                 </span>
               </div>
               <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.12] text-gray-900 dark:text-white">
-                {grid.titleIntro}{""}
+                {grid.titleIntro}{" "}
                 <span className="relative inline-block text-[#0306ac] dark:text-[#e9bd36] pb-1 ml-1">
                   {grid.titleHighlight}
                   <svg
@@ -461,7 +461,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
 
                 {/* Headline */}
                 <h2 className="font-heading text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.35] tracking-tight text-white">
-                  {ctaBanner.titleIntro}{""}
+                  {ctaBanner.titleIntro}{" "}
                   <span className="relative inline-block">
                     <span className="font-cursive text-[#E9BD36] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
                       {ctaBanner.titleHighlight}
@@ -476,7 +476,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                     >
                       <path d="M 5 6 C 30 9, 70 9, 95 4" />
                     </svg>
-                  </span>{""}
+                  </span>{" "}
                   {ctaBanner.titleLine2}
                 </h2>
 
