@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from"react";
-import { Check, ChevronDown } from"lucide-react";
+import { useEffect, useId, useRef, useState } from "react";
+import { Check, ChevronDown } from "lucide-react";
 
 export interface ThemedSelectOption {
   value: string;
@@ -43,8 +43,8 @@ export default function ThemedSelect({
   defaultValue,
   onChange,
   options,
-  placeholder ="Select an option",
-  className ="",
+  placeholder = "Select an option",
+  className = "",
   required,
   disabled,
   id,
@@ -52,7 +52,7 @@ export default function ThemedSelect({
   onBlur,
 }: ThemedSelectProps) {
   const isControlled = value !== undefined;
-  const [internal, setInternal] = useState(defaultValue ??"");
+  const [internal, setInternal] = useState(defaultValue ?? "");
   const current = isControlled ? value! : internal;
 
   const [open, setOpen] = useState(false);
@@ -149,13 +149,13 @@ export default function ThemedSelect({
         onKeyDown={handleTriggerKeyDown}
         onFocus={onFocus}
         onBlur={onBlur}
-        className={`${DEFAULT_TRIGGER} ${disabled ?"opacity-50 cursor-not-allowed" :"cursor-pointer"} ${className}`}
+        className={`${DEFAULT_TRIGGER} ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"} ${className}`}
       >
-        <span className={selected ?"" :"text-brand-zinc-400 dark:text-zinc-500"}>
+        <span className={selected ? "" : "text-brand-zinc-400 dark:text-zinc-500"}>
           {selected ? selected.label : placeholder}
         </span>
         <ChevronDown
-          className={`h-4 w-4 shrink-0 text-brand-zinc-400 dark:text-zinc-500 transition-transform duration-200 ${open ?"rotate-180" :""}`}
+          className={`h-4 w-4 shrink-0 text-brand-zinc-400 dark:text-zinc-500 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
         />
       </button>
 
@@ -180,12 +180,12 @@ export default function ThemedSelect({
                 onClick={() => !o.disabled && commit(o.value)}
                 className={`flex w-full items-center justify-between gap-2 rounded-xl px-3.5 py-2.5 text-left text-sm transition-colors ${
                   o.disabled
-                    ?"text-brand-zinc-400 dark:text-zinc-600 cursor-not-allowed"
+                    ? "text-brand-zinc-400 dark:text-zinc-600 cursor-not-allowed"
                     : isSelected
-                      ?"bg-brand-blue text-white dark:bg-brand-yellow dark:text-brand-dark font-semibold"
+                      ? "bg-brand-blue text-white dark:bg-brand-yellow dark:text-brand-dark font-semibold"
                       : isActive
-                        ?"bg-brand-blue/10 dark:bg-brand-yellow/10 text-brand-dark dark:text-white"
-                        :"text-brand-dark dark:text-white hover:bg-brand-blue/10 dark:hover:bg-brand-yellow/10"
+                        ? "bg-brand-blue/10 dark:bg-brand-yellow/10 text-brand-dark dark:text-white"
+                        : "text-brand-dark dark:text-white hover:bg-brand-blue/10 dark:hover:bg-brand-yellow/10"
                 }`}
               >
                 <span>{o.label}</span>

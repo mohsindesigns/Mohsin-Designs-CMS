@@ -1,13 +1,13 @@
 "use client";
 
-import CtaButton from"@/components/ui/CtaButton";
-import { withTrailingSlash } from"@/lib/url";
-import { motion, AnimatePresence } from"framer-motion";
-import { Plus, ArrowRight } from"lucide-react";
-import { useState, type ReactNode } from"react";
-import { useContent } from"@/hooks/useContent";
-import RichTextRenderer from"@/components/ui/RichTextRenderer";
-import { isSafeHref } from"@/lib/utils";
+import CtaButton from "@/components/ui/CtaButton";
+import { withTrailingSlash } from "@/lib/url";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus, ArrowRight } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { useContent } from "@/hooks/useContent";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
+import { isSafeHref } from "@/lib/utils";
 
 interface FAQItem {
   id?: string;
@@ -51,66 +51,66 @@ export default function PageInlineFaqs({
 
   const rawFaq = propData || content.faq || {};
 
-  const sectionTag = badge || rawFaq.faqBadge || rawFaq.sectionTag || rawFaq.section?.badge ||"FREQUENTLY ASKED QUESTIONS";
+  const sectionTag = badge || rawFaq.faqBadge || rawFaq.sectionTag || rawFaq.section?.badge || "FREQUENTLY ASKED QUESTIONS";
   
   // Clean dynamic heading resolution without unwanted hardcoded prefixes
   const explicitIntro = propTitleIntro !== undefined ? propTitleIntro : (rawFaq.faqTitleIntro !== undefined ? rawFaq.faqTitleIntro : (rawFaq.titleIntro !== undefined ? rawFaq.titleIntro : undefined));
   const explicitHighlight = propTitleHighlight || title || rawFaq.faqTitleHighlight || rawFaq.titleHighlight || rawFaq.faqTitle || rawFaq.section?.headlineHighlight || rawFaq.section?.headline;
 
-  let titleIntro ="";
-  let titleHighlight ="";
+  let titleIntro = "";
+  let titleHighlight = "";
 
-  const isBoilerplateIntro = explicitIntro ==="Common Questions," || explicitIntro ==="Common Questions";
+  const isBoilerplateIntro = explicitIntro ==="Common Questions, " || explicitIntro ==="Common Questions";
 
   if (explicitIntro !== undefined && explicitIntro.trim() && !isBoilerplateIntro) {
     titleIntro = explicitIntro.trim();
-    titleHighlight = (explicitHighlight ||"").trim();
+    titleHighlight = (explicitHighlight || "").trim();
   } else if (explicitHighlight && explicitHighlight.trim()) {
-    titleIntro ="";
+    titleIntro = "";
     titleHighlight = explicitHighlight.trim();
   } else {
-    titleIntro ="";
-    titleHighlight ="Frequently Asked Questions";
+    titleIntro = "";
+    titleHighlight = "Frequently Asked Questions";
   }
 
-  const rawDesc = description || rawFaq.faqDescription || rawFaq.description || rawFaq.section?.description ||"";
+  const rawDesc = description || rawFaq.faqDescription || rawFaq.description || rawFaq.section?.description || "";
   // Filter out any legacy St. Louis boilerplate from old database records
-  const desc = (typeof rawDesc === 'string' && rawDesc.includes("St. Louis")) ?"" : rawDesc;
+  const desc = (typeof rawDesc === 'string' && rawDesc.includes("St. Louis")) ? "" : rawDesc;
 
   const strategyAudit = {
-    badge: rawFaq.strategyAudit?.badge ||"FREE ARCHITECTURE AUDIT",
-    title: rawFaq.strategyAudit?.title ||"Have a complex custom build in mind?",
-    desc: rawFaq.strategyAudit?.desc ||"Book a 30-minute high-level technical strategy session with our lead engineer.",
-    button: rawFaq.strategyAudit?.button ||"Book Architecture Call",
-    href: isSafeHref(rawFaq.strategyAudit?.href) ? rawFaq.strategyAudit.href :"#contact"
+    badge: rawFaq.strategyAudit?.badge || "FREE ARCHITECTURE AUDIT",
+    title: rawFaq.strategyAudit?.title || "Have a complex custom build in mind? ",
+    desc: rawFaq.strategyAudit?.desc || "Book a 30-minute high-level technical strategy session with our lead engineer.",
+    button: rawFaq.strategyAudit?.button || "Book Architecture Call",
+    href: isSafeHref(rawFaq.strategyAudit?.href) ? rawFaq.strategyAudit.href : "#contact"
   };
 
   // Fallback starter FAQs if none exist
   const defaultFaqs: FAQItem[] = [
     {
-      question:"What is your typical project timeline?",
-      answer:"Most custom web applications, high-converting marketing sites, and bespoke CMS builds launch within 2 to 4 weeks depending on scope and integrations.",
-      category:"TIMELINE & PROCESS"
+      question: "What is your typical project timeline? ",
+      answer: "Most custom web applications, high-converting marketing sites, and bespoke CMS builds launch within 2 to 4 weeks depending on scope and integrations.",
+      category: "TIMELINE & PROCESS"
     },
     {
-      question:"How do you handle ongoing maintenance and support?",
-      answer:"We offer dedicated monthly SLA maintenance packages covering continuous security patches, performance audits, technical SEO adjustments, and feature iterations.",
-      category:"SUPPORT & SLA"
+      question: "How do you handle ongoing maintenance and support? ",
+      answer: "We offer dedicated monthly SLA maintenance packages covering continuous security patches, performance audits, technical SEO adjustments, and feature iterations.",
+      category: "SUPPORT & SLA"
     },
     {
-      question:"Do you build custom CMS integrations?",
-      answer:"Yes! We specialize in lightweight, lightning-fast custom CMS dashboards tailored strictly to your team's workflow without bloating the codebase.",
-      category:"ENGINEERING"
+      question: "Do you build custom CMS integrations? ",
+      answer: "Yes! We specialize in lightweight, lightning-fast custom CMS dashboards tailored strictly to your team's workflow without bloating the codebase.",
+      category: "ENGINEERING"
     },
     {
-      question:"What tech stack do you recommend for high-scale apps?",
-      answer:"Our primary stack centers on Next.js (App Router), TypeScript, Tailwind CSS / Vanilla CSS, Framer Motion, and scalable MongoDB or PostgreSQL architectures.",
-      category:"TECHNOLOGY"
+      question: "What tech stack do you recommend for high-scale apps? ",
+      answer: "Our primary stack centers on Next.js (App Router), TypeScript, Tailwind CSS / Vanilla CSS, Framer Motion, and scalable MongoDB or PostgreSQL architectures.",
+      category: "TECHNOLOGY"
     },
     {
-      question:"How does the pricing and billing structure work?",
-      answer:"We operate on fixed-price milestone deliverables for well-defined scopes and transparent weekly sprints for fast-moving agile product development.",
-      category:"PRICING"
+      question: "How does the pricing and billing structure work? ",
+      answer: "We operate on fixed-price milestone deliverables for well-defined scopes and transparent weekly sprints for fast-moving agile product development.",
+      category: "PRICING"
     }
   ];
 
@@ -134,9 +134,9 @@ export default function PageInlineFaqs({
 
   const faqs = activeFaqs.map((f: any, idx: number) => ({
     id: f._id || f.id || `faq-${idx}`,
-    question: f.question || f.q || f.title ||"Frequently Asked Question",
-    answer: f.answer || f.a || f.description ||"",
-    category: f.category || f.tag ||"GENERAL"
+    question: f.question || f.q || f.title || "Frequently Asked Question",
+    answer: f.answer || f.a || f.description || "",
+    category: f.category || f.tag || "GENERAL"
   }));
 
   const toggleFAQ = (index: number) => {
@@ -224,7 +224,7 @@ export default function PageInlineFaqs({
           <div className="lg:col-span-7 min-w-0 space-y-3.5 w-full">
             
             {faqs.map((f, index) => {
-              const doubleDigit = String(index + 1).padStart(2,"0");
+              const doubleDigit = String(index + 1).padStart(2, "0");
               const isOpen = openIndex === index;
 
               return (
@@ -232,8 +232,8 @@ export default function PageInlineFaqs({
                   key={index}
                   className={`group relative overflow-hidden rounded-2xl border transition-all duration-300 cursor-pointer select-none p-4 xs:p-5 sm:p-6 ${
                     isOpen
-                      ?"bg-white dark:bg-[#12121e] border-primary/30 dark:border-yellow-400/30 shadow-md"
-                      :"bg-white/60 dark:bg-[#12121e]/60 border-slate-200/80 dark:border-white/10 hover:bg-white dark:hover:bg-[#12121e] hover:border-primary/20 dark:hover:border-yellow-400/20"
+                      ? "bg-white dark:bg-[#12121e] border-primary/30 dark:border-yellow-400/30 shadow-md"
+                      : "bg-white/60 dark:bg-[#12121e]/60 border-slate-200/80 dark:border-white/10 hover:bg-white dark:hover:bg-[#12121e] hover:border-primary/20 dark:hover:border-yellow-400/20"
                   }`}
                   onClick={() => toggleFAQ(index)}
                 >
@@ -249,7 +249,7 @@ export default function PageInlineFaqs({
                         {/* Question */}
                         {f.question && f.question.trim() && (
                           <h3 className={`font-heading font-extrabold text-base sm:text-lg leading-snug transition-colors duration-300 pr-2 ${
-                            isOpen ?"text-primary dark:text-yellow-400" :"text-slate-900 dark:text-white group-hover:text-primary dark:group-hover:text-yellow-400"
+                            isOpen ? "text-primary dark:text-yellow-400" : "text-slate-900 dark:text-white group-hover:text-primary dark:group-hover:text-yellow-400"
                           }`}>
                             {f.question}
                           </h3>
@@ -261,11 +261,11 @@ export default function PageInlineFaqs({
                     <div className="shrink-0 mt-0.5">
                       <motion.div
                         animate={{ rotate: isOpen ? 135 : 0 }}
-                        transition={{ type:"spring", stiffness: 220, damping: 18 }}
+                        transition={{ type: "spring", stiffness: 220, damping: 18 }}
                         className={`flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-300 ${
                           isOpen
-                            ?"bg-primary border-primary text-white dark:bg-yellow-400 dark:border-yellow-400 dark:text-[#080710] shadow-sm"
-                            :"bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-800 dark:text-white group-hover:border-primary dark:group-hover:border-yellow-400"
+                            ? "bg-primary border-primary text-white dark:bg-yellow-400 dark:border-yellow-400 dark:text-[#080710] shadow-sm"
+                            : "bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-800 dark:text-white group-hover:border-primary dark:group-hover:border-yellow-400"
                         }`}
                       >
                         <Plus className="h-4 w-4 stroke-[2]" />
@@ -278,9 +278,9 @@ export default function PageInlineFaqs({
                     {isOpen && (
                       <motion.div
                         initial={{ height: 0, opacity: 0 }}
-                        animate={{ height:"auto", opacity: 1 }}
+                        animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.25, ease:"easeInOut" }}
+                        transition={{ duration: 0.25, ease: "easeInOut" }}
                         className="overflow-hidden relative z-10"
                         onClick={(e) => e.stopPropagation()}
                       >

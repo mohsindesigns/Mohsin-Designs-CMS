@@ -1,10 +1,10 @@
 "use client";
 
-import dynamic from"next/dynamic";
-import Hero from"@/components/Hero";
-import Services from"@/components/Services";
-import { useContent } from"@/hooks/useContent";
-import PageInlineFaqs from"@/components/PageInlineFaqs";
+import dynamic from "next/dynamic";
+import Hero from "@/components/Hero";
+import Services from "@/components/Services";
+import { useContent } from "@/hooks/useContent";
+import PageInlineFaqs from "@/components/PageInlineFaqs";
 
 const TrustedBrandsSection = dynamic(() => import("@/components/sections/TrustedBrandsSection"), { ssr: false });
 const AboutOwner = dynamic(() => import("@/components/AboutOwner"), { ssr: false });

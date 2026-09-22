@@ -1,9 +1,9 @@
 // app/privacy/page.tsx or src/app/privacy/page.tsx
 "use client";
 
-import PageBreadcrumbs from"@/components/PageBreadcrumbs";
-import { motion } from"framer-motion";
-import { Icon } from"../../config/icons";
+import PageBreadcrumbs from "@/components/PageBreadcrumbs";
+import { motion } from "framer-motion";
+import { Icon } from "../../config/icons";
 
 export default function PrivacyPolicyPage() {
   return (
@@ -25,7 +25,7 @@ export default function PrivacyPolicyPage() {
             <PageBreadcrumbs
               align="center"
               className="mb-6"
-              items={[{ name:"Home", url:"/" }, { name:"Privacy Policy", url:"/privacy/" }]}
+              items={[{ name: "Home", url: "/" }, { name: "Privacy Policy", url: "/privacy/" }]}
             />
             <div className="inline-flex items-center gap-2 bg-primary/5 px-4 py-2 rounded-full border border-primary/10 mb-6">
               <Icon name="Shield" className="w-4 h-4 text-primary" />
@@ -55,7 +55,7 @@ export default function PrivacyPolicyPage() {
                 1. Introduction
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                Mohsin Designs ("we,""our," or"us") operates the website{' '}
+                Mohsin Designs ("we, ""our, " or"us") operates the website{' '}
                 <a href="https://mohsindesigns.com" className="text-primary hover:underline">mohsindesigns.com</a>{' '}
                 and provides web design, development, and reputation management services, including a Google reviews integration widget and a project-location-review SaaS platform (collectively, the"Services").
               </p>

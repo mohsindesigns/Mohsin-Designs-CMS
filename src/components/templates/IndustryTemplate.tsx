@@ -1,15 +1,15 @@
 "use client";
 
-import CtaButton from"@/components/ui/CtaButton";
-import ThemedSelect from"@/components/ui/ThemedSelect";
-import { withTrailingSlash } from"@/lib/url";
-import PageBreadcrumbs from"@/components/PageBreadcrumbs";
-import React, { useState } from"react";
-import Image from"next/image";
-import Link from"@/components/ui/Link";
-import { motion, AnimatePresence } from"framer-motion";
-import TurnstileCaptcha from"@/components/ui/TurnstileCaptcha";
-import { isSafeHref, getValidHref } from"@/lib/utils";
+import CtaButton from "@/components/ui/CtaButton";
+import ThemedSelect from "@/components/ui/ThemedSelect";
+import { withTrailingSlash } from "@/lib/url";
+import PageBreadcrumbs from "@/components/PageBreadcrumbs";
+import React, { useState } from "react";
+import Image from "next/image";
+import Link from "@/components/ui/Link";
+import { motion, AnimatePresence } from "framer-motion";
+import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
+import { isSafeHref, getValidHref } from "@/lib/utils";
 import {
   ArrowRight,
   Play,
@@ -43,11 +43,11 @@ import {
   Code,
   Lock,
   MessageSquare
-} from"lucide-react";
-import * as LucideIcons from"lucide-react";
-import { useContent } from"@/hooks/useContent";
-import PageInlineFaqs from"@/components/PageInlineFaqs";
-import RichTextRenderer from"@/components/ui/RichTextRenderer";
+} from "lucide-react";
+import * as LucideIcons from "lucide-react";
+import { useContent } from "@/hooks/useContent";
+import PageInlineFaqs from "@/components/PageInlineFaqs";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 // ── Icon Resolver Helper ──────────────────────────────────────────────────────
 function getIcon(name?: string, FallbackComponent = Briefcase) {
@@ -64,7 +64,7 @@ const drawVariants = {
     transition: {
       duration: custom?.duration ?? 0.5,
       delay: custom?.delay ?? 0.1,
-      ease:"easeOut" as any
+      ease: "easeOut" as any
     }
   })
 };
@@ -78,35 +78,35 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
   // 1. HERO SECTION DATA & FORM STATE
   // ───────────────────────────────────────────────────────────────────────────
   const hero = {
-    eyebrowBadge: industryData.hero?.eyebrowBadge ||"INDUSTRY-SPECIFIC DIGITAL ARCHITECTURE",
-    titleIntro: industryData.hero?.titleIntro ||"High-Converting Platforms Built for",
-    titleHighlight: industryData.hero?.titleHighlight ||"Industry Leaders",
-    titleSuffix: industryData.hero?.titleSuffix ||"that Compound Revenue",
+    eyebrowBadge: industryData.hero?.eyebrowBadge || "INDUSTRY-SPECIFIC DIGITAL ARCHITECTURE",
+    titleIntro: industryData.hero?.titleIntro || "High-Converting Platforms Built for",
+    titleHighlight: industryData.hero?.titleHighlight || "Industry Leaders",
+    titleSuffix: industryData.hero?.titleSuffix || "that Compound Revenue",
     description: industryData.hero?.description !== undefined
       ? industryData.hero.description
-      :"We engineer bespoke web applications, custom digital architectures, and conversion-first UI/UX tailored specifically for regulated and high-yield commercial industries.",
-    primaryCtaText: industryData.hero?.primaryCtaText ||"Request Industry Audit",
-    primaryCtaLink: industryData.hero?.primaryCtaLink ||"#industry-form",
-    secondaryCtaText: industryData.hero?.secondaryCtaText ||"",
-    secondaryCtaLink: industryData.hero?.secondaryCtaLink ||"",
+      : "We engineer bespoke web applications, custom digital architectures, and conversion-first UI/UX tailored specifically for regulated and high-yield commercial industries.",
+    primaryCtaText: industryData.hero?.primaryCtaText || "Request Industry Audit",
+    primaryCtaLink: industryData.hero?.primaryCtaLink || "#industry-form",
+    secondaryCtaText: industryData.hero?.secondaryCtaText || "",
+    secondaryCtaLink: industryData.hero?.secondaryCtaLink || "",
     highlights: (Array.isArray(industryData.hero?.highlights))
       ? industryData.hero.highlights.filter((h: any) => typeof h ==="string" && h.trim().length > 0)
       : [],
     statsPills: (Array.isArray(industryData.hero?.statsPills))
       ? industryData.hero.statsPills.filter((s: any) => s && ((typeof s.value ==="string" && s.value.trim().length > 0) || (typeof s.label ==="string" && s.label.trim().length > 0)))
       : [],
-    formTitle: industryData.hero?.formTitle ||"Get a Free Industry Strategy Session",
-    formSubtitle: industryData.hero?.formSubtitle ||"Direct architecture consultation with zero sales pressure.",
-    formButtonText: industryData.hero?.formButtonText ||"Get Free Strategy"
+    formTitle: industryData.hero?.formTitle || "Get a Free Industry Strategy Session",
+    formSubtitle: industryData.hero?.formSubtitle || "Direct architecture consultation with zero sales pressure.",
+    formButtonText: industryData.hero?.formButtonText || "Get Free Strategy"
   };
 
   // Quick Hero Form State
   const [formData, setFormData] = useState({
-    name:"",
-    email:"",
-    phone:"",
-    industry:"",
-    message:""
+    name: "",
+    email: "",
+    phone: "",
+    industry: "",
+    message: ""
   });
   const [captchaToken, setCaptchaToken] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -120,16 +120,16 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
 
     try {
       const res = await fetch("/api/send", {
-        method:"POST",
-        headers: {"Content-Type":"application/json" },
+        method: "POST",
+        headers: {"Content-Type": "application/json" },
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
-          type:"Industry Consultation Request",
+          type: "Industry Consultation Request",
           captchaToken: captchaToken,
-          subject: `New Industry Lead: ${formData.name} (${formData.industry ||"General"})`,
-          message: formData.message || `Interested in strategy session for ${formData.industry ||"Industry Page"}.`,
+          subject: `New Industry Lead: ${formData.name} (${formData.industry || "General"})`,
+          message: formData.message || `Interested in strategy session for ${formData.industry || "Industry Page"}.`,
           industry: formData.industry
         })
       });
@@ -139,10 +139,10 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
         setFormSubmitted(true);
         setCaptchaToken("");
       } else {
-        setFormError(data.error ||"Failed to submit request. Please try again.");
+        setFormError(data.error || "Failed to submit request. Please try again.");
       }
     } catch (err: any) {
-      setFormError(err.message ||"Network error. Please try again.");
+      setFormError(err.message || "Network error. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -159,47 +159,47 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
         ? cmsServicesData.services
         : [
             {
-              title:"Custom Web Application Engineering",
-              desc:"Full-stack React & Next.js architectures built for lightning-fast speeds and high concurrent traffic.",
-              iconName:"Code",
-              tag:"Next.js 15",
-              href:"/services"
+              title: "Custom Web Application Engineering",
+              desc: "Full-stack React & Next.js architectures built for lightning-fast speeds and high concurrent traffic.",
+              iconName: "Code",
+              tag: "Next.js 15",
+              href: "/services"
             },
             {
-              title:"Conversion-Focused UI/UX Design",
-              desc:"Clean, frictionless interface design tailored to guide decision-makers through your pipeline.",
-              iconName:"Palette",
-              tag:"High Yield",
-              href:"/services"
+              title: "Conversion-Focused UI/UX Design",
+              desc: "Clean, frictionless interface design tailored to guide decision-makers through your pipeline.",
+              iconName: "Palette",
+              tag: "High Yield",
+              href: "/services"
             },
             {
-              title:"Technical SEO & Schema Optimization",
-              desc:"Comprehensive structured data markup and site architectures to dominate commercial keywords.",
-              iconName:"Search",
-              tag:"Rank #1",
-              href:"/services"
+              title: "Technical SEO & Schema Optimization",
+              desc: "Comprehensive structured data markup and site architectures to dominate commercial keywords.",
+              iconName: "Search",
+              tag: "Rank #1",
+              href: "/services"
             },
             {
-              title:"Headless CMS & Content Publishing",
-              desc:"Empower your marketing team with flexible, zero-lag editing workflows that scale effortlessly.",
-              iconName:"Layers",
-              tag:"Modular",
-              href:"/services"
+              title: "Headless CMS & Content Publishing",
+              desc: "Empower your marketing team with flexible, zero-lag editing workflows that scale effortlessly.",
+              iconName: "Layers",
+              tag: "Modular",
+              href: "/services"
             }
           ];
 
   const servicesSec = {
-    eyebrow: industryData.servicesSection?.eyebrow ||"OUR CORE DISCIPLINES",
-    titleIntro: industryData.servicesSection?.titleIntro ||"Comprehensive Solutions Tailored for",
-    titleHighlight: industryData.servicesSection?.titleHighlight ||"Market Dominance",
-    description: industryData.servicesSection?.description ||"Modular, high-performance web engineering services built to address the unique commercial requirements of your sector.",
+    eyebrow: industryData.servicesSection?.eyebrow || "OUR CORE DISCIPLINES",
+    titleIntro: industryData.servicesSection?.titleIntro || "Comprehensive Solutions Tailored for",
+    titleHighlight: industryData.servicesSection?.titleHighlight || "Market Dominance",
+    description: industryData.servicesSection?.description || "Modular, high-performance web engineering services built to address the unique commercial requirements of your sector.",
     items: rawServices.map((srv: any) => ({
       id: srv.id || srv.slug,
-      title: srv.title || srv.name ||"Specialized Service",
-      desc: srv.desc || srv.tagline || srv.description ||"Tailored industry digital engineering solution.",
-      iconName: srv.iconName || srv.icon ||"Code",
-      tag: srv.tag || srv.category ||"Service",
-      href: srv.href || (srv.slug ? `/services/${srv.slug}` :"/services")
+      title: srv.title || srv.name || "Specialized Service",
+      desc: srv.desc || srv.tagline || srv.description || "Tailored industry digital engineering solution.",
+      iconName: srv.iconName || srv.icon || "Code",
+      tag: srv.tag || srv.category || "Service",
+      href: srv.href || (srv.slug ? `/services/${srv.slug}` : "/services")
     }))
   };
 
@@ -207,54 +207,54 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
   // 3. DOMAIN EXPERTISE / INDUSTRIES SECTION DATA
   // ───────────────────────────────────────────────────────────────────────────
   const domainExpertise = {
-    eyebrow: industryData.domainExpertise?.eyebrow ||"INDUSTRY SECTORS WE SERVE",
-    titleIntro: industryData.domainExpertise?.titleIntro ||"Proven Experience Across",
-    titleHighlight: industryData.domainExpertise?.titleHighlight ||"Key Market Verticals",
-    description: industryData.domainExpertise?.description ||"Every industry has distinct compliance, customer acquisition funnels, and technical requirements. We tailor our engineering to your exact vertical.",
+    eyebrow: industryData.domainExpertise?.eyebrow || "INDUSTRY SECTORS WE SERVE",
+    titleIntro: industryData.domainExpertise?.titleIntro || "Proven Experience Across",
+    titleHighlight: industryData.domainExpertise?.titleHighlight || "Key Market Verticals",
+    description: industryData.domainExpertise?.description || "Every industry has distinct compliance, customer acquisition funnels, and technical requirements. We tailor our engineering to your exact vertical.",
     domains: (Array.isArray(industryData.domainExpertise?.domains) && industryData.domainExpertise.domains.length > 0)
       ? industryData.domainExpertise.domains
       : [
         {
-          id:"01",
-          title:"Healthcare & MedTech",
-          desc:"HIPAA-compliant, trustworthy patient portals and medical practice booking systems.",
-          iconName:"Heart",
-          tags: ["HIPAA Compliance","Telehealth","Patient Portals"]
+          id: "01",
+          title: "Healthcare & MedTech",
+          desc: "HIPAA-compliant, trustworthy patient portals and medical practice booking systems.",
+          iconName: "Heart",
+          tags: ["HIPAA Compliance", "Telehealth", "Patient Portals"]
         },
         {
-          id:"02",
-          title:"FinTech & Financial Services",
-          desc:"Ultra-secure financial dashboards, loan calculators, and bank-grade digital security.",
-          iconName:"ShieldCheck",
-          tags: ["FinTech","SOC2 Compliant","Real-time Telemetry"]
+          id: "02",
+          title: "FinTech & Financial Services",
+          desc: "Ultra-secure financial dashboards, loan calculators, and bank-grade digital security.",
+          iconName: "ShieldCheck",
+          tags: ["FinTech", "SOC2 Compliant", "Real-time Telemetry"]
         },
         {
-          id:"03",
-          title:"E-Commerce & High-Volume Retail",
-          desc:"Sub-second product catalogs, custom Shopify headless setups, and frictionless checkouts.",
-          iconName:"ShoppingCart",
-          tags: ["Headless Commerce","Shopify Plus","Conversion Rate"]
+          id: "03",
+          title: "E-Commerce & High-Volume Retail",
+          desc: "Sub-second product catalogs, custom Shopify headless setups, and frictionless checkouts.",
+          iconName: "ShoppingCart",
+          tags: ["Headless Commerce", "Shopify Plus", "Conversion Rate"]
         },
         {
-          id:"04",
-          title:"Legal & Professional Services",
-          desc:"Authoritative, lead-generating corporate websites for law firms and consultancy practices.",
-          iconName:"Scale",
-          tags: ["Lead Capture","Case Studies","SEO Authority"]
+          id: "04",
+          title: "Legal & Professional Services",
+          desc: "Authoritative, lead-generating corporate websites for law firms and consultancy practices.",
+          iconName: "Scale",
+          tags: ["Lead Capture", "Case Studies", "SEO Authority"]
         },
         {
-          id:"05",
-          title:"B2B SaaS & Enterprise Technology",
-          desc:"Product tour interfaces, documentation hubs, and high-velocity SaaS landing systems.",
-          iconName:"Cpu",
-          tags: ["SaaS Funnels","Product Tours","API Portals"]
+          id: "05",
+          title: "B2B SaaS & Enterprise Technology",
+          desc: "Product tour interfaces, documentation hubs, and high-velocity SaaS landing systems.",
+          iconName: "Cpu",
+          tags: ["SaaS Funnels", "Product Tours", "API Portals"]
         },
         {
-          id:"06",
-          title:"Real Estate & Architecture",
-          desc:"High-resolution property showcases, dynamic MLS mapping, and interactive floorplans.",
-          iconName:"Building2",
-          tags: ["Property Hubs","Interactive Maps","Luxury Design"]
+          id: "06",
+          title: "Real Estate & Architecture",
+          desc: "High-resolution property showcases, dynamic MLS mapping, and interactive floorplans.",
+          iconName: "Building2",
+          tags: ["Property Hubs", "Interactive Maps", "Luxury Design"]
         }
       ]
   };
@@ -263,20 +263,20 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
   // 4. ABOUT FOUNDER SECTION DATA
   // ───────────────────────────────────────────────────────────────────────────
   const founder = {
-    eyebrow: industryData.founder?.eyebrow ||"EXECUTIVE LEADERSHIP & CRAFT",
-    titleIntro: industryData.founder?.titleIntro ||"Architectural Rigor with",
-    titleHighlight: industryData.founder?.titleHighlight ||"Direct Founder Involvement",
-    founderName: industryData.founder?.founderName ||"",
-    founderTitle: industryData.founder?.founderTitle ||"",
-    portraitSrc: industryData.founder?.portraitSrc ||"/founder_portrait_nobg.png",
-    portraitAlt: industryData.founder?.portraitAlt || industryData.founder?.founderName ||"Mohsin Founder",
+    eyebrow: industryData.founder?.eyebrow || "EXECUTIVE LEADERSHIP & CRAFT",
+    titleIntro: industryData.founder?.titleIntro || "Architectural Rigor with",
+    titleHighlight: industryData.founder?.titleHighlight || "Direct Founder Involvement",
+    founderName: industryData.founder?.founderName || "",
+    founderTitle: industryData.founder?.founderTitle || "",
+    portraitSrc: industryData.founder?.portraitSrc || "/founder_portrait_nobg.png",
+    portraitAlt: industryData.founder?.portraitAlt || industryData.founder?.founderName || "Mohsin Founder",
     bio: industryData.founder?.bioContent !== undefined
       ? industryData.founder?.bioContent
       : industryData.founder?.bio !== undefined
         ? industryData.founder?.bio
         : (industryData.founder?.bioParagraph1 || industryData.founder?.bioParagraph2)
           ? [industryData.founder?.bioParagraph1, industryData.founder?.bioParagraph2].filter(Boolean).map((p: string) => `<p>${p}</p>`).join("")
-          :"<p>At Mohsin Designs, we reject the bloated agency model of endless account managers. Every client works directly with experienced senior engineers and conversion architects.</p><p>We treat every project as a critical revenue engine, combining clean, scalable code with obsessive attention to UI micro-interactions and performance optimization.</p>",
+          : "<p>At Mohsin Designs, we reject the bloated agency model of endless account managers. Every client works directly with experienced senior engineers and conversion architects.</p><p>We treat every project as a critical revenue engine, combining clean, scalable code with obsessive attention to UI micro-interactions and performance optimization.</p>",
     metrics: (Array.isArray(industryData.founder?.metrics))
       ? industryData.founder.metrics.filter((m: any) => m && ((typeof m.value ==="string" && m.value.trim().length > 0) || (typeof m.label ==="string" && m.label.trim().length > 0)))
       : []
@@ -286,40 +286,40 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
   // 5. WHY BUSINESSES CHOOSE US SECTION DATA
   // ───────────────────────────────────────────────────────────────────────────
   const whyChooseUs = {
-    eyebrow: industryData.whyChooseUs?.eyebrow ||"THE MOHSIN ADVANTAGE",
-    titleIntro: industryData.whyChooseUs?.titleIntro ||"Why Market Leaders Choose",
-    titleHighlight: industryData.whyChooseUs?.titleHighlight ||"Mohsin Designs",
-    description: industryData.whyChooseUs?.description ||"We deliver measurable advantages through clean code, direct communication, and relentless performance standards.",
-    blueCardLine1: industryData.whyChooseUs?.blueCardLine1 ||"Direct Senior Architect",
-    blueCardLine2: industryData.whyChooseUs?.blueCardLine2 ||"Zero Junior Hand-Offs",
-    blueCardImage: industryData.whyChooseUs?.blueCardImage ||"/founder.png",
-    blueCardImageAlt: industryData.whyChooseUs?.blueCardImageAlt ||"Architect",
+    eyebrow: industryData.whyChooseUs?.eyebrow || "THE MOHSIN ADVANTAGE",
+    titleIntro: industryData.whyChooseUs?.titleIntro || "Why Market Leaders Choose",
+    titleHighlight: industryData.whyChooseUs?.titleHighlight || "Mohsin Designs",
+    description: industryData.whyChooseUs?.description || "We deliver measurable advantages through clean code, direct communication, and relentless performance standards.",
+    blueCardLine1: industryData.whyChooseUs?.blueCardLine1 || "Direct Senior Architect",
+    blueCardLine2: industryData.whyChooseUs?.blueCardLine2 || "Zero Junior Hand-Offs",
+    blueCardImage: industryData.whyChooseUs?.blueCardImage || "/founder.png",
+    blueCardImageAlt: industryData.whyChooseUs?.blueCardImageAlt || "Architect",
     features: (Array.isArray(industryData.whyChooseUs?.features) && industryData.whyChooseUs.features.length > 0)
       ? industryData.whyChooseUs.features
       : [
         {
-          title:"Sub-Second Edge Speeds",
-          desc:"Lightning fast asset delivery and edge routing boosting Core Web Vitals to 100/100.",
-          iconName:"Zap",
-          iconBg:"amber"
+          title: "Sub-Second Edge Speeds",
+          desc: "Lightning fast asset delivery and edge routing boosting Core Web Vitals to 100/100.",
+          iconName: "Zap",
+          iconBg: "amber"
         },
         {
-          title:"Conversion-First UX Flow",
-          desc:"Psychologically optimized layouts engineered to maximize form completions and discovery calls.",
-          iconName:"Target",
-          iconBg:"blue"
+          title: "Conversion-First UX Flow",
+          desc: "Psychologically optimized layouts engineered to maximize form completions and discovery calls.",
+          iconName: "Target",
+          iconBg: "blue"
         },
         {
-          title:"Clean Modular Code",
-          desc:"Zero technical debt. Modular React and Next.js components built to scale effortlessly.",
-          iconName:"Code",
-          iconBg:"blue"
+          title: "Clean Modular Code",
+          desc: "Zero technical debt. Modular React and Next.js components built to scale effortlessly.",
+          iconName: "Code",
+          iconBg: "blue"
         },
         {
-          title:"Guaranteed Security & Uptime",
-          desc:"Serverless cloud infrastructure backed by automatic SSL and 99.9% uptime guarantees.",
-          iconName:"ShieldCheck",
-          iconBg:"amber"
+          title: "Guaranteed Security & Uptime",
+          desc: "Serverless cloud infrastructure backed by automatic SSL and 99.9% uptime guarantees.",
+          iconName: "ShieldCheck",
+          iconBg: "amber"
         }
       ]
   };
@@ -335,20 +335,20 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
         ? industryData.faqs
       : [
         {
-          question:"How do you tailor development for regulated industries?",
-          answer:"We incorporate industry-specific compliance rules (such as HIPAA, ADA WCAG 2.1, and SOC2 best practices) directly into the code architecture, ensuring rigorous data protection and audit compliance."
+          question: "How do you tailor development for regulated industries? ",
+          answer: "We incorporate industry-specific compliance rules (such as HIPAA, ADA WCAG 2.1, and SOC2 best practices) directly into the code architecture, ensuring rigorous data protection and audit compliance."
         },
         {
-          question:"What is your typical project timeline for an industry platform?",
-          answer:"Most custom builds are completed in 4 to 6 weeks through structured agile sprints with live staged previews and weekly progress checkpoints."
+          question: "What is your typical project timeline for an industry platform? ",
+          answer: "Most custom builds are completed in 4 to 6 weeks through structured agile sprints with live staged previews and weekly progress checkpoints."
         },
         {
-          question:"Can you migrate our existing site data and SEO rankings safely?",
-          answer:"Yes. We implement automated 301 redirect mapping, semantic HTML preservation, and complete metadata transfer so you retain and accelerate your organic search rankings."
+          question: "Can you migrate our existing site data and SEO rankings safely? ",
+          answer: "Yes. We implement automated 301 redirect mapping, semantic HTML preservation, and complete metadata transfer so you retain and accelerate your organic search rankings."
         },
         {
-          question:"Do we have complete editorial control over content and pages?",
-          answer:"Absolutely. Our headless CMS allows your internal marketing team to add new pages, edit text, publish articles, and update media without touching code."
+          question: "Do we have complete editorial control over content and pages? ",
+          answer: "Absolutely. Our headless CMS allows your internal marketing team to add new pages, edit text, publish articles, and update media without touching code."
         }
       ];
 
@@ -356,17 +356,17 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
   // 7. FINAL CTA BANNER DATA
   // ───────────────────────────────────────────────────────────────────────────
   const ctaBanner = {
-    eyebrow: industryData.ctaBanner?.eyebrow ||"READY TO ACCELERATE YOUR GROWTH?",
-    titleIntro: industryData.ctaBanner?.titleIntro ||"Let's Build Your Next",
-    titleWord1: industryData.ctaBanner?.titleWord1 ||"Competitive",
-    titleWord2: industryData.ctaBanner?.titleWord2 ||"Advantage.",
-    description: industryData.ctaBanner?.description ||"Schedule a free 30-minute industry strategy session. We will audit your current presence and deliver an actionable architecture blueprint.",
-    ctaPrimaryText: industryData.ctaBanner?.ctaPrimaryText ||"Book Strategy Session",
-    ctaPrimaryHref: industryData.ctaBanner?.ctaPrimaryHref ||"#industry-form",
-    ctaSecondaryText: industryData.ctaBanner?.ctaSecondaryText ||"Explore Our Work",
-    ctaSecondaryHref: industryData.ctaBanner?.ctaSecondaryHref ||"/gallery",
-    portraitSrc: industryData.ctaBanner?.portraitSrc ||"/founder_portrait_nobg.png",
-    portraitAlt: industryData.ctaBanner?.portraitAlt ||"Mohsin Lead Architect"
+    eyebrow: industryData.ctaBanner?.eyebrow || "READY TO ACCELERATE YOUR GROWTH? ",
+    titleIntro: industryData.ctaBanner?.titleIntro || "Let's Build Your Next",
+    titleWord1: industryData.ctaBanner?.titleWord1 || "Competitive",
+    titleWord2: industryData.ctaBanner?.titleWord2 || "Advantage.",
+    description: industryData.ctaBanner?.description || "Schedule a free 30-minute industry strategy session. We will audit your current presence and deliver an actionable architecture blueprint.",
+    ctaPrimaryText: industryData.ctaBanner?.ctaPrimaryText || "Book Strategy Session",
+    ctaPrimaryHref: industryData.ctaBanner?.ctaPrimaryHref || "#industry-form",
+    ctaSecondaryText: industryData.ctaBanner?.ctaSecondaryText || "Explore Our Work",
+    ctaSecondaryHref: industryData.ctaBanner?.ctaSecondaryHref || "/gallery",
+    portraitSrc: industryData.ctaBanner?.portraitSrc || "/founder_portrait_nobg.png",
+    portraitAlt: industryData.ctaBanner?.portraitAlt || "Mohsin Lead Architect"
   };
 
   return (
@@ -443,10 +443,10 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
               {/* Action Buttons Row */}
               <div className="flex items-center gap-3.5 flex-wrap pt-2">
                 {hero.primaryCtaText && (
-                  <CtaButton href={hero.primaryCtaLink ||"#industry-form"}>{hero.primaryCtaText}</CtaButton>
+                  <CtaButton href={hero.primaryCtaLink || "#industry-form"}>{hero.primaryCtaText}</CtaButton>
                 )}
                 {hero.secondaryCtaText && (
-                  <CtaButton href={hero.secondaryCtaLink ||"#sectors"} variant="secondary">{hero.secondaryCtaText}</CtaButton>
+                  <CtaButton href={hero.secondaryCtaLink || "#sectors"} variant="secondary">{hero.secondaryCtaText}</CtaButton>
                 )}
               </div>
             </div>
@@ -543,13 +543,13 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                         className="!rounded-xl !py-2.5 !px-3.5 text-xs sm:text-sm bg-zinc-50 dark:bg-white/5"
                         placeholder="Select Your Industry..."
                         options={[
-                          { value:"Healthcare & MedTech", label:"Healthcare & MedTech" },
-                          { value:"FinTech & Finance", label:"FinTech & Financial Services" },
-                          { value:"E-Commerce & Retail", label:"E-Commerce & Retail" },
-                          { value:"B2B SaaS & Tech", label:"B2B SaaS & Enterprise Tech" },
-                          { value:"Legal & Professional", label:"Legal & Professional Services" },
-                          { value:"Real Estate & Construction", label:"Real Estate & Construction" },
-                          { value:"Other Industry", label:"Other Commercial Industry" },
+                          { value: "Healthcare & MedTech", label: "Healthcare & MedTech" },
+                          { value: "FinTech & Finance", label: "FinTech & Financial Services" },
+                          { value: "E-Commerce & Retail", label: "E-Commerce & Retail" },
+                          { value: "B2B SaaS & Tech", label: "B2B SaaS & Enterprise Tech" },
+                          { value: "Legal & Professional", label: "Legal & Professional Services" },
+                          { value: "Real Estate & Construction", label: "Real Estate & Construction" },
+                          { value: "Other Industry", label: "Other Commercial Industry" },
                         ]}
                       />
                     </div>
@@ -580,7 +580,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                     />
 
                     <CtaButton type="submit" fullWidth loading={isSubmitting} icon={<ArrowRight />}>
-                      {isSubmitting ?"TRANSMITTING..." : hero.formButtonText}
+                      {isSubmitting ? "TRANSMITTING..." : hero.formButtonText}
                     </CtaButton>
 
                     <p className="text-[10px] text-center text-brand-zinc-400 dark:text-zinc-500 pt-1">
@@ -660,7 +660,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
 
                   <div className="pt-4 border-t border-brand-zinc-200/70 dark:border-white/10 flex items-center justify-between">
                     <Link
-                      href={service.href ||"/services"}
+                      href={service.href || "/services"}
                       className="inline-flex items-center gap-2 text-xs font-mono font-black text-brand-dark dark:text-white group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors"
                     >
                       <span>Learn More</span>
@@ -716,7 +716,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
               return (
                 <div
                   key={domain.id || idx}
-                  className={`rounded-[32px] bg-zinc-50/90 dark:bg-[#0c0b18] border border-brand-zinc-200/80 dark:border-white/10 p-6 sm:p-8 flex flex-col justify-between space-y-6 group hover:border-[#0306AC]/60 dark:hover:border-[#E9BD36]/60 transition-all duration-300 shadow-sm hover:shadow-2xl relative overflow-hidden ${validHref ?"cursor-pointer" :""}`}
+                  className={`rounded-[32px] bg-zinc-50/90 dark:bg-[#0c0b18] border border-brand-zinc-200/80 dark:border-white/10 p-6 sm:p-8 flex flex-col justify-between space-y-6 group hover:border-[#0306AC]/60 dark:hover:border-[#E9BD36]/60 transition-all duration-300 shadow-sm hover:shadow-2xl relative overflow-hidden ${validHref ? "cursor-pointer" : ""}`}
                 >
                   <div className="space-y-4 relative z-10">
                     <div className="flex items-center justify-between">
@@ -734,7 +734,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                           <Link
                             href={validHref}
                             className="hover:underline focus:outline-none after:absolute after:inset-0 after:z-10 inline-flex items-center gap-1.5"
-                            {...(isExternal ? { target:"_blank", rel:"noopener noreferrer" } : {})}
+                            {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                           >
                             <span>{domain.title}</span>
                             <span className="inline-block transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-[#0306AC] dark:text-[#E9BD36]">↗</span>
@@ -744,7 +744,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                         )}
                       </h3>
                       <div className="text-xs sm:text-sm text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed relative z-20 pointer-events-none [&_a]:pointer-events-auto">
-                        <RichTextRenderer content={domain.desc || domain.description ||""} />
+                        <RichTextRenderer content={domain.desc || domain.description || ""} />
                       </div>
                     </div>
                   </div>
@@ -784,7 +784,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                 <div className="relative aspect-[4/5] w-full max-w-[440px] rounded-[32px] overflow-hidden shadow-2xl border border-brand-zinc-200/60 dark:border-white/10 group">
                   <img
                     src={founder.portraitSrc}
-                    alt={founder.portraitAlt ||"Founder"}
+                    alt={founder.portraitAlt || "Founder"}
                     className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 pointer-events-none"
                   />
                 </div>
@@ -875,7 +875,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
 
                 {whyChooseUs.blueCardImage && (
                   <div className="relative mt-8 -mx-8 sm:-mx-9 -mb-8 sm:-mb-9 rounded-b-[36px] overflow-hidden shadow-inner">
-                    <img src={whyChooseUs.blueCardImage} alt={whyChooseUs.blueCardImageAlt ||"Feature"} className="w-full h-64 sm:h-72 lg:h-80 object-cover object-center" />
+                    <img src={whyChooseUs.blueCardImage} alt={whyChooseUs.blueCardImageAlt || "Feature"} className="w-full h-64 sm:h-72 lg:h-80 object-cover object-center" />
                   </div>
                 )}
               </div>
@@ -887,7 +887,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                 const FeatIcon = getIcon(feat.iconName, Target);
                 return (
                   <div key={idx} className="p-7 rounded-[28px] bg-zinc-50 dark:bg-[#0c0b18] border border-brand-zinc-200/80 dark:border-white/10 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col items-start justify-between min-h-[220px] group">
-                    <div className={`h-12 w-12 rounded-2xl flex items-center justify-center ${feat.iconBg ==="amber" ?"bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-[#E9BD36]" :"bg-blue-50 dark:bg-white/10 text-[#0306AC] dark:text-[#E9BD36]"} group-hover:scale-110 transition-transform`}>
+                    <div className={`h-12 w-12 rounded-2xl flex items-center justify-center ${feat.iconBg ==="amber" ? "bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-[#E9BD36]" : "bg-blue-50 dark:bg-white/10 text-[#0306AC] dark:text-[#E9BD36]"} group-hover:scale-110 transition-transform`}>
                       <FeatIcon className="h-6 w-6" />
                     </div>
                     <div>
@@ -914,9 +914,9 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
         <PageInlineFaqs
           faqs={faqsList}
           faqSchemaMarkup={pageContent.faqSchemaMarkup || industryData.faqSchemaMarkup}
-          badge={pageContent.faqBadge || industryData.faqBadge ||"INDUSTRY FAQS"}
-          title={pageContent.faqTitle || industryData.faqTitle ||"Frequently Asked Questions"}
-          description={pageContent.faqDescription || industryData.faqDescription ||"Key answers regarding our industry-specific architectural workflows and delivery."}
+          badge={pageContent.faqBadge || industryData.faqBadge || "INDUSTRY FAQS"}
+          title={pageContent.faqTitle || industryData.faqTitle || "Frequently Asked Questions"}
+          description={pageContent.faqDescription || industryData.faqDescription || "Key answers regarding our industry-specific architectural workflows and delivery."}
           data={pageContent}
         />
       )}
@@ -961,8 +961,8 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
               )}
 
               <div className="flex items-center gap-4 flex-wrap pt-2">
-                <CtaButton href={ctaBanner.ctaPrimaryHref ||"#industry-form"}>{ctaBanner.ctaPrimaryText}</CtaButton>
-                <CtaButton href={ctaBanner.ctaSecondaryHref ||"/gallery"} variant="secondary" icon={<Play className="fill-current ml-0.5" />}>{ctaBanner.ctaSecondaryText}</CtaButton>
+                <CtaButton href={ctaBanner.ctaPrimaryHref || "#industry-form"}>{ctaBanner.ctaPrimaryText}</CtaButton>
+                <CtaButton href={ctaBanner.ctaSecondaryHref || "/gallery"} variant="secondary" icon={<Play className="fill-current ml-0.5" />}>{ctaBanner.ctaSecondaryText}</CtaButton>
               </div>
             </div>
 
@@ -970,7 +970,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
               <div className="absolute bottom-0 w-[320px] h-[320px] bg-gradient-to-t from-[#020485] to-[#0408d9] rounded-full opacity-90 border border-white/20 shadow-2xl" />
               {ctaBanner.portraitSrc && (
                 <div className="relative z-10 w-[280px] h-[370px] self-end drop-shadow-2xl overflow-hidden rounded-t-[32px] border-t border-l border-r border-white/25 shadow-2xl">
-                  <Image src={ctaBanner.portraitSrc} alt={ctaBanner.portraitAlt ||"Portrait"} width={320} height={420} className="w-full h-full object-cover object-top filter contrast-[1.05]" />
+                  <Image src={ctaBanner.portraitSrc} alt={ctaBanner.portraitAlt || "Portrait"} width={320} height={420} className="w-full h-full object-cover object-top filter contrast-[1.05]" />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#010356]/80 via-transparent to-transparent pointer-events-none" />
                 </div>
               )}

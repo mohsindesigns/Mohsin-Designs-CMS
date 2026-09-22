@@ -1,9 +1,9 @@
 "use client";
 
-import CtaButton from"@/components/ui/CtaButton";
-import { useEffect } from"react";
-import Link from"@/components/ui/Link";
-import { motion } from"framer-motion";
+import CtaButton from "@/components/ui/CtaButton";
+import { useEffect } from "react";
+import Link from "@/components/ui/Link";
+import { motion } from "framer-motion";
 
 export default function Error({
   error,
@@ -14,7 +14,7 @@ export default function Error({
 }) {
   useEffect(() => {
     // Log the error to an error reporting service
-    console.error("Application error:", error);
+    console.error("Application error: ", error);
   }, [error]);
 
   return (

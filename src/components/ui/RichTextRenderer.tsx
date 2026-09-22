@@ -1,7 +1,7 @@
 "use client";
 
-import { normalizeHtmlLinks } from"@/lib/url";
-import React from"react";
+import { normalizeHtmlLinks } from "@/lib/url";
+import React from "react";
 // isomorphic-dompurify runs real DOMPurify against a real DOM either way -
 // jsdom on the server, the browser DOM on the client - rather than a
 // hand-rolled regex sanitizer for the SSR path. A regex-based sanitizer was
@@ -11,8 +11,8 @@ import React from"react";
 // dangerous URL scheme past the pattern) - exactly the category of bug a
 // real HTML parser doesn't have, since it isn't trying to out-guess every
 // way markup can be spelled.
-import DOMPurify from"isomorphic-dompurify";
-import { makeLinksDoFollow, cleanMojibake } from"@/lib/utils";
+import DOMPurify from "isomorphic-dompurify";
+import { makeLinksDoFollow, cleanMojibake } from "@/lib/utils";
 
 interface RichTextRendererProps {
   content: string | string[];
@@ -20,7 +20,7 @@ interface RichTextRendererProps {
   stripParagraphs?: boolean;
 }
 
-export default function RichTextRenderer({ content, className ="", stripParagraphs = false }: RichTextRendererProps) {
+export default function RichTextRenderer({ content, className = "", stripParagraphs = false }: RichTextRendererProps) {
   const safeSanitize = (html: string) => {
     if (!html) return html;
     try {
@@ -109,7 +109,7 @@ export default function RichTextRenderer({ content, className ="", stripParagrap
   return (
     <div
       className={`rich-text-content pointer-events-auto
-        font-body leading-relaxed ${hasColorOverride ?"[&_p]:!text-inherit [&_span]:!text-inherit [&_li]:!text-inherit" :"text-foreground/80"}
+        font-body leading-relaxed ${hasColorOverride ? "[&_p]:!text-inherit [&_span]:!text-inherit [&_li]:!text-inherit" : "text-foreground/80"}
         ${className}`}
       dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
     />

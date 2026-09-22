@@ -1,17 +1,17 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from"react";
+import React, { useEffect, useRef, useState } from "react";
 
 // Official Cloudflare Turnstile Test Site Key (Always Passes)
-const DEFAULT_TEST_SITE_KEY ="1x00000000000000000000AA";
+const DEFAULT_TEST_SITE_KEY = "1x00000000000000000000AA";
 
 interface TurnstileCaptchaProps {
   onVerify: (token: string) => void;
   onExpire?: () => void;
   onError?: (error: any) => void;
   siteKey?: string;
-  theme?:"light" |"dark" |"auto";
-  size?:"normal" |"compact" |"flexible";
+  theme?: "light" | "dark" | "auto";
+  size?: "normal" | "compact" | "flexible";
   className?: string;
 }
 
@@ -41,9 +41,9 @@ export default function TurnstileCaptcha({
   onExpire,
   onError,
   siteKey,
-  theme ="auto",
-  size ="flexible",
-  className ="",
+  theme = "auto",
+  size = "flexible",
+  className = "",
 }: TurnstileCaptchaProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
@@ -60,13 +60,13 @@ export default function TurnstileCaptcha({
       return;
     }
 
-    const scriptId ="cloudflare-turnstile-script";
+    const scriptId = "cloudflare-turnstile-script";
     let script = document.getElementById(scriptId) as HTMLScriptElement | null;
 
     if (!script) {
       script = document.createElement("script");
       script.id = scriptId;
-      script.src ="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
       script.async = true;
       script.defer = true;
       script.onload = () => {
@@ -107,7 +107,7 @@ export default function TurnstileCaptcha({
       });
       widgetIdRef.current = widgetId;
     } catch (err) {
-      console.error("Turnstile render error:", err);
+      console.error("Turnstile render error: ", err);
     }
 
     return () => {

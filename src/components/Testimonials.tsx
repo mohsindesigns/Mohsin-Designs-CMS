@@ -1,117 +1,117 @@
 "use client";
 
-import { motion, useScroll, useTransform, useSpring } from"framer-motion";
-import { Star, Quote } from"lucide-react";
-import { useRef } from"react";
-import { useContent } from"@/hooks/useContent";
-import RichTextRenderer from"@/components/ui/RichTextRenderer";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import { Star, Quote } from "lucide-react";
+import { useRef } from "react";
+import { useContent } from "@/hooks/useContent";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 export default function Testimonials({ data: overrideData }: { data?: any }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const content = useContent();
   const rawData = overrideData || content.testimonials || {};
 
-  const sectionTag = rawData.sectionTag || rawData.section?.badge ||"CLIENT PRAISE & REVIEWS";
-  const titleIntro = rawData.titleIntro || rawData.section?.headlinePrefix ||"Trusted by Founders,";
-  const titleHighlight = rawData.titleHighlight || rawData.section?.headlineHighlight ||"Loved by Teams";
-  const description = rawData.description || rawData.section?.description ||"Real feedback from visionary founders and engineering leaders who transformed their digital platforms with our expertise.";
+  const sectionTag = rawData.sectionTag || rawData.section?.badge || "CLIENT PRAISE & REVIEWS";
+  const titleIntro = rawData.titleIntro || rawData.section?.headlinePrefix || "Trusted by Founders, ";
+  const titleHighlight = rawData.titleHighlight || rawData.section?.headlineHighlight || "Loved by Teams";
+  const description = rawData.description || rawData.section?.description || "Real feedback from visionary founders and engineering leaders who transformed their digital platforms with our expertise.";
 
-  const scorecardRating = rawData.scorecardRating ||"4.9/5";
-  const scorecardRatingLabel = rawData.scorecardRatingLabel ||"OVERALL";
-  const scorecardTitle = rawData.scorecardTitle ||"TOP RATED ENGINEERING";
-  const scorecardSub = rawData.scorecardSub ||"BASED ON 120+ CLIENT REVIEWS";
+  const scorecardRating = rawData.scorecardRating || "4.9/5";
+  const scorecardRatingLabel = rawData.scorecardRatingLabel || "OVERALL";
+  const scorecardTitle = rawData.scorecardTitle || "TOP RATED ENGINEERING";
+  const scorecardSub = rawData.scorecardSub || "BASED ON 120+ CLIENT REVIEWS";
 
   // Fallback reviews list if none exist
   const defaultReviews = [
     {
-      id:"rev-1",
-      name:"Marcus Vance",
-      role:"VP of Engineering",
-      company:"FinScale",
-      quote:"Mohsin's team revamped our core web application in record time. Performance increased by 300% and user engagement reached all-time highs.",
+      id: "rev-1",
+      name: "Marcus Vance",
+      role: "VP of Engineering",
+      company: "FinScale",
+      quote: "Mohsin's team revamped our core web application in record time. Performance increased by 300% and user engagement reached all-time highs.",
       rating: 5,
       column: 1,
-      avatarBg:"bg-[#0306AC]"
+      avatarBg: "bg-[#0306AC]"
     },
     {
-      id:"rev-2",
-      name:"Elena Rostova",
-      role:"Chief Design Officer",
-      company:"Aura AI",
-      quote:"The attention to typography, micro-interactions, and responsive layout is world-class. Our design system was delivered ahead of schedule.",
+      id: "rev-2",
+      name: "Elena Rostova",
+      role: "Chief Design Officer",
+      company: "Aura AI",
+      quote: "The attention to typography, micro-interactions, and responsive layout is world-class. Our design system was delivered ahead of schedule.",
       rating: 5,
       column: 1,
-      avatarBg:"bg-purple-600"
+      avatarBg: "bg-purple-600"
     },
     {
-      id:"rev-3",
-      name:"David Chen",
-      role:"Founder & CEO",
-      company:"NexPath Logistics",
-      quote:"From discovery to deployment, the execution was flawless. Their architectural decisions saved us months of rework down the line.",
+      id: "rev-3",
+      name: "David Chen",
+      role: "Founder & CEO",
+      company: "NexPath Logistics",
+      quote: "From discovery to deployment, the execution was flawless. Their architectural decisions saved us months of rework down the line.",
       rating: 5,
       column: 1,
-      avatarBg:"bg-emerald-600"
+      avatarBg: "bg-emerald-600"
     },
     {
-      id:"rev-4",
-      name:"Sarah Jenkins",
-      role:"Head of Product",
-      company:"CloudCore",
-      quote:"Super intuitive CMS and stunning frontend animations. Our non-technical marketing team can now update high-converting pages effortlessly.",
+      id: "rev-4",
+      name: "Sarah Jenkins",
+      role: "Head of Product",
+      company: "CloudCore",
+      quote: "Super intuitive CMS and stunning frontend animations. Our non-technical marketing team can now update high-converting pages effortlessly.",
       rating: 5,
       column: 2,
-      avatarBg:"bg-amber-600"
+      avatarBg: "bg-amber-600"
     },
     {
-      id:"rev-5",
-      name:"Liam O'Connor",
-      role:"Technical Director",
-      company:"Verve Media",
-      quote:"Incredible speed, clean code, and zero bugs on launch day. Mohsin Designs is our go-to engineering partner for every enterprise build.",
+      id: "rev-5",
+      name: "Liam O'Connor",
+      role: "Technical Director",
+      company: "Verve Media",
+      quote: "Incredible speed, clean code, and zero bugs on launch day. Mohsin Designs is our go-to engineering partner for every enterprise build.",
       rating: 5,
       column: 2,
-      avatarBg:"bg-indigo-600"
+      avatarBg: "bg-indigo-600"
     },
     {
-      id:"rev-6",
-      name:"Amina Al-Mansoor",
-      role:"Director of Digital",
-      company:"Apex Gulf Group",
-      quote:"They understood our complex requirements instantly and delivered a modern portal that exceeds international enterprise standards.",
+      id: "rev-6",
+      name: "Amina Al-Mansoor",
+      role: "Director of Digital",
+      company: "Apex Gulf Group",
+      quote: "They understood our complex requirements instantly and delivered a modern portal that exceeds international enterprise standards.",
       rating: 5,
       column: 2,
-      avatarBg:"bg-rose-600"
+      avatarBg: "bg-rose-600"
     },
     {
-      id:"rev-7",
-      name:"Julian Meyer",
-      role:"Co-Founder",
-      company:"StackFlow Analytics",
-      quote:"The speed and polish of the final product blew our investors away. Truly state-of-the-art UI with rock-solid Next.js architecture.",
+      id: "rev-7",
+      name: "Julian Meyer",
+      role: "Co-Founder",
+      company: "StackFlow Analytics",
+      quote: "The speed and polish of the final product blew our investors away. Truly state-of-the-art UI with rock-solid Next.js architecture.",
       rating: 5,
       column: 3,
-      avatarBg:"bg-cyan-600"
+      avatarBg: "bg-cyan-600"
     },
     {
-      id:"rev-8",
-      name:"Clara Johansson",
-      role:"Growth Lead",
-      company:"Nordic Ventures",
-      quote:"Conversion rates jumped by 42% in the first 30 days after re-platforming. The ROI speaks for itself.",
+      id: "rev-8",
+      name: "Clara Johansson",
+      role: "Growth Lead",
+      company: "Nordic Ventures",
+      quote: "Conversion rates jumped by 42% in the first 30 days after re-platforming. The ROI speaks for itself.",
       rating: 5,
       column: 3,
-      avatarBg:"bg-teal-600"
+      avatarBg: "bg-teal-600"
     },
     {
-      id:"rev-9",
-      name:"Tariq Mahmood",
-      role:"Head of Engineering",
-      company:"PulseTech",
-      quote:"Best agency collaboration we've had in 8 years. Highly responsive, deep technical chops, and unmatched creative execution.",
+      id: "rev-9",
+      name: "Tariq Mahmood",
+      role: "Head of Engineering",
+      company: "PulseTech",
+      quote: "Best agency collaboration we've had in 8 years. Highly responsive, deep technical chops, and unmatched creative execution.",
       rating: 5,
       column: 3,
-      avatarBg:"bg-[#0306AC]"
+      avatarBg: "bg-[#0306AC]"
     }
   ];
 
@@ -122,24 +122,24 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
   } else if (Array.isArray(rawData.items) && rawData.items.length > 0) {
     rawList = rawData.items.map((it: any, idx: number) => ({
       id: it.id || `item-${idx}`,
-      name: it.name ||"Client",
-      role: it.position || it.role ||"Client",
-      company: it.company ||"Enterprise",
-      quote: it.text || it.quote ||"",
+      name: it.name || "Client",
+      role: it.position || it.role || "Client",
+      company: it.company || "Enterprise",
+      quote: it.text || it.quote || "",
       rating: it.rating || 5,
       column: (idx % 3) + 1,
-      avatarBg:"bg-[#0306AC]"
+      avatarBg: "bg-[#0306AC]"
     }));
   } else if (Array.isArray(rawData.testimonials) && rawData.testimonials.length > 0) {
     rawList = rawData.testimonials.map((it: any, idx: number) => ({
       id: it._id || it.id || `test-${idx}`,
-      name: it.name ||"Client",
-      role: it.position || it.role ||"Client",
-      company: it.company ||"Enterprise",
-      quote: it.text || it.quote ||"",
+      name: it.name || "Client",
+      role: it.position || it.role || "Client",
+      company: it.company || "Enterprise",
+      quote: it.text || it.quote || "",
       rating: it.rating || 5,
       column: (idx % 3) + 1,
-      avatarBg:"bg-[#0306AC]"
+      avatarBg: "bg-[#0306AC]"
     }));
   } else {
     rawList = defaultReviews;
@@ -147,19 +147,19 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
 
   const testimonials = rawList.map((t: any, idx: number) => ({
     id: t.id || `rev-${idx}`,
-    name: t.name ||"Verified Client",
-    role: t.role ||"Executive",
-    company: t.company ||"Enterprise",
-    quote: t.quote || t.text ||"Exceptional service and outstanding deliverables.",
+    name: t.name || "Verified Client",
+    role: t.role || "Executive",
+    company: t.company || "Enterprise",
+    quote: t.quote || t.text || "Exceptional service and outstanding deliverables.",
     rating: typeof t.rating ==="number" ? t.rating : 5,
     column: t.column || (idx % 3) + 1,
-    avatarBg: t.avatarBg ||"bg-[#0306AC]"
+    avatarBg: t.avatarBg || "bg-[#0306AC]"
   }));
 
   // Scroll tracking for parallax offset
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start end","end start"]
+    offset: ["start end", "end start"]
   });
 
   // Soft physics-based spring smoothing to ease scroll translation jumps

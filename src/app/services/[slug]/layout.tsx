@@ -1,8 +1,8 @@
-import type { Metadata } from"next";
-import connectToDatabase from"@/lib/mongodb";
-import SiteContent from"@/models/Content";
-import { BASE_URL } from"@/lib/constants";
-import { resolveRobotsMetadata } from"@/lib/seo";
+import type { Metadata } from "next";
+import connectToDatabase from "@/lib/mongodb";
+import SiteContent from "@/models/Content";
+import { BASE_URL } from "@/lib/constants";
+import { resolveRobotsMetadata } from "@/lib/seo";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -11,13 +11,13 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   await connectToDatabase();
-  const content = await SiteContent.findOne({ key:"complete_data" }).lean() as any;
+  const content = await SiteContent.findOne({ key: "complete_data" }).lean() as any;
   const services = content?.data?.services?.services || [];
   const service = services.find((s: any) => s.slug === slug && s.status !== 'draft' && !s.isTrashed);
 
   if (!service) {
     return {
-      title:"Service Not Found",
+      title: "Service Not Found",
       robots: { index: false, follow: false },
     };
   }
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       url: `${BASE_URL}/services/${slug}/`,
-      type:"website",
+      type: "website",
       images: [
         {
           url: seo.featuredImage || seo.ogImage || `${BASE_URL}/portfolio_hero_bg.png`,
@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       ],
     },
     twitter: {
-      card:"summary_large_image",
+      card: "summary_large_image",
       title,
       description,
       images: [seo.featuredImage || seo.twitterImage || seo.ogImage || `${BASE_URL}/portfolio_hero_bg.png`],

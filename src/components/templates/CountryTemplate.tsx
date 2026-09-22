@@ -1,11 +1,11 @@
 "use client";
 
-import PageBreadcrumbs from"@/components/PageBreadcrumbs";
-import dynamic from"next/dynamic";
-import Hero from"@/components/Hero";
-import Services from"@/components/Services";
-import PageInlineFaqs from"@/components/PageInlineFaqs";
-import { useContent } from"@/hooks/useContent";
+import PageBreadcrumbs from "@/components/PageBreadcrumbs";
+import dynamic from "next/dynamic";
+import Hero from "@/components/Hero";
+import Services from "@/components/Services";
+import PageInlineFaqs from "@/components/PageInlineFaqs";
+import { useContent } from "@/hooks/useContent";
 
 const Portfolio = dynamic(() => import("@/components/Portfolio"));
 const Testimonials = dynamic(() => import("@/components/Testimonials"), { ssr: false });

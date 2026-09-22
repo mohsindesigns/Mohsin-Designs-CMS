@@ -1,20 +1,20 @@
 // BrandStore.tsx - Fixed with proper contrast
-import { motion, useScroll, useTransform } from"framer-motion";
-import { useState, useEffect, useRef } from"react";
-import { Icon } from"../config/icons";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { Icon } from "../config/icons";
 
 export default function BrandStore() {
     const containerRef = useRef(null);
 
     const { scrollYProgress } = useScroll({
         target: containerRef,
-        offset: ["start end","end start"]
+        offset: ["start end", "end start"]
     });
 
     const y = useTransform(scrollYProgress, [0, 1], [100, -100]);
     const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
 
-    const storeUrl ="/contact-us";
+    const storeUrl = "/contact-us";
 
     return (
         <section
@@ -30,12 +30,12 @@ export default function BrandStore() {
             {/* Floating Orbs */}
             <motion.div
                 animate={{ y: [0, -15, 0], x: [0, 8, 0] }}
-                transition={{ duration: 8, repeat: Infinity, ease:"easeInOut" }}
+                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
                 className="absolute top-10 right-[10%] w-24 h-24 rounded-full bg-primary/15 blur-[50px] pointer-events-none"
             />
             <motion.div
                 animate={{ y: [0, 15, 0], x: [0, -8, 0] }}
-                transition={{ duration: 10, repeat: Infinity, ease:"easeInOut", delay: 2 }}
+                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
                 className="absolute bottom-10 left-[10%] w-32 h-32 rounded-full bg-primary/10 blur-[60px] pointer-events-none"
             />
 
@@ -102,7 +102,7 @@ export default function BrandStore() {
                     initial={{ opacity: 0, scale: 0.9 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.5, type:"spring" }}
+                    transition={{ duration: 0.5, delay: 0.5, type: "spring" }}
                 >
                     <motion.a
                         href={storeUrl}

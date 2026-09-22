@@ -1,9 +1,9 @@
 "use client";
 
-import Navbar from"./Navbar";
-import Footer from"./Footer";
-import PageTransition from"./PageTransition";
-import { usePathname } from"next/navigation";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
+import PageTransition from "./PageTransition";
+import { usePathname } from "next/navigation";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

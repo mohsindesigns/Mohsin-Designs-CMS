@@ -25,9 +25,9 @@ const DynamicIcon = ({ name, className }: { name: string; className?: string }) 
 };
 
 const themeGradientMap: Record<string, string> = {
-  amber:"from-amber-500/20 to-orange-500/10",
-  blue:"from-blue-500/20 to-purple-500/10",
-  green:"from-green-500/20 to-emerald-500/10"
+  amber: "from-amber-500/20 to-orange-500/10",
+  blue: "from-blue-500/20 to-purple-500/10",
+  green: "from-green-500/20 to-emerald-500/10"
 };
 
 export default function FeaturedDetailGrid({ data }: FeaturedDetailGridProps) {
@@ -46,7 +46,7 @@ export default function FeaturedDetailGrid({ data }: FeaturedDetailGridProps) {
           className="grid grid-cols-1 md:grid-cols-3 gap-6"
         >
           {cards.map((item, idx) => {
-            const gradientClass = themeGradientMap[item.colorTheme ||""] ||"from-amber-500/20 to-orange-500/10";
+            const gradientClass = themeGradientMap[item.colorTheme || ""] || "from-amber-500/20 to-orange-500/10";
             return (
               <motion.div
                 key={idx}
@@ -56,10 +56,10 @@ export default function FeaturedDetailGrid({ data }: FeaturedDetailGridProps) {
                 <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="relative z-10">
                   <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-5 group-hover:bg-primary/20 transition-colors">
-                    <DynamicIcon name={item.icon ||"Zap"} className="w-7 h-7 text-primary" />
+                    <DynamicIcon name={item.icon || "Zap"} className="w-7 h-7 text-primary" />
                   </div>
-                  <h4 className="text-xl font-bold text-foreground mb-3">{item.title ||"Feature Card"}</h4>
-                  <p className="text-muted-foreground leading-relaxed">{item.description ||"Description goes here."}</p>
+                  <h4 className="text-xl font-bold text-foreground mb-3">{item.title || "Feature Card"}</h4>
+                  <p className="text-muted-foreground leading-relaxed">{item.description || "Description goes here."}</p>
                 </div>
               </motion.div>
             );

@@ -1,4 +1,4 @@
-import React from"react";
+import React from "react";
 
 /**
  * Extracts and cleans JSON-LD blocks from user-provided schema data.
@@ -68,7 +68,7 @@ interface CustomSchemaMarkupProps {
 // <script> tag (rather than trying to sanitize every source field that
 // might eventually be concatenated into one JSON blob).
 function escapeForScriptTag(json: string): string {
-  return json.replace(/</g,"\\u003C");
+  return json.replace(/</g, "\\u003C");
 }
 
 export default function CustomSchemaMarkup({ schema, schemaData }: CustomSchemaMarkupProps) {

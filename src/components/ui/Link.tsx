@@ -1,8 +1,8 @@
 "use client";
 
-import NextLink from"next/link";
-import { forwardRef, type ComponentProps } from"react";
-import { withTrailingSlash } from"@/lib/url";
+import NextLink from "next/link";
+import { forwardRef, type ComponentProps } from "react";
+import { withTrailingSlash } from "@/lib/url";
 
 type LinkProps = ComponentProps<typeof NextLink>;
 

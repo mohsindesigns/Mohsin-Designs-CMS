@@ -1,8 +1,8 @@
 "use client";
 
-import React from"react";
-import Link from"@/components/ui/Link";
-import { ChevronRight, Home } from"lucide-react";
+import React from "react";
+import Link from "@/components/ui/Link";
+import { ChevronRight, Home } from "lucide-react";
 
 interface BreadcrumbItem {
   name: string;
@@ -14,7 +14,7 @@ interface LocationBreadcrumbsProps {
   className?: string;
 }
 
-export default function LocationBreadcrumbs({ items, className ="" }: LocationBreadcrumbsProps) {
+export default function LocationBreadcrumbs({ items, className = "" }: LocationBreadcrumbsProps) {
   if (!items || items.length <= 1) return null;
 
   return (

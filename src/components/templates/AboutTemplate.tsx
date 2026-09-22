@@ -1,13 +1,13 @@
 "use client";
 
-import { motion, useInView, useScroll, useTransform } from"framer-motion";
-import { useRef, useEffect, useState } from"react";
-import Image from"next/image";
-import Link from"@/components/ui/Link";
-import { useContent } from"../../hooks/useContent";
-import { Icon } from"../../config/icons";
-import gsap from"gsap";
-import { ScrollTrigger } from"gsap/ScrollTrigger";
+import { motion, useInView, useScroll, useTransform } from "framer-motion";
+import { useRef, useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "@/components/ui/Link";
+import { useContent } from "../../hooks/useContent";
+import { Icon } from "../../config/icons";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 
 
@@ -40,9 +40,9 @@ import {
   GlobeIcon
 } from 'lucide-react';
 import React from 'react';
-import RichTextRenderer from"../ui/RichTextRenderer";
-import BlogSection from"../sections/BlogSection";
-import PageInlineFaqs from"@/components/PageInlineFaqs";
+import RichTextRenderer from "../ui/RichTextRenderer";
+import BlogSection from "../sections/BlogSection";
+import PageInlineFaqs from "@/components/PageInlineFaqs";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -56,7 +56,7 @@ const iconMap: Record<string, any> = {
 
 
 // ==================== STAT COUNTER COMPONENT ====================
-const StatCounter = ({ value, label, suffix ="", delay = 0, iconName, description }: {
+const StatCounter = ({ value, label, suffix = "", delay = 0, iconName, description }: {
   value: number;
   label: string;
   suffix?: string;
@@ -66,7 +66,7 @@ const StatCounter = ({ value, label, suffix ="", delay = 0, iconName, descriptio
 }) => {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin:"-20px" });
+  const inView = useInView(ref, { once: true, margin: "-20px" });
 
   useEffect(() => {
     if (inView) {
@@ -141,7 +141,7 @@ const StatsSection = ({ content: passedContent }: { content?: any }) => {
           <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-primary/10 rounded-full mb-4 sm:mb-6">
             <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
             <span className="text-[10px] sm:text-xs md:text-sm font-medium text-primary uppercase tracking-wider">
-              {statsData.badge ||"Impact"}
+              {statsData.badge || "Impact"}
             </span>
           </div>
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-2 sm:mb-4 px-2">
@@ -162,7 +162,7 @@ const StatsSection = ({ content: passedContent }: { content?: any }) => {
               label={stat.label}
               suffix={stat.suffix}
               delay={0.1 + index * 0.1}
-              iconName={stat.icon ||"Shield"}
+              iconName={stat.icon || "Shield"}
               description={stat.description}
             />
           ))}
@@ -189,7 +189,7 @@ const Hero = ({ content: passedContent }: { content?: any }) => {
   const y1 = useTransform(scrollY, [0, 500], [0, 150]);
   const textY = useTransform(scrollY, [0, 500], [0, -50]);
   const { aboutPage } = useContent();
-  const hero = passedContent || aboutPage?.hero || { headline: {}, stats: [], phone:"" };
+  const hero = passedContent || aboutPage?.hero || { headline: {}, stats: [], phone: "" };
 
   return (
     <section className="relative min-h-[85vh] sm:min-h-screen w-full bg-background overflow-hidden flex items-center justify-center py-16 sm:py-12">
@@ -198,13 +198,13 @@ const Hero = ({ content: passedContent }: { content?: any }) => {
           {hero.bgImage && (hero.bgImage.startsWith('http') || hero.bgImage.startsWith('/uploads') || hero.bgImage.startsWith('/cdn-images')) ? (
             <img
               src={hero.bgImage}
-              alt={hero.bgImageAlt ||"Mohsin Designs Interior"}
+              alt={hero.bgImageAlt || "Mohsin Designs Interior"}
               className="object-cover w-full h-full opacity-20 sm:opacity-30 scale-110 grayscale-[0.5]"
             />
           ) : (
             <Image
-              src={hero.bgImage ||"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070"}
-              alt={hero.bgImageAlt ||"Mohsin Designs Interior"}
+              src={hero.bgImage || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070"}
+              alt={hero.bgImageAlt || "Mohsin Designs Interior"}
               fill
               quality={100}
               className="object-cover opacity-20 sm:opacity-30 scale-110 grayscale-[0.5]"
@@ -248,13 +248,13 @@ const Hero = ({ content: passedContent }: { content?: any }) => {
             />
 
             <div className="flex flex-row gap-3 sm:gap-4 justify-center lg:justify-start items-center">
-              <Link href={hero.ctaLink ||"/contact-us"} className="w-full sm:w-auto">
+              <Link href={hero.ctaLink || "/contact-us"} className="w-full sm:w-auto">
                 <motion.div
                   whileHover={{ y: -5, boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}
                   whileTap={{ scale: 0.98 }}
                   className="px-12 sm:px-14 md:px-16 py-3 sm:py-4 md:py-5 bg-primary text-primary-foreground font-bold text-lg rounded-xl flex items-center justify-center gap-2 sm:gap-3 group transition-all hover:text-white"
                 >
-                  {hero.cta ||"Get a Quote"}
+                  {hero.cta || "Get a Quote"}
                   <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                 </motion.div>
               </Link>
@@ -284,7 +284,7 @@ const Hero = ({ content: passedContent }: { content?: any }) => {
                     return (
                       <div key={i} className="flex items-center gap-4 p-3 rounded-xl bg-background/40 border border-border/40">
                         <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-                          <Icon name={stat.icon ||"Shield"} className="text-primary w-5 h-5" />
+                          <Icon name={stat.icon || "Shield"} className="text-primary w-5 h-5" />
                         </div>
                         <div>
                           <p className="text-muted-foreground text-[10px] uppercase tracking-wider font-bold">{stat.label}</p>
@@ -298,7 +298,7 @@ const Hero = ({ content: passedContent }: { content?: any }) => {
                 <div className="mt-6 pt-4 border-t border-border/60">
                   <div className="text-center">
                     <a
-                      href={`tel:${(hero.phone ||"").replace(/-/g, '')}`}
+                      href={`tel:${(hero.phone || "").replace(/-/g, '')}`}
                       className="text-lg font-bold text-foreground hover:text-primary transition-colors"
                     >
                       {hero.phone}
@@ -319,7 +319,7 @@ const Hero = ({ content: passedContent }: { content?: any }) => {
 const FounderPortrait = ({ content }: { content?: any }) => {
   const [isHovered, setIsHovered] = useState(false);
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin:"-50px" });
+  const inView = useInView(ref, { once: true, margin: "-50px" });
   const story = content || { portrait: {}, founder: {} };
 
   return (
@@ -339,7 +339,7 @@ const FounderPortrait = ({ content }: { content?: any }) => {
           {story.portrait?.image && (story.portrait.image.startsWith('http') || story.portrait.image.startsWith('/')) ? (
             <img
               src={story.portrait.image}
-              alt={story.portrait?.alt || story.founder?.name ||"Founder"}
+              alt={story.portrait?.alt || story.founder?.name || "Founder"}
               className="object-cover w-full h-full"
             />
           ) : (
@@ -411,7 +411,7 @@ const FounderStory = ({ content: passedContent }: { content?: any }) => {
   const sectionRef = useRef(null);
   const [isClient, setIsClient] = useState(false);
   const { aboutPage } = useContent();
-  const story = passedContent || aboutPage?.story || { headline:"", highlight:"", description:"", founder: { bio: [], social: {} } };
+  const story = passedContent || aboutPage?.story || { headline: "", highlight: "", description: "", founder: { bio: [], social: {} } };
 
   useEffect(() => {
     setIsClient(true);
@@ -428,11 +428,11 @@ const FounderStory = ({ content: passedContent }: { content?: any }) => {
           opacity: 1,
           duration: 1,
           stagger: 0.15,
-          ease:"power2.out",
+          ease: "power2.out",
           scrollTrigger: {
             trigger: sectionRef.current,
-            start:"top 85%",
-            toggleActions:"play none none reverse"
+            start: "top 85%",
+            toggleActions: "play none none reverse"
           }
         }
       );
@@ -562,7 +562,7 @@ const FounderStory = ({ content: passedContent }: { content?: any }) => {
 // ==================== MISSION SECTION ====================
 const MissionSection = ({ content: passedContent }: { content?: any }) => {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin:"-20px", amount: 0.1 });
+  const inView = useInView(ref, { once: true, margin: "-20px", amount: 0.1 });
   const { aboutPage } = useContent();
   const mission = passedContent || aboutPage?.mission || { principles: [], stats: [] };
 
@@ -611,7 +611,7 @@ const MissionSection = ({ content: passedContent }: { content?: any }) => {
               return (
                 <motion.div key={i} initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: i * 0.15 }} whileHover={{ y: -5 }} className="p-4 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl border shadow-md hover:shadow-xl transition bg-card">
                   <div className="flex justify-between mb-3 sm:mb-4">
-                    <Icon name={item.icon ||"Scale"} className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+                    <Icon name={item.icon || "Scale"} className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                     <span className="text-[10px] sm:text-xs text-muted-foreground">{item.val}</span>
                   </div>
                   <h3 className="text-base sm:text-lg md:text-xl font-bold mb-1 sm:mb-2">{item.title}</h3>
@@ -640,7 +640,7 @@ const RecognitionMarquee = ({ content: passedContent }: { content?: any }) => {
     <section className="py-6 sm:py-8 md:py-12 mt-2 overflow-hidden relative bg-background">
       <div className="flex flex-col gap-2">
         <div className="flex whitespace-nowrap leading-none">
-          <motion.div animate={{ x: ["0%","-50%"] }} transition={{ duration: 35, repeat: Infinity, ease:"linear" }} className="flex items-center gap-2 sm:gap-4 md:gap-8">
+          <motion.div animate={{ x: ["0%", "-50%"] }} transition={{ duration: 35, repeat: Infinity, ease: "linear" }} className="flex items-center gap-2 sm:gap-4 md:gap-8">
             {[...certs, ...certs].map((text, i) => (
               <div key={i} className="flex items-center gap-2 sm:gap-4 md:gap-8 group cursor-default">
                 <span className="text-5xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-[8rem] font-black uppercase tracking-tighter transition-all duration-500 text-transparent group-hover:text-primary group-hover:[-webkit-text-stroke:1px_hsl(var(--primary))]" style={{ WebkitTextStroke: '1px hsl(var(--border))', WebkitTextStrokeColor: 'hsl(var(--border))' }}>
@@ -672,7 +672,7 @@ const ServiceCard = ({ service, index }: { service: any; index: number }) => {
   const isValidImage = serviceImage.startsWith("/") || serviceImage.startsWith("http");
 
   return (
-    <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin:"-50px" }} transition={{ duration: 0.6, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }} className="group" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+    <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ duration: 0.6, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }} className="group" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
       <Link href={`/services/${service.slug}`} className="block h-full">
         <div className="flex flex-col h-full">
           <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 shadow-lg transition-all duration-700 group-hover:shadow-2xl">
@@ -740,7 +740,7 @@ const ServicesSection = ({ content: passedContent, featuredServices: passedFeatu
     <section className="py-16 md:py-24 px-6 lg:px-12 bg-transparent relative z-30">
       <div className="w-full max-w-7xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center mb-16">
-          <span className="inline-block text-primary text-xs font-black uppercase tracking-[0.5em] mb-4">{capabilities.badge ||"Services"}</span>
+          <span className="inline-block text-primary text-xs font-black uppercase tracking-[0.5em] mb-4">{capabilities.badge || "Services"}</span>
           <h2 className="text-4xl md:text-6xl font-heading font-bold mb-6 tracking-tighter text-foreground">
             {capabilities.headline ? (
               <>
@@ -810,8 +810,8 @@ const AwardCTABanner = ({ content: passedContent }: { content?: any }) => {
           </div>
         </div>
         <div className="flex flex-col sm:flex-row gap-4">
-          <Link href={"https://www.greensky.com/prequal/gs/prequalify-for-loan?merchant=81115616&channel=External-Button-Prequal"}><button className="px-8 py-4 bg-primary text-primary-foreground font-bold rounded-full shadow-lg hover:scale-105 transition-transform">{ctaBanner.primaryCta ||"Contact Us"}</button></Link>
-          <Link href={"/contact-us"}><button className="px-8 py-4 bg-background text-primary border-2 border-primary font-bold rounded-full hover:bg-primary hover:text-white transition-all">{ctaBanner.secondaryCta ||"Free Estimate"}</button></Link>
+          <Link href={"https://www.greensky.com/prequal/gs/prequalify-for-loan?merchant=81115616&channel=External-Button-Prequal"}><button className="px-8 py-4 bg-primary text-primary-foreground font-bold rounded-full shadow-lg hover:scale-105 transition-transform">{ctaBanner.primaryCta || "Contact Us"}</button></Link>
+          <Link href={"/contact-us"}><button className="px-8 py-4 bg-background text-primary border-2 border-primary font-bold rounded-full hover:bg-primary hover:text-white transition-all">{ctaBanner.secondaryCta || "Free Estimate"}</button></Link>
         </div>
       </div>
     </motion.div>
@@ -846,7 +846,7 @@ const ValuesGrid = ({ content: passedContent }: { content?: any }) => {
             return (
               <motion.div key={idx} initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.1 }} className="bg-card p-8 rounded-3xl border border-border hover:border-primary/50 transition-all shadow-lg hover:shadow-2xl group">
                 <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary/10 transition-colors">
-                  <Icon name={value.icon ||"BadgeCheck"} className="w-8 h-8 text-muted-foreground group-hover:text-primary transition-colors" />
+                  <Icon name={value.icon || "BadgeCheck"} className="w-8 h-8 text-muted-foreground group-hover:text-primary transition-colors" />
                 </div>
                 <h3 className="text-2xl font-bold mb-4">{value.title}</h3>
                 <RichTextRenderer

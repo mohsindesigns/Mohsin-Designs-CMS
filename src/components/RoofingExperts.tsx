@@ -1,17 +1,17 @@
-import { motion, useInView, useReducedMotion } from"framer-motion";
-import Image from"next/image";
-import { useRef, useEffect, useState, useCallback, useMemo, memo } from"react";
-import { Icon } from"../config/icons";
-import { useContent } from"../hooks/useContent";
-import Link from"@/components/ui/Link";
-import RichTextRenderer from"./ui/RichTextRenderer";
+import { motion, useInView, useReducedMotion } from "framer-motion";
+import Image from "next/image";
+import { useRef, useEffect, useState, useCallback, useMemo, memo } from "react";
+import { Icon } from "../config/icons";
+import { useContent } from "../hooks/useContent";
+import Link from "@/components/ui/Link";
+import RichTextRenderer from "./ui/RichTextRenderer";
 
-const Counter = memo(({ value, suffix ="", duration = 1.8 }: { value: number; suffix?: string; duration?: number }) => {
+const Counter = memo(({ value, suffix = "", duration = 1.8 }: { value: number; suffix?: string; duration?: number }) => {
     const ref = useRef(null);
     // Coerce value to a safe number — DB may return strings or null
     const safeValue = typeof value === 'number' && !isNaN(value) ? value : parseFloat(String(value)) || 0;
     const [display, setDisplay] = useState(0);
-    const inView = useInView(ref, { once: true, margin:"-50px" });
+    const inView = useInView(ref, { once: true, margin: "-50px" });
     const shouldReduceMotion = useReducedMotion();
     const hasAnimatedRef = useRef(false);
     const animationFrameRef = useRef<number | null>(null);
@@ -61,7 +61,7 @@ const Counter = memo(({ value, suffix ="", duration = 1.8 }: { value: number; su
     );
 });
 
-Counter.displayName ="Counter";
+Counter.displayName = "Counter";
 
 const ParticlesBackground = memo(() => {
     const particlesInit = useCallback(async (engine: any) => {
@@ -77,8 +77,8 @@ const ParticlesBackground = memo(() => {
                     value: 12,
                     density: { enable: true, area: 800 },
                 },
-                color: { value: ["hsl(var(--primary))","hsl(var(--primary)/80)"] },
-                shape: { type:"circle" },
+                color: { value: ["hsl(var(--primary))", "hsl(var(--primary)/80)"] },
+                shape: { type: "circle" },
                 opacity: {
                     value: 0.15,
                     random: true,
@@ -92,15 +92,15 @@ const ParticlesBackground = memo(() => {
                 move: {
                     enable: true,
                     speed: 0.3,
-                    direction:"top" as const,
+                    direction: "top" as const,
                     random: true,
                     straight: false,
-                    outModes: { default:"out" as const },
+                    outModes: { default: "out" as const },
                 },
                 links: {
                     enable: true,
                     distance: 150,
-                    color:"hsl(var(--primary))",
+                    color: "hsl(var(--primary))",
                     opacity: 0.1,
                     width: 0.5,
                 },
@@ -120,7 +120,7 @@ const ParticlesBackground = memo(() => {
     }, []);
 
     const containerRef = useRef(null);
-    const isInView = useInView(containerRef, { margin:"200px" });
+    const isInView = useInView(containerRef, { margin: "200px" });
 
     if (!ParticlesComponent) return null;
 
@@ -138,13 +138,13 @@ const ParticlesBackground = memo(() => {
     );
 });
 
-ParticlesBackground.displayName ="ParticlesBackground";
+ParticlesBackground.displayName = "ParticlesBackground";
 
 const StatCard = memo(({ value, suffix, label }: { value: number; suffix: string; label: string }) => {
     return (
         <motion.div
             whileHover={{ y: -4 }}
-            transition={{ type:"spring", stiffness: 300, damping: 20 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
             className="relative bg-card p-4 rounded-2xl border border-border shadow-lg hover:shadow-xl hover:shadow-primary/10 transition-all duration-300"
         >
             <div className="relative">
@@ -158,7 +158,7 @@ const StatCard = memo(({ value, suffix, label }: { value: number; suffix: string
     );
 });
 
-StatCard.displayName ="StatCard";
+StatCard.displayName = "StatCard";
 
 export default function AboutSection() {
     const { about } = useContent();
@@ -166,9 +166,9 @@ export default function AboutSection() {
     const shouldReduceMotion = useReducedMotion();
 
     const {
-        badge ="",
-        headline = { prefix:"", highlight:"", suffix:"" },
-        description ="",
+        badge = "",
+        headline = { prefix: "", highlight: "", suffix: "" },
+        description = "",
         image = {},
         stats = [],
         buttons = [],
@@ -189,7 +189,7 @@ export default function AboutSection() {
                 transition: {
                     delay: custom * 0.15,
                     duration: 0.7,
-                    ease:"easeOut" as const,
+                    ease: "easeOut" as const,
                 },
             }),
         }),
@@ -246,7 +246,7 @@ export default function AboutSection() {
                         transition={{
                             duration: 20,
                             repeat: Infinity,
-                            ease:"linear",
+                            ease: "linear",
                         }}
                         className="absolute -top-40 -left-40 w-96 h-96 bg-primary/5 rounded-full blur-3xl"
                     />
@@ -259,7 +259,7 @@ export default function AboutSection() {
                         transition={{
                             duration: 25,
                             repeat: Infinity,
-                            ease:"linear",
+                            ease: "linear",
                             delay: 2,
                         }}
                         className="absolute -bottom-40 -right-40 w-[30rem] h-[30rem] bg-primary/5 rounded-full blur-3xl"
@@ -273,7 +273,7 @@ export default function AboutSection() {
                         variants={variants}
                         initial="hidden"
                         whileInView="visible"
-                        viewport={{ once: true, margin:"-50px" }}
+                        viewport={{ once: true, margin: "-50px" }}
                         custom={0}
                         className="relative group"
                     >
@@ -284,7 +284,7 @@ export default function AboutSection() {
                                 {isDynamicImage && (image.src.startsWith('http') || image.src.startsWith('/')) ? (
                                     <img
                                         src={image.src}
-                                        alt={image.alt ||"About Mohsin Designs"}
+                                        alt={image.alt || "About Mohsin Designs"}
                                         className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
                                     />
                                 ) : (
@@ -301,7 +301,7 @@ export default function AboutSection() {
                                 >
                                     <div className="bg-card/95 backdrop-blur-sm px-5 py-2.5 rounded-full shadow-xl border border-border">
                                         <span className="flex items-center gap-2 text-sm font-bold text-primary">
-                                            {image?.badge ||"Veteran Owned & Operated"}
+                                            {image?.badge || "Veteran Owned & Operated"}
                                         </span>
                                     </div>
                                 </motion.div>
@@ -313,7 +313,7 @@ export default function AboutSection() {
                         variants={variants}
                         initial="hidden"
                         whileInView="visible"
-                        viewport={{ once: true, margin:"-50px" }}
+                        viewport={{ once: true, margin: "-50px" }}
                         custom={1}
                         className="space-y-4"
                     >

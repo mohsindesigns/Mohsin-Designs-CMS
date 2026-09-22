@@ -1,13 +1,13 @@
 "use client";
 
-import CtaButton from"@/components/ui/CtaButton";
-import { withTrailingSlash } from"@/lib/url";
-import { useRef } from"react";
-import { motion, useInView } from"framer-motion";
-import { ArrowUpRight } from"lucide-react";
-import Image from"next/image";
-import { useContent } from"../hooks/useContent";
-import RichTextRenderer from"./ui/RichTextRenderer";
+import CtaButton from "@/components/ui/CtaButton";
+import { withTrailingSlash } from "@/lib/url";
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { ArrowUpRight } from "lucide-react";
+import Image from "next/image";
+import { useContent } from "../hooks/useContent";
+import RichTextRenderer from "./ui/RichTextRenderer";
 
 // Variants for repeating hand-drawn paths animations on scroll
 const drawVariants = {
@@ -17,7 +17,7 @@ const drawVariants = {
     transition: {
       duration: custom?.duration ?? 0.4,
       delay: custom?.delay ?? 0.1,
-      ease:"easeOut" as any
+      ease: "easeOut" as any
     }
   })
 };
@@ -36,8 +36,8 @@ function Digit({ char, isActive }: { char: string; isActive: boolean }) {
       {/* Pre-rendered invisible digit keeps width static to prevent layout jitter */}
       <span className="invisible block">9</span>
       <motion.span
-        initial={{ y:"0%" }}
-        animate={isActive ? { y: `-${targetDigit * 10}%` } : { y:"0%" }}
+        initial={{ y: "0%" }}
+        animate={isActive ? { y: `-${targetDigit * 10}%` } : { y: "0%" }}
         transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }}
         className="absolute top-0 left-0 flex flex-col font-heading font-black"
       >
@@ -52,9 +52,9 @@ function Digit({ char, isActive }: { char: string; isActive: boolean }) {
 }
 
 // 3D rolling number counter
-function RollingNumber({ value, suffix ="" }: { value: number; suffix?: string }) {
+function RollingNumber({ value, suffix = "" }: { value: number; suffix?: string }) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: false, margin:"-50px" });
+  const isInView = useInView(ref, { once: false, margin: "-50px" });
   const valueString = value.toString();
   const digits = valueString.split("");
 
@@ -73,33 +73,33 @@ export default function AboutOwner() {
   const { about } = content;
 
   // Sync CMS fields with fallback defaults
-  const sectionTag = about?.badge ||"ABOUT THE OWNER";
-  const titleIntro = about?.headline?.prefix ||"Leading with Vision,";
-  const titleHighlight = about?.headline?.highlight ||"Building with Trust.";
+  const sectionTag = about?.badge || "ABOUT THE OWNER";
+  const titleIntro = about?.headline?.prefix || "Leading with Vision, ";
+  const titleHighlight = about?.headline?.highlight || "Building with Trust.";
   
   // Rich description from QuillEditor (falls back to plain bio paragraphs for legacy data)
-  const description = about?.description ||"";
+  const description = about?.description || "";
   const legacyBio = about?.bioParagraph1 || about?.bioParagraph2
-    ? `<p><strong>${about?.bioParagraph1 ||""}</strong></p><p>${about?.bioParagraph2 ||""}</p>`
-    :"";
-  const bioContent = description || legacyBio ||"<p><strong>I help brands scale dynamically using advanced design and tech systems.</strong></p><p>With over a decade of design experience, we specialize in high-end design systems, custom development, and comprehensive marketing architectures.</p>";
+    ? `<p><strong>${about?.bioParagraph1 || ""}</strong></p><p>${about?.bioParagraph2 || ""}</p>`
+    : "";
+  const bioContent = description || legacyBio || "<p><strong>I help brands scale dynamically using advanced design and tech systems.</strong></p><p>With over a decade of design experience, we specialize in high-end design systems, custom development, and comprehensive marketing architectures.</p>";
   
   // Only use image if it looks like a real path/URL
-  const rawPortraitSrc = about?.image?.src ||"";
-  const portraitSrc = rawPortraitSrc.startsWith("/") || rawPortraitSrc.startsWith("http") ? rawPortraitSrc :"";
-  const portraitAlt = about?.image?.alt ||"Mohsin Designs Biography";
+  const rawPortraitSrc = about?.image?.src || "";
+  const portraitSrc = rawPortraitSrc.startsWith("/") || rawPortraitSrc.startsWith("http") ? rawPortraitSrc : "";
+  const portraitAlt = about?.image?.alt || "Mohsin Designs Biography";
   
-  const circleText = about?.circleText ||"CREATIVE POWER • MOHSIN DESIGNS •";
-  const circleLetter = about?.circleLetter ||"M";
+  const circleText = about?.circleText || "CREATIVE POWER • MOHSIN DESIGNS •";
+  const circleLetter = about?.circleLetter || "M";
 
   const statsList = about?.stats || [
-    { value: 12, suffix:"+", label:"Years Experience" },
-    { value: 150, suffix:"+", label:"Brands Scaled" },
-    { value: 99, suffix:"%", label:"Success Rate" }
+    { value: 12, suffix: "+", label: "Years Experience" },
+    { value: 150, suffix: "+", label: "Brands Scaled" },
+    { value: 99, suffix: "%", label: "Success Rate" }
   ];
 
-  const ctaText = about?.buttons?.[0]?.text ||"Let's Collaborate";
-  const ctaHref = about?.buttons?.[0]?.href ||"/contact-us";
+  const ctaText = about?.buttons?.[0]?.text || "Let's Collaborate";
+  const ctaHref = about?.buttons?.[0]?.href || "/contact-us";
 
   return (
     <section id="about" className="relative overflow-hidden bg-transparent border-b border-brand-zinc-200 dark:border-white/10 section-y">
@@ -178,7 +178,7 @@ export default function AboutOwner() {
             {/* Rotating Star Badge */}
             <motion.div
               animate={{ rotate: -360 }}
-              transition={{ ease:"linear", duration: 15, repeat: Infinity }}
+              transition={{ ease: "linear", duration: 15, repeat: Infinity }}
               className="absolute -top-6 -left-6 h-20 w-20 z-20 hidden sm:block select-none pointer-events-none"
             >
               <svg viewBox="0 0 100 100" className="h-full w-full">
@@ -257,7 +257,7 @@ export default function AboutOwner() {
               {statsList.map((s: any, i: number) => (
                 <div key={i} className="relative pl-2 sm:pl-6 border-l-2 border-brand-accent">
                   <div className="text-xl xs:text-2xl sm:text-4xl md:text-5xl font-heading font-black text-brand-blue dark:text-white leading-none">
-                    <RollingNumber value={s.value || 0} suffix={s.suffix ||""} />
+                    <RollingNumber value={s.value || 0} suffix={s.suffix || ""} />
                   </div>
                   <div className="text-[8px] sm:text-[10px] font-bold text-brand-zinc-500 dark:text-zinc-300 uppercase tracking-widest mt-3 leading-none">
                     {s.label}

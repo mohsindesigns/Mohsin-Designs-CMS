@@ -1,13 +1,13 @@
 "use client";
 
-import { motion, useInView } from"framer-motion";
-import { useRef, useEffect, useState } from"react";
-import Image from"next/image";
-import { useContent } from"../hooks/useContent";
-import { Icon } from"../config/icons";
-import gsap from"gsap";
-import { ScrollTrigger } from"gsap/ScrollTrigger";
-import RichTextRenderer from"./ui/RichTextRenderer";
+import { motion, useInView } from "framer-motion";
+import { useRef, useEffect, useState } from "react";
+import Image from "next/image";
+import { useContent } from "../hooks/useContent";
+import { Icon } from "../config/icons";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import RichTextRenderer from "./ui/RichTextRenderer";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -33,11 +33,11 @@ export default function Leadership() {
           opacity: 1,
           duration: 1,
           stagger: 0.15,
-          ease:"power2.out",
+          ease: "power2.out",
           scrollTrigger: {
             trigger: sectionRef.current,
-            start:"top 85%",
-            toggleActions:"play none none reverse"
+            start: "top 85%",
+            toggleActions: "play none none reverse"
           }
         }
       );
@@ -75,7 +75,7 @@ export default function Leadership() {
           <div className="flex items-center justify-center gap-2 sm:gap-3 mb-4 sm:mb-6">
             <div className="w-6 sm:w-8 h-[2px] bg-gradient-to-r from-primary/30 to-primary" />
             <span className="text-[10px] sm:text-xs font-medium tracking-[0.2em] uppercase text-primary">
-              {story.section?.badge ||"Our Leadership"}
+              {story.section?.badge || "Our Leadership"}
             </span>
             <div className="w-6 sm:w-8 h-[2px] bg-gradient-to-r from-primary to-primary/30" />
           </div>
@@ -98,7 +98,7 @@ export default function Leadership() {
                 )}
               </>
             ) : (
-              <span dangerouslySetInnerHTML={{ __html: story.section?.headline ||"" }} />
+              <span dangerouslySetInnerHTML={{ __html: story.section?.headline || "" }} />
             )}
           </h2>
 
@@ -118,13 +118,13 @@ export default function Leadership() {
                   {ceo.image?.src && (ceo.image.src.startsWith('http') || ceo.image.src.startsWith('/uploads') || ceo.image.src.startsWith('/cdn-images')) ? (
                     <img
                       src={ceo.image.src}
-                      alt={ceo.alt || ceo.name ||"CEO"}
+                      alt={ceo.alt || ceo.name || "CEO"}
                       className="object-cover w-full h-full"
                     />
                   ) : (
                     <Image
-                      src={ceo.image?.src ||"/founder.png"}
-                      alt={ceo.alt || ceo.name ||"CEO"}
+                      src={ceo.image?.src || "/founder.png"}
+                      alt={ceo.alt || ceo.name || "CEO"}
                       className="object-cover"
                       fill
                       quality={100}

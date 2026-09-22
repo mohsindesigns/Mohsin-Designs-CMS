@@ -1,16 +1,16 @@
 "use client";
  
-import { motion, AnimatePresence } from"framer-motion";
-import { ArrowRight, ArrowUp } from"lucide-react";
-import { FormEvent, useState } from"react";
-import Link from"@/components/ui/Link";
-import { useContent } from"../hooks/useContent";
-import RichTextRenderer from"./ui/RichTextRenderer";
-import { Icon } from"../config/icons";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, ArrowUp } from "lucide-react";
+import { FormEvent, useState } from "react";
+import Link from "@/components/ui/Link";
+import { useContent } from "../hooks/useContent";
+import RichTextRenderer from "./ui/RichTextRenderer";
+import { Icon } from "../config/icons";
  
 const stripHtml = (html: string) => {
   if (!html) return"";
-  return html.replace(/<[^>]*>/g,"").replace(/&nbsp;/g,"").trim();
+  return html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, "").trim();
 };
 
 export default function Footer() {
@@ -49,11 +49,11 @@ export default function Footer() {
  
   const scrollToTop = () => {
     if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, behavior:"smooth" });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
  
-  const wordmarkText = (footer?.wordmarkText ||"MOHSIN DESIGNS") as string;
+  const wordmarkText = (footer?.wordmarkText || "MOHSIN DESIGNS") as string;
   const wordmarkLetters = Array.from(wordmarkText) as string[];
  
   const containerVariants = {
@@ -66,7 +66,7 @@ export default function Footer() {
   };
  
   const letterVariants = {
-    hidden: { y:"100%", opacity: 0 },
+    hidden: { y: "100%", opacity: 0 },
     visible: {
       y: 0,
       opacity: 1,
@@ -82,7 +82,7 @@ export default function Footer() {
   //"Company Links" are managed at Admin > Settings > Footer ("Company Links"),
   // saved as footer.services.materials.items ({label, href}) - not
   // footer.quickLinks, which has no admin UI.
-  const quickLinksTitle = footer?.services?.materials?.title || footer?.labelQuickLinks ||"Company";
+  const quickLinksTitle = footer?.services?.materials?.title || footer?.labelQuickLinks || "Company";
   const quickLinks = (footer?.services?.materials?.items || []).filter(
     (l: any) => l?.label && String(l.label).trim()
   );
@@ -98,7 +98,7 @@ export default function Footer() {
   const matchedSelectedServices = selectedServiceIds.length > 0
     ? allPublishedServices.filter((s: any) => selectedServiceIds.includes(s._id) || selectedServiceIds.includes(s.id) || selectedServiceIds.includes(s.slug))
     : [];
-  const servicesListTitle = footer?.services?.title || footer?.labelServices ||"Services";
+  const servicesListTitle = footer?.services?.title || footer?.labelServices || "Services";
   const servicesList = (matchedSelectedServices.length > 0 ? matchedSelectedServices : allPublishedServices)
     .map((s: any) => ({ label: s.title, href: `/services/${s.slug}` }));
  
@@ -119,13 +119,13 @@ export default function Footer() {
                   {/* Light-theme logo (footer.company.logo). Falls back to the dark one if only that is set. */}
                   <img
                     src={footer.company.logo || footer.company.logoDark}
-                    alt={footer?.company?.name ||"Mohsin Designs Logo"}
+                    alt={footer?.company?.name || "Mohsin Designs Logo"}
                     className="object-contain h-full max-w-full dark:hidden"
                   />
                   {/* Dark-theme logo (footer.company.logoDark). Falls back to the light one. */}
                   <img
                     src={footer.company.logoDark || footer.company.logo}
-                    alt={footer?.company?.name ||"Mohsin Designs Logo"}
+                    alt={footer?.company?.name || "Mohsin Designs Logo"}
                     loading="lazy"
                     className="object-contain h-full max-w-full hidden dark:block"
                   />
@@ -135,14 +135,14 @@ export default function Footer() {
                   <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 overflow-hidden border border-white/10">
                     <div className="absolute top-1 left-1 w-6 h-6 rounded-full bg-brand-yellow/80 mix-blend-screen" />
                     <div className="absolute bottom-1 right-1 w-6 h-6 rounded-full bg-brand-blue/80 mix-blend-screen" />
-                    <span className="relative font-heading font-extrabold text-white text-base z-10">{footer?.logoLetter ||"M"}</span>
+                    <span className="relative font-heading font-extrabold text-white text-base z-10">{footer?.logoLetter || "M"}</span>
                   </div>
                   <div className="flex flex-col">
                     <span className="font-sans font-black text-lg leading-none tracking-tight text-white uppercase">
-                      {footer?.logoText ||"MOHSIN"}
+                      {footer?.logoText || "MOHSIN"}
                     </span>
                     <span className="font-sans font-bold text-[9px] tracking-widest text-brand-yellow uppercase leading-none mt-1">
-                      {footer?.logoSub ||"DESIGNS"}
+                      {footer?.logoSub || "DESIGNS"}
                     </span>
                   </div>
                 </>
@@ -190,7 +190,7 @@ export default function Footer() {
             <ul className="space-y-2.5 text-xs md:text-sm font-semibold text-slate-300 dark:text-zinc-300">
               {quickLinks.map((link: any, idx: number) => (
                 <li key={idx}>
-                  <Link href={link.href ||"/"} className="inline-block text-slate-300 dark:text-zinc-300 hover:!text-brand-yellow dark:hover:!text-brand-yellow hover:translate-x-1 transition-all duration-200">
+                  <Link href={link.href || "/"} className="inline-block text-slate-300 dark:text-zinc-300 hover:!text-brand-yellow dark:hover:!text-brand-yellow hover:translate-x-1 transition-all duration-200">
                     {link.label}
                   </Link>
                 </li>
@@ -217,11 +217,11 @@ export default function Footer() {
           {/* Contact Info Column */}
           <div className="lg:col-span-3 min-w-0 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
             <p className="font-mono font-bold text-[10px] uppercase tracking-widest text-brand-yellow">
-              {footer?.labelContactInfo ||"Contact Info"}
+              {footer?.labelContactInfo || "Contact Info"}
             </p>
             <ul className="space-y-4 text-xs md:text-sm font-semibold text-slate-300 dark:text-zinc-300">
               <li className="flex flex-col gap-1">
-                <span className="text-[8px] font-mono font-black text-slate-400 dark:text-zinc-400 uppercase tracking-widest">{footer?.labelEmail ||"Email"}</span>
+                <span className="text-[8px] font-mono font-black text-slate-400 dark:text-zinc-400 uppercase tracking-widest">{footer?.labelEmail || "Email"}</span>
                 {contact?.email && (
                   <a href={`mailto:${contact.email}`} className="text-white hover:text-brand-yellow dark:hover:text-brand-yellow transition-colors font-mono break-all xs:break-normal">
                     {contact.email}
@@ -229,16 +229,16 @@ export default function Footer() {
                 )}
               </li>
               <li className="flex flex-col gap-1">
-                <span className="text-[8px] font-mono font-black text-slate-400 dark:text-zinc-400 uppercase tracking-widest">{footer?.labelPhone ||"Phone"}</span>
+                <span className="text-[8px] font-mono font-black text-slate-400 dark:text-zinc-400 uppercase tracking-widest">{footer?.labelPhone || "Phone"}</span>
                 {contact?.phone && (
-                  <a href={`tel:${stripHtml(contact.phone).replace(/[^0-9+]/g,"")}`} className="text-white hover:text-brand-yellow dark:hover:text-brand-yellow transition-colors font-mono break-all xs:break-normal">
+                  <a href={`tel:${stripHtml(contact.phone).replace(/[^0-9+]/g, "")}`} className="text-white hover:text-brand-yellow dark:hover:text-brand-yellow transition-colors font-mono break-all xs:break-normal">
                     {stripHtml(contact.phone)}
                   </a>
                 )}
               </li>
               {(contact?.address || footer?.valueAddress) && (
                 <li className="flex flex-col gap-1">
-                  <span className="text-[8px] font-mono font-black text-slate-400 dark:text-zinc-400 uppercase tracking-widest">{footer?.labelAddress ||"Address"}</span>
+                  <span className="text-[8px] font-mono font-black text-slate-400 dark:text-zinc-400 uppercase tracking-widest">{footer?.labelAddress || "Address"}</span>
                   <div className="text-white leading-relaxed [&_a]:!text-white hover:[&_a]:!text-brand-yellow [&_a]:underline [&_p]:m-0"><RichTextRenderer content={contact?.address || footer?.valueAddress} className="text-white [&_*]:!text-white hover:[&_a]:!text-brand-yellow text-xs md:text-sm" stripParagraphs /></div>
                 </li>
               )}
@@ -248,7 +248,7 @@ export default function Footer() {
           {/* Newsletter Column */}
           <div className="lg:col-span-2 min-w-0 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
             <p className="font-mono font-bold text-[10px] uppercase tracking-widest text-brand-yellow">
-              {footer?.labelNewsletter ||"Newsletter"}
+              {footer?.labelNewsletter || "Newsletter"}
             </p>
             <p className="text-xs text-slate-300 dark:text-zinc-300 font-medium leading-relaxed">
               {footer?.newsletterDesc}
@@ -267,12 +267,12 @@ export default function Footer() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full bg-transparent px-3 py-2.5 text-xs text-white focus:outline-none placeholder:text-slate-400 dark:placeholder:text-zinc-500 font-medium"
-                    placeholder={footer?.newsletterPlaceholder ||"Your email"}
+                    placeholder={footer?.newsletterPlaceholder || "Your email"}
                   />
                   <button
                     type="submit"
                     className="bg-brand-blue text-white dark:bg-brand-yellow dark:text-[#080710] px-3.5 flex items-center justify-center hover:bg-brand-yellow hover:text-[#080710] dark:hover:bg-yellow-300 transition-colors duration-300 cursor-pointer"
-                    aria-label={footer?.ariaSubscribe ||"Subscribe"}
+                    aria-label={footer?.ariaSubscribe || "Subscribe"}
                   >
                     <ArrowRight className="h-4 w-4" />
                   </button>
@@ -284,7 +284,7 @@ export default function Footer() {
                   animate={{ opacity: 1 }}
                   className="block text-xs font-bold text-brand-yellow"
                 >
-                  {footer?.newsletterSuccess ||"Subscribed successfully!"}
+                  {footer?.newsletterSuccess || "Subscribed successfully!"}
                 </motion.span>
               )}
             </AnimatePresence>
@@ -309,11 +309,11 @@ export default function Footer() {
               variants={letterVariants}
               className={`inline-block transition-all duration-300 cursor-default hover:scale-110 ${
                 idx >= 7 
-                  ?"text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.28)] dark:[-webkit-text-stroke:1px_rgba(255,255,255,0.12)] hover:[-webkit-text-stroke:1px_#E9BD36] pointer-events-auto" 
-                  :"text-white/20 dark:text-white/[0.06] hover:text-brand-yellow dark:hover:text-brand-yellow pointer-events-auto"
+                  ? "text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.28)] dark:[-webkit-text-stroke:1px_rgba(255,255,255,0.12)] hover:[-webkit-text-stroke:1px_#E9BD36] pointer-events-auto" 
+                  : "text-white/20 dark:text-white/[0.06] hover:text-brand-yellow dark:hover:text-brand-yellow pointer-events-auto"
               }`}
             >
-              {letter ==="" ?"\u00A0" : letter}
+              {letter ==="" ? "\u00A0" : letter}
             </motion.span>
           ))}
         </motion.span>
@@ -322,20 +322,20 @@ export default function Footer() {
       {/* Bottom Bar */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 pt-10 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-white/5">
         <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-widest text-center md:text-left">
-          {footer?.copyrightPrefix ||"©"}{currentYear}{footer?.copyrightSuffix ||" Mohsin Designs. All rights reserved."}
+          {footer?.copyrightPrefix || "©"}{currentYear}{footer?.copyrightSuffix || " Mohsin Designs. All rights reserved."}
         </p>
         
         <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full md:w-auto justify-between md:justify-end">
           <div className="flex gap-4 sm:gap-6 text-[10px] font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-wider">
-            <Link href={footer?.privacyHref ||"/privacy"} className="text-slate-400 dark:text-zinc-400 hover:!text-brand-yellow dark:hover:!text-brand-yellow transition-colors">{footer?.privacyText ||"Privacy Policy"}</Link>
-            <span>{footer?.linkSeparator ||"|"}</span>
-            <Link href={footer?.termsHref ||"/terms"} className="text-slate-400 dark:text-zinc-400 hover:!text-brand-yellow dark:hover:!text-brand-yellow transition-colors">{footer?.termsText ||"Terms & Conditions"}</Link>
+            <Link href={footer?.privacyHref || "/privacy"} className="text-slate-400 dark:text-zinc-400 hover:!text-brand-yellow dark:hover:!text-brand-yellow transition-colors">{footer?.privacyText || "Privacy Policy"}</Link>
+            <span>{footer?.linkSeparator || "| "}</span>
+            <Link href={footer?.termsHref || "/terms"} className="text-slate-400 dark:text-zinc-400 hover:!text-brand-yellow dark:hover:!text-brand-yellow transition-colors">{footer?.termsText || "Terms & Conditions"}</Link>
           </div>
  
           <button
             onClick={scrollToTop}
             className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 border border-white/10 text-slate-300 hover:bg-brand-yellow dark:hover:bg-brand-yellow hover:text-[#080710] dark:hover:text-[#080710] hover:border-brand-yellow dark:hover:border-brand-yellow transition-all duration-300 cursor-pointer shadow-sm hover:scale-105 active:scale-95"
-            aria-label={footer?.ariaScrollTop ||"Scroll to Top"}
+            aria-label={footer?.ariaScrollTop || "Scroll to Top"}
           >
             <ArrowUp className="h-4 w-4" />
           </button>

@@ -1,13 +1,13 @@
 "use client";
 
-import CtaButton from"@/components/ui/CtaButton";
-import { withTrailingSlash } from"@/lib/url";
-import { motion, AnimatePresence } from"framer-motion";
-import { CheckCircle, Mail, MapPin, Phone, ArrowRight } from"lucide-react";
-import { useState, FormEvent, MouseEvent } from"react";
-import contentDefaults from"@/data/content.json";
-import { useContent } from"@/hooks/useContent";
-import RichTextRenderer from"@/components/ui/RichTextRenderer";
+import CtaButton from "@/components/ui/CtaButton";
+import { withTrailingSlash } from "@/lib/url";
+import { motion, AnimatePresence } from "framer-motion";
+import { CheckCircle, Mail, MapPin, Phone, ArrowRight } from "lucide-react";
+import { useState, FormEvent, MouseEvent } from "react";
+import contentDefaults from "@/data/content.json";
+import { useContent } from "@/hooks/useContent";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 export default function ContactForm({ data }: { data?: any }) {
   const dynamicContent = useContent();
@@ -21,10 +21,10 @@ export default function ContactForm({ data }: { data?: any }) {
   };
 
   const [formData, setFormData] = useState({
-    name:"",
-    email:"",
-    phone:"",
-    message:""
+    name: "",
+    email: "",
+    phone: "",
+    message: ""
   });
 
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -43,14 +43,14 @@ export default function ContactForm({ data }: { data?: any }) {
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    if (!formData.name.trim()) newErrors.name = contact.errorName ||"Please enter your full name";
+    if (!formData.name.trim()) newErrors.name = contact.errorName || "Please enter your full name";
     if (!formData.email.trim()) {
-      newErrors.email = contact.errorEmailRequired ||"Email address is required";
+      newErrors.email = contact.errorEmailRequired || "Email address is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = contact.errorEmailInvalid ||"Please enter a valid email address";
+      newErrors.email = contact.errorEmailInvalid || "Please enter a valid email address";
     }
-    if (!formData.phone.trim()) newErrors.phone = contact.errorPhone ||"Please enter your phone number";
-    if (!formData.message.trim()) newErrors.message = contact.errorMessage ||"Please write a message";
+    if (!formData.phone.trim()) newErrors.phone = contact.errorPhone || "Please enter your phone number";
+    if (!formData.message.trim()) newErrors.message = contact.errorMessage || "Please write a message";
     return newErrors;
   };
 
@@ -68,27 +68,27 @@ export default function ContactForm({ data }: { data?: any }) {
 
     try {
       const res = await fetch("/api/send", {
-        method:"POST",
-        headers: {"Content-Type":"application/json" },
+        method: "POST",
+        headers: {"Content-Type": "application/json" },
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
           message: formData.message,
-          type:"Contact Form",
-          source: typeof window !=="undefined" ? window.location.pathname :"Contact Form",
+          type: "Contact Form",
+          source: typeof window !=="undefined" ? window.location.pathname : "Contact Form",
         }),
       });
 
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error ||"Failed to submit form. Please try again.");
+        throw new Error(errData.error || "Failed to submit form. Please try again.");
       }
 
       setIsSuccess(true);
     } catch (err: any) {
-      console.error("Contact Form Submission Error:", err);
-      setServerError(err.message ||"Failed to send message. Please try again.");
+      console.error("Contact Form Submission Error: ", err);
+      setServerError(err.message || "Failed to send message. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -110,7 +110,7 @@ export default function ContactForm({ data }: { data?: any }) {
               linear-gradient(to right, rgba(3, 6, 172, 0.035) 1px, transparent 1px),
               linear-gradient(to bottom, rgba(3, 6, 172, 0.035) 1px, transparent 1px)
             `,
-            backgroundSize:"80px 80px"
+            backgroundSize: "80px 80px"
           }}
         />
       </div>
@@ -128,7 +128,7 @@ export default function ContactForm({ data }: { data?: any }) {
           x: mousePos.x - 200,
           y: mousePos.y - 200
         }}
-        transition={{ type:"spring", damping: 35, stiffness: 160, mass: 0.6 }}
+        transition={{ type: "spring", damping: 35, stiffness: 160, mass: 0.6 }}
       />
       <motion.div
         className="absolute w-[300px] h-[300px] rounded-full bg-brand-accent/[0.08] blur-[80px] pointer-events-none hidden md:block"
@@ -136,7 +136,7 @@ export default function ContactForm({ data }: { data?: any }) {
           x: mousePos.x - 150 + 50,
           y: mousePos.y - 150 + 50
         }}
-        transition={{ type:"spring", damping: 45, stiffness: 120, mass: 0.9 }}
+        transition={{ type: "spring", damping: 45, stiffness: 120, mass: 0.9 }}
       />
 
       {/* Static corner blurs for mobile support */}
@@ -207,7 +207,7 @@ export default function ContactForm({ data }: { data?: any }) {
                       <MapPin className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
-                      <span className="block text-[9px] font-mono font-bold text-brand-zinc-400 uppercase tracking-wider">{contact.locationLabel ||"LOCATION"}</span>
+                      <span className="block text-[9px] font-mono font-bold text-brand-zinc-400 uppercase tracking-wider">{contact.locationLabel || "LOCATION"}</span>
                       <span className="text-xs font-black text-brand-dark dark:text-white group-hover/item:text-brand-blue dark:group-hover/item:text-brand-yellow transition-colors font-mono block">
                         {contact.location}
                       </span>
@@ -219,7 +219,7 @@ export default function ContactForm({ data }: { data?: any }) {
                       <MapPin className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
-                      <span className="block text-[9px] font-mono font-bold text-brand-zinc-400 uppercase tracking-wider">{contact.locationLabel ||"LOCATION"}</span>
+                      <span className="block text-[9px] font-mono font-bold text-brand-zinc-400 uppercase tracking-wider">{contact.locationLabel || "LOCATION"}</span>
                       <span className="text-xs font-black text-brand-dark dark:text-white font-mono block">
                         {contact.location}
                       </span>
@@ -229,7 +229,7 @@ export default function ContactForm({ data }: { data?: any }) {
 
                 {/* Phone Item */}
                 <a
-                  href={`tel:${(contact.phone || '').replace(/[^0-9+]/g,"")}`}
+                  href={`tel:${(contact.phone || '').replace(/[^0-9+]/g, "")}`}
                   className="flex items-center gap-4 group/item p-2.5 rounded-2xl hover:bg-brand-blue/5 dark:hover:bg-white/5 transition-colors"
                 >
                   <div className="w-10 h-10 rounded-xl bg-brand-blue/10 dark:bg-brand-yellow/10 border border-brand-blue/20 dark:border-brand-yellow/20 flex items-center justify-center text-brand-blue dark:text-brand-yellow group-hover/item:scale-105 transition-transform shrink-0">
@@ -290,7 +290,7 @@ export default function ContactForm({ data }: { data?: any }) {
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                           placeholder={contact.placeholderName}
-                          className={`w-full bg-brand-light dark:bg-white/5 border rounded-2xl px-4 py-3.5 text-xs font-semibold text-brand-dark dark:text-white placeholder-brand-zinc-400 dark:placeholder-zinc-500 focus:ring-4 focus:ring-brand-blue/10 dark:focus:ring-brand-yellow/10 focus:border-brand-blue dark:focus:border-brand-yellow focus:bg-white dark:focus:bg-[#161622] outline-none transition-all ${errors.name ?"border-red-400" :"border-brand-zinc-200 dark:border-white/10"
+                          className={`w-full bg-brand-light dark:bg-white/5 border rounded-2xl px-4 py-3.5 text-xs font-semibold text-brand-dark dark:text-white placeholder-brand-zinc-400 dark:placeholder-zinc-500 focus:ring-4 focus:ring-brand-blue/10 dark:focus:ring-brand-yellow/10 focus:border-brand-blue dark:focus:border-brand-yellow focus:bg-white dark:focus:bg-[#161622] outline-none transition-all ${errors.name ? "border-red-400" : "border-brand-zinc-200 dark:border-white/10"
                             }`}
                         />
                       </div>
@@ -308,7 +308,7 @@ export default function ContactForm({ data }: { data?: any }) {
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                           placeholder={contact.placeholderEmail}
-                          className={`w-full bg-brand-light dark:bg-white/5 border rounded-2xl px-4 py-3.5 text-xs font-semibold text-brand-dark dark:text-white placeholder-brand-zinc-400 dark:placeholder-zinc-500 focus:ring-4 focus:ring-brand-blue/10 dark:focus:ring-brand-yellow/10 focus:border-brand-blue dark:focus:border-brand-yellow focus:bg-white dark:focus:bg-[#161622] outline-none transition-all ${errors.email ?"border-red-400" :"border-brand-zinc-200 dark:border-white/10"
+                          className={`w-full bg-brand-light dark:bg-white/5 border rounded-2xl px-4 py-3.5 text-xs font-semibold text-brand-dark dark:text-white placeholder-brand-zinc-400 dark:placeholder-zinc-500 focus:ring-4 focus:ring-brand-blue/10 dark:focus:ring-brand-yellow/10 focus:border-brand-blue dark:focus:border-brand-yellow focus:bg-white dark:focus:bg-[#161622] outline-none transition-all ${errors.email ? "border-red-400" : "border-brand-zinc-200 dark:border-white/10"
                             }`}
                         />
                       </div>
@@ -327,7 +327,7 @@ export default function ContactForm({ data }: { data?: any }) {
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         placeholder={contact.placeholderPhone}
-                        className={`w-full bg-brand-light dark:bg-white/5 border rounded-2xl px-4 py-3.5 text-xs font-semibold text-brand-dark dark:text-white placeholder-brand-zinc-400 dark:placeholder-zinc-500 focus:ring-4 focus:ring-brand-blue/10 dark:focus:ring-brand-yellow/10 focus:border-brand-blue dark:focus:border-brand-yellow focus:bg-white dark:focus:bg-[#161622] outline-none transition-all ${errors.phone ?"border-red-400" :"border-brand-zinc-200 dark:border-white/10"
+                        className={`w-full bg-brand-light dark:bg-white/5 border rounded-2xl px-4 py-3.5 text-xs font-semibold text-brand-dark dark:text-white placeholder-brand-zinc-400 dark:placeholder-zinc-500 focus:ring-4 focus:ring-brand-blue/10 dark:focus:ring-brand-yellow/10 focus:border-brand-blue dark:focus:border-brand-yellow focus:bg-white dark:focus:bg-[#161622] outline-none transition-all ${errors.phone ? "border-red-400" : "border-brand-zinc-200 dark:border-white/10"
                           }`}
                       />
                     </div>
@@ -344,7 +344,7 @@ export default function ContactForm({ data }: { data?: any }) {
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       placeholder={contact.placeholderMessage}
-                      className={`w-full bg-brand-light dark:bg-white/5 border rounded-2xl px-4 py-3.5 text-xs font-semibold text-brand-dark dark:text-white placeholder-brand-zinc-400 dark:placeholder-zinc-500 focus:ring-4 focus:ring-brand-blue/10 dark:focus:ring-brand-yellow/10 focus:border-brand-blue dark:focus:border-brand-yellow focus:bg-white dark:focus:bg-[#161622] outline-none transition-all resize-none ${errors.message ?"border-red-400" :"border-brand-zinc-200 dark:border-white/10"
+                      className={`w-full bg-brand-light dark:bg-white/5 border rounded-2xl px-4 py-3.5 text-xs font-semibold text-brand-dark dark:text-white placeholder-brand-zinc-400 dark:placeholder-zinc-500 focus:ring-4 focus:ring-brand-blue/10 dark:focus:ring-brand-yellow/10 focus:border-brand-blue dark:focus:border-brand-yellow focus:bg-white dark:focus:bg-[#161622] outline-none transition-all resize-none ${errors.message ? "border-red-400" : "border-brand-zinc-200 dark:border-white/10"
                         }`}
                     />
                     {errors.message && <span className="text-[10px] font-bold text-red-500 block">{errors.message}</span>}
@@ -381,7 +381,7 @@ export default function ContactForm({ data }: { data?: any }) {
                   <button
                     onClick={() => {
                       setIsSuccess(false);
-                      setFormData({ name:"", email:"", phone:"", message:"" });
+                      setFormData({ name: "", email: "", phone: "", message: "" });
                     }}
                     className="inline-flex items-center gap-2 text-xs font-mono font-black uppercase tracking-widest text-brand-blue dark:text-brand-yellow hover:underline cursor-pointer pt-4"
                   >

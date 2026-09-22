@@ -1,8 +1,8 @@
 "use client";
 
-import PageBreadcrumbs from"@/components/PageBreadcrumbs";
-import { useContent } from"../../hooks/useContent";
-import PageInlineFaqs from"@/components/PageInlineFaqs";
+import PageBreadcrumbs from "@/components/PageBreadcrumbs";
+import { useContent } from "../../hooks/useContent";
+import PageInlineFaqs from "@/components/PageInlineFaqs";
 
 export default function FAQTemplate({ pageData, params }: { pageData?: any, params?: any }) {
     const { faq: globalFaq } = useContent();

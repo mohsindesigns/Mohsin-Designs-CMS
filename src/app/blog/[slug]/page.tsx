@@ -1,10 +1,10 @@
-import CtaButton from"@/components/ui/CtaButton";
-import { withTrailingSlash } from"@/lib/url";
-import PageBreadcrumbs from"@/components/PageBreadcrumbs";
-import { Metadata } from"next";
-import { notFound } from"next/navigation";
-import Image from"next/image";
-import Link from"@/components/ui/Link";
+import CtaButton from "@/components/ui/CtaButton";
+import { withTrailingSlash } from "@/lib/url";
+import PageBreadcrumbs from "@/components/PageBreadcrumbs";
+import { Metadata } from "next";
+import { notFound } from "next/navigation";
+import Image from "next/image";
+import Link from "@/components/ui/Link";
 import {
   Calendar,
   User,
@@ -17,24 +17,24 @@ import {
   CheckCircle2,
   ChevronLeft,
   Star
-} from"lucide-react";
+} from "lucide-react";
 
-import connectToDatabase from"@/lib/mongodb";
-import Post from"@/models/Post";
-import Page from"@/models/Page";
-import SiteContent from"@/models/Content";
-import ReadingProgress from"@/components/blogs/ReadingProgress";
-import ShareButton from"@/components/blogs/ShareButton";
-import PageInlineFaqs from"@/components/PageInlineFaqs";
-import { BASE_URL } from"@/lib/constants";
-import { makeLinksDoFollow } from"@/lib/utils";
-import { resolveRobotsMetadata } from"@/lib/seo";
-import CustomSchemaMarkup, { extractSchemaBlocks } from"@/components/CustomSchemaMarkup";
-import { extractLocationInfo, getResolvedSchemaBlocks } from"@/lib/dynamicSchema";
+import connectToDatabase from "@/lib/mongodb";
+import Post from "@/models/Post";
+import Page from "@/models/Page";
+import SiteContent from "@/models/Content";
+import ReadingProgress from "@/components/blogs/ReadingProgress";
+import ShareButton from "@/components/blogs/ShareButton";
+import PageInlineFaqs from "@/components/PageInlineFaqs";
+import { BASE_URL } from "@/lib/constants";
+import { makeLinksDoFollow } from "@/lib/utils";
+import { resolveRobotsMetadata } from "@/lib/seo";
+import CustomSchemaMarkup, { extractSchemaBlocks } from "@/components/CustomSchemaMarkup";
+import { extractLocationInfo, getResolvedSchemaBlocks } from "@/lib/dynamicSchema";
 
-import RichTextRenderer from"@/components/ui/RichTextRenderer";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
-import { getCachedPost, getCachedSiteContent } from"@/lib/content";
+import { getCachedPost, getCachedSiteContent } from "@/lib/content";
 
 export const revalidate = 60; // Revalidate every 60s
 
@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     getCachedSiteContent()
   ]);
 
-  if (!post) return { title:"Article Not Found | Mohsin Designs" };
+  if (!post) return { title: "Article Not Found | Mohsin Designs" };
 
   const isGlobalNoIndex = !!contentData?.settings?.globalNoIndex;
   const pageTitle = post.seo?.metaTitle || `${post.title} | Mohsin Designs`;
@@ -73,7 +73,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: post.seo?.ogTitle || pageTitle,
       description: post.seo?.ogDescription || pageDesc,
       url: canonicalUrl,
-      type:"article",
+      type: "article",
       publishedTime: publishedIso,
       modifiedTime: modifiedIso,
       images: pageImage
@@ -88,7 +88,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         : undefined
     },
     twitter: {
-      card:"summary_large_image",
+      card: "summary_large_image",
       title: post.seo?.ogTitle || pageTitle,
       description: post.seo?.ogDescription || pageDesc,
       images: pageImage ? [pageImage] : undefined
@@ -109,14 +109,14 @@ export default async function BlogPostPage({ params }: Props) {
     getCachedPost(slug),
     getCachedSiteContent(),
     Page.findOne({
-      $or: [{ slug:"blog" }, { template:"blog" }]
+      $or: [{ slug: "blog" }, { template: "blog" }]
     }).lean()
   ]);
 
   if (!post) notFound();
 
   const siteSettings = globalContentData?.settings || {};
-  const siteBrandName = siteSettings.siteTitle ||"Mohsin Designs";
+  const siteBrandName = siteSettings.siteTitle || "Mohsin Designs";
 
   const blogPageData = (blogPageDoc as any)?.content?.blogPage || (blogPageDoc as any)?.content || {};
 
@@ -125,43 +125,43 @@ export default async function BlogPostPage({ params }: Props) {
 
   // Resolve Sidebar Consultation CTA
   const sidebarCta = {
-    badge: blogPageData.detailSidebarCta?.badge ||"EXPERT CONSULTATION",
-    title: blogPageData.detailSidebarCta?.title ||"Scale Your Organic Revenue Today",
-    description: blogPageData.detailSidebarCta?.description ||"Get a custom local SEO and web architecture strategy tailored for your business.",
-    buttonText: blogPageData.detailSidebarCta?.buttonText ||"GET FREE ESTIMATE",
-    buttonHref: blogPageData.detailSidebarCta?.buttonHref ||"/#contact"
+    badge: blogPageData.detailSidebarCta?.badge || "EXPERT CONSULTATION",
+    title: blogPageData.detailSidebarCta?.title || "Scale Your Organic Revenue Today",
+    description: blogPageData.detailSidebarCta?.description || "Get a custom local SEO and web architecture strategy tailored for your business.",
+    buttonText: blogPageData.detailSidebarCta?.buttonText || "GET FREE ESTIMATE",
+    buttonHref: blogPageData.detailSidebarCta?.buttonHref || "/#contact"
   };
 
   // Resolve Signature Detail CTA Banner (Syncs with Blog Page CTA)
   const ctaSource = blogPageData.ctaBanner || blogPageData.detailCtaBanner || {};
   const detailCtaBanner = {
-    eyebrow: ctaSource.eyebrow ||"READY TO ACCELERATE?",
-    titleIntro: ctaSource.titleIntro ||"Let's Build Your Next",
-    titleHighlight: ctaSource.titleHighlight ||"Competitive Edge",
-    titleLine2: ctaSource.titleLine2 ||"Together.",
-    description: ctaSource.description ||"Schedule a free 30-minute technical audit. We'll diagnose bottlenecks in your existing presence and map out a concrete blueprint for compounding growth.",
+    eyebrow: ctaSource.eyebrow || "READY TO ACCELERATE? ",
+    titleIntro: ctaSource.titleIntro || "Let's Build Your Next",
+    titleHighlight: ctaSource.titleHighlight || "Competitive Edge",
+    titleLine2: ctaSource.titleLine2 || "Together.",
+    description: ctaSource.description || "Schedule a free 30-minute technical audit. We'll diagnose bottlenecks in your existing presence and map out a concrete blueprint for compounding growth.",
     ctaPrimary: {
-      label: ctaSource.ctaPrimary?.label ||"Book Strategy Session",
-      href: ctaSource.ctaPrimary?.href ||"/contact-us"
+      label: ctaSource.ctaPrimary?.label || "Book Strategy Session",
+      href: ctaSource.ctaPrimary?.href || "/contact-us"
     },
     ctaSecondary: {
-      label: ctaSource.ctaSecondary?.label ||"Watch Showreel",
-      href: ctaSource.ctaSecondary?.href ||"/gallery"
+      label: ctaSource.ctaSecondary?.label || "Watch Showreel",
+      href: ctaSource.ctaSecondary?.href || "/gallery"
     },
-    portraitSrc: ctaSource.portraitSrc ||"",
-    portraitAlt: ctaSource.portraitAlt ||"Mohsin Designs Lead Architect"
+    portraitSrc: ctaSource.portraitSrc || "",
+    portraitAlt: ctaSource.portraitAlt || "Mohsin Designs Lead Architect"
   };
 
   // Resolve Related Section Header
   const relatedSection = {
-    eyebrow: blogPageData.relatedSection?.eyebrow ||"EXPLORE MORE INSIGHTS",
-    title: blogPageData.relatedSection?.title ||"Related Articles & Guides"
+    eyebrow: blogPageData.relatedSection?.eyebrow || "EXPLORE MORE INSIGHTS",
+    title: blogPageData.relatedSection?.title || "Related Articles & Guides"
   };
 
   // 3. Fetch 3 Related Articles (excluding current post)
   const relatedPostsRaw = await Post.find({
     _id: { $ne: post._id },
-    status:"published",
+    status: "published",
     isTrashed: { $ne: true }
   })
     .populate("categories")
@@ -170,27 +170,27 @@ export default async function BlogPostPage({ params }: Props) {
     .lean();
 
   const relatedPosts = relatedPostsRaw.map((r: any, idx: number) => {
-    let catBadge ="Article";
+    let catBadge = "Article";
     if (Array.isArray(r.categories) && r.categories.length > 0) {
-      catBadge = r.categories[0]?.name ||"Article";
+      catBadge = r.categories[0]?.name || "Article";
     }
 
-    let rDate ="Recent";
+    let rDate = "Recent";
     if (r.publishedAt || r.createdAt) {
       try {
         rDate = new Date(r.publishedAt || r.createdAt).toLocaleDateString("en-US", {
-          month:"short",
-          day:"numeric",
-          year:"numeric"
+          month: "short",
+          day: "numeric",
+          year: "numeric"
         });
       } catch {
-        rDate ="Recent";
+        rDate = "Recent";
       }
     }
 
-    let rReadTime ="5 min read";
+    let rReadTime = "5 min read";
     if (r.content) {
-      const words = String(r.content).replace(/<[^>]*>/g,"").split(/\s+/).length;
+      const words = String(r.content).replace(/<[^>]*>/g, "").split(/\s+/).length;
       rReadTime = `${Math.max(3, Math.ceil(words / 200))} min read`;
     }
 
@@ -199,39 +199,39 @@ export default async function BlogPostPage({ params }: Props) {
       slug: r.slug || String(r._id),
       title: r.title,
       badge: catBadge,
-      image: r.featuredImage ||"https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop",
+      image: r.featuredImage || "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop",
       date: rDate,
       readTime: rReadTime
     };
   });
 
   // 4. Resolve Post Metadata & Author Information (Sanitized to pure string primitives)
-  let categoryBadge ="Article";
+  let categoryBadge = "Article";
   if (Array.isArray(post.categories) && post.categories.length > 0) {
-    categoryBadge = post.categories[0]?.name ||"Article";
+    categoryBadge = post.categories[0]?.name || "Article";
   }
 
-  let formattedDate ="Recent";
+  let formattedDate = "Recent";
   if (post.publishedAt || post.createdAt) {
     try {
       formattedDate = new Date(post.publishedAt || post.createdAt).toLocaleDateString("en-US", {
-        month:"short",
-        day:"numeric",
-        year:"numeric"
+        month: "short",
+        day: "numeric",
+        year: "numeric"
       });
     } catch {
-      formattedDate ="Recent";
+      formattedDate = "Recent";
     }
   }
 
   const rawHtmlContent = post.content || `<p>${post.excerpt || post.title}</p>`;
-  const wordCount = rawHtmlContent.replace(/<[^>]*>/g,"").split(/\s+/).filter(Boolean).length;
+  const wordCount = rawHtmlContent.replace(/<[^>]*>/g, "").split(/\s+/).filter(Boolean).length;
   const readTimeDisplay = `${Math.max(3, Math.ceil(wordCount / 200))} min read`;
-  const featuredImage = post.featuredImage ||"https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop";
+  const featuredImage = post.featuredImage || "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop";
 
   // Sanitize Author details so no ObjectId or Buffer is passed
   const rawAuthor = post.author as any;
-  let cleanName ="Mohsin";
+  let cleanName = "Mohsin";
   if (rawAuthor) {
     if (rawAuthor.name && typeof rawAuthor.name ==="string" && rawAuthor.name.trim()) {
       cleanName = rawAuthor.name.trim();
@@ -240,7 +240,7 @@ export default async function BlogPostPage({ params }: Props) {
     }
   }
 
-  let cleanRole ="Founder & Creative Director";
+  let cleanRole = "Founder & Creative Director";
   if (rawAuthor?.role) {
     if (typeof rawAuthor.role ==="object" && rawAuthor.role?.name) {
       cleanRole = String(rawAuthor.role.name);
@@ -249,7 +249,7 @@ export default async function BlogPostPage({ params }: Props) {
     }
   }
 
-  let cleanAvatar ="";
+  let cleanAvatar = "";
   if (rawAuthor) {
     const candidate = rawAuthor.image || rawAuthor.avatar;
     if (candidate && typeof candidate ==="string" && candidate.startsWith("http")) {
@@ -269,7 +269,7 @@ export default async function BlogPostPage({ params }: Props) {
   };
 
   // Extract location info for blog content location schema
-  const blogLocationInfo = extractLocationInfo(slug, post.title, post.template ||"", post.content || {});
+  const blogLocationInfo = extractLocationInfo(slug, post.title, post.template || "", post.content || {});
 
   // 5. Automated Table of Contents Logic
   let tableOfContents: { id: string; text: string; level: number }[] = [];
@@ -280,12 +280,12 @@ export default async function BlogPostPage({ params }: Props) {
   const slugify = (text: string) =>
     text
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g,"-")
-      .replace(/(^-|-$)/g,"");
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
 
   while ((match = headingRegex.exec(rawHtmlContent)) !== null) {
     const tag = match[1].toLowerCase();
-    const cleanText = match[2].replace(/<[^>]*>/g,"").trim();
+    const cleanText = match[2].replace(/<[^>]*>/g, "").trim();
     if (!cleanText || cleanText.length < 2) continue;
 
     const id = slugify(cleanText) || `section-${tableOfContents.length + 1}`;
@@ -295,7 +295,7 @@ export default async function BlogPostPage({ params }: Props) {
 
     const originalTag = match[0];
     const newTag = `<${tag} id="${id}" class="scroll-mt-32 font-heading ${
-      level <= 2 ?"text-2xl sm:text-3xl mt-12 mb-4" :"text-xl sm:text-2xl mt-8 mb-3"
+      level <= 2 ? "text-2xl sm:text-3xl mt-12 mb-4" : "text-xl sm:text-2xl mt-8 mb-3"
     } font-black text-brand-dark dark:text-white leading-snug">${match[2]}</${tag}>`;
     processedContent = processedContent.replace(originalTag, newTag);
   }
@@ -336,8 +336,8 @@ export default async function BlogPostPage({ params }: Props) {
           <div
             className="absolute inset-0 bg-white dark:bg-[#080710]"
             style={{
-              maskImage:"linear-gradient(to right, white 55%, transparent 90%)",
-              WebkitMaskImage:"linear-gradient(to right, white 55%, transparent 90%)"
+              maskImage: "linear-gradient(to right, white 55%, transparent 90%)",
+              WebkitMaskImage: "linear-gradient(to right, white 55%, transparent 90%)"
             }}
           />
           {/* Additional gradient layer */}
@@ -349,9 +349,9 @@ export default async function BlogPostPage({ params }: Props) {
           <PageBreadcrumbs
             className="mb-5"
             items={[
-              { name:"Home", url:"/" },
-              { name:"Blogs", url:"/blogs/" },
-              { name: post.title, url:"#" },
+              { name: "Home", url: "/" },
+              { name: "Blogs", url: "/blogs/" },
+              { name: post.title, url: "#" },
             ]}
           />
 
@@ -468,15 +468,15 @@ export default async function BlogPostPage({ params }: Props) {
                         href={withTrailingSlash(`#${item.id}`)}
                         className={`flex items-center gap-3.5 py-2 px-3 rounded-xl transition-all duration-300 group ${
                           item.level <= 2
-                            ?"text-brand-dark dark:text-white font-bold hover:bg-brand-blue/10 dark:hover:bg-brand-yellow/10 hover:text-brand-blue dark:hover:text-brand-yellow bg-brand-zinc-50/50 dark:bg-zinc-900/40"
-                            :"pl-7 text-brand-zinc-500 dark:text-zinc-400 hover:text-brand-blue dark:hover:text-brand-yellow hover:bg-brand-zinc-50 dark:hover:bg-zinc-900/40"
+                            ? "text-brand-dark dark:text-white font-bold hover:bg-brand-blue/10 dark:hover:bg-brand-yellow/10 hover:text-brand-blue dark:hover:text-brand-yellow bg-brand-zinc-50/50 dark:bg-zinc-900/40"
+                            : "pl-7 text-brand-zinc-500 dark:text-zinc-400 hover:text-brand-blue dark:hover:text-brand-yellow hover:bg-brand-zinc-50 dark:hover:bg-zinc-900/40"
                         }`}
                       >
                         <div
                           className={`shrink-0 w-2 h-2 rounded-full transition-all duration-300 ${
                             item.level <= 2
-                              ?"bg-brand-blue dark:bg-brand-yellow scale-100 shadow-[0_0_8px_rgba(3,6,172,0.4)] dark:shadow-[0_0_8px_rgba(233,189,54,0.4)]"
-                              :"bg-brand-zinc-300 dark:bg-zinc-700 scale-75 group-hover:bg-brand-blue group-hover:scale-100"
+                              ? "bg-brand-blue dark:bg-brand-yellow scale-100 shadow-[0_0_8px_rgba(3,6,172,0.4)] dark:shadow-[0_0_8px_rgba(233,189,54,0.4)]"
+                              : "bg-brand-zinc-300 dark:bg-zinc-700 scale-75 group-hover:bg-brand-blue group-hover:scale-100"
                           }`}
                         />
                         <span className="text-xs sm:text-sm font-semibold line-clamp-1 flex-1">
@@ -549,9 +549,9 @@ export default async function BlogPostPage({ params }: Props) {
           <PageInlineFaqs
             faqs={post.faq}
             faqSchemaMarkup={post.faqSchemaMarkup}
-            badge={post.faqBadge ||"ARTICLE FAQ"}
-            title={post.faqTitle ||"Frequently Asked Questions"}
-            subtitle={post.faqDescription ||"Key insights and technical queries answered."}
+            badge={post.faqBadge || "ARTICLE FAQ"}
+            title={post.faqTitle || "Frequently Asked Questions"}
+            subtitle={post.faqDescription || "Key insights and technical queries answered."}
           />
         </div>
       )}

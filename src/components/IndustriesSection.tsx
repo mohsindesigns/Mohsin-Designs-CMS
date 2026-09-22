@@ -1,10 +1,10 @@
 "use client";
 
-import React from"react";
-import Link from"@/components/ui/Link";
-import { motion, useMotionValue } from"framer-motion";
-import RichTextRenderer from"@/components/ui/RichTextRenderer";
-import { isSafeHref, getValidHref } from"@/lib/utils";
+import React from "react";
+import Link from "@/components/ui/Link";
+import { motion, useMotionValue } from "framer-motion";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
+import { isSafeHref, getValidHref } from "@/lib/utils";
 import {
   Globe,
   Cpu,
@@ -22,7 +22,7 @@ import {
   PenTool,
   Palette,
   BarChart2
-} from"lucide-react";
+} from "lucide-react";
 
 const iconMap: Record<string, React.ElementType> = {
   Globe,
@@ -51,13 +51,13 @@ const drawVariants = {
     transition: {
       duration: custom?.duration ?? 0.5,
       delay: custom?.delay ?? 0.1,
-      ease:"easeOut" as any
+      ease: "easeOut" as any
     }
   })
 };
 
 // Spotlight Card
-function SpotlightCard({ children, className ="" }: { children: React.ReactNode; className?: string }) {
+function SpotlightCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -83,10 +83,10 @@ interface IndustriesSectionProps {
 
 export default function IndustriesSection({ data }: IndustriesSectionProps) {
   const industries = {
-    eyebrow: data?.eyebrow || data?.sectionTag ||"08 // SECTORS WE ACCELERATE",
-    titleIntro: data?.titleIntro !== undefined ? data.titleIntro :"Industries",
-    titleHighlight: data?.titleHighlight || data?.title ||"We Specialize In",
-    description: data?.description ||"Every industry has distinct compliance, customer acquisition funnels, and technical requirements. We tailor our engineering to your exact vertical.",
+    eyebrow: data?.eyebrow || data?.sectionTag || "08 // SECTORS WE ACCELERATE",
+    titleIntro: data?.titleIntro !== undefined ? data.titleIntro : "Industries",
+    titleHighlight: data?.titleHighlight || data?.title || "We Specialize In",
+    description: data?.description || "Every industry has distinct compliance, customer acquisition funnels, and technical requirements. We tailor our engineering to your exact vertical.",
     list: (Array.isArray(data?.list) && data.list.length > 0)
       ? data.list
       : (Array.isArray(data?.items) && data.items.length > 0)
@@ -94,12 +94,12 @@ export default function IndustriesSection({ data }: IndustriesSectionProps) {
         : (Array.isArray(data?.domains) && data.domains.length > 0)
           ? data.domains
           : [
-            { title:"Home Services & Contracting", desc:"Roofing, decking, remodeling, and local trade contractors scaling regional territories.", iconName:"Building2", watermark:"HS" },
-            { title:"Technology & SaaS", desc:"Fast-growth software startups and tech firms demanding high conversion rates.", iconName:"Cpu", watermark:"TS" },
-            { title:"Commercial Real Estate", desc:"Property developers, architectural firms, and luxury real estate agencies.", iconName:"Building2", watermark:"CR" },
-            { title:"E-Commerce & Retail", desc:"Direct-to-consumer and B2B brands scaling transactions with seamless checkout.", iconName:"ShoppingCart", watermark:"EC" },
-            { title:"Professional Services", desc:"Law firms, financial consultancies, and executive agencies building trust.", iconName:"Briefcase", watermark:"PS" },
-            { title:"Healthcare & Wellness", desc:"Clinics, medical practices, and private health facilities seeking patient acquisition.", iconName:"Heart", watermark:"HW" }
+            { title: "Home Services & Contracting", desc: "Roofing, decking, remodeling, and local trade contractors scaling regional territories.", iconName: "Building2", watermark: "HS" },
+            { title: "Technology & SaaS", desc: "Fast-growth software startups and tech firms demanding high conversion rates.", iconName: "Cpu", watermark: "TS" },
+            { title: "Commercial Real Estate", desc: "Property developers, architectural firms, and luxury real estate agencies.", iconName: "Building2", watermark: "CR" },
+            { title: "E-Commerce & Retail", desc: "Direct-to-consumer and B2B brands scaling transactions with seamless checkout.", iconName: "ShoppingCart", watermark: "EC" },
+            { title: "Professional Services", desc: "Law firms, financial consultancies, and executive agencies building trust.", iconName: "Briefcase", watermark: "PS" },
+            { title: "Healthcare & Wellness", desc: "Clinics, medical practices, and private health facilities seeking patient acquisition.", iconName: "Heart", watermark: "HW" }
           ]
   };
 
@@ -149,7 +149,7 @@ export default function IndustriesSection({ data }: IndustriesSectionProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {industries.list.map((ind: any, idx: number) => {
             const FallbackIcon = defaultIcons[idx % defaultIcons.length];
-            const words = String(ind.title ||"").split("");
+            const words = String(ind.title || "").split("");
             const abbreviation = ind.watermark || words.map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
             const rawHref = ind.link || ind.href || ind.url;
             const validHref = getValidHref(rawHref);
@@ -158,7 +158,7 @@ export default function IndustriesSection({ data }: IndustriesSectionProps) {
             return (
               <SpotlightCard
                 key={idx}
-                className={`bg-white dark:bg-[#0c0b18] border border-slate-200/80 dark:border-white/10 p-6 sm:p-8 rounded-[28px] hover:shadow-2xl hover:border-blue-600/30 dark:hover:border-yellow-400/30 transition-all duration-500 flex flex-col justify-between min-h-[250px] relative group text-left overflow-hidden ${validHref ?"cursor-pointer" :""}`}
+                className={`bg-white dark:bg-[#0c0b18] border border-slate-200/80 dark:border-white/10 p-6 sm:p-8 rounded-[28px] hover:shadow-2xl hover:border-blue-600/30 dark:hover:border-yellow-400/30 transition-all duration-500 flex flex-col justify-between min-h-[250px] relative group text-left overflow-hidden ${validHref ? "cursor-pointer" : ""}`}
               >
                 {/* Floating Watermark */}
  <span className="absolute top-5 right-7 font-heading text-6xl sm:text-7xl font-black text-slate-100 dark:text-white/[0.04] select-none pointer-events-none transition-transform duration-500 group-hover:scale-110">
@@ -180,7 +180,7 @@ export default function IndustriesSection({ data }: IndustriesSectionProps) {
                         <Link
                           href={validHref}
                           className="hover:underline focus:outline-none after:absolute after:inset-0 after:z-10 inline-flex items-center gap-1.5"
-                          {...(isExternal ? { target:"_blank", rel:"noopener noreferrer" } : {})}
+                          {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                         >
                           <span>{ind.title}</span>
                           <span className="inline-block transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-[#0306AC] dark:text-[#E9BD36]">↗</span>
@@ -190,7 +190,7 @@ export default function IndustriesSection({ data }: IndustriesSectionProps) {
                       )}
                     </h3>
                     <div className="text-xs sm:text-sm text-brand-zinc-600 dark:text-zinc-400 font-sans leading-relaxed font-normal relative z-20 pointer-events-none [&_a]:pointer-events-auto">
-                      <RichTextRenderer content={ind.desc || ind.description ||""} />
+                      <RichTextRenderer content={ind.desc || ind.description || ""} />
                     </div>
                   </div>
                 </div>

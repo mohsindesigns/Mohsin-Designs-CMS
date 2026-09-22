@@ -1,20 +1,20 @@
 "use client";
 
-import PageBreadcrumbs from"@/components/PageBreadcrumbs";
-import { useRef, useState, useEffect } from"react";
-import { motion, useInView, AnimatePresence } from"framer-motion";
-import { Icon } from"../../config/icons";
-import { useContent } from"../../hooks/useContent";
-import Image from"next/image";
-import RichTextRenderer from"../ui/RichTextRenderer";
-import PageInlineFaqs from"@/components/PageInlineFaqs";
+import PageBreadcrumbs from "@/components/PageBreadcrumbs";
+import { useRef, useState, useEffect } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
+import { Icon } from "../../config/icons";
+import { useContent } from "../../hooks/useContent";
+import Image from "next/image";
+import RichTextRenderer from "../ui/RichTextRenderer";
+import PageInlineFaqs from "@/components/PageInlineFaqs";
 
-const FALLBACK_IMAGE ="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=800&h=450&fit=crop&q=80";
-const GOOGLE_MAPS_REVIEW_URL ="https://maps.app.goo.gl/PbvRBs4tJsDAJVMy6";
+const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=800&h=450&fit=crop&q=80";
+const GOOGLE_MAPS_REVIEW_URL = "https://maps.app.goo.gl/PbvRBs4tJsDAJVMy6";
 
 const getVideoThumbnail = (videoId: string) => `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 
-const Counter = ({ value, suffix ="", start = false, isDecimal = false }: any) => {
+const Counter = ({ value, suffix = "", start = false, isDecimal = false }: any) => {
     const [count, setCount] = useState(0);
     useEffect(() => {
         if (!start) return;
@@ -35,7 +35,7 @@ const Counter = ({ value, suffix ="", start = false, isDecimal = false }: any) =
 
 const TestimonialCard = ({ testimonial, index, onPlay }: any) => {
     const ref = useRef(null);
-    const inView = useInView(ref, { once: true, margin:"-50px" });
+    const inView = useInView(ref, { once: true, margin: "-50px" });
     return (
         <motion.div ref={ref} initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.5, delay: index * 0.1 }} className="group relative bg-white dark:bg-card rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-100 dark:border-white/5 transition-all duration-300">
  <div className="absolute top-6 right-6 text-5xl text-primary/10 font-cursive">"</div>

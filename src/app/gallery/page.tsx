@@ -1,11 +1,11 @@
-import Page from"@/models/Page";
+import Page from "@/models/Page";
 export const revalidate = 60; // Cache for 1 minute
-import { Metadata } from"next";
-import connectToDatabase from"@/lib/mongodb";
-import SiteContent from"@/models/Content";
-import CustomSchemaMarkup from"@/components/CustomSchemaMarkup";
-import { BASE_URL } from"@/lib/constants";
-import { resolveRobotsMetadata } from"@/lib/seo";
+import { Metadata } from "next";
+import connectToDatabase from "@/lib/mongodb";
+import SiteContent from "@/models/Content";
+import CustomSchemaMarkup from "@/components/CustomSchemaMarkup";
+import { BASE_URL } from "@/lib/constants";
+import { resolveRobotsMetadata } from "@/lib/seo";
 
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -13,12 +13,12 @@ export async function generateMetadata(): Promise<Metadata> {
   
   // Try to find the page in MongoDB Page collection first
   const pageDoc = await Page.findOne({
-    slug:"gallery",
+    slug: "gallery",
     status: 'published',
     isTrashed: { $ne: true }
   }).lean() as any;
 
-  const content = await SiteContent.findOne({ key:"complete_data" }).lean() as any;
+  const content = await SiteContent.findOne({ key: "complete_data" }).lean() as any;
   const globalData = content?.data || {};
   const isGlobalNoIndex = !!globalData?.settings?.globalNoIndex;
 
@@ -34,9 +34,9 @@ export async function generateMetadata(): Promise<Metadata> {
                     galleryData?.header?.title || 
                     [galleryData?.header?.titlePrefix, galleryData?.header?.titleHighlight, galleryData?.header?.titleSuffix].filter(Boolean).join("");
 
-  const metaTitle = seo.metaTitle || heroTitle ||"Creative Work. Real Results. | Our Portfolio";
+  const metaTitle = seo.metaTitle || heroTitle || "Creative Work. Real Results. | Our Portfolio";
 
-  const metaDescription = seo.metaDescription || galleryData?.hero?.subtitle || galleryData?.header?.description?.replace(/<[^>]*>/g, '') ||"";
+  const metaDescription = seo.metaDescription || galleryData?.hero?.subtitle || galleryData?.header?.description?.replace(/<[^>]*>/g, '') || "";
 
   return {
     metadataBase: new URL(BASE_URL),
@@ -51,12 +51,12 @@ export async function generateMetadata(): Promise<Metadata> {
       title: seo.ogTitle || seo.metaTitle || metaTitle,
       description: seo.ogDescription || metaDescription,
       url: pageUrl,
-      siteName:"Mohsin Designs",
-      type:"website",
+      siteName: "Mohsin Designs",
+      type: "website",
       images: seo.featuredImage ? [{ url: seo.featuredImage }] : [],
     },
     twitter: {
-      card:"summary_large_image",
+      card: "summary_large_image",
       title: seo.twitterTitle || seo.ogTitle || metaTitle,
       description: seo.twitterDescription || seo.ogDescription || metaDescription,
       images: [seo.featuredImage || seo.twitterImage || seo.ogImage].filter(Boolean) as string[],
@@ -70,12 +70,12 @@ export default async function GalleryPage() {
 
   // Find the page in MongoDB Page collection
   const pageDoc = await Page.findOne({
-    slug:"gallery",
+    slug: "gallery",
     status: 'published',
     isTrashed: { $ne: true }
   }).lean();
 
-  const content = await SiteContent.findOne({ key:"complete_data" }).lean() as any;
+  const content = await SiteContent.findOne({ key: "complete_data" }).lean() as any;
   const globalData = content?.data || {};
 
   const page = pageDoc ? JSON.parse(JSON.stringify(pageDoc)) : null;
@@ -106,7 +106,7 @@ export default async function GalleryPage() {
       <TemplateWrapper
         templateName="gallery"
         pageData={{
-          ...(page || { title:"Project Gallery", template:"gallery", slug:"gallery" }),
+          ...(page || { title: "Project Gallery", template: "gallery", slug: "gallery" }),
           content: {
             ...globalData,
             ...(page?.content || {}),

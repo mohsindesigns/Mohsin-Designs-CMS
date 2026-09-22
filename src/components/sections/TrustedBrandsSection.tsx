@@ -1,9 +1,9 @@
 "use client";
 
-import React from"react";
-import { motion } from"framer-motion";
-import { Globe, ArrowUpRight } from"lucide-react";
-import RichTextRenderer from"@/components/ui/RichTextRenderer";
+import React from "react";
+import { motion } from "framer-motion";
+import { Globe, ArrowUpRight } from "lucide-react";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 // Standard vector logos for premier fallbacks
 const GoogleLogo = () => (
@@ -60,26 +60,26 @@ const WebflowLogo = () => (
 );
 
 export default function TrustedBrandsSection({ data }: { data?: any }) {
-  const badge = data?.badge || data?.eyebrow ||"02 // CLIENT PROOF";
-  const titleIntro = data?.titleIntro !== undefined ? data.titleIntro :"Trusted by";
-  const titleHighlight = data?.titleHighlight !== undefined ? data.titleHighlight :"Leading Brands";
+  const badge = data?.badge || data?.eyebrow || "02 // CLIENT PROOF";
+  const titleIntro = data?.titleIntro !== undefined ? data.titleIntro : "Trusted by";
+  const titleHighlight = data?.titleHighlight !== undefined ? data.titleHighlight : "Leading Brands";
   const description = data?.description !== undefined
     ? data.description
-    :"Powering innovative market disruptors, scaling enterprises, and high-performance industry leaders worldwide.";
+    : "Powering innovative market disruptors, scaling enterprises, and high-performance industry leaders worldwide.";
 
   const rawLogos = Array.isArray(data?.logos) && data.logos.length > 0
     ? data.logos
     : Array.isArray(data?.items) && data.items.length > 0
       ? data.items
       : [
-          { name:"Google Cloud", sub:"Enterprise Partner", image:"" },
-          { name:"Shopify Plus", sub:"Commerce Tier", image:"" },
-          { name:"Stripe", sub:"Verified Partner", image:"" },
-          { name:"Vercel", sub:"Deployment Fleet", image:"" },
-          { name:"AWS", sub:"Cloud Infrastructure", image:"" },
-          { name:"Meta", sub:"Performance Ad Hub", image:"" },
-          { name:"HubSpot", sub:"Inbound Solutions", image:"" },
-          { name:"Webflow", sub:"Visual Engine", image:"" }
+          { name: "Google Cloud", sub: "Enterprise Partner", image: "" },
+          { name: "Shopify Plus", sub: "Commerce Tier", image: "" },
+          { name: "Stripe", sub: "Verified Partner", image: "" },
+          { name: "Vercel", sub: "Deployment Fleet", image: "" },
+          { name: "AWS", sub: "Cloud Infrastructure", image: "" },
+          { name: "Meta", sub: "Performance Ad Hub", image: "" },
+          { name: "HubSpot", sub: "Inbound Solutions", image: "" },
+          { name: "Webflow", sub: "Visual Engine", image: "" }
         ];
 
   const speed = Number(data?.speed) || 28;
@@ -89,13 +89,13 @@ export default function TrustedBrandsSection({ data }: { data?: any }) {
       return (
         <img
           src={item.image}
-          alt={item.name ||"Brand Logo"}
+          alt={item.name || "Brand Logo"}
           className="h-6 w-auto max-w-8 object-contain shrink-0 filter drop-shadow-sm transition-all duration-300"
         />
       );
     }
 
-    const name = String(item.name ||"").toLowerCase();
+    const name = String(item.name || "").toLowerCase();
     if (name.includes("google")) return <GoogleLogo />;
     if (name.includes("shopify")) return <ShopifyLogo />;
     if (name.includes("stripe")) return <StripeLogo />;
@@ -170,9 +170,9 @@ export default function TrustedBrandsSection({ data }: { data?: any }) {
           {[...Array(3)].map((_, repIdx) => (
             <div key={repIdx} className="flex gap-5 sm:gap-6 shrink-0 items-center">
               {rawLogos.map((brand: any, bIdx: number) => {
-                const CardWrapper = brand.link ?"a" :"div";
+                const CardWrapper = brand.link ? "a" : "div";
                 const wrapperProps = brand.link
-                  ? { href: brand.link, target:"_blank", rel:"noopener noreferrer" }
+                  ? { href: brand.link, target: "_blank", rel: "noopener noreferrer" }
                   : {};
 
                 return (

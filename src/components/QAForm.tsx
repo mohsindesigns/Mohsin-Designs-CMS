@@ -1,29 +1,29 @@
-import CtaButton from"@/components/ui/CtaButton";
-import ThemedSelect from"@/components/ui/ThemedSelect";
-import { useRef, useEffect, useState } from"react";
+import CtaButton from "@/components/ui/CtaButton";
+import ThemedSelect from "@/components/ui/ThemedSelect";
+import { useRef, useEffect, useState } from "react";
 import {
   motion,
   useScroll,
   useTransform,
   AnimatePresence
-} from"framer-motion";
-import gsap from"gsap";
-import { ScrollTrigger } from"gsap/ScrollTrigger";
-import { Icon } from"../config/icons";
-import { useContent } from"../hooks/useContent";
-import Image from"next/image";
-import Link from"@/components/ui/Link";
-import RichTextRenderer from"./ui/RichTextRenderer";
-import TurnstileCaptcha from"./ui/TurnstileCaptcha";
+} from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Icon } from "../config/icons";
+import { useContent } from "../hooks/useContent";
+import Image from "next/image";
+import Link from "@/components/ui/Link";
+import RichTextRenderer from "./ui/RichTextRenderer";
+import TurnstileCaptcha from "./ui/TurnstileCaptcha";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const LiquidParallax = ({ children, speed = 0.1, className ="" }: { children: React.ReactNode; speed?: number; className?: string }) => {
+const LiquidParallax = ({ children, speed = 0.1, className = "" }: { children: React.ReactNode; speed?: number; className?: string }) => {
   const ref = useRef(null);
 
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start end","end start"]
+    offset: ["start end", "end start"]
   });
 
   const y = useTransform(scrollYProgress, [0, 1], [0, speed * 50]);
@@ -40,7 +40,7 @@ const LiquidParallax = ({ children, speed = 0.1, className ="" }: { children: Re
   );
 };
 
-const HolographicInput = ({ icon: IconName, label, type ="text", options = [], ...props }: { icon: string; label: string; type?: string; options?: any[];[key: string]: any }) => {
+const HolographicInput = ({ icon: IconName, label, type = "text", options = [], ...props }: { icon: string; label: string; type?: string; options?: any[];[key: string]: any }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [hasValue, setHasValue] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -83,7 +83,7 @@ const HolographicInput = ({ icon: IconName, label, type ="text", options = [], .
         {type ==="select" ? (
           <ThemedSelect
             name={props.name}
-            value={props.value ||""}
+            value={props.value || ""}
             onChange={(e) => {
               setHasValue(!!e.target.value);
               props.onChange?.(e as any);
@@ -243,7 +243,7 @@ const CrystalServiceCard = ({ title, desc, icon, isSelected, onClick }: { title:
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          transition={{ type:"spring", stiffness: 500, damping: 30 }}
+          transition={{ type: "spring", stiffness: 500, damping: 30 }}
           className="absolute top-3 right-3 sm:top-4 sm:right-4"
         >
           <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-gradient-to-r from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/30">
@@ -264,9 +264,9 @@ const CrystalServiceCard = ({ title, desc, icon, isSelected, onClick }: { title:
 
 const StageIndicator = ({ currentStep }: { currentStep: number }) => {
   const stages = [
-    { number: 1, name:"Identity", icon:"User", desc:"Your details" },
-    { number: 2, name:"Specification", icon:"FileText", desc:"Project scope" },
-    { number: 3, name:"Transmission", icon:"Send", desc:"Final review" },
+    { number: 1, name: "Identity", icon: "User", desc: "Your details" },
+    { number: 2, name: "Specification", icon: "FileText", desc: "Project scope" },
+    { number: 3, name: "Transmission", icon: "Send", desc: "Final review" },
   ];
 
   return (
@@ -275,7 +275,7 @@ const StageIndicator = ({ currentStep }: { currentStep: number }) => {
 
       <motion.div
         className="absolute top-4 sm:top-6 left-0 h-[2px] bg-gradient-to-r from-primary to-primary hidden sm:block"
-        initial={{ width:"0%" }}
+        initial={{ width: "0%" }}
         animate={{ width: `${((currentStep - 1) / 2) * 100}%` }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       />
@@ -286,12 +286,12 @@ const StageIndicator = ({ currentStep }: { currentStep: number }) => {
             <motion.div
               animate={currentStep >= stage.number ? {
                 scale: 1.1,
-                backgroundColor:"hsl(var(--primary))",
-                borderColor:"hsl(var(--primary))",
+                backgroundColor: "hsl(var(--primary))",
+                borderColor: "hsl(var(--primary))",
               } : {
                 scale: 1,
-                backgroundColor:"hsl(var(--background))",
-                borderColor:"hsl(var(--border))",
+                backgroundColor: "hsl(var(--background))",
+                borderColor: "hsl(var(--border))",
               }}
               className={`
                 relative w-10 h-10 sm:w-14 sm:h-14 rounded-full border-2 
@@ -304,7 +304,7 @@ const StageIndicator = ({ currentStep }: { currentStep: number }) => {
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{ type:"spring" }}
+                  transition={{ type: "spring" }}
                 >
                   <Icon name="Check" className="w-5 h-5 text-white" />
                 </motion.div>
@@ -369,7 +369,7 @@ const SuccessModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.9, y: 20, opacity: 0 }}
             transition={{
-              type:"spring",
+              type: "spring",
               stiffness: 400,
               damping: 30
             }}
@@ -382,7 +382,7 @@ const SuccessModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{
-                  type:"spring",
+                  type: "spring",
                   stiffness: 500,
                   damping: 30,
                   delay: 0.2
@@ -465,11 +465,11 @@ const SMSConsentCheckbox = ({ checked, onChange, showError }: { checked: boolean
           />
           <motion.div
             animate={checked ? {
-              backgroundColor:"hsl(var(--primary))",
-              borderColor:"hsl(var(--primary))"
+              backgroundColor: "hsl(var(--primary))",
+              borderColor: "hsl(var(--primary))"
             } : {
-              backgroundColor:"transparent",
-              borderColor: showError ?"hsl(0, 84%, 60%)" :"hsl(var(--border))"
+              backgroundColor: "transparent",
+              borderColor: showError ? "hsl(0, 84%, 60%)" : "hsl(var(--border))"
             }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -482,7 +482,7 @@ const SMSConsentCheckbox = ({ checked, onChange, showError }: { checked: boolean
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                transition={{ type:"spring", stiffness: 500, damping: 30 }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
               >
                 <Icon name="Check" className="w-3 h-3 text-white" />
               </motion.div>
@@ -622,7 +622,7 @@ ${formData.message}
         zipCode: formData.zipCode,
         timeline: timelines.find((t: any) => t.value === formData.timeline)?.label || 'Not specified',
         services: serviceNames || 'None selected',
-        message: formData.message ||"New Quote Request from Homepage",
+        message: formData.message || "New Quote Request from Homepage",
         captchaToken: captchaToken,
         sms_consent: 'Yes'
       };
@@ -690,11 +690,11 @@ ${formData.message}
           rotateX: 0,
           duration: 1.2,
           stagger: 0.15,
-          ease:"expo.out",
+          ease: "expo.out",
           scrollTrigger: {
             trigger: sectionRef.current,
-            start:"top 85%",
-            toggleActions:"play none none reverse"
+            start: "top 85%",
+            toggleActions: "play none none reverse"
           }
         }
       );
@@ -773,7 +773,7 @@ ${formData.message}
               duration: 8 + Math.random() * 6,
               repeat: Infinity,
               delay: Math.random() * 4,
-              ease:"easeInOut"
+              ease: "easeInOut"
             }}
           />
         ))}
@@ -1028,7 +1028,7 @@ ${formData.message}
                     icon={false}
                     onClick={() => setFormStep(Math.max(1, formStep - 1))}
                     disabled={formStep === 1}
-                    className={formStep === 1 ?"invisible" :""}
+                    className={formStep === 1 ? "invisible" : ""}
                   >
                     Previous
                   </CtaButton>
@@ -1039,7 +1039,7 @@ ${formData.message}
                     </CtaButton>
                   ) : (
                     <CtaButton type="submit" loading={isSubmitting} icon={<Icon name="Send" />}>
-                      {isSubmitting ?"Transmitting..." :"Get Free Quote"}
+                      {isSubmitting ? "Transmitting..." : "Get Free Quote"}
                     </CtaButton>
                   )}
                 </div>

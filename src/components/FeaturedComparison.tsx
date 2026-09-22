@@ -44,17 +44,17 @@ export default function FeaturedComparison({ data }: FeaturedComparisonProps) {
   if (!data) return null;
 
   const {
-    badge ="Premium Material Showcase",
-    titleLine1 ="Composite & PVC:",
-    titleLine2 ="Built Different",
-    description ="Two premium paths to your dream outdoor space. Discover why our deck installations are the gold standard.",
-    image ="",
-    imageBadge ="Award-Winning Craftsmanship",
-    imageTitle ="Transform Your Outdoor Living",
-    imageDescription ="Every deck we build is a masterpiece of engineering and design, backed by industry-leading warranties.",
-    comparisonTitle ="Compare & Choose",
-    comparisonSubtitle ="Find Your Perfect Material",
-    comparisonDescription ="Side-by-side comparison of our premium decking solutions",
+    badge = "Premium Material Showcase",
+    titleLine1 = "Composite & PVC: ",
+    titleLine2 = "Built Different",
+    description = "Two premium paths to your dream outdoor space. Discover why our deck installations are the gold standard.",
+    image = "",
+    imageBadge = "Award-Winning Craftsmanship",
+    imageTitle = "Transform Your Outdoor Living",
+    imageDescription = "Every deck we build is a masterpiece of engineering and design, backed by industry-leading warranties.",
+    comparisonTitle = "Compare & Choose",
+    comparisonSubtitle = "Find Your Perfect Material",
+    comparisonDescription = "Side-by-side comparison of our premium decking solutions",
     card1 = {},
     card2 = {}
   } = data;
@@ -76,7 +76,7 @@ export default function FeaturedComparison({ data }: FeaturedComparisonProps) {
             y: [0, -30, 20, 0],
             scale: [1, 1.2, 0.9, 1],
           }}
-          transition={{ duration: 15, repeat: Infinity, ease:"easeInOut" }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
           className="absolute bottom-20 right-10 w-96 h-96 bg-primary/3 rounded-full blur-[120px]"
@@ -85,7 +85,7 @@ export default function FeaturedComparison({ data }: FeaturedComparisonProps) {
             y: [0, 20, -30, 0],
             scale: [1, 0.9, 1.1, 1],
           }}
-          transition={{ duration: 18, repeat: Infinity, ease:"easeInOut", delay: 2 }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
         />
         <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(hsl(var(--primary))_1px,transparent_1px)] [background-size:40px_40px]" />
       </div>
@@ -104,7 +104,7 @@ export default function FeaturedComparison({ data }: FeaturedComparisonProps) {
             initial={{ scale: 0 }}
             whileInView={{ scale: 1 }}
             viewport={{ once: true }}
-            transition={{ type:"spring", stiffness: 200, damping: 20 }}
+            transition={{ type: "spring", stiffness: 200, damping: 20 }}
             className="inline-flex items-center gap-2 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 text-primary px-5 py-2.5 rounded-full border border-primary/30 mb-8 backdrop-blur-sm"
           >
             <DynamicIcon name="Sparkles" className="w-4 h-4" />
@@ -142,7 +142,7 @@ export default function FeaturedComparison({ data }: FeaturedComparisonProps) {
           {image ? (
             <img
               src={image}
-              alt={imageTitle ||"Premium showcase"}
+              alt={imageTitle || "Premium showcase"}
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
             />
           ) : (
@@ -212,17 +212,17 @@ export default function FeaturedComparison({ data }: FeaturedComparisonProps) {
             {/* Card 1 */}
             <motion.div
               whileHover={{ y: -10 }}
-              transition={{ type:"spring", stiffness: 300, damping: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
               className={`relative rounded-3xl overflow-hidden border-2 transition-all duration-500 bg-card border-border hover:border-primary/30`}
             >
               <div className="p-8 sm:p-10">
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
-                    <DynamicIcon name={card1.icon ||"TreePine"} className="w-7 h-7 text-primary" />
+                    <DynamicIcon name={card1.icon || "TreePine"} className="w-7 h-7 text-primary" />
                   </div>
                   <div>
-                    <h4 className="text-2xl font-bold text-foreground">{card1.title ||"Capped Composite"}</h4>
-                    <p className="text-sm text-muted-foreground">{card1.subtitle ||"Wood fiber blend"}</p>
+                    <h4 className="text-2xl font-bold text-foreground">{card1.title || "Capped Composite"}</h4>
+                    <p className="text-sm text-muted-foreground">{card1.subtitle || "Wood fiber blend"}</p>
                   </div>
                 </div>
 
@@ -256,7 +256,7 @@ export default function FeaturedComparison({ data }: FeaturedComparisonProps) {
             {/* Card 2 */}
             <motion.div
               whileHover={{ y: -10 }}
-              transition={{ type:"spring", stiffness: 300, damping: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
               className={`relative rounded-3xl overflow-hidden border-2 transition-all duration-500 bg-card ${
                 card2.isRecommended
                   ? 'border-primary shadow-2xl shadow-primary/20 bg-gradient-to-b from-primary/5 to-transparent'
@@ -274,11 +274,11 @@ export default function FeaturedComparison({ data }: FeaturedComparisonProps) {
               <div className="p-8 sm:p-10">
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
-                    <DynamicIcon name={card2.icon ||"Droplets"} className="w-7 h-7 text-primary" />
+                    <DynamicIcon name={card2.icon || "Droplets"} className="w-7 h-7 text-primary" />
                   </div>
                   <div>
-                    <h4 className="text-2xl font-bold text-foreground">{card2.title ||"Cellular PVC"}</h4>
-                    <p className="text-sm text-muted-foreground">{card2.subtitle ||"100% polymer"}</p>
+                    <h4 className="text-2xl font-bold text-foreground">{card2.title || "Cellular PVC"}</h4>
+                    <p className="text-sm text-muted-foreground">{card2.subtitle || "100% polymer"}</p>
                   </div>
                 </div>
 

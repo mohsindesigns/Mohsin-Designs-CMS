@@ -17,9 +17,18 @@ export default {
                 xs: "480px",
             },
             fontFamily: {
+                // Exactly two brand fonts, everywhere:
+                //   heading (Lora)          -> all headings, body copy defaults
+                //   accent / cursive (Dancing Script) -> the highlighted word inside a heading
+                // `sans`, `mono` and `serif` are remapped here too so any stray use of those
+                // built-in Tailwind utilities can't leak a browser-default font onto the page.
                 heading: ['var(--font-heading)', 'serif'],
                 body: ['var(--font-body)', 'sans-serif'],
-                accent: ['var(--font-body)', 'sans-serif'],
+                sans: ['var(--font-body)', 'sans-serif'],
+                mono: ['var(--font-body)', 'sans-serif'],
+                serif: ['var(--font-heading)', 'serif'],
+                accent: ['Dancing Script', 'cursive'],
+                cursive: ['Dancing Script', 'cursive'],
             },
             colors: {
                 border: "hsl(var(--border))",

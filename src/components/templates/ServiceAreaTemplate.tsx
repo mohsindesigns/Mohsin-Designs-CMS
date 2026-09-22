@@ -1,11 +1,11 @@
 "use client";
 
-import CtaButton from"@/components/ui/CtaButton";
-import { withTrailingSlash } from"@/lib/url";
-import PageBreadcrumbs from"@/components/PageBreadcrumbs";
-import React from"react";
-import { motion } from"framer-motion";
-import Link from"@/components/ui/Link";
+import CtaButton from "@/components/ui/CtaButton";
+import { withTrailingSlash } from "@/lib/url";
+import PageBreadcrumbs from "@/components/PageBreadcrumbs";
+import React from "react";
+import { motion } from "framer-motion";
+import Link from "@/components/ui/Link";
 import {
   MapPin, CheckCircle, Map, ShieldCheck, Clock, Award, Check, Navigation,
   Building, Compass, ArrowRight, Zap, Star,
@@ -13,11 +13,11 @@ import {
   Phone, Calendar, ClipboardCheck, Hammer, Sparkles, Globe, ShieldAlert,
   Wrench, PencilRuler, Flame, AlertTriangle, FileCheck2, FileText, Layers, RefreshCw,
   Clipboard, ClipboardList
-} from"lucide-react";
-import RichTextRenderer from"../ui/RichTextRenderer";
-import { useContent } from"@/hooks/useContent";
-import PageInlineFaqs from"@/components/PageInlineFaqs";
-import dynamic from"next/dynamic";
+} from "lucide-react";
+import RichTextRenderer from "../ui/RichTextRenderer";
+import { useContent } from "@/hooks/useContent";
+import PageInlineFaqs from "@/components/PageInlineFaqs";
+import dynamic from "next/dynamic";
 
 const QuickQuote = dynamic(() => import("@/components/QuickQuote"), { ssr: false });
 
@@ -86,7 +86,7 @@ const ServiceCard = ({ service, index }: any) => {
 
             {/* CTA anchor link */}
             <div className="flex items-center gap-2 text-primary font-black text-xs uppercase tracking-wider">
-              {service.buttonText ||"Explore Service"} <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform" />
+              {service.buttonText || "Explore Service"} <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform" />
             </div>
           </div>
         </div>
@@ -103,119 +103,119 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
   const content = pageData?.content || {};
 
   const hero = content.hero || {
-    headline: pageData?.title ||"Our Service Areas",
-    description:"Proudly serving St. Louis, St. Charles, and surrounding Missouri communities with elite, veteran-owned roofing and home improvements.",
-    image:"/images/service-area-hero.jpg"
+    headline: pageData?.title || "Our Service Areas",
+    description: "Proudly serving St. Louis, St. Charles, and surrounding Missouri communities with elite, veteran-owned roofing and home improvements.",
+    image: "/images/service-area-hero.jpg"
   };
 
-  const bannerImg = hero.image ||"/images/service-area-hero.jpg";
+  const bannerImg = hero.image || "/images/service-area-hero.jpg";
 
   const regions: Region[] = content.regions || [
     {
-      name:"St. Louis County",
-      cities: ["Chesterfield","Wildwood","Ballwin","Kirkwood","Webster Groves","Florissant","Hazelwood","Maryland Heights","Eureka","Fenton","Ladue","Clayton"],
-      zipcodes: ["63017","63005","63011","63021","63122","63119","63031","63042","63043","63025","63026","63124","63105"]
+      name: "St. Louis County",
+      cities: ["Chesterfield", "Wildwood", "Ballwin", "Kirkwood", "Webster Groves", "Florissant", "Hazelwood", "Maryland Heights", "Eureka", "Fenton", "Ladue", "Clayton"],
+      zipcodes: ["63017", "63005", "63011", "63021", "63122", "63119", "63031", "63042", "63043", "63025", "63026", "63124", "63105"]
     },
     {
-      name:"St. Charles County",
-      cities: ["St. Charles","St. Peters","O'Fallon","Wentzville","Lake St. Louis","Cottleville","Weldon Spring","Defiance"],
-      zipcodes: ["63301","63303","63304","63376","63366","63368","63385","63367"]
+      name: "St. Charles County",
+      cities: ["St. Charles", "St. Peters", "O'Fallon", "Wentzville", "Lake St. Louis", "Cottleville", "Weldon Spring", "Defiance"],
+      zipcodes: ["63301", "63303", "63304", "63376", "63366", "63368", "63385", "63367"]
     },
     {
-      name:"Jefferson County",
-      cities: ["Arnold","Imperial","Festus","Hillsboro","House Springs","Barnhart"],
-      zipcodes: ["63010","63052","63028","63050","63051","63012"]
+      name: "Jefferson County",
+      cities: ["Arnold", "Imperial", "Festus", "Hillsboro", "House Springs", "Barnhart"],
+      zipcodes: ["63010", "63052", "63028", "63050", "63051", "63012"]
     }
   ];
 
   const stats = content.stats || [
-    { value:"15+", label:"Years of Local Expertise" },
-    { value:"500+", label:"Premium Roofs Installed" },
-    { value:"100%", label:"Veteran-Owned & Operated" }
+    { value: "15+", label: "Years of Local Expertise" },
+    { value: "500+", label: "Premium Roofs Installed" },
+    { value: "100%", label: "Veteran-Owned & Operated" }
   ];
 
   const processSteps = content.process || content.processSteps || [
-    { title:"Free Inspection", description:"We perform a highly detailed visual inspection of your entire roof, shingle layers, gutters, and attic structure." },
-    { title:"Custom Quote", description:"Receive an itemized, fully transparent project quote detailing premium materials, scopes, and warranty parameters." },
-    { title:"Elite Install", description:"Our certified expert crews complete your roofing or siding replacement with ultimate military precision and focus." },
-    { title:"Final Sign-Off", description:"We execute a deep ground clean-up and a final walkthrough with you to verify that our work exceeds your expectations." }
+    { title: "Free Inspection", description: "We perform a highly detailed visual inspection of your entire roof, shingle layers, gutters, and attic structure." },
+    { title: "Custom Quote", description: "Receive an itemized, fully transparent project quote detailing premium materials, scopes, and warranty parameters." },
+    { title: "Elite Install", description: "Our certified expert crews complete your roofing or siding replacement with ultimate military precision and focus." },
+    { title: "Final Sign-Off", description: "We execute a deep ground clean-up and a final walkthrough with you to verify that our work exceeds your expectations." }
   ];
 
   const processSection = content.processSection || {
-    headline:"Our Core Blueprint",
-    title:"Our Elite 4-Step Process"
+    headline: "Our Core Blueprint",
+    title: "Our Elite 4-Step Process"
   };
 
   const mapData = content.map || {
-    headline:"Our Coverage Area",
-    title:"Our Operational Coverage Map",
-    description:"Centrally dispatched to provide lightning-fast storm response, professional inspections, and veteran-grade roof installations across all primary Missouri counties.",
-    iframeUrl:"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d199426.6823901614!2d-90.3835467!3d38.6531004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x54eab584e432360b%3A0x1c3bb99243deb742!2sSt.+Louis%2C+MO!5e0!3m2!1sen!2sus!4v1700000000000",
-    bullet1Title:"Primary Coverage Area",
-    bullet1Text:"St. Louis, St. Charles, Jefferson & surrounding communities.",
-    bullet2Title:"Operation Hours",
-    bullet2Text:"Mon - Sat: 7:00 AM - 6:00 PM (Emergency storm response 24/7)",
-    bullet3Title:"Direct Office Hotline",
-    bullet3Text:"(636) 293-9977"
+    headline: "Our Coverage Area",
+    title: "Our Operational Coverage Map",
+    description: "Centrally dispatched to provide lightning-fast storm response, professional inspections, and veteran-grade roof installations across all primary Missouri counties.",
+    iframeUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d199426.6823901614!2d-90.3835467!3d38.6531004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x54eab584e432360b%3A0x1c3bb99243deb742!2sSt.+Louis%2C+MO!5e0!3m2!1sen!2sus!4v1700000000000",
+    bullet1Title: "Primary Coverage Area",
+    bullet1Text: "St. Louis, St. Charles, Jefferson & surrounding communities.",
+    bullet2Title: "Operation Hours",
+    bullet2Text: "Mon - Sat: 7:00 AM - 6:00 PM (Emergency storm response 24/7)",
+    bullet3Title: "Direct Office Hotline",
+    bullet3Text: "(636) 293-9977"
   };
 
   const materialsData = content.materials || {
-    headline:"Certified Excellence",
-    title:"Premium Materials We Install",
+    headline: "Certified Excellence",
+    title: "Premium Materials We Install",
     items: [
-      { title:"Asphalt Shingles", description:"Architectural shingles engineered for ultimate storm protection, wind resilience, and custom color coordination to match your house aesthetics." },
-      { title:"Standing Seam Metal", description:"High-end modern architectural profile that offers complete storm immunity, maximum energy efficiency, and a lifetime of zero maintenance." },
-      { title:"High-End Siding", description:"Fiber cement siding configured to stand strong against moisture rot, pests, and high wind impacts, instantly boosting your curb appeal." },
-      { title:"Seamless Gutters", description:"High-capacity aluminum water drainage channels manufactured custom on-site to perfectly fit your roof perimeter and protect your soil foundations." }
+      { title: "Asphalt Shingles", description: "Architectural shingles engineered for ultimate storm protection, wind resilience, and custom color coordination to match your house aesthetics." },
+      { title: "Standing Seam Metal", description: "High-end modern architectural profile that offers complete storm immunity, maximum energy efficiency, and a lifetime of zero maintenance." },
+      { title: "High-End Siding", description: "Fiber cement siding configured to stand strong against moisture rot, pests, and high wind impacts, instantly boosting your curb appeal." },
+      { title: "Seamless Gutters", description: "High-capacity aluminum water drainage channels manufactured custom on-site to perfectly fit your roof perimeter and protect your soil foundations." }
     ]
   };
 
   const servicesSection = content.servicesSection || {
-    headline:"What We Provide",
-    title:"Services We Provide in This Area",
+    headline: "What We Provide",
+    title: "Services We Provide in This Area",
     items: [
-      { title:"Residential Roofing", description:"Pristine asphalt shingle and standing seam metal roof replacements designed for ultimate local storm immunity.", buttonText:"Explore Service", buttonHref:"/services/residential-roofing", icon:"Home" },
-      { title:"Commercial Roofing", description:"Heavy-duty TPO, EPDM, and flat roof coatings configured for Missouri commercial properties and corporate facilities.", buttonText:"Explore Service", buttonHref:"/services/commercial-roofing", icon:"Building" },
-      { title:"Seamless Gutters", description:"Custom on-site rolled high-capacity aluminum gutter installations to secure proper rain drainage controls.", buttonText:"Explore Service", buttonHref:"/services/seamless-gutters", icon:"Droplets" }
+      { title: "Residential Roofing", description: "Pristine asphalt shingle and standing seam metal roof replacements designed for ultimate local storm immunity.", buttonText: "Explore Service", buttonHref: "/services/residential-roofing", icon: "Home" },
+      { title: "Commercial Roofing", description: "Heavy-duty TPO, EPDM, and flat roof coatings configured for Missouri commercial properties and corporate facilities.", buttonText: "Explore Service", buttonHref: "/services/commercial-roofing", icon: "Building" },
+      { title: "Seamless Gutters", description: "Custom on-site rolled high-capacity aluminum gutter installations to secure proper rain drainage controls.", buttonText: "Explore Service", buttonHref: "/services/seamless-gutters", icon: "Droplets" }
     ]
   };
 
   const whyChooseData = content.whyChoose || {
-    headline:"Why Choose Us",
-    title:"Elite Missouri Roofing Quality",
+    headline: "Why Choose Us",
+    title: "Elite Missouri Roofing Quality",
     items: [
-      { title:"Licensed & Fully Insured", description:"Complete compliance for your peace of mind. We hold full general liability, workers' comp, and active licensing across all service counties." },
-      { title:"Rapid Storm Dispatch", description:"Expedited emergency tarping and inspections. St. Louis storm damage requires immediate action, and our teams respond directly inside our operational radius." },
-      { title:"Veteran Owned Standards", description:"Applying military precision, honor, and elite craftsmanship to every shingle repair, gutter build, and residential siding replacement." }
+      { title: "Licensed & Fully Insured", description: "Complete compliance for your peace of mind. We hold full general liability, workers' comp, and active licensing across all service counties." },
+      { title: "Rapid Storm Dispatch", description: "Expedited emergency tarping and inspections. St. Louis storm damage requires immediate action, and our teams respond directly inside our operational radius." },
+      { title: "Veteran Owned Standards", description: "Applying military precision, honor, and elite craftsmanship to every shingle repair, gutter build, and residential siding replacement." }
     ]
   };
 
   const overviewData = content.overview || {
-    headline:"Local Overview",
-    title:"Elite Roofing & Restoration in This Community",
-    description:"<p>Proudly providing premium residential roofing, standing seam metal builds, siding updates, and gutter cleanups to Missouri homeowners. We combine veteran precision with durable local materials.</p>",
-    buttonText:"Schedule Free Inspection",
-    buttonHref:"#contact",
-    image:"/images/service-area-overview.jpg"
+    headline: "Local Overview",
+    title: "Elite Roofing & Restoration in This Community",
+    description: "<p>Proudly providing premium residential roofing, standing seam metal builds, siding updates, and gutter cleanups to Missouri homeowners. We combine veteran precision with durable local materials.</p>",
+    buttonText: "Schedule Free Inspection",
+    buttonHref: "#contact",
+    image: "/images/service-area-overview.jpg"
   };
 
   const regionsSection = content.regionsSection || {
-    title:"Communities We Serve in This Region",
-    description:"Toggle regional counties to view specific community coverage lists."
+    title: "Communities We Serve in This Region",
+    description: "Toggle regional counties to view specific community coverage lists."
   };
 
   const cta = content.cta || {
-    headline:"Ready to Start Your Project?",
-    description:"Whether you need a minor repair or a complete roof replacement, our expert team is ready to protect your home. Contact us today for an elite-grade service experience.",
-    buttonText:"Schedule Free Inspection",
-    buttonHref:"#contact"
+    headline: "Ready to Start Your Project? ",
+    description: "Whether you need a minor repair or a complete roof replacement, our expert team is ready to protect your home. Contact us today for an elite-grade service experience.",
+    buttonText: "Schedule Free Inspection",
+    buttonHref: "#contact"
   };
 
   const pageUrlDisplay = (() => {
     const slug = pageData?.slug?.toString().trim();
     if (!slug) return"https://mohsindesigns.com";
 
-    const normalizedSlug = slug.replace(/^\/+|\/+$/g,"");
+    const normalizedSlug = slug.replace(/^\/+|\/+$/g, "");
     if (/^https?:\/\//i.test(normalizedSlug)) return normalizedSlug;
 
     return `https://mohsindesigns.com/${normalizedSlug}`;
@@ -231,7 +231,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
         <div className="absolute inset-0 z-0">
           <img
             src={bannerImg}
-            alt={pageData?.title ||"Service Area Banner"}
+            alt={pageData?.title || "Service Area Banner"}
             className="w-full h-full object-cover opacity-35"
           />
           {/* Guaranteed Deep Contrast Mask Overlay */}
@@ -640,7 +640,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
               {overviewData.buttonText && (
                 <div className="pt-4">
-                  <CtaButton href={overviewData.buttonHref ||"#contact"}>{overviewData.buttonText}</CtaButton>
+                  <CtaButton href={overviewData.buttonHref || "#contact"}>{overviewData.buttonText}</CtaButton>
                 </div>
               )}
             </div>
@@ -649,7 +649,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
             <div className="lg:col-span-6 min-w-0">
               <div className="relative rounded-[2rem] overflow-hidden shadow-2xl border border-slate-200/80 group">
                 <img
-                  src={overviewData.image ||"/images/service-area-overview.jpg"}
+                  src={overviewData.image || "/images/service-area-overview.jpg"}
                   alt={overviewData.title}
                   className="w-full h-[450px] object-cover hover:scale-105 transition-transform duration-700"
                 />

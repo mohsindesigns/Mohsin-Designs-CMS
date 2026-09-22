@@ -1,35 +1,35 @@
-import type { Metadata } from"next";
-import { Lora, Poppins } from"next/font/google";
+import type { Metadata } from "next";
+import { Lora, Poppins } from "next/font/google";
 import"./globals.css";
-import { Providers } from"@/components/Providers";
-import SiteLayout from"@/components/SiteLayout";
-import connectToDatabase from"@/lib/mongodb";
-import SiteContent from"@/models/Content";
-import { BASE_URL } from"@/lib/constants";
-import InteractiveBackground from"@/components/InteractiveBackground";
-import { resolveRobotsMetadata } from"@/lib/seo";
-import { getCachedSiteContent, getCachedSiteScripts } from"@/lib/content";
+import { Providers } from "@/components/Providers";
+import SiteLayout from "@/components/SiteLayout";
+import connectToDatabase from "@/lib/mongodb";
+import SiteContent from "@/models/Content";
+import { BASE_URL } from "@/lib/constants";
+import InteractiveBackground from "@/components/InteractiveBackground";
+import { resolveRobotsMetadata } from "@/lib/seo";
+import { getCachedSiteContent, getCachedSiteScripts } from "@/lib/content";
 
 
 const lora = Lora({
-  variable:"--font-heading",
+  variable: "--font-heading",
   subsets: ["latin"],
-  weight: ["500","600","700"],
+  weight: ["500", "600", "700"],
 });
 
 const poppins = Poppins({
-  variable:"--font-body",
+  variable: "--font-body",
   subsets: ["latin"],
-  weight: ["300","400","500","600","700"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 
 export async function generateMetadata(): Promise<Metadata> {
   let settings: any = {
-    siteTitle:"",
-    siteTemplate:"%s",
-    favicon:"",
-    siteDescription:"",
+    siteTitle: "",
+    siteTemplate: "%s",
+    favicon: "",
+    siteDescription: "",
     siteKeywords: []
   };
 
@@ -47,17 +47,17 @@ export async function generateMetadata(): Promise<Metadata> {
       apple: settings.favicon || `${BASE_URL}/portfolio_hero_bg.png`,
     },
     facebook: {
-      appId:"Mohsin-Designs",
+      appId: "Mohsin-Designs",
     },
     title: {
-      default: settings.siteTitle ||"Mohsin Designs",
-      template: settings.siteTemplate ||"%s | Mohsin Designs",
+      default: settings.siteTitle || "Mohsin Designs",
+      template: settings.siteTemplate || "%s | Mohsin Designs",
     },
-    description: settings.siteDescription ||"Modern Web Architecture, SEO & Digital Marketing Solutions by Mohsin Designs.",
-    keywords: settings.siteKeywords || ["Mohsin Designs","Web Design","SEO Services","Digital Marketing"],
-    authors: [{ name:"Mohsin Designs", url: BASE_URL }],
-    creator:"Mohsin Designs",
-    publisher:"Mohsin Designs",
+    description: settings.siteDescription || "Modern Web Architecture, SEO & Digital Marketing Solutions by Mohsin Designs.",
+    keywords: settings.siteKeywords || ["Mohsin Designs", "Web Design", "SEO Services", "Digital Marketing"],
+    authors: [{ name: "Mohsin Designs", url: BASE_URL }],
+    creator: "Mohsin Designs",
+    publisher: "Mohsin Designs",
 
     // ── Robots & Canonical ──
     robots: resolveRobotsMetadata(null, !!settings?.globalNoIndex),
@@ -67,40 +67,40 @@ export async function generateMetadata(): Promise<Metadata> {
 
     // ── Open Graph (Facebook, LinkedIn) ──
     openGraph: {
-      type:"website",
-      locale:"en_US",
+      type: "website",
+      locale: "en_US",
       url: BASE_URL,
-      siteName:"Mohsin Designs",
-      title: settings.siteTitle ||"Mohsin Designs",
-      description: settings.siteDescription ||"Modern Web Architecture, SEO & Digital Marketing Solutions by Mohsin Designs.",
+      siteName: "Mohsin Designs",
+      title: settings.siteTitle || "Mohsin Designs",
+      description: settings.siteDescription || "Modern Web Architecture, SEO & Digital Marketing Solutions by Mohsin Designs.",
       images: [
         {
           url: settings.favicon || `${BASE_URL}/portfolio_hero_bg.png`,
           width: 1200,
           height: 630,
-          alt:"Mohsin Designs – Web Design, SEO & Digital Marketing Agency",
-          type:"image/png",
+          alt: "Mohsin Designs – Web Design, SEO & Digital Marketing Agency",
+          type: "image/png",
         },
       ],
     },
 
     // ── Twitter Cards ──
     twitter: {
-      card:"summary_large_image",
-      title: settings.siteTitle ||"Mohsin Designs",
-      description: settings.siteDescription ||"Modern Web Architecture, SEO & Digital Marketing Solutions by Mohsin Designs.",
+      card: "summary_large_image",
+      title: settings.siteTitle || "Mohsin Designs",
+      description: settings.siteDescription || "Modern Web Architecture, SEO & Digital Marketing Solutions by Mohsin Designs.",
       images: [settings.favicon || `${BASE_URL}/portfolio_hero_bg.png`],
-      creator:"@MohsinDesigns",
-      site:"@MohsinDesigns",
+      creator: "@MohsinDesigns",
+      site: "@MohsinDesigns",
     },
 
     other: {
-"format-detection":"telephone=no",
+"format-detection": "telephone=no",
     },
   };
 }
 
-import { ContentProvider } from"@/context/ContentContext";
+import { ContentProvider } from "@/context/ContentContext";
 
 export default async function RootLayout({
   children,
