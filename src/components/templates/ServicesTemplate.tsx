@@ -445,7 +445,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, ease: "easeOut" }}
-              className="on-dark-surface relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#0306ac] via-[#020485] to-[#010252] text-white p-8 sm:p-12 lg:p-14 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-8"
+              className="on-dark-surface relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#0306ac] via-[#020485] to-[#010252] dark:from-[#12121e] dark:via-[#0f0f1a] dark:to-[#080710] text-white p-8 sm:p-12 lg:p-14 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-8"
             >
               {/* Left text column */}
               <div className="relative z-10 flex flex-col justify-center gap-5 lg:max-w-[62%]">

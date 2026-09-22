@@ -208,16 +208,19 @@ export default function Navbar() {
                           </Link>
                         </div>
 
-                        {/* Service cards */}
-                        <div className="grid grid-cols-3 gap-1.5 px-5 pb-5 pt-2">
+                        {/* Service cards - each is its own bordered card at rest (not just on
+                            hover) so the grid reads as clearly separated tiles, and the whole
+                            grid scrolls once it's taller than the viewport can fit, so the
+                            footer strip below is never pushed off-screen. */}
+                        <div className="grid max-h-[min(56vh,460px)] grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 overflow-y-auto px-5 pb-5 pt-2">
                           {services.map((service: any) => (
                             <Link
                               key={service.slug}
                               href={`/services/${service.slug}`}
                               onClick={handleLinkClick}
-                              className="group flex items-center gap-3.5 rounded-2xl border border-transparent p-3.5 transition-all duration-300 hover:border-brand-blue/15 hover:bg-brand-blue/[0.04] dark:hover:border-brand-yellow/20 dark:hover:bg-brand-yellow/[0.06]"
+                              className="group flex items-center gap-3.5 rounded-2xl border border-brand-zinc-100 bg-brand-zinc-50/60 p-3.5 transition-all duration-300 hover:border-brand-blue/25 hover:bg-brand-blue/[0.05] hover:shadow-sm dark:border-white/[0.06] dark:bg-white/[0.02] dark:hover:border-brand-yellow/25 dark:hover:bg-brand-yellow/[0.07]"
                             >
-                              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-blue/10 text-brand-blue transition-all duration-300 group-hover:bg-brand-blue group-hover:text-white group-hover:shadow-lg group-hover:shadow-brand-blue/25 dark:bg-brand-yellow/10 dark:text-brand-yellow dark:group-hover:bg-brand-yellow dark:group-hover:text-brand-dark">
+                              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-brand-blue shadow-sm transition-all duration-300 group-hover:bg-brand-blue group-hover:text-white group-hover:shadow-lg group-hover:shadow-brand-blue/25 dark:bg-white/5 dark:text-brand-yellow dark:group-hover:bg-brand-yellow dark:group-hover:text-brand-dark">
                                 <Icon name={service.icon} className="h-5 w-5" />
                               </span>
                               <span className="min-w-0 block text-[15px] font-bold leading-snug text-brand-dark transition-colors group-hover:text-brand-blue dark:text-white dark:group-hover:text-brand-yellow">

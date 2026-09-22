@@ -308,10 +308,56 @@
     --cta-sec-sheen: rgb(3 6 172 / 0.1);
   }
 
-  .dark,
+  .dark {
+    --cta-bg: #E9BD36;
+    --cta-bg-hover: #F6CB47;
+    --cta-fg: #080710;
+    --cta-chip-bg: #080710;
+    --cta-chip-fg: #E9BD36;
+    --cta-glow: 233 189 54;
+    --cta-ring: #E9BD36;
+    --cta-sheen: rgb(255 255 255 / 0.5);
+    --cta-sec-fg: #ffffff;
+    --cta-sec-border: rgb(255 255 255 / 0.28);
+    --cta-sec-border-hover: rgb(255 255 255 / 0.7);
+    --cta-sec-hover-bg: rgb(255 255 255 / 0.09);
+    --cta-sec-chip-bg: rgb(255 255 255 / 0.14);
+    --cta-sec-chip-fg: #ffffff;
+    --cta-sec-chip-hover-bg: #E9BD36;
+    --cta-sec-chip-hover-fg: #080710;
+    --cta-sec-sheen: rgb(255 255 255 / 0.14);
+  }
+
+  /* Buttons on a permanently-dark banner (.cta-banner-card / .on-dark-surface / .cta-on-dark)
+     need their OWN light/dark split, separate from the page's theme, because the card itself
+     never goes light - a plain blue button would vanish against its own blue background.
+     Light mode: crisp white button + blue text/chip (unmistakably "light", full contrast).
+     Dark mode: the site's normal yellow accent, same as everywhere else. */
   .cta-banner-card,
   .on-dark-surface,
   .cta-on-dark {
+    --cta-bg: #ffffff;
+    --cta-bg-hover: #eef1ff;
+    --cta-fg: #0306AC;
+    --cta-chip-bg: #0306AC;
+    --cta-chip-fg: #ffffff;
+    --cta-glow: 255 255 255;
+    --cta-ring: #ffffff;
+    --cta-sheen: rgb(3 6 172 / 0.12);
+    --cta-sec-fg: #ffffff;
+    --cta-sec-border: rgb(255 255 255 / 0.28);
+    --cta-sec-border-hover: rgb(255 255 255 / 0.7);
+    --cta-sec-hover-bg: rgb(255 255 255 / 0.09);
+    --cta-sec-chip-bg: rgb(255 255 255 / 0.14);
+    --cta-sec-chip-fg: #ffffff;
+    --cta-sec-chip-hover-bg: #ffffff;
+    --cta-sec-chip-hover-fg: #0306AC;
+    --cta-sec-sheen: rgb(255 255 255 / 0.14);
+  }
+
+  .dark .cta-banner-card,
+  .dark .on-dark-surface,
+  .dark .cta-on-dark {
     --cta-bg: #E9BD36;
     --cta-bg-hover: #F6CB47;
     --cta-fg: #080710;
