@@ -6,6 +6,7 @@ import { Save, Loader2, Settings, LayoutTemplate, Type, Image as ImageIcon, Chev
 import Link from "@/components/ui/Link";
 import * as LucideIcons from "lucide-react";
 import ImageField from "@/components/admin/ImageField";
+import LocationsMenuEditor from "@/components/admin/LocationsMenuEditor";
 import dynamic from "next/dynamic";
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), { 
   ssr: false,
@@ -383,8 +384,11 @@ export default function SettingsEditor() {
           {activeTab === "header" && (
             <motion.div key="header" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                <h2 className="text-xl font-normal text-[#1d2327] mb-6 font-serif">Header & Navigation</h2>
-               <SettingsRow label="Navbar Logo">
-                  <ImageField value={data.navbar?.logo || ""} onChange={(val) => updateData("navbar", "logo", val)} label="Logo" />
+               <SettingsRow label="Navbar Logo (Light mode)" description="Shown when the site is in light theme. Use a logo that reads well on a white header.">
+                  <ImageField value={data.navbar?.logo || ""} onChange={(val) => updateData("navbar", "logo", val)} label="Light mode logo" />
+               </SettingsRow>
+               <SettingsRow label="Navbar Logo (Dark mode)" description="Shown when the site is in dark theme. If left empty, the light mode logo is used.">
+                  <ImageField value={data.navbar?.logoDark || ""} onChange={(val) => updateData("navbar", "logoDark", val)} label="Dark mode logo" />
                </SettingsRow>
                <SettingsRow label="CTA Button">
                   <div className="flex gap-4">
@@ -468,14 +472,58 @@ export default function SettingsEditor() {
                                  <label className="flex items-center gap-2 cursor-pointer text-[12px] text-[#1d2327]">
                                    <input type="checkbox" checked={link.useMegaMenu || false} onChange={(e) => {
                                       const nl = [...data.navbar.companyLinks];
-                                      nl[idx].useMegaMenu = e.target.checked;
+                                      nl[idx] = { ...nl[idx], useMegaMenu: e.target.checked, ...(e.target.checked ? { useLocationsMenu: false } : {}) };
                                       updateData("navbar", "companyLinks", nl);
                                    }} className="rounded-sm border-[#8c8f94]" />
                                    Use Services Mega Menu
                                  </label>
+                                 <label className="flex items-center gap-2 cursor-pointer text-[12px] text-[#1d2327]">
+                                   <input type="checkbox" checked={link.useLocationsMenu || false} onChange={(e) => {
+                                      const nl = [...data.navbar.companyLinks];
+                                      nl[idx] = { ...nl[idx], useLocationsMenu: e.target.checked, ...(e.target.checked ? { useMegaMenu: false } : {}) };
+                                      updateData("navbar", "companyLinks", nl);
+                                   }} className="rounded-sm border-[#8c8f94]" />
+                                   Use Locations Dropdown (with map)
+                                 </label>
                                  <button onClick={() => updateData("navbar", "companyLinks", data.navbar.companyLinks.filter((_:any,i:number)=>i!==idx))} className="text-[#d63638] hover:underline text-[12px] text-left">Remove Parent</button>
                               </div>
                            </div>
+
+                           {link.useMegaMenu && (
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 bg-white p-4 border border-[#dcdcde] rounded-sm">
+                                 <div className="md:col-span-3 text-[11px] font-bold text-[#646970] uppercase tracking-wider">Services mega menu text (all optional)</div>
+                                 <div className="flex flex-col gap-1">
+                                    <label className="text-[11px] font-semibold">Small heading</label>
+                                    <input type="text" placeholder="Our Services" value={link.megaMenuEyebrow || ""} onChange={(e) => {
+                                       const nl = [...data.navbar.companyLinks]; nl[idx] = { ...nl[idx], megaMenuEyebrow: e.target.value }; updateData("navbar", "companyLinks", nl);
+                                    }} className="border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]" />
+                                 </div>
+                                 <div className="flex flex-col gap-1">
+                                    <label className="text-[11px] font-semibold">Heading</label>
+                                    <input type="text" placeholder="Everything you need to grow" value={link.megaMenuTitle || ""} onChange={(e) => {
+                                       const nl = [...data.navbar.companyLinks]; nl[idx] = { ...nl[idx], megaMenuTitle: e.target.value }; updateData("navbar", "companyLinks", nl);
+                                    }} className="border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]" />
+                                 </div>
+                                 <div className="flex flex-col gap-1">
+                                    <label className="text-[11px] font-semibold">Bottom bar text</label>
+                                    <input type="text" placeholder="Not sure which service fits? Talk to our team..." value={link.megaMenuFooterText || ""} onChange={(e) => {
+                                       const nl = [...data.navbar.companyLinks]; nl[idx] = { ...nl[idx], megaMenuFooterText: e.target.value }; updateData("navbar", "companyLinks", nl);
+                                    }} className="border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]" />
+                                 </div>
+                              </div>
+                           )}
+
+                           {link.useLocationsMenu && (
+                              <LocationsMenuEditor
+                                 value={link.locationsMenu}
+                                 pages={pages}
+                                 onChange={(v) => {
+                                    const nl = [...data.navbar.companyLinks];
+                                    nl[idx] = { ...nl[idx], locationsMenu: v };
+                                    updateData("navbar", "companyLinks", nl);
+                                 }}
+                              />
+                           )}
 
                            {/* SUBMENU EDITOR */}
                            <div className="pl-6 border-l-2 border-[#c3c4c7] space-y-4">
@@ -540,8 +588,11 @@ export default function SettingsEditor() {
           {activeTab === "footer" && (
             <motion.div key="footer" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                <h2 className="text-xl font-normal text-[#1d2327] mb-6 font-serif">Footer Content</h2>
-               <SettingsRow label="Footer Logo">
-                  <ImageField value={data.footer?.company?.logo || ""} onChange={(val) => updateData("footer", "company", { ...data.footer.company, logo: val })} label="Logo" />
+               <SettingsRow label="Footer Logo (Light mode)" description="Shown in the footer when the site is in light theme.">
+                  <ImageField value={data.footer?.company?.logo || ""} onChange={(val) => updateData("footer", "company", { ...data.footer.company, logo: val })} label="Light mode logo" />
+               </SettingsRow>
+               <SettingsRow label="Footer Logo (Dark mode)" description="Shown in the footer when the site is in dark theme. If left empty, the light mode logo is used.">
+                  <ImageField value={data.footer?.company?.logoDark || ""} onChange={(val) => updateData("footer", "company", { ...data.footer.company, logoDark: val })} label="Dark mode logo" />
                </SettingsRow>
                <SettingsRow label="Company Name">
                   <input type="text" value={data.footer?.company?.name || ""} onChange={(e) => updateData("footer", "company", { ...data.footer.company, name: e.target.value })} className="w-full max-w-md border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />

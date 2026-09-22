@@ -1,5 +1,6 @@
 "use client";
 
+import CtaButton from "@/components/ui/CtaButton";
 import { withTrailingSlash } from "@/lib/url";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, ArrowRight } from "lucide-react";
@@ -198,7 +199,7 @@ export default function PageInlineFaqs({
             </div>
 
             {/* Premium Clean Sticky Strategy Session Box */}
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-[#020485] to-[#010356] dark:from-[#12121e] dark:via-[#0f0f1a] dark:to-[#080710] border border-primary/20 dark:border-white/10 p-5 xs:p-7 text-white shadow-xl group transition-all duration-300">
+            <div className="on-dark-surface relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-[#020485] to-[#010356] dark:from-[#12121e] dark:via-[#0f0f1a] dark:to-[#080710] border border-primary/20 dark:border-white/10 p-5 xs:p-7 text-white shadow-xl group transition-all duration-300">
               <div className="relative z-20 space-y-5">
                 <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-3 py-1 text-[9px] font-mono font-black tracking-wider uppercase text-yellow-400">
                   {strategyAudit.badge}
@@ -213,15 +214,7 @@ export default function PageInlineFaqs({
                     <RichTextRenderer content={strategyAudit.desc} className="text-white/85 dark:text-zinc-300 [&_*]:!text-white/85 dark:[&_*]:!text-zinc-300 text-xs leading-relaxed" />
                   </div>
                 </div>
-                <a
-                  href={withTrailingSlash(strategyAudit.href)}
-                  className="inline-flex items-center justify-between w-full px-5 py-3.5 rounded-2xl bg-white text-slate-950 hover:bg-yellow-400 hover:text-slate-950 font-heading font-black text-xs uppercase tracking-wider transition-all duration-300 shadow-md group/btn no-underline"
-                >
-                  <span>{strategyAudit.button}</span>
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-950 text-white group-hover/btn:bg-slate-950 group-hover/btn:text-yellow-400 transition-colors">
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </span>
-                </a>
+                <CtaButton href={strategyAudit.href} fullWidth>{strategyAudit.button}</CtaButton>
               </div>
             </div>
 

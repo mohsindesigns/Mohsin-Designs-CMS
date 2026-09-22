@@ -1,5 +1,6 @@
 'use client';
 
+import CtaButton from "@/components/ui/CtaButton";
 import { Share2, Check } from 'lucide-react';
 import { useState } from 'react';
 
@@ -33,22 +34,8 @@ export default function ShareButton({ title, url }: { title: string; url?: strin
   };
 
   return (
-    <button 
-      type="button"
-      onClick={handleShare}
-      className="w-full flex items-center justify-center gap-2.5 bg-brand-blue dark:bg-brand-yellow text-white dark:text-[#080710] px-6 py-3.5 rounded-xl font-mono font-black text-xs uppercase tracking-wider hover:opacity-90 active:scale-[0.98] transition-all shadow-lg shadow-brand-blue/20 dark:shadow-brand-yellow/15 cursor-pointer"
-    >
-      {copied ? (
-        <>
-          <Check className="w-4 h-4 text-emerald-400 dark:text-emerald-800 shrink-0" />
-          <span>Link Copied to Clipboard!</span>
-        </>
-      ) : (
-        <>
-          <Share2 className="w-4 h-4 shrink-0" />
-          <span>Share This Article</span>
-        </>
-      )}
-    </button>
+    <CtaButton fullWidth onClick={handleShare} icon={copied ? <Check /> : <Share2 />}>
+      {copied ? 'Link Copied to Clipboard!' : 'Share This Article'}
+    </CtaButton>
   );
 }

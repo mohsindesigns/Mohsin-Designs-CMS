@@ -1,3 +1,4 @@
+import CtaButton from "@/components/ui/CtaButton";
 import { withTrailingSlash } from "@/lib/url";
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import { Metadata } from "next";
@@ -524,15 +525,7 @@ export default async function BlogPostPage({ params }: Props) {
                   content={sidebarCta.description}
                   className="text-white/80 dark:text-zinc-300 text-xs leading-relaxed font-sans font-normal"
                 />
-                <Link
-                  href={sidebarCta.buttonHref}
-                  className="btn-primary-cta w-full justify-center text-xs py-3.5 mt-2"
-                >
-                  <span>{sidebarCta.buttonText}</span>
-                  <span className="btn-icon">
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </span>
-                </Link>
+                <CtaButton href={sidebarCta.buttonHref} fullWidth className="mt-2">{sidebarCta.buttonText}</CtaButton>
               </div>
               )}
 
@@ -646,15 +639,9 @@ export default async function BlogPostPage({ params }: Props) {
 
             {/* CTAs */}
             <div className="flex items-center gap-4 flex-wrap pt-2">
-              <a href={withTrailingSlash(detailCtaBanner.ctaPrimary.href)} className="btn-primary-cta">
-                <span>{detailCtaBanner.ctaPrimary.label}</span>
-                <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
-              </a>
+              <CtaButton href={detailCtaBanner.ctaPrimary.href}>{detailCtaBanner.ctaPrimary.label}</CtaButton>
 
-              <a href={withTrailingSlash(detailCtaBanner.ctaSecondary.href)} className="btn-secondary-cta">
-                <span>{detailCtaBanner.ctaSecondary.label}</span>
-                <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
-              </a>
+              <CtaButton href={detailCtaBanner.ctaSecondary.href} variant="secondary">{detailCtaBanner.ctaSecondary.label}</CtaButton>
             </div>
           </div>
 

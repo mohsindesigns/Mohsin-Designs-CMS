@@ -3,16 +3,38 @@
 import { withTrailingSlash } from "@/lib/url";
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, Menu, X, Star, Sun, Moon } from "lucide-react";
+import { ArrowRight, ArrowUpRight, MapPin, Menu, X, Star, Sun, Moon } from "lucide-react";
 import { Icon } from "../config/icons";
 import { useContent } from "../hooks/useContent";
 import Image from "next/image";
 import Link from "@/components/ui/Link";
+import CtaButton from "@/components/ui/CtaButton";
+import { parseMapEmbed } from "@/lib/mapEmbed";
 
 const stripHtml = (html: string) => {
   if (!html) return "";
   return html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ");
 };
+
+// Shared look of the dropdown / mega-menu panels. The nav bar itself is uppercase + bold + wide
+// tracking; panels must reset that or their titles and descriptions become unreadable.
+const PANEL_BASE =
+  "absolute left-1/2 top-full mt-3 max-w-[calc(100vw-3rem)] overflow-hidden rounded-3xl border border-brand-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#12121e] text-left font-sans text-sm font-normal normal-case tracking-normal text-brand-dark dark:text-white shadow-[0_30px_70px_-20px_rgba(3,6,172,0.28)] dark:shadow-[0_30px_70px_-20px_rgba(0,0,0,0.7)] pointer-events-auto";
+
+type MapSource = { kind: "embed" | "image" | "none"; value: string };
+
+// Which map to show in the Locations dropdown: the hovered location's own map if it has one,
+// otherwise the dropdown's default (embed or image).
+function resolveLocationMap(menu: any, item?: any): MapSource {
+  const itemEmbed = parseMapEmbed(item?.mapEmbed);
+  if (itemEmbed) return { kind: "embed", value: itemEmbed };
+  if (item?.mapImage) return { kind: "image", value: item.mapImage };
+  const menuEmbed = parseMapEmbed(menu?.mapEmbed);
+  if (menu?.mapType === "image" && menu?.mapImage) return { kind: "image", value: menu.mapImage };
+  if (menuEmbed) return { kind: "embed", value: menuEmbed };
+  if (menu?.mapImage) return { kind: "image", value: menu.mapImage };
+  return { kind: "none", value: "" };
+}
 
 export default function Navbar() {
   const content = useContent();
@@ -22,6 +44,7 @@ export default function Navbar() {
   const [activeMegaMenu, setActiveMegaMenu] = useState<string | null>(null);
   const [isHoveringMegaMenu, setIsHoveringMegaMenu] = useState(false);
   const [hoveredService, setHoveredService] = useState<string | null>(null);
+  const [hoveredLocation, setHoveredLocation] = useState<number | null>(null);
   const [expandedMobileLink, setExpandedMobileLink] = useState<string | null>(null);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -48,9 +71,9 @@ export default function Navbar() {
     }
   };
 
-  const handleServicesMouseEnter = (linkIdx: number) => {
+  const openMenu = (id: string) => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    setActiveMegaMenu(`mega-${linkIdx}`);
+    setActiveMegaMenu(id);
   };
 
   const handleServicesMouseLeave = () => {
@@ -69,6 +92,7 @@ export default function Navbar() {
     timeoutRef.current = setTimeout(() => {
       setActiveMegaMenu(null);
       setHoveredService(null);
+      setHoveredLocation(null);
     }, 150);
   };
 
@@ -76,6 +100,7 @@ export default function Navbar() {
     setActiveMegaMenu(null);
     setIsOpen(false);
     setHoveredService(null);
+    setHoveredLocation(null);
     setExpandedMobileLink(null);
 
     if (typeof window !== 'undefined') {
@@ -93,12 +118,20 @@ export default function Navbar() {
       >
         {/* Brand Logo - Supporting dynamic image & fallback premium styling */}
         <Link href="/" className="flex items-center group pointer-events-auto" onClick={handleLinkClick}>
-          {navbar.logo ? (
+          {navbar.logo || navbar.logoDark ? (
             <div className="h-10 sm:h-12 w-24 sm:w-28 flex items-center justify-center overflow-hidden relative">
+              {/* Light-theme logo (navbar.logo). Falls back to the dark one if only that is set. */}
               <img
-                src={navbar.logo}
+                src={navbar.logo || navbar.logoDark}
                 alt={settings.siteTitle || "Mohsin Designs Logo"}
-                className="object-contain w-full h-full max-h-10"
+                className="object-contain w-full h-full max-h-10 dark:hidden"
+              />
+              {/* Dark-theme logo (navbar.logoDark). Falls back to the light one. */}
+              <img
+                src={navbar.logoDark || navbar.logo}
+                alt={settings.siteTitle || "Mohsin Designs Logo"}
+                loading="lazy"
+                className="object-contain w-full h-full max-h-10 hidden dark:block"
               />
             </div>
           ) : (
@@ -107,7 +140,7 @@ export default function Navbar() {
                 <span className="font-sans font-black text-white text-sm sm:text-base leading-none">
                   {navbar.logoLetter || (settings.siteTitle ? settings.siteTitle.charAt(0) : "M")}
                 </span>
-                <div className="absolute -top-0.5 -right-0.5 h-3 w-3 sm:h-3.5 sm:w-3.5 rounded-full bg-brand-yellow flex items-center justify-center border border-white">
+                <div className="absolute -top-0.5 -right-0.5 h-3 w-3 sm:h-3.5 sm:w-3.5 rounded-full bg-brand-accent flex items-center justify-center border border-white">
                   <Star className="h-1.5 w-1.5 sm:h-2 sm:w-2 fill-brand-dark text-brand-dark" />
                 </div>
               </div>
@@ -127,17 +160,22 @@ export default function Navbar() {
         <nav className="hidden md:flex items-center gap-8 font-sans font-bold text-xs uppercase tracking-wider text-brand-dark dark:text-white">
           {(companyLinks || []).map((link: any, linkIdx: number) => {
             if (link.useMegaMenu) {
+              const menuId = `mega-${linkIdx}`;
+              const isOpen = activeMegaMenu === menuId;
               return (
                 <div key={linkIdx} className="static">
                   <Link
                     href={link.href}
-                    onMouseEnter={() => handleServicesMouseEnter(linkIdx)}
+                    onMouseEnter={() => openMenu(menuId)}
                     onMouseLeave={handleServicesMouseLeave}
+                    onClick={handleLinkClick}
+                    aria-haspopup="true"
+                    aria-expanded={isOpen}
                     className="relative py-1 hover:text-brand-blue dark:hover:text-brand-yellow transition-colors group flex items-center gap-1"
                   >
                     <span>{link.label}</span>
                     {services.length > 0 && (
-                      <motion.span animate={{ rotate: activeMegaMenu === `mega-${linkIdx}` ? 180 : 0 }}>
+                      <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>
                         <Icon name="ChevronDown" className="h-3 w-3 ml-0.5" />
                       </motion.span>
                     )}
@@ -145,42 +183,202 @@ export default function Navbar() {
                   </Link>
 
                   <AnimatePresence>
-                    {activeMegaMenu === `mega-${linkIdx}` && (
+                    {isOpen && services.length > 0 && (
                       <motion.div
                         initial={{ opacity: 0, y: 15, x: "-50%" }}
                         animate={{ opacity: 1, y: 0, x: "-50%" }}
                         exit={{ opacity: 0, y: 10, x: "-50%" }}
                         onMouseEnter={handleMegaMenuMouseEnter}
                         onMouseLeave={handleMegaMenuMouseLeave}
-                        className="absolute left-1/2 top-full mt-2 w-[800px] bg-white dark:bg-[#12121e] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-brand-zinc-200/80 dark:border-white/10 p-8 pointer-events-auto"
+                        className={`${PANEL_BASE} w-[960px]`}
                         style={{ zIndex: 1000 }}
                       >
-                        <div className="grid grid-cols-3 gap-6">
-                          {services.map((service: any) => {
-                            const isThisHovered = hoveredService === service.title;
-                            return (
-                              <Link
-                                key={service.slug}
-                                href={`/services/${service.slug}`}
-                                onMouseEnter={() => setHoveredService(service.title)}
-                                onMouseLeave={() => setHoveredService(null)}
-                                onClick={handleLinkClick}
-                                className="group block p-4 rounded-xl hover:bg-brand-blue/5 dark:hover:bg-brand-yellow/5 transition-all duration-300 border border-transparent hover:border-brand-blue/10 dark:hover:border-brand-yellow/10"
-                              >
-                                <div className="flex items-center space-x-4 mb-3">
-                                  <div className={`h-12 w-12 rounded-xl flex items-center justify-center transition-all duration-300 ${isThisHovered ? "bg-brand-blue dark:bg-brand-yellow text-white dark:text-brand-dark shadow-lg shadow-brand-blue/25" : "bg-brand-blue/10 dark:bg-brand-yellow/10 text-brand-blue dark:text-brand-yellow"}`}>
-                                    <Icon name={service.icon} className="h-6 w-6" />
-                                  </div>
-                                  <h3 className={`font-bold transition-colors ${isThisHovered ? "text-brand-blue dark:text-brand-yellow" : "text-brand-dark dark:text-white"}`}>
-                                    {service.title}
-                                  </h3>
-                                </div>
-                                <p className="text-brand-zinc-500 dark:text-brand-zinc-400 text-xs leading-relaxed line-clamp-2">
+                        {/* Header */}
+                        <div className="flex items-end justify-between gap-6 px-8 pt-7 pb-3">
+                          <div>
+                            <p className="text-[11px] font-mono font-bold uppercase tracking-[0.18em] text-brand-blue dark:text-brand-yellow">
+                              {link.megaMenuEyebrow || "Our Services"}
+                            </p>
+                            <h3 className="mt-1.5 font-heading text-2xl font-black leading-tight tracking-tight text-brand-dark dark:text-white">
+                              {link.megaMenuTitle || "Everything you need to grow"}
+                            </h3>
+                          </div>
+                          <Link
+                            href={link.href}
+                            onClick={handleLinkClick}
+                            className="group/all inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-brand-blue dark:text-brand-yellow hover:underline underline-offset-4"
+                          >
+                            View all services
+                            <ArrowRight className="h-4 w-4 transition-transform group-hover/all:translate-x-0.5" />
+                          </Link>
+                        </div>
+
+                        {/* Service cards */}
+                        <div className="grid grid-cols-3 gap-1.5 px-5 pb-5 pt-2">
+                          {services.map((service: any) => (
+                            <Link
+                              key={service.slug}
+                              href={`/services/${service.slug}`}
+                              onClick={handleLinkClick}
+                              className="group flex items-start gap-3.5 rounded-2xl border border-transparent p-3.5 transition-all duration-300 hover:border-brand-blue/15 hover:bg-brand-blue/[0.04] dark:hover:border-brand-yellow/20 dark:hover:bg-brand-yellow/[0.06]"
+                            >
+                              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-blue/10 text-brand-blue transition-all duration-300 group-hover:bg-brand-blue group-hover:text-white group-hover:shadow-lg group-hover:shadow-brand-blue/25 dark:bg-brand-yellow/10 dark:text-brand-yellow dark:group-hover:bg-brand-yellow dark:group-hover:text-brand-dark">
+                                <Icon name={service.icon} className="h-5 w-5" />
+                              </span>
+                              <span className="min-w-0">
+                                <span className="block text-[15px] font-bold leading-snug text-brand-dark transition-colors group-hover:text-brand-blue dark:text-white dark:group-hover:text-brand-yellow">
+                                  {service.title}
+                                </span>
+                                <span className="mt-1 block text-[13px] font-normal leading-relaxed text-brand-zinc-600 dark:text-zinc-400 line-clamp-2">
                                   {stripHtml(service.description)}
+                                </span>
+                              </span>
+                            </Link>
+                          ))}
+                        </div>
+
+                        {/* Footer strip */}
+                        <div className="flex items-center justify-between gap-6 border-t border-brand-zinc-200/80 bg-brand-blue/[0.03] px-8 py-4 dark:border-white/10 dark:bg-white/[0.03]">
+                          <p className="text-[13px] font-medium text-brand-zinc-600 dark:text-zinc-300">
+                            {link.megaMenuFooterText || "Not sure which service fits? Talk to our team - the first consultation is free."}
+                          </p>
+                          <CtaButton size="sm" href={navbar.ctaLink || "/contact-us"} onClick={handleLinkClick}>
+                            {navbar.ctaText || "Book Now"}
+                          </CtaButton>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            }
+
+            if (link.useLocationsMenu) {
+              const menuId = `loc-${linkIdx}`;
+              const isOpen = activeMegaMenu === menuId;
+              const menu = link.locationsMenu || {};
+              const locItems = (Array.isArray(menu.items) ? menu.items : []).filter((i: any) => i?.label && i?.href);
+              const activeItem = hoveredLocation !== null ? locItems[hoveredLocation] : null;
+              const map = resolveLocationMap(menu, activeItem);
+              const caption = activeItem?.label || menu.title || link.label;
+
+              return (
+                <div key={linkIdx} className="static">
+                  <Link
+                    href={link.href}
+                    onMouseEnter={() => openMenu(menuId)}
+                    onMouseLeave={handleServicesMouseLeave}
+                    onClick={handleLinkClick}
+                    aria-haspopup="true"
+                    aria-expanded={isOpen}
+                    className="relative py-1 hover:text-brand-blue dark:hover:text-brand-yellow transition-colors group flex items-center gap-1"
+                  >
+                    <span>{link.label}</span>
+                    <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>
+                      <Icon name="ChevronDown" className="h-3 w-3 ml-0.5" />
+                    </motion.span>
+                    <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-brand-blue dark:bg-brand-yellow transition-all duration-300 group-hover:w-full" />
+                  </Link>
+
+                  <AnimatePresence>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 15, x: "-50%" }}
+                        animate={{ opacity: 1, y: 0, x: "-50%" }}
+                        exit={{ opacity: 0, y: 10, x: "-50%" }}
+                        onMouseEnter={handleMegaMenuMouseEnter}
+                        onMouseLeave={handleMegaMenuMouseLeave}
+                        className={`${PANEL_BASE} w-[900px]`}
+                        style={{ zIndex: 1000 }}
+                      >
+                        <div className="grid grid-cols-12">
+                          {/* Left: intro + locations */}
+                          <div className="col-span-5 flex flex-col p-7">
+                            <p className="flex items-center gap-1.5 text-[11px] font-mono font-bold uppercase tracking-[0.18em] text-brand-blue dark:text-brand-yellow">
+                              <MapPin className="h-3.5 w-3.5" />
+                              {menu.eyebrow || "Where we work"}
+                            </p>
+                            <h3 className="mt-2 font-heading text-2xl font-black leading-tight tracking-tight text-brand-dark dark:text-white">
+                              {menu.title || "Our locations"}
+                            </h3>
+                            {menu.description && (
+                              <p className="mt-2 text-[13px] leading-relaxed text-brand-zinc-600 dark:text-zinc-400">
+                                {stripHtml(menu.description)}
+                              </p>
+                            )}
+
+                            <div className="mt-5 -mx-2 flex max-h-[300px] flex-col gap-0.5 overflow-y-auto pr-1">
+                              {locItems.map((item: any, i: number) => (
+                                <Link
+                                  key={i}
+                                  href={item.href}
+                                  onMouseEnter={() => setHoveredLocation(i)}
+                                  onFocus={() => setHoveredLocation(i)}
+                                  onClick={handleLinkClick}
+                                  className="group flex items-center gap-3 rounded-xl px-2 py-2.5 transition-colors hover:bg-brand-blue/[0.06] dark:hover:bg-brand-yellow/[0.08]"
+                                >
+                                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-blue/10 text-brand-blue transition-colors group-hover:bg-brand-blue group-hover:text-white dark:bg-brand-yellow/10 dark:text-brand-yellow dark:group-hover:bg-brand-yellow dark:group-hover:text-brand-dark">
+                                    <MapPin className="h-4 w-4" />
+                                  </span>
+                                  <span className="min-w-0 flex-1">
+                                    <span className="block truncate text-[15px] font-semibold leading-tight text-brand-dark transition-colors group-hover:text-brand-blue dark:text-white dark:group-hover:text-brand-yellow">
+                                      {item.label}
+                                    </span>
+                                    {item.subtitle && (
+                                      <span className="mt-0.5 block truncate text-[13px] font-normal text-brand-zinc-600 dark:text-zinc-400">
+                                        {item.subtitle}
+                                      </span>
+                                    )}
+                                  </span>
+                                  <ArrowRight className="h-4 w-4 shrink-0 -translate-x-1 text-brand-blue opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100 dark:text-brand-yellow" />
+                                </Link>
+                              ))}
+                              {locItems.length === 0 && (
+                                <p className="px-2 py-3 text-[13px] text-brand-zinc-600 dark:text-zinc-400">
+                                  Add locations in Admin &gt; Settings &gt; Header.
                                 </p>
+                              )}
+                            </div>
+
+                            {menu.ctaLabel && menu.ctaHref && (
+                              <Link
+                                href={menu.ctaHref}
+                                onClick={handleLinkClick}
+                                className="group/all mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-blue dark:text-brand-yellow hover:underline underline-offset-4"
+                              >
+                                {menu.ctaLabel}
+                                <ArrowRight className="h-4 w-4 transition-transform group-hover/all:translate-x-0.5" />
                               </Link>
-                            );
-                          })}
+                            )}
+                          </div>
+
+                          {/* Right: map / image */}
+                          <div className="relative col-span-7 min-h-[400px] bg-brand-blue/[0.05] dark:bg-white/[0.04]">
+                            {map.kind === "embed" ? (
+                              <iframe
+                                key={map.value}
+                                src={map.value}
+                                title={`Map - ${caption}`}
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                                sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+                                className="absolute inset-0 h-full w-full border-0 dark:[filter:invert(0.92)_hue-rotate(180deg)_contrast(0.9)]"
+                              />
+                            ) : map.kind === "image" ? (
+                              <img key={map.value} src={map.value} alt={`${caption} map`} className="absolute inset-0 h-full w-full object-cover" />
+                            ) : (
+                              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-brand-blue/40 dark:text-brand-yellow/40">
+                                <MapPin className="h-10 w-10" />
+                                <span className="text-[13px] font-medium">Add a map in Admin &gt; Settings &gt; Header</span>
+                              </div>
+                            )}
+                            <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 via-black/25 to-transparent px-5 pb-4 pt-12">
+                              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-[13px] font-semibold text-brand-dark shadow-md">
+                                <MapPin className="h-3.5 w-3.5 text-brand-blue" />
+                                {caption}
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       </motion.div>
                     )}
@@ -241,19 +439,11 @@ export default function Navbar() {
           <button
             onClick={toggleTheme}
             aria-label="Toggle theme"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-brand-zinc-200 dark:border-white/15 bg-brand-light dark:bg-white/10 hover:bg-brand-yellow/20 transition-all duration-300 text-brand-dark dark:text-white"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-brand-zinc-200 dark:border-white/15 bg-brand-light dark:bg-white/10 hover:bg-brand-blue/10 dark:hover:bg-brand-yellow/20 transition-all duration-300 text-brand-dark dark:text-white"
           >
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
-          <a
-            href={withTrailingSlash(navbar.ctaLink || "/contact-us")}
-            className="btn-primary-cta"
-          >
-            <span>{navbar.ctaText || "Book Now"}</span>
-            <span className="btn-icon">
-              <ArrowUpRight className="h-3.5 w-3.5" />
-            </span>
-          </a>
+          <CtaButton href={navbar.ctaLink || "/contact-us"}>{navbar.ctaText || "Book Now"}</CtaButton>
         </div>
 
         {/* Mobile: Theme toggle + hamburger */}
@@ -261,7 +451,7 @@ export default function Navbar() {
           <button
             onClick={toggleTheme}
             aria-label="Toggle theme"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-brand-zinc-200 dark:border-white/15 bg-brand-light dark:bg-white/10 hover:bg-brand-yellow/20 transition-all duration-300 text-brand-dark dark:text-white"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-brand-zinc-200 dark:border-white/15 bg-brand-light dark:bg-white/10 hover:bg-brand-blue/10 dark:hover:bg-brand-yellow/20 transition-all duration-300 text-brand-dark dark:text-white"
           >
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
@@ -285,6 +475,10 @@ export default function Navbar() {
           <nav className="flex flex-col gap-4 text-sm font-bold uppercase tracking-wider">
             {companyLinks.map((link: any, linkIdx: number) => {
               const isMegaMenu = link.useMegaMenu;
+              const isLocations = !!link.useLocationsMenu;
+              const locationItems = isLocations
+                ? (link.locationsMenu?.items || []).filter((i: any) => i?.label && i?.href)
+                : [];
               const hasSubLinks = link.subLinks && link.subLinks.length > 0;
               const isExpanded = expandedMobileLink === link.label;
 
@@ -298,7 +492,7 @@ export default function Navbar() {
                     >
                       {link.label}
                     </Link>
-                    {(isMegaMenu || hasSubLinks) && (
+                    {(isMegaMenu || isLocations || hasSubLinks) && (
                       <button
                         onClick={() => setExpandedMobileLink(isExpanded ? null : link.label)}
                         className="p-2 text-brand-zinc-500 hover:text-brand-blue dark:hover:text-brand-yellow transition-colors"
@@ -314,7 +508,7 @@ export default function Navbar() {
                   </div>
 
                   <AnimatePresence>
-                    {(isMegaMenu || hasSubLinks) && isExpanded && (
+                    {(isMegaMenu || isLocations || hasSubLinks) && isExpanded && (
                       <motion.div
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
@@ -332,6 +526,18 @@ export default function Navbar() {
                                 className="block py-1 text-xs text-brand-zinc-500 dark:text-brand-zinc-400 hover:text-brand-blue dark:hover:text-brand-yellow transition-colors"
                               >
                                 {service.title}
+                              </Link>
+                            ))
+                          ) : isLocations ? (
+                            locationItems.map((item: any, lIdx: number) => (
+                              <Link
+                                key={lIdx}
+                                href={item.href}
+                                onClick={handleLinkClick}
+                                className="flex items-center gap-2 py-1 text-xs text-brand-zinc-500 dark:text-brand-zinc-400 hover:text-brand-blue dark:hover:text-brand-yellow transition-colors"
+                              >
+                                <MapPin className="h-3 w-3 shrink-0" />
+                                {item.label}
                               </Link>
                             ))
                           ) : (
@@ -354,16 +560,7 @@ export default function Navbar() {
               );
             })}
             <hr className="border-brand-zinc-100 dark:border-white/10" />
-            <a
-              href={withTrailingSlash(navbar.ctaLink || "/contact-us")}
-              onClick={handleLinkClick}
-              className="btn-primary-cta w-full"
-            >
-              <span>{navbar.ctaText || "Book Now"}</span>
-              <span className="btn-icon">
-                <ArrowUpRight className="h-3.5 w-3.5" />
-              </span>
-            </a>
+            <CtaButton href={navbar.ctaLink || "/contact-us"} onClick={handleLinkClick} fullWidth>{navbar.ctaText || "Book Now"}</CtaButton>
           </nav>
         </motion.div>
       )}

@@ -259,7 +259,7 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
 
       {/* Decorative Background Glows */}
       <div className="absolute top-1/4 -left-32 w-96 h-96 rounded-full bg-primary/5 blur-3xl pointer-events-none z-0" />
-      <div className="absolute bottom-1/4 -right-32 w-96 h-96 rounded-full bg-yellow-400/10 blur-3xl pointer-events-none z-0" />
+      <div className="absolute bottom-1/4 -right-32 w-96 h-96 rounded-full bg-primary/5 dark:bg-yellow-400/10 blur-3xl pointer-events-none z-0" />
 
       {/* Crossing structural grid lines */}
       <div className="absolute inset-x-0 top-12 h-[1px] bg-primary/[0.03] pointer-events-none" />
@@ -300,9 +300,9 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
                 <span className="font-mono text-[7px] font-bold uppercase tracking-widest text-white/80 dark:text-slate-950/80 mt-1">{scorecardRatingLabel}</span>
               </div>
               <div className="space-y-1 text-left">
-                <div className="flex gap-0.5 text-[#E9BD36]">
+                <div className="flex gap-0.5 text-brand-star">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-3.5 w-3.5 fill-[#E9BD36] text-[#E9BD36]" />
+                    <Star key={i} className="h-3.5 w-3.5 fill-brand-star text-brand-star" />
                   ))}
                 </div>
                 <span className="block text-[11px] font-black text-slate-900 dark:text-white uppercase tracking-wider leading-none">
@@ -335,9 +335,9 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
                   className="group w-[320px] sm:w-[350px] shrink-0 bg-white dark:bg-[#12121e] border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:border-primary/20 dark:hover:border-primary/30 transition-all duration-300 flex flex-col justify-between h-[180px] sm:h-[190px] card-sweep-glare text-left"
                 >
                   <div className="space-y-3">
-                    <div className="flex gap-0.5 text-[#E9BD36]">
+                    <div className="flex gap-0.5 text-brand-star">
                       {[...Array(item.rating)].map((_, i) => (
-                        <Star key={i} className="h-3 w-3 fill-[#E9BD36] text-[#E9BD36]" />
+                        <Star key={i} className="h-3 w-3 fill-brand-star text-brand-star" />
                       ))}
                     </div>
                     <RichTextRenderer
@@ -374,9 +374,9 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
                   className="group w-[320px] sm:w-[350px] shrink-0 bg-white dark:bg-[#12121e] border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:border-primary/20 dark:hover:border-primary/30 transition-all duration-300 flex flex-col justify-between h-[180px] sm:h-[190px] card-sweep-glare text-left"
                 >
                   <div className="space-y-3">
-                    <div className="flex gap-0.5 text-[#E9BD36]">
+                    <div className="flex gap-0.5 text-brand-star">
                       {[...Array(item.rating)].map((_, i) => (
-                        <Star key={i} className="h-3 w-3 fill-[#E9BD36] text-[#E9BD36]" />
+                        <Star key={i} className="h-3 w-3 fill-brand-star text-brand-star" />
                       ))}
                     </div>
                     <RichTextRenderer
@@ -413,9 +413,9 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
                   className="group w-[320px] sm:w-[350px] shrink-0 bg-white dark:bg-[#12121e] border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:border-primary/20 dark:hover:border-primary/30 transition-all duration-300 flex flex-col justify-between h-[180px] sm:h-[190px] card-sweep-glare text-left"
                 >
                   <div className="space-y-3">
-                    <div className="flex gap-0.5 text-[#E9BD36]">
+                    <div className="flex gap-0.5 text-brand-star">
                       {[...Array(item.rating)].map((_, i) => (
-                        <Star key={i} className="h-3 w-3 fill-[#E9BD36] text-[#E9BD36]" />
+                        <Star key={i} className="h-3 w-3 fill-brand-star text-brand-star" />
                       ))}
                     </div>
                     <RichTextRenderer

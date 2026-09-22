@@ -1,5 +1,6 @@
 "use client";
 
+import CtaButton from "@/components/ui/CtaButton";
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import React, { useState } from "react";
 import Link from "@/components/ui/Link";
@@ -300,7 +301,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
 
       {/* ── Floating blobs ─────────────────────────────────────────────────── */}
       <div className="absolute top-[3%] left-[-15%] w-[50vw] h-[50vw] rounded-full bg-[#0306ac]/[0.03] dark:bg-[#0306ac]/[0.06] blur-[120px] pointer-events-none select-none -z-10 animate-float-blob" />
-      <div className="absolute top-[30%] right-[-10%] w-[45vw] h-[45vw] rounded-full bg-[#e9bd36]/[0.02] dark:bg-[#e9bd36]/[0.05] blur-[150px] pointer-events-none select-none -z-10 animate-float-blob-delayed" />
+      <div className="absolute top-[30%] right-[-10%] w-[45vw] h-[45vw] rounded-full bg-brand-blue/[0.02] dark:bg-brand-yellow/[0.05] blur-[150px] pointer-events-none select-none -z-10 animate-float-blob-delayed" />
       <div className="absolute bottom-[20%] left-[-12%] w-[48vw] h-[48vw] rounded-full bg-[#0306ac]/[0.02] dark:bg-[#0306ac]/[0.04] blur-[140px] pointer-events-none select-none -z-10 animate-float-blob" />
 
       {/* ── 1. HERO ────────────────────────────────────────────────────────── */}
@@ -330,8 +331,8 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                 <PageBreadcrumbs page={pageData} />
                 {/* Badge */}
                 <div className="flex items-center gap-3">
-                  <span className="inline-flex items-center gap-2 rounded-full bg-[#e9bd36] px-4 py-1.5 text-[10px] font-mono font-black tracking-widest uppercase text-[#080710] shadow-sm">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#080710]" />
+                  <span className="inline-flex items-center gap-2 rounded-full bg-brand-accent px-4 py-1.5 text-[10px] font-mono font-black tracking-widest uppercase text-white dark:text-[#080710] shadow-sm">
+                    <span className="h-1.5 w-1.5 rounded-full bg-white dark:bg-[#080710]" />
                     {hero.badgeText}
                   </span>
                   <div className="h-[1px] w-12 bg-gray-300 dark:bg-zinc-700" />
@@ -343,7 +344,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                   <span className="relative inline-block text-[#0306ac] dark:text-[#e9bd36] pb-1 ml-1">
                     {hero.titleHighlight}
                     <svg
-                      className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-[#e9bd36] opacity-90"
+                      className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90"
                       viewBox="0 0 100 10"
                       preserveAspectRatio="none"
                     >
@@ -365,20 +366,8 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                 />
 
                 <div className="flex flex-wrap items-center gap-4 pt-2">
-                  <Link
-                    href={hero.ctaPrimary.href}
-                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold bg-[#0306ac] text-white hover:bg-[#020485] hover:text-white dark:bg-[#e9bd36] dark:text-[#080710] dark:hover:bg-amber-400 dark:hover:text-[#080710] transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
-                  >
-                    <span>{hero.ctaPrimary.label}</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                  <Link
-                    href={hero.ctaSecondary.href}
-                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold bg-white dark:bg-white/5 border border-gray-300 dark:border-white/15 text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-white/10 hover:text-gray-800 dark:hover:text-white transition-all"
-                  >
-                    <span>{hero.ctaSecondary.label}</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
+                  <CtaButton href={hero.ctaPrimary.href}>{hero.ctaPrimary.label}</CtaButton>
+                  <CtaButton href={hero.ctaSecondary.href} variant="secondary">{hero.ctaSecondary.label}</CtaButton>
                 </div>
               </motion.div>
 
@@ -414,7 +403,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                 <span className="relative inline-block text-[#0306ac] dark:text-[#e9bd36] pb-1 ml-1">
                   {grid.titleHighlight}
                   <svg
-                    className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-[#e9bd36] opacity-90"
+                    className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90"
                     viewBox="0 0 100 10"
                     preserveAspectRatio="none"
                   >
@@ -499,20 +488,8 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
 
                 {/* Buttons */}
                 <div className="flex items-center gap-4 flex-wrap pt-2">
-                  <Link
-                    href={ctaBanner.ctaPrimary.href}
-                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold bg-[#E9BD36] text-[#080710] hover:bg-amber-400 hover:text-[#080710] transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
-                  >
-                    <span>{ctaBanner.ctaPrimary.label}</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                  <Link
-                    href={ctaBanner.ctaSecondary.href}
-                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold bg-white/10 hover:bg-white/20 border border-white/20 text-white hover:text-white transition-all"
-                  >
-                    <span>{ctaBanner.ctaSecondary.label}</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
+                  <CtaButton href={ctaBanner.ctaPrimary.href}>{ctaBanner.ctaPrimary.label}</CtaButton>
+                  <CtaButton href={ctaBanner.ctaSecondary.href} variant="secondary">{ctaBanner.ctaSecondary.label}</CtaButton>
                 </div>
               </div>
 

@@ -1,5 +1,7 @@
 "use client";
 
+import CtaButton from "@/components/ui/CtaButton";
+import ThemedSelect from "@/components/ui/ThemedSelect";
 import { withTrailingSlash } from "@/lib/url";
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import React, { useState } from "react";
@@ -376,7 +378,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
       <section className="relative overflow-hidden pt-28 pb-16 lg:pt-36 lg:pb-24 border-b border-brand-zinc-200 dark:border-white/10">
         {/* Ambient background glows */}
         <div className="absolute top-0 left-1/4 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-br from-[#0306AC]/15 dark:from-[#0306AC]/25 to-transparent rounded-full blur-[140px] pointer-events-none -z-10" />
-        <div className="absolute top-1/3 right-10 w-[400px] h-[400px] bg-gradient-to-br from-[#E9BD36]/10 dark:from-[#E9BD36]/15 to-transparent rounded-full blur-[120px] pointer-events-none -z-10" />
+        <div className="absolute top-1/3 right-10 w-[400px] h-[400px] bg-gradient-to-br from-[#0306AC]/10 dark:from-[#E9BD36]/15 to-transparent rounded-full blur-[120px] pointer-events-none -z-10" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none -z-10" />
 
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
@@ -399,7 +401,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                 {hero.titleIntro}{" "}
                 <span className="relative inline-block text-[#0306AC] dark:text-[#E9BD36]">
                   <span className="font-serif italic font-normal">{hero.titleHighlight}</span>
-                  <svg className="absolute left-0 bottom-[-2px] w-full h-3 text-[#E9BD36]" viewBox="0 0 100 10" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+                  <svg className="absolute left-0 bottom-[-2px] w-full h-3 text-brand-accent" viewBox="0 0 100 10" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
                     <path d="M 5 6 C 30 9, 70 9, 95 4" />
                   </svg>
                 </span>{" "}
@@ -441,16 +443,10 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
               {/* Action Buttons Row */}
               <div className="flex items-center gap-3.5 flex-wrap pt-2">
                 {hero.primaryCtaText && (
-                  <a href={withTrailingSlash(hero.primaryCtaLink || "#industry-form")} className="btn-primary-cta">
-                    <span>{hero.primaryCtaText}</span>
-                    <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
-                  </a>
+                  <CtaButton href={hero.primaryCtaLink || "#industry-form"}>{hero.primaryCtaText}</CtaButton>
                 )}
                 {hero.secondaryCtaText && (
-                  <a href={withTrailingSlash(hero.secondaryCtaLink || "#sectors")} className="btn-secondary-cta">
-                    <span>{hero.secondaryCtaText}</span>
-                    <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
-                  </a>
+                  <CtaButton href={hero.secondaryCtaLink || "#sectors"} variant="secondary">{hero.secondaryCtaText}</CtaButton>
                 )}
               </div>
             </div>
@@ -541,20 +537,21 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                       <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-brand-zinc-700 dark:text-zinc-300 mb-1.5">
                         Industry / Sector
                       </label>
-                      <select
+                      <ThemedSelect
                         value={formData.industry}
                         onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-white/5 border border-brand-zinc-200 dark:border-white/10 text-xs sm:text-sm text-brand-dark dark:text-white focus:border-[#0306AC] dark:focus:border-[#E9BD36] focus:ring-1 focus:ring-[#0306AC] dark:focus:ring-[#E9BD36] outline-none transition-all appearance-none"
-                      >
-                        <option value="" className="text-black dark:text-black">Select Your Industry...</option>
-                        <option value="Healthcare & MedTech" className="text-black">Healthcare & MedTech</option>
-                        <option value="FinTech & Finance" className="text-black">FinTech & Financial Services</option>
-                        <option value="E-Commerce & Retail" className="text-black">E-Commerce & Retail</option>
-                        <option value="B2B SaaS & Tech" className="text-black">B2B SaaS & Enterprise Tech</option>
-                        <option value="Legal & Professional" className="text-black">Legal & Professional Services</option>
-                        <option value="Real Estate & Construction" className="text-black">Real Estate & Construction</option>
-                        <option value="Other Industry" className="text-black">Other Commercial Industry</option>
-                      </select>
+                        className="!rounded-xl !py-2.5 !px-3.5 text-xs sm:text-sm bg-zinc-50 dark:bg-white/5"
+                        placeholder="Select Your Industry..."
+                        options={[
+                          { value: "Healthcare & MedTech", label: "Healthcare & MedTech" },
+                          { value: "FinTech & Finance", label: "FinTech & Financial Services" },
+                          { value: "E-Commerce & Retail", label: "E-Commerce & Retail" },
+                          { value: "B2B SaaS & Tech", label: "B2B SaaS & Enterprise Tech" },
+                          { value: "Legal & Professional", label: "Legal & Professional Services" },
+                          { value: "Real Estate & Construction", label: "Real Estate & Construction" },
+                          { value: "Other Industry", label: "Other Commercial Industry" },
+                        ]}
+                      />
                     </div>
 
                     <div>
@@ -582,14 +579,9 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                       theme="auto"
                     />
 
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="w-full py-3.5 rounded-2xl bg-[#0306AC] hover:bg-[#02058e] text-white dark:bg-[#E9BD36] dark:hover:bg-[#ffe554] dark:text-[#080710] font-mono text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-70 cursor-pointer"
-                    >
-                      <span>{isSubmitting ? "TRANSMITTING..." : hero.formButtonText}</span>
-                      <ArrowRight className="h-4 w-4" />
-                    </button>
+                    <CtaButton type="submit" fullWidth loading={isSubmitting} icon={<ArrowRight />}>
+                      {isSubmitting ? "TRANSMITTING..." : hero.formButtonText}
+                    </CtaButton>
 
                     <p className="text-[10px] text-center text-brand-zinc-400 dark:text-zinc-500 pt-1">
                       🔒 100% Confidential. Zero spam. We never share your data.
@@ -969,14 +961,8 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
               )}
 
               <div className="flex items-center gap-4 flex-wrap pt-2">
-                <a href={withTrailingSlash(ctaBanner.ctaPrimaryHref || "#industry-form")} className="btn-primary-cta">
-                  <span>{ctaBanner.ctaPrimaryText}</span>
-                  <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
-                </a>
-                <a href={withTrailingSlash(ctaBanner.ctaSecondaryHref || "/gallery")} className="btn-secondary-cta">
-                  <span>{ctaBanner.ctaSecondaryText}</span>
-                  <span className="btn-icon"><Play className="h-3.5 w-3.5 fill-current ml-0.5" /></span>
-                </a>
+                <CtaButton href={ctaBanner.ctaPrimaryHref || "#industry-form"}>{ctaBanner.ctaPrimaryText}</CtaButton>
+                <CtaButton href={ctaBanner.ctaSecondaryHref || "/gallery"} variant="secondary" icon={<Play className="fill-current ml-0.5" />}>{ctaBanner.ctaSecondaryText}</CtaButton>
               </div>
             </div>
 

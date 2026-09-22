@@ -64,7 +64,7 @@ export default function AboutOwnerClean({ data: propData }: { data?: any }) {
           >
 
             {/* Ambient background glow */}
-            <div className="absolute -inset-4 bg-gradient-to-tr from-brand-blue/15 to-brand-yellow/15 rounded-3xl blur-2xl opacity-70 pointer-events-none" />
+            <div className="absolute -inset-4 bg-gradient-to-tr from-brand-blue/15 to-brand-accent/15 rounded-3xl blur-2xl opacity-70 pointer-events-none" />
 
             {/* Rotating Monogram Badge in top corner */}
             <motion.div
@@ -83,8 +83,8 @@ export default function AboutOwnerClean({ data: propData }: { data?: any }) {
                 </text>
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="h-5 w-5 rounded-full bg-[#E9BD36] flex items-center justify-center shadow-md">
-                  <span className="text-[10px] font-black text-[#080710]">{circleLetter}</span>
+                <div className="h-5 w-5 rounded-full bg-brand-accent flex items-center justify-center shadow-md">
+                  <span className="text-[10px] font-black text-white">{circleLetter}</span>
                 </div>
               </div>
             </motion.div>

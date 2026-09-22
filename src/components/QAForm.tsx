@@ -1,3 +1,5 @@
+import CtaButton from "@/components/ui/CtaButton";
+import ThemedSelect from "@/components/ui/ThemedSelect";
 import { useRef, useEffect, useState } from "react";
 import {
   motion,
@@ -79,23 +81,19 @@ const HolographicInput = ({ icon: IconName, label, type = "text", options = [], 
         </div>
 
         {type === "select" ? (
-          <select
-            ref={inputRef as React.RefObject<HTMLSelectElement>}
+          <ThemedSelect
+            name={props.name}
+            value={props.value || ""}
             onChange={(e) => {
               setHasValue(!!e.target.value);
-              props.onChange?.(e);
+              props.onChange?.(e as any);
             }}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
-            className="w-full pl-12 pr-10 py-4 bg-transparent rounded-xl text-foreground text-sm focus:outline-none appearance-none cursor-pointer"
-            value={props.value || ""}
-            {...props}
-          >
-            <option value="" disabled>{label}</option>
-            {options.map((opt) => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
-            ))}
-          </select>
+            className="!border-0 !bg-transparent !rounded-xl !pl-12 !pr-10 !py-4 !ring-0"
+            placeholder={label}
+            options={options}
+          />
         ) : (
           <input
             ref={inputRef as React.RefObject<HTMLInputElement>}
@@ -421,17 +419,9 @@ const SuccessModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                 </span>
               </motion.div>
 
-              <motion.button
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 }}
-                onClick={onClose}
-                className="mt-6 sm:mt-8 px-6 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-xs font-medium tracking-[0.2em] uppercase rounded-full shadow-lg hover:shadow-xl transition-all duration-500"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
+              <CtaButton onClick={onClose} icon={false} className="mt-6 sm:mt-8">
                 {success.buttonText}
-              </motion.button>
+              </CtaButton>
             </div>
 
             <div className="absolute top-4 left-4 sm:top-6 sm:left-6 w-8 h-8 sm:w-12 sm:h-12 border-t-2 border-l-2 border-primary/20" />
@@ -1032,77 +1022,25 @@ ${formData.message}
                 </AnimatePresence>
 
                 <div className="flex items-center justify-between pt-4 sm:pt-6 border-t border-primary/10">
-                  <motion.button
-                    type="button"
+                  <CtaButton
+                    variant="secondary"
+                    size="sm"
+                    icon={false}
                     onClick={() => setFormStep(Math.max(1, formStep - 1))}
-                    className={`
-                      relative px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium rounded-full transition-all duration-500
-                      ${formStep === 1
-                        ? 'opacity-0 pointer-events-none'
-                        : 'text-muted-foreground hover:text-foreground'
-                      }
-                    `}
-                    whileHover={{ x: -3 }}
-                    whileTap={{ scale: 0.98 }}
                     disabled={formStep === 1}
+                    className={formStep === 1 ? "invisible" : ""}
                   >
-                    <span className="flex items-center gap-1 sm:gap-2">
-                      ← <span className="hidden xs:inline">Previous</span>
-                    </span>
-                  </motion.button>
+                    Previous
+                  </CtaButton>
 
                   {formStep < 3 ? (
-                    <motion.button
-                      type="button"
-                      onClick={handleContinueClick}
-                      className="relative px-5 sm:px-8 py-2 sm:py-3 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-xs sm:text-sm font-medium rounded-full shadow-lg overflow-hidden group"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <span className="relative z-10 flex items-center gap-1 sm:gap-2">
-                        Continue
-                        <Icon name="ArrowRight" className="w-4 h-4" />
-                      </span>
-                      <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-primary/90 to-primary"
-                        initial={{ x: '-100%' }}
-                        whileHover={{ x: 0 }}
-                        transition={{ duration: 0.4 }}
-                      />
-                    </motion.button>
+                    <CtaButton onClick={handleContinueClick} icon={<Icon name="ArrowRight" />}>
+                      Continue
+                    </CtaButton>
                   ) : (
-                    <motion.button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="relative px-6 sm:px-10 py-2.5 sm:py-4 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-xs sm:text-sm font-medium rounded-full shadow-2xl overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
-                      whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
-                      whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
-                    >
-                      <span className="relative z-10 flex items-center gap-1 sm:gap-2">
-                        {isSubmitting ? (
-                          <>
-                            <motion.div
-                              animate={{ rotate: 360 }}
-                              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                              className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full"
-                            />
-                            <span className="hidden xs:inline">Transmitting...</span>
-                          </>
-                        ) : (
-                          <>
-                            <span className="hidden xs:inline">Get Free Quote</span>
-                            <span className="xs:hidden">Send</span>
-                            <Icon name="Send" className="w-4 h-4" />
-                          </>
-                        )}
-                      </span>
-                      <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-primary/90 to-primary"
-                        initial={{ x: '-100%' }}
-                        whileHover={{ x: 0 }}
-                        transition={{ duration: 0.4 }}
-                      />
-                    </motion.button>
+                    <CtaButton type="submit" loading={isSubmitting} icon={<Icon name="Send" />}>
+                      {isSubmitting ? "Transmitting..." : "Get Free Quote"}
+                    </CtaButton>
                   )}
                 </div>
               </form>

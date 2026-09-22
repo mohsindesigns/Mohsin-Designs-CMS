@@ -1,5 +1,6 @@
 "use client";
 
+import CtaButton from "@/components/ui/CtaButton";
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
@@ -204,7 +205,7 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
                   <div className="absolute inset-0 bg-gradient-to-br from-[#0306AC] via-[#0306AC] to-[#020485] opacity-0 group-hover:opacity-100 dark:group-hover:opacity-0 transition-opacity duration-500 z-0 rounded-[2rem]" />
 
                   {/* Top accent bar */}
-                  <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-[2rem] bg-gradient-to-r from-brand-blue/40 via-brand-blue to-brand-blue/40 group-hover:from-brand-yellow/60 group-hover:via-brand-yellow group-hover:to-brand-yellow/60 transition-all duration-500" />
+                  <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-[2rem] bg-gradient-to-r from-brand-blue/40 via-brand-blue to-brand-blue/40 group-hover:from-brand-accent/60 group-hover:via-brand-accent group-hover:to-brand-accent/60 transition-all duration-500" />
 
                   {/* Dot grid bg */}
                   <div className="absolute inset-0 opacity-[0.035] group-hover:opacity-0 transition-opacity duration-500 pointer-events-none z-0 rounded-[2rem]"
@@ -212,7 +213,7 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
 
                   {/* Glow orbs */}
                   <div className="absolute -top-10 -right-10 w-52 h-52 rounded-full bg-white/10 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-0" />
-                  <div className="absolute -bottom-8 -left-8 w-40 h-40 rounded-full bg-brand-yellow/5 blur-2xl opacity-0 group-hover:opacity-60 transition-opacity duration-700 pointer-events-none z-0" />
+                  <div className="absolute -bottom-8 -left-8 w-40 h-40 rounded-full bg-brand-accent/5 blur-2xl opacity-0 group-hover:opacity-60 transition-opacity duration-700 pointer-events-none z-0" />
 
                   {/* Giant background number */}
                   <span className="font-heading font-black text-[6rem] md:text-[7rem] absolute -right-2 -top-2 select-none pointer-events-none z-0 text-transparent bg-clip-text bg-gradient-to-b from-brand-blue/20 to-transparent group-hover:from-white/15 group-hover:to-transparent transition-all duration-500 leading-none">
@@ -285,10 +286,10 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, margin: "-50px" }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-16 md:mt-24 relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#0306AC] via-[#020485] to-[#010356] dark:from-[#12121e] dark:via-[#0f0f1a] dark:to-[#080710] border border-brand-blue/20 dark:border-white/10 p-8 sm:p-12 md:p-16 text-white shadow-2xl"
+          className="on-dark-surface mt-16 md:mt-24 relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#0306AC] via-[#020485] to-[#010356] dark:from-[#12121e] dark:via-[#0f0f1a] dark:to-[#080710] border border-brand-blue/20 dark:border-white/10 p-8 sm:p-12 md:p-16 text-white shadow-2xl"
         >
           {/* Subtle glowing ambient lights */}
-          <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-brand-yellow/15 blur-3xl pointer-events-none" />
+          <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-brand-accent/15 blur-3xl pointer-events-none" />
           <div className="absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-white/10 blur-3xl pointer-events-none" />
           
           <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 md:gap-12">
@@ -306,13 +307,7 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
             </div>
 
             <div className="shrink-0 w-full sm:w-auto flex flex-col sm:flex-row items-center gap-4">
-              <Link
-                href={services.ctaButtonHref}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-brand-yellow text-brand-dark hover:bg-white hover:text-brand-blue font-heading font-black text-xs sm:text-sm uppercase tracking-wider transition-all duration-300 shadow-lg group active:scale-95 no-underline"
-              >
-                <span>{services.ctaButtonText}</span>
-                <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-              </Link>
+              <CtaButton href={services.ctaButtonHref} className="w-full sm:w-auto">{services.ctaButtonText}</CtaButton>
             </div>
           </div>
         </motion.div>

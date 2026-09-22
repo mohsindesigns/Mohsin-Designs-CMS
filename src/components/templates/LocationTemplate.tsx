@@ -1,5 +1,6 @@
 "use client";
 
+import CtaButton from "@/components/ui/CtaButton";
 import { withTrailingSlash } from "@/lib/url";
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import React, { useEffect, useRef } from "react";
@@ -344,7 +345,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
       <div className="absolute top-0 left-[-10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-tr from-brand-blue/[0.04] to-indigo-500/[0.02] dark:from-brand-blue/[0.08] dark:to-indigo-500/[0.04] blur-[140px] pointer-events-none select-none -z-10 animate-float-blob" />
       <div className="absolute top-[25%] right-[-15%] w-[55vw] h-[55vw] rounded-full bg-gradient-to-br from-brand-yellow/[0.03] to-amber-500/[0.01] dark:from-brand-yellow/[0.06] dark:to-amber-500/[0.02] blur-[160px] pointer-events-none select-none -z-10 animate-float-blob-delayed" />
       <div className="absolute bottom-[20%] left-[-15%] w-[50vw] h-[50vw] rounded-full bg-brand-blue/[0.02] dark:bg-brand-blue/[0.05] blur-[150px] pointer-events-none select-none -z-10 animate-float-blob" />
-      <div className="absolute bottom-0 right-[-10%] w-[45vw] h-[45vw] rounded-full bg-brand-yellow/[0.02] dark:bg-brand-yellow/[0.04] blur-[130px] pointer-events-none select-none -z-10 animate-float-blob-delayed" />
+      <div className="absolute bottom-0 right-[-10%] w-[45vw] h-[45vw] rounded-full bg-brand-blue/[0.02] dark:bg-brand-yellow/[0.04] blur-[130px] pointer-events-none select-none -z-10 animate-float-blob-delayed" />
 
       {/* Modern thin interactive background grid overlay */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#0306ac05_1px,transparent_1px),linear-gradient(to_bottom,#0306ac05_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:48px_48px] pointer-events-none -z-10" />
@@ -384,8 +385,8 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
               <PageBreadcrumbs page={pageData} />
               {/* Star Badge */}
               <div className="inline-flex pointer-events-auto">
-                <span className="inline-flex items-center gap-2 rounded-full bg-brand-yellow px-4 py-1.5 text-[10px] font-black tracking-wider uppercase text-[#080710] select-none shadow-sm">
-                  <Star className="h-3.5 w-3.5 fill-[#080710] text-[#080710] shrink-0" />
+                <span className="inline-flex items-center gap-2 rounded-full bg-brand-accent px-4 py-1.5 text-[10px] font-black tracking-wider uppercase text-white dark:text-[#080710] select-none shadow-sm">
+                  <Star className="h-3.5 w-3.5 fill-white text-white dark:fill-[#080710] dark:text-[#080710] shrink-0" />
                   {hero.eyebrow}
                 </span>
               </div>
@@ -394,7 +395,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
                 {hero.titleIntro}
                 <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 font-black">
                   {hero.titleHighlight}
-                  <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-yellow opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
+                  <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
                     <motion.path
                       d="M 2 5 Q 50 1.5, 98 3.5 C 99 3.5, 99 4.5, 98 5 Q 50 7, 2 5.5 Z"
                       fill="currentColor"
@@ -413,15 +414,9 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
 
               {/* Action Buttons */}
               <div className="flex flex-wrap items-center gap-4 pt-2">
-                <Link href={hero.ctaPrimaryHref} className="btn-primary-cta">
-                  <span>{hero.ctaPrimaryText}</span>
-                  <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
-                </Link>
+                <CtaButton href={hero.ctaPrimaryHref}>{hero.ctaPrimaryText}</CtaButton>
 
-                <Link href={hero.ctaSecondaryHref} className="btn-secondary-cta">
-                  <span>{hero.ctaSecondaryText}</span>
-                  <span className="btn-icon"><Play className="h-3.5 w-3.5 fill-current ml-0.5" /></span>
-                </Link>
+                <CtaButton href={hero.ctaSecondaryHref} variant="secondary" icon={<Play className="fill-current ml-0.5" />}>{hero.ctaSecondaryText}</CtaButton>
               </div>
             </motion.div>
 
@@ -771,15 +766,9 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
               />
 
               <div className="flex items-center gap-4 flex-wrap pt-2">
-                <Link href={ctaBanner.ctaPrimaryHref} className="btn-primary-cta">
-                  <span>{ctaBanner.ctaPrimaryText}</span>
-                  <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
-                </Link>
+                <CtaButton href={ctaBanner.ctaPrimaryHref}>{ctaBanner.ctaPrimaryText}</CtaButton>
 
-                <Link href={ctaBanner.ctaSecondaryHref} className="btn-secondary-cta no-underline">
-                  <span>{ctaBanner.ctaSecondaryText}</span>
-                  <span className="btn-icon"><Play className="h-3.5 w-3.5 fill-current ml-0.5" /></span>
-                </Link>
+                <CtaButton href={ctaBanner.ctaSecondaryHref} variant="secondary" icon={<Play className="fill-current ml-0.5" />}>{ctaBanner.ctaSecondaryText}</CtaButton>
               </div>
             </div>
 

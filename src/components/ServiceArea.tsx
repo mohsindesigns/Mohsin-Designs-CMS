@@ -1,5 +1,6 @@
 "use client";
 
+import CtaButton from "@/components/ui/CtaButton";
 import { withTrailingSlash } from "@/lib/url";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowUpRight, MapPin, Globe } from "lucide-react";
@@ -187,13 +188,7 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
             </div>
 
             {/* Solid CTA Button */}
-            <a
-              href={withTrailingSlash(ctaHref)}
-              className="inline-flex items-center justify-center gap-2.5 rounded-xl bg-[#0306AC] hover:bg-[#020485] !text-white dark:bg-[#E9BD36] dark:hover:bg-yellow-400 dark:!text-[#080710] active:scale-95 px-6 py-3.5 text-xs sm:text-sm font-bold shadow-lg shadow-[#0306AC]/25 dark:shadow-[#E9BD36]/20 hover:shadow-xl transition-all self-center lg:self-start group cursor-pointer"
-            >
-              <span className="!text-white dark:!text-[#080710] font-bold">{ctaText}</span>
-              <ArrowRight className="h-4 w-4 !text-white dark:!text-[#080710] group-hover:translate-x-1 transition-transform" />
-            </a>
+            <CtaButton href={ctaHref}>{ctaText}</CtaButton>
           </div>
 
           {/* ── Right Column: Real Interactive World Map ── */}

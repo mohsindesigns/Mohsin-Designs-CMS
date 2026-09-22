@@ -1,5 +1,6 @@
 "use client";
 
+import CtaButton from "@/components/ui/CtaButton";
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import React, { useMemo } from "react";
 import Image from "next/image";
@@ -234,7 +235,7 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
 
       {/* Floating Blurred Mesh Blobs */}
       <div className="absolute top-[1%] left-[-15%] w-[50vw] h-[50vw] rounded-full bg-brand-blue/[0.03] dark:bg-brand-blue/[0.06] blur-[120px] pointer-events-none select-none -z-10 animate-float-blob" />
-      <div className="absolute top-[28%] right-[-10%] w-[45vw] h-[45vw] rounded-full bg-brand-yellow/[0.02] dark:bg-brand-yellow/[0.05] blur-[150px] pointer-events-none select-none -z-10 animate-float-blob-delayed" />
+      <div className="absolute top-[28%] right-[-10%] w-[45vw] h-[45vw] rounded-full bg-brand-blue/[0.02] dark:bg-brand-yellow/[0.05] blur-[150px] pointer-events-none select-none -z-10 animate-float-blob-delayed" />
 
       {/* ── 1. HERO SECTION WITH FULL-BLEED BACKGROUND IMAGE ───────── */}
       {((hero as any)?.enabled !== false && (galleryPage as any).hero?.enabled !== false) && (
@@ -260,8 +261,8 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
             <PageBreadcrumbs page={pageData} />
             {/* Brand Pill Badge */}
             <div className="inline-flex pointer-events-auto">
-              <span className="inline-flex items-center gap-2 rounded-full bg-brand-yellow px-4 py-1.5 text-[10px] font-black tracking-wider uppercase text-[#080710] select-none shadow-sm">
-                <Star className="h-3.5 w-3.5 fill-[#080710] text-[#080710] shrink-0" />
+              <span className="inline-flex items-center gap-2 rounded-full bg-brand-accent px-4 py-1.5 text-[10px] font-black tracking-wider uppercase text-white dark:text-[#080710] select-none shadow-sm">
+                <Star className="h-3.5 w-3.5 fill-white text-white dark:fill-[#080710] dark:text-[#080710] shrink-0" />
                 {hero.badge}
               </span>
             </div>
@@ -271,7 +272,7 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
               {hero.titlePrefix} <br />
               <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1">
                 {hero.titleHighlight}
-                <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-yellow opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
+                <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
                   <motion.path
                     d="M 2 5 Q 50 1.5, 98 3.5 C 99 3.5, 99 4.5, 98 5 Q 50 7, 2 5.5 Z"
                     fill="currentColor"
@@ -292,15 +293,9 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
 
             {/* CTAs */}
             <div className="flex flex-wrap items-center gap-4 pt-2">
-              <Link href={hero.ctaPrimary.href} className="btn-primary-cta">
-                <span>{hero.ctaPrimary.label}</span>
-                <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
-              </Link>
+              <CtaButton href={hero.ctaPrimary.href}>{hero.ctaPrimary.label}</CtaButton>
 
-              <Link href={hero.ctaSecondary.href} className="btn-secondary-cta">
-                <span>{hero.ctaSecondary.label}</span>
-                <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
-              </Link>
+              <CtaButton href={hero.ctaSecondary.href} variant="secondary">{hero.ctaSecondary.label}</CtaButton>
             </div>
           </motion.div>
         </div>
@@ -488,15 +483,9 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
 
               {/* CTAs */}
               <div className="flex items-center gap-4 flex-wrap pt-2">
-                <Link href={ctaBanner.ctaPrimary.href} className="btn-primary-cta">
-                  <span>{ctaBanner.ctaPrimary.label}</span>
-                  <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
-                </Link>
+                <CtaButton href={ctaBanner.ctaPrimary.href}>{ctaBanner.ctaPrimary.label}</CtaButton>
 
-                <Link href={ctaBanner.ctaSecondary.href} className="btn-secondary-cta">
-                  <span>{ctaBanner.ctaSecondary.label}</span>
-                  <span className="btn-icon"><Play className="h-3.5 w-3.5 fill-current ml-0.5" /></span>
-                </Link>
+                <CtaButton href={ctaBanner.ctaSecondary.href} variant="secondary" icon={<Play className="fill-current ml-0.5" />}>{ctaBanner.ctaSecondary.label}</CtaButton>
               </div>
             </div>
 

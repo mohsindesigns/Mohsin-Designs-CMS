@@ -133,18 +133,28 @@ export default function RealWorldMap({
       const isActive = activeHubId === hub.id;
 
       // Brand Color Pin Marker with Theme Adaptations
+      // Light mode: all blue. Dark mode: yellow accents.
       const pinOuterColor = isActive
-        ? "bg-[#E9BD36] border-[#0306AC] text-[#0306AC]"
+        ? isDarkMode
+          ? "bg-[#E9BD36] border-[#0306AC] text-[#0306AC]"
+          : "bg-[#0306AC] border-white text-white"
         : isDarkMode
         ? "bg-[#0306AC] border-[#E9BD36] text-[#E9BD36]"
         : "bg-[#0306AC] border-white text-white";
 
-      const pinDotColor = isActive ? "bg-[#0306AC]" : "bg-[#E9BD36]";
-      const pingRingColor = isActive ? "bg-[#E9BD36]/50" : "bg-[#0306AC]/30";
+      const pinDotColor = isDarkMode
+        ? isActive ? "bg-[#0306AC]" : "bg-[#E9BD36]"
+        : "bg-white";
+      const pingRingColor = isDarkMode
+        ? isActive ? "bg-[#E9BD36]/50" : "bg-[#0306AC]/30"
+        : isActive ? "bg-[#0306AC]/40" : "bg-[#0306AC]/20";
 
       const tooltipBg = isDarkMode
         ? "bg-[#0c0c16] text-white border border-white/10"
         : "bg-white text-slate-900 border border-slate-200 shadow-xl";
+
+      const tooltipDot = isDarkMode ? "bg-[#E9BD36]" : "bg-[#0306AC]";
+      const activeRing = isDarkMode ? "ring-[#E9BD36]" : "ring-[#0306AC]";
 
       const customIcon = L.divIcon({
         className: "custom-hub-marker",
@@ -153,13 +163,13 @@ export default function RealWorldMap({
             <!-- Ping animation ring -->
             <div class="absolute w-8 h-8 rounded-full ${pingRingColor} animate-ping"></div>
             <!-- Outer border circle -->
-            <div class="relative flex items-center justify-center w-5 h-5 rounded-full border-2 ${pinOuterColor} shadow-md transition-all duration-300 ${isActive ? 'scale-125 ring-2 ring-[#E9BD36]' : 'hover:scale-110'}">
+            <div class="relative flex items-center justify-center w-5 h-5 rounded-full border-2 ${pinOuterColor} shadow-md transition-all duration-300 ${isActive ? `scale-125 ring-2 ${activeRing}` : 'hover:scale-110'}">
               <div class="w-1.5 h-1.5 rounded-full ${pinDotColor}"></div>
             </div>
             <!-- Hover Tooltip -->
             <div class="absolute bottom-full mb-2 hidden group-hover:flex flex-col items-center pointer-events-none z-50 whitespace-nowrap">
               <div class="${tooltipBg} text-[11px] font-bold px-2.5 py-1 rounded-lg shadow-lg flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-[#E9BD36]"></span>
+                <span class="w-1.5 h-1.5 rounded-full ${tooltipDot}"></span>
                 <span>${hub.name}</span>
               </div>
               <div class="w-2 h-2 ${isDarkMode ? 'bg-[#0c0c16] border-r border-b border-white/10' : 'bg-white border-r border-b border-slate-200'} rotate-45 -mt-1"></div>

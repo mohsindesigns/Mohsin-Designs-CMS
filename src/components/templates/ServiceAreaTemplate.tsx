@@ -1,5 +1,6 @@
 "use client";
 
+import CtaButton from "@/components/ui/CtaButton";
 import { withTrailingSlash } from "@/lib/url";
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import React from "react";
@@ -639,13 +640,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
               {overviewData.buttonText && (
                 <div className="pt-4">
-                  <a
-                    href={withTrailingSlash(overviewData.buttonHref || "#contact")}
-                    className="inline-flex items-center justify-center bg-primary hover:bg-primary/95 text-white font-black px-8 py-4 rounded-xl transition-all shadow-lg active:scale-[0.98] text-xs uppercase tracking-wider gap-2 group"
-                  >
-                    {overviewData.buttonText}
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </a>
+                  <CtaButton href={overviewData.buttonHref || "#contact"}>{overviewData.buttonText}</CtaButton>
                 </div>
               )}
             </div>
@@ -696,12 +691,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
               content={cta.description}
               className="text-white text-sm sm:text-base max-w-xl mx-auto leading-relaxed font-medium"
             />
-            <a
-              href={withTrailingSlash(cta.buttonHref)}
-              className="inline-flex items-center justify-center bg-white hover:bg-slate-100 text-slate-950 font-black px-8 py-4 rounded-xl transition-all shadow-lg active:scale-[0.98] text-xs sm:text-sm uppercase tracking-wider gap-2 group"
-            >
-              {cta.buttonText} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </a>
+            <CtaButton href={cta.buttonHref}>{cta.buttonText}</CtaButton>
           </div>
         </div>
       </section>

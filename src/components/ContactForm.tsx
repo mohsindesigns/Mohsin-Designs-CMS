@@ -1,5 +1,6 @@
 "use client";
 
+import CtaButton from "@/components/ui/CtaButton";
 import { withTrailingSlash } from "@/lib/url";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, Mail, MapPin, Phone, ArrowRight } from "lucide-react";
@@ -130,7 +131,7 @@ export default function ContactForm({ data }: { data?: any }) {
         transition={{ type: "spring", damping: 35, stiffness: 160, mass: 0.6 }}
       />
       <motion.div
-        className="absolute w-[300px] h-[300px] rounded-full bg-brand-yellow/[0.08] blur-[80px] pointer-events-none hidden md:block"
+        className="absolute w-[300px] h-[300px] rounded-full bg-brand-accent/[0.08] blur-[80px] pointer-events-none hidden md:block"
         animate={{
           x: mousePos.x - 150 + 50,
           y: mousePos.y - 150 + 50
@@ -140,7 +141,7 @@ export default function ContactForm({ data }: { data?: any }) {
 
       {/* Static corner blurs for mobile support */}
       <div className="absolute top-1/4 left-1/4 w-[280px] h-[280px] rounded-full bg-brand-blue/[0.04] blur-[80px] pointer-events-none md:hidden" />
-      <div className="absolute bottom-1/4 right-1/4 w-[200px] h-[200px] rounded-full bg-brand-yellow/[0.06] blur-[60px] pointer-events-none md:hidden" />
+      <div className="absolute bottom-1/4 right-1/4 w-[200px] h-[200px] rounded-full bg-brand-accent/[0.06] blur-[60px] pointer-events-none md:hidden" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
@@ -249,7 +250,7 @@ export default function ContactForm({ data }: { data?: any }) {
           {/* Right Column: Elite Premium Support Form Card */}
           <div className="lg:col-span-7 w-full bg-white dark:bg-[#12121e] border border-brand-zinc-200/80 dark:border-white/10 p-6 sm:p-9 md:p-11 rounded-[2.5rem] shadow-[0_20px_60px_rgba(3,6,172,0.06)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.4)] relative overflow-hidden">
             {/* Top subtle accent gradient bar */}
-            <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-brand-blue via-brand-yellow to-brand-blue" />
+            <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-brand-blue via-brand-accent to-brand-blue" />
 
             <AnimatePresence mode="wait">
               {!isSuccess ? (
@@ -351,22 +352,9 @@ export default function ContactForm({ data }: { data?: any }) {
 
                   {/* Submit Button */}
                   <div className="pt-2">
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="inline-flex items-center justify-between gap-3 rounded-full bg-brand-blue dark:bg-brand-yellow border border-brand-blue dark:border-brand-yellow pl-7 pr-1.5 py-1.5 text-xs font-black uppercase tracking-[0.14em] text-white dark:text-[#080710] shadow-lg hover:bg-[#0408d9] dark:hover:bg-[#f5ca4a] hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed w-full sm:w-auto min-w-[200px]"
-                    >
-                      <span className="whitespace-nowrap">
-                        {isSubmitting ? contact.btnSubmitting : contact.btnSubmit}
-                      </span>
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-dark text-brand-yellow">
-                        {isSubmitting ? (
-                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-brand-yellow border-t-transparent" />
-                        ) : (
-                          <ArrowRight className="h-4 w-4" />
-                        )}
-                      </span>
-                    </button>
+                    <CtaButton type="submit" loading={isSubmitting} icon={<ArrowRight />}>
+                      {isSubmitting ? contact.btnSubmitting : contact.btnSubmit}
+                    </CtaButton>
                   </div>
 
                 </motion.form>

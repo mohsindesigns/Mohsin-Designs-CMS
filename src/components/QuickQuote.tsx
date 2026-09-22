@@ -1,3 +1,5 @@
+import CtaButton from "@/components/ui/CtaButton";
+import ThemedSelect from "@/components/ui/ThemedSelect";
 import { useState, useEffect } from 'react';
 import Link from "@/components/ui/Link";
 import { motion, AnimatePresence } from 'framer-motion';
@@ -641,19 +643,14 @@ ${formData.message}
                                                                 <Icon name="Home" className="w-4 h-4 inline mr-2 text-primary" />
                                                                 {quickQuote.formLabels?.projectType || "Project Type"}
                                                             </label>
-                                                            <select
+                                                            <ThemedSelect
                                                                 name="projectType"
                                                                 value={formData.projectType}
-                                                                onChange={handleInputChange}
-                                                                className="w-full px-5 py-4 bg-muted border border-border rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-foreground appearance-none"
-                                                            >
-                                                                <option value="">Select project type</option>
-                                                                {projectTypes.map((type: any) => (
-                                                                    <option key={type.value} value={type.value}>
-                                                                        {type.label}
-                                                                    </option>
-                                                                ))}
-                                                            </select>
+                                                                onChange={(e) => handleInputChange(e as React.ChangeEvent<HTMLSelectElement>)}
+                                                                className="!rounded-xl bg-muted border-border"
+                                                                placeholder="Select project type"
+                                                                options={projectTypes.map((type: any) => ({ value: type.value, label: type.label }))}
+                                                            />
                                                         </div>
                                                     </motion.div>
                                                 )}
@@ -703,49 +700,25 @@ ${formData.message}
 
                                             <div className="flex items-center justify-between pt-6 border-t border-border">
                                                 {step > 1 && (
-                                                    <motion.button
-                                                        type="button"
-                                                        onClick={() => setStep(step - 1)}
-                                                        className="group px-6 py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
-                                                        whileHover={{ x: -3 }}
-                                                        whileTap={{ scale: 0.98 }}
-                                                    >
-                                                        <Icon name="ChevronRight" className="w-4 h-4 rotate-180" />
-                                                        Back
-                                                    </motion.button>
+                                                    <CtaButton variant="secondary" size="sm" icon={false} onClick={() => setStep(step - 1)}>
+                                                      Back
+                                                    </CtaButton>
                                                 )}
 
                                                 {step < 3 ? (
-                                                    <motion.button
-                                                        type="button"
-                                                        onClick={() => setStep(step + 1)}
-                                                        className="ml-auto px-8 py-3 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium rounded-xl shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-300 flex items-center gap-2"
-                                                        whileHover={{ scale: 1.02, x: 3 }}
-                                                        whileTap={{ scale: 0.98 }}
-                                                    >
-                                                        Continue
-                                                        <Icon name="ChevronRight" className="w-4 h-4" />
-                                                    </motion.button>
+                                                    <CtaButton className="ml-auto" onClick={() => setStep(step + 1)} icon={<Icon name="ChevronRight" />}>
+                                                      Continue
+                                                    </CtaButton>
                                                 ) : (
-                                                    <motion.button
-                                                        type="submit"
-                                                        disabled={isSubmitting || !smsConsent}
-                                                        className="ml-auto px-8 py-3 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium rounded-xl shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                                                        whileHover={{ scale: isSubmitting || !smsConsent ? 1 : 1.02 }}
-                                                        whileTap={{ scale: isSubmitting || !smsConsent ? 1 : 0.98 }}
+                                                    <CtaButton
+                                                      type="submit"
+                                                      className="ml-auto"
+                                                      disabled={!smsConsent}
+                                                      loading={isSubmitting}
+                                                      icon={<Icon name="Send" />}
                                                     >
-                                                        {isSubmitting ? (
-                                                            <>
-                                                                <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-                                                                Sending...
-                                                            </>
-                                                        ) : (
-                                                            <>
-                                                                {quickQuote.formLabels?.submit || "Get Quote"}
-                                                                <Icon name="Send" className="w-4 h-4" />
-                                                            </>
-                                                        )}
-                                                    </motion.button>
+                                                      {isSubmitting ? "Sending..." : quickQuote.formLabels?.submit || "Get Quote"}
+                                                    </CtaButton>
                                                 )}
                                             </div>
 

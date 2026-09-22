@@ -236,7 +236,7 @@ export default function BlogSection({
       className="relative overflow-hidden bg-white dark:bg-[#080710] border-t border-b border-slate-200 dark:border-white/10 section-y"
     >
       {/* Decorative Background Glows */}
-      <div className="absolute top-1/3 -right-32 w-96 h-96 rounded-full bg-[#E9BD36]/10 blur-3xl pointer-events-none z-0" />
+      <div className="absolute top-1/3 -right-32 w-96 h-96 rounded-full bg-brand-accent/10 blur-3xl pointer-events-none z-0" />
       <div className="absolute bottom-1/3 -left-32 w-96 h-96 rounded-full bg-primary/5 blur-3xl pointer-events-none z-0" />
 
       {/* Crossing structural grid lines */}

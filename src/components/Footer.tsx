@@ -114,12 +114,20 @@ export default function Footer() {
           {/* Logo & Description Column */}
           <div className="lg:col-span-3 space-y-6 lg:pr-6">
             <div className="flex items-center gap-2.5">
-              {footer?.company?.logo ? (
+              {footer?.company?.logo || footer?.company?.logoDark ? (
                 <div className="relative flex h-10 w-24 items-center justify-start overflow-hidden">
+                  {/* Light-theme logo (footer.company.logo). Falls back to the dark one if only that is set. */}
                   <img
-                    src={footer.company.logo}
+                    src={footer.company.logo || footer.company.logoDark}
                     alt={footer?.company?.name || "Mohsin Designs Logo"}
-                    className="object-contain h-full max-w-full"
+                    className="object-contain h-full max-w-full dark:hidden"
+                  />
+                  {/* Dark-theme logo (footer.company.logoDark). Falls back to the light one. */}
+                  <img
+                    src={footer.company.logoDark || footer.company.logo}
+                    alt={footer?.company?.name || "Mohsin Designs Logo"}
+                    loading="lazy"
+                    className="object-contain h-full max-w-full hidden dark:block"
                   />
                 </div>
               ) : (

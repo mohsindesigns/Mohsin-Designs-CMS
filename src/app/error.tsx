@@ -1,5 +1,6 @@
 "use client";
 
+import CtaButton from "@/components/ui/CtaButton";
 import { useEffect } from "react";
 import Link from "@/components/ui/Link";
 import { motion } from "framer-motion";
@@ -37,18 +38,8 @@ export default function Error({
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <button
-            onClick={() => reset()}
-            className="px-6 py-2 bg-primary text-white rounded-full font-medium hover:opacity-90 transition-opacity"
-          >
-            Try again
-          </button>
-          <Link
-            href="/"
-            className="px-6 py-2 border border-border rounded-full font-medium hover:bg-muted transition-colors"
-          >
-            Go to Homepage
-          </Link>
+          <CtaButton onClick={() => reset()}>Try again</CtaButton>
+          <CtaButton href="/" variant="secondary">Go to Homepage</CtaButton>
         </div>
       </motion.div>
     </div>

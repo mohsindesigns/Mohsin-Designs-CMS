@@ -61,7 +61,7 @@ export default function InteractiveBackground() {
     >
       {/* Dynamic Animated Floating blobs */}
       <div className="absolute top-[10%] left-[5%] h-[550px] w-[550px] rounded-full bg-brand-blue/[0.015] blur-3xl animate-blob-float-global" />
-      <div className="absolute bottom-[20%] right-[10%] h-[600px] w-[600px] rounded-full bg-brand-yellow/[0.025] blur-3xl animate-blob-float-global-delayed" />
+      <div className="absolute bottom-[20%] right-[10%] h-[600px] w-[600px] rounded-full bg-brand-accent/[0.025] blur-3xl animate-blob-float-global-delayed" />
       <div
         className="absolute top-[50%] left-[40%] h-[500px] w-[500px] rounded-full bg-brand-blue/[0.01] blur-3xl animate-blob-float-global"
         style={{ animationDelay: "8s" }}

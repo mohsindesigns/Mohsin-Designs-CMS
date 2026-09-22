@@ -1,5 +1,7 @@
 "use client";
 
+import CtaButton from "@/components/ui/CtaButton";
+import ThemedSelect from "@/components/ui/ThemedSelect";
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
@@ -176,10 +178,13 @@ ${message}
                   {careersData?.rolesEnabled !== false && (
                   <div className="space-y-3">
                     <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2"><Briefcase className="w-4 h-4 text-blue-500" />{careersData?.labels?.role}</label>
-                    <select name="role" required defaultValue="" className="w-full px-5 py-4 bg-slate-50/50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all appearance-none">
-                      <option value="" disabled>{careersData?.labels?.roleSelector || "Select a Position"}</option>
-                      {careersData?.roles?.map((role: any, index: number) => <option key={index} value={role.value}>{role.label}</option>)}
-                    </select>
+                    <ThemedSelect
+                      name="role"
+                      required
+                      className="!rounded-xl bg-slate-50/50"
+                      placeholder={careersData?.labels?.roleSelector || "Select a Position"}
+                      options={(careersData?.roles || []).map((role: any) => ({ value: role.value, label: role.label }))}
+                    />
                   </div>
                   )}
 
@@ -211,9 +216,9 @@ ${message}
                     onExpire={() => setCaptchaToken("")}
                     theme="light"
                   />
-                  <button type="submit" disabled={isSubmitting} className="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all disabled:opacity-70">
+                  <CtaButton type="submit" fullWidth loading={isSubmitting} className="cta-on-light">
                     {isSubmitting ? 'SENDING...' : 'SUBMIT APPLICATION'}
-                  </button>
+                  </CtaButton>
                   {errorMsg && (
                     <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm text-center">
                       {errorMsg}

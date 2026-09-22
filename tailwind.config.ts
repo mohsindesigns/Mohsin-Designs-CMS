@@ -96,6 +96,13 @@ export default {
                     "zinc-400": "#9CA3AF",
                     "zinc-500": "var(--color-gray)",
                     "zinc-800": "#1F2937",
+                    // ── Unified mode-switching accent (blue in light, yellow in dark) ──
+                    accent: "var(--color-brand-accent)",
+                    "accent-hover": "var(--color-brand-accent-hover)",
+                    "accent-subtle": "var(--color-brand-accent-subtle)",
+                    "accent-glow": "var(--color-brand-accent-glow)",
+                    // Star ratings — always yellow
+                    star: "var(--color-star-rating)",
                 },
             },
             borderRadius: {

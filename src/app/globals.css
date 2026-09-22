@@ -127,9 +127,9 @@
     --color-blue-opaque-10: rgba(3, 6, 172, 0.1);
     --color-dark-opaque-4: rgba(8, 7, 16, 0.04);
     --color-footer-bg: #090A29;
-    --underline-glow: drop-shadow(0px 1.5px 2px rgba(233, 189, 54, 0.45));
-    --color-gradient-stop-1: #E9BD36;
-    --color-gradient-stop-2: #FFA800;
+    --underline-glow: drop-shadow(0px 1.5px 2px rgba(3, 6, 172, 0.45));
+    --color-gradient-stop-1: #0306AC;
+    --color-gradient-stop-2: #2563EB;
     --background-mouse-glow: rgba(3, 6, 172, 0.015);
     --background-grid-dot-color: #e5e7eb;
     --background-spotlight-color: rgba(3, 6, 172, 0.22);
@@ -140,6 +140,15 @@
     --svg-track-stroke: rgba(3, 6, 172, 0.08);
     --svg-dot-shadow: drop-shadow(0px 1.5px 3px rgba(3, 6, 172, 0.45));
     --mouse-glow-color: rgba(3, 6, 172, 0.07);
+
+    /* ── Unified accent token: blue in light mode, yellow in dark mode ── */
+    --color-brand-accent: #0306AC;
+    --color-brand-accent-rgb: 3 6 172;
+    --color-brand-accent-hover: #0510D8;
+    --color-brand-accent-subtle: rgba(3, 6, 172, 0.08);
+    --color-brand-accent-glow: rgba(3, 6, 172, 0.25);
+    /* Star ratings are always yellow (universal UX convention) */
+    --color-star-rating: #E9BD36;
 
     /* brand mappings for tailwind compatibility */
     --color-brand-card: #0c0b18;
@@ -180,9 +189,9 @@
     --color-blue-opaque-10: rgba(233, 189, 54, 0.18);
     --color-dark-opaque-4: rgba(255, 255, 255, 0.04);
     --color-footer-bg: #080710;
-    --underline-glow: drop-shadow(0px 1.5px 2px rgba(3, 6, 172, 0.45));
-    --color-gradient-stop-1: #0306AC;
-    --color-gradient-stop-2: #020485;
+    --underline-glow: drop-shadow(0px 1.5px 2px rgba(233, 189, 54, 0.45));
+    --color-gradient-stop-1: #E9BD36;
+    --color-gradient-stop-2: #FFA800;
     --background-mouse-glow: rgba(233, 189, 54, 0.04);
     --background-grid-dot-color: #2a2a3a;
     --background-spotlight-color: rgba(233, 189, 54, 0.18);
@@ -193,6 +202,15 @@
     --svg-track-stroke: rgba(255, 255, 255, 0.08);
     --svg-dot-shadow: drop-shadow(0px 1.5px 3px rgba(233, 189, 54, 0.45));
     --mouse-glow-color: rgba(233, 189, 54, 0.12);
+
+    /* ── Unified accent token: yellow in dark mode ── */
+    --color-brand-accent: #E9BD36;
+    --color-brand-accent-rgb: 233 189 54;
+    --color-brand-accent-hover: #F6CB47;
+    --color-brand-accent-subtle: rgba(233, 189, 54, 0.1);
+    --color-brand-accent-glow: rgba(233, 189, 54, 0.28);
+    /* Star ratings are always yellow */
+    --color-star-rating: #E9BD36;
 
     /* brand mappings for tailwind compatibility */
     --color-brand-card: #0c0b18;
@@ -243,14 +261,64 @@
     @apply text-primary;
   }
 
-  /* Footer links safe default */
+  /* Footer links safe default — footer is always on dark background */
   footer a {
     color: #cbd5e1;
   }
   footer a:hover {
-    color: #E9BD36 !important;
+    color: var(--color-yellow) !important;
   }
 
+}
+
+@layer base {
+  /* Universal CTA button tokens (see "UNIVERSAL CTA BUTTON SYSTEM" below).
+     Light theme = blue button / white-and-blue chip. Dark theme = yellow button / dark-and-yellow chip.
+     Dark surfaces always get the dark look so buttons are never blue-on-blue. */
+  /* .cta-on-light: force the light look on pages that hard-code a white background in dark mode too */
+  :root,
+  .cta-on-light {
+    --cta-bg: #0306AC;
+    --cta-bg-hover: #0510D8;
+    --cta-fg: #ffffff;
+    --cta-chip-bg: #ffffff;
+    --cta-chip-fg: #0306AC;
+    --cta-glow: 3 6 172;
+    --cta-ring: #0306AC;
+    --cta-sheen: rgb(255 255 255 / 0.38);
+    --cta-sec-fg: #0306AC;
+    --cta-sec-border: rgb(3 6 172 / 0.28);
+    --cta-sec-border-hover: rgb(3 6 172 / 0.9);
+    --cta-sec-hover-bg: rgb(3 6 172 / 0.07);
+    --cta-sec-chip-bg: rgb(3 6 172 / 0.1);
+    --cta-sec-chip-fg: #0306AC;
+    --cta-sec-chip-hover-bg: #0306AC;
+    --cta-sec-chip-hover-fg: #ffffff;
+    --cta-sec-sheen: rgb(3 6 172 / 0.1);
+  }
+
+  .dark,
+  .cta-banner-card,
+  .on-dark-surface,
+  .cta-on-dark {
+    --cta-bg: #E9BD36;
+    --cta-bg-hover: #F6CB47;
+    --cta-fg: #080710;
+    --cta-chip-bg: #080710;
+    --cta-chip-fg: #E9BD36;
+    --cta-glow: 233 189 54;
+    --cta-ring: #E9BD36;
+    --cta-sheen: rgb(255 255 255 / 0.5);
+    --cta-sec-fg: #ffffff;
+    --cta-sec-border: rgb(255 255 255 / 0.28);
+    --cta-sec-border-hover: rgb(255 255 255 / 0.7);
+    --cta-sec-hover-bg: rgb(255 255 255 / 0.09);
+    --cta-sec-chip-bg: rgb(255 255 255 / 0.14);
+    --cta-sec-chip-fg: #ffffff;
+    --cta-sec-chip-hover-bg: #E9BD36;
+    --cta-sec-chip-hover-fg: #080710;
+    --cta-sec-sheen: rgb(255 255 255 / 0.14);
+  }
 }
 
 @layer utilities {
@@ -764,247 +832,241 @@
     text-decoration: underline !important;
   }
 
-  /* ===========================
-     GLOBAL CTA BUTTON SYSTEM
-     Premium, unified, consistent
-     =========================== */
+  /* ===========================================================
+     UNIVERSAL CTA BUTTON SYSTEM
+     One design for every button on the site, driven by the --cta-* tokens (see the
+     @layer base block near the top of this file):
+       light theme -> brand BLUE pill with a yellow icon chip
+       dark theme  -> brand YELLOW pill with a dark icon chip
+     Dark surfaces (.cta-banner-card, .on-dark-surface, .cta-on-dark) always use the
+     dark-theme look so a button is never blue-on-blue.
+     Use <CtaButton> (components/ui/CtaButton.tsx). The raw classes below render the
+     same thing: .btn-primary-cta, .btn-secondary-cta, .btn-submit-cta
+     (+ .btn-sm / .btn-lg sizes, .btn-icon chip inside).
+     =========================================================== */
 
-  /* --- Primary CTA: Bold Yellow Pill --- */
-  .btn-primary-cta {
+  .btn-primary-cta,
+  .btn-secondary-cta,
+  .btn-submit-cta {
+    position: relative !important;
+    isolation: isolate;
     display: inline-flex !important;
     align-items: center !important;
-    gap: 0.625rem !important;
+    justify-content: center !important;
+    gap: 0.75rem !important;
+    min-height: 3rem !important;
+    padding: 0.3rem 0.3rem 0.3rem 1.5rem !important;
     border-radius: 9999px !important;
-    background-color: var(--color-yellow) !important;
-    color: #080710 !important;
-    padding: 0.45rem 0.45rem 0.45rem 1.375rem !important;
+    border: 1.5px solid transparent !important;
     font-family: var(--font-sans), sans-serif !important;
-    font-size: 0.7rem !important;
-    font-weight: 900 !important;
-    text-transform: uppercase !important;
+    font-size: 0.72rem !important;
+    font-weight: 800 !important;
     letter-spacing: 0.14em !important;
-    border: 1.5px solid var(--color-yellow) !important;
-    box-shadow: 0 4px 20px rgba(233, 189, 54, 0.28), 0 1px 3px rgba(0,0,0,0.08) !important;
-    transition: background-color 220ms ease, box-shadow 220ms ease, transform 150ms ease !important;
-    cursor: pointer !important;
+    text-transform: uppercase !important;
+    line-height: 1 !important;
     white-space: nowrap !important;
     text-decoration: none !important;
-    line-height: 1 !important;
-    vertical-align: middle !important;
+    cursor: pointer !important;
+    overflow: hidden !important;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      background-color 250ms ease,
+      border-color 250ms ease,
+      color 250ms ease,
+      box-shadow 300ms ease,
+      transform 300ms cubic-bezier(0.22, 1, 0.36, 1) !important;
   }
 
-  .btn-primary-cta > span:first-child {
-    color: #080710 !important;
-    flex: 1 !important;
+  /* Label */
+  .btn-primary-cta > span:first-child,
+  .btn-secondary-cta > span:first-child,
+  .btn-submit-cta > span:first-child {
+    flex: 1 1 auto !important;
+    text-align: center !important;
+    color: inherit !important;
   }
 
-  .btn-primary-cta .btn-icon {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    height: 2.125rem !important;
-    width: 2.125rem !important;
-    border-radius: 9999px !important;
-    background-color: #080710 !important;
-    color: var(--color-yellow) !important;
-    flex-shrink: 0 !important;
-    transition: transform 200ms ease !important;
+  /* Diagonal sheen that sweeps across on hover */
+  .btn-primary-cta::before,
+  .btn-secondary-cta::before,
+  .btn-submit-cta::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(105deg, transparent 25%, var(--cta-sheen) 50%, transparent 75%);
+    transform: translateX(-130%);
+    transition: transform 750ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .btn-secondary-cta::before {
+    background: linear-gradient(105deg, transparent 25%, var(--cta-sec-sheen) 50%, transparent 75%);
+  }
+  .btn-primary-cta:hover::before,
+  .btn-secondary-cta:hover::before,
+  .btn-submit-cta:hover:not(:disabled)::before {
+    transform: translateX(130%);
   }
 
-  .btn-primary-cta:hover {
-    background-color: #f5ca4a !important;
-    box-shadow: 0 8px 32px rgba(233, 189, 54, 0.42), 0 2px 6px rgba(0,0,0,0.1) !important;
-    transform: translateY(-1px) !important;
+  /* ---- Primary (and form-submit) ---- */
+  .btn-primary-cta,
+  .btn-submit-cta {
+    background-color: var(--cta-bg) !important;
+    background-image: linear-gradient(180deg, rgb(255 255 255 / 0.18) 0%, rgb(255 255 255 / 0) 55%) !important;
+    color: var(--cta-fg) !important;
+    box-shadow:
+      0 10px 24px -10px rgb(var(--cta-glow) / 0.65),
+      0 2px 6px rgb(0 0 0 / 0.1),
+      inset 0 1px 0 rgb(255 255 255 / 0.28) !important;
   }
 
-  .btn-primary-cta:hover .btn-icon {
-    transform: translateX(2px) !important;
+  .btn-primary-cta:hover,
+  .btn-submit-cta:hover:not(:disabled) {
+    background-color: var(--cta-bg-hover) !important;
+    color: var(--cta-fg) !important;
+    transform: translateY(-2px) !important;
+    box-shadow:
+      0 16px 30px -10px rgb(var(--cta-glow) / 0.8),
+      0 4px 10px rgb(0 0 0 / 0.12),
+      inset 0 1px 0 rgb(255 255 255 / 0.34) !important;
   }
 
-  .btn-primary-cta:active {
-    transform: translateY(0) scale(0.98) !important;
-  }
-
-  /* --- Secondary CTA: Ghost Pill --- */
+  /* ---- Secondary (outline) ---- */
   .btn-secondary-cta {
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 0.625rem !important;
-    border-radius: 9999px !important;
     background-color: transparent !important;
-    color: var(--color-dark) !important;
-    padding: 0.45rem 0.45rem 0.45rem 1.375rem !important;
-    font-family: var(--font-sans), sans-serif !important;
-    font-size: 0.7rem !important;
-    font-weight: 900 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.14em !important;
-    border: 1.5px solid rgba(8, 7, 16, 0.2) !important;
+    background-image: none !important;
+    color: var(--cta-sec-fg) !important;
+    border-color: var(--cta-sec-border) !important;
     box-shadow: none !important;
-    transition: background-color 220ms ease, border-color 220ms ease, transform 150ms ease !important;
-    cursor: pointer !important;
-    white-space: nowrap !important;
-    text-decoration: none !important;
-    line-height: 1 !important;
-    vertical-align: middle !important;
-  }
-
-  .btn-secondary-cta > span:first-child {
-    flex: 1 !important;
-  }
-
-  .btn-secondary-cta .btn-icon {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    height: 2.125rem !important;
-    width: 2.125rem !important;
-    border-radius: 9999px !important;
-    background-color: #080710 !important;
-    color: #ffffff !important;
-    flex-shrink: 0 !important;
-    transition: transform 200ms ease !important;
   }
 
   .btn-secondary-cta:hover {
-    background-color: rgba(8, 7, 16, 0.05) !important;
-    border-color: rgba(8, 7, 16, 0.35) !important;
-    transform: translateY(-1px) !important;
+    background-color: var(--cta-sec-hover-bg) !important;
+    color: var(--cta-sec-fg) !important;
+    border-color: var(--cta-sec-border-hover) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 12px 24px -14px rgb(0 0 0 / 0.4) !important;
   }
 
-  .btn-secondary-cta:hover .btn-icon {
-    transform: translateX(2px) !important;
-  }
-
-  .btn-secondary-cta:active {
-    transform: translateY(0) scale(0.98) !important;
-  }
-
-  /* Dark mode overrides */
-  .dark .btn-secondary-cta {
-    color: #ffffff !important;
-    border-color: rgba(255, 255, 255, 0.2) !important;
-  }
-
-  .dark .btn-secondary-cta .btn-icon {
-    background-color: rgba(255, 255, 255, 0.12) !important;
-    color: #ffffff !important;
-  }
-
-  .dark .btn-secondary-cta:hover {
-    background-color: rgba(255, 255, 255, 0.08) !important;
-    border-color: rgba(255, 255, 255, 0.4) !important;
-  }
-
-  .dark .btn-secondary-cta:hover .btn-icon {
-    background-color: rgba(255, 255, 255, 0.2) !important;
-  }
-
-  /* Ensure secondary CTA buttons inside dark CTA banner cards remain white and fully legible in both light and dark modes */
-  .cta-banner-card .btn-secondary-cta {
-    color: #ffffff !important;
-    border-color: rgba(255, 255, 255, 0.25) !important;
-  }
-
-  .cta-banner-card .btn-secondary-cta > span:first-child {
-    color: #ffffff !important;
-  }
-
-  .cta-banner-card .btn-secondary-cta .btn-icon {
-    background-color: rgba(255, 255, 255, 0.15) !important;
-    color: #ffffff !important;
-  }
-
-  .cta-banner-card .btn-secondary-cta:hover {
-    background-color: rgba(255, 255, 255, 0.12) !important;
-    border-color: rgba(255, 255, 255, 0.45) !important;
-  }
-
-  .cta-banner-card .btn-secondary-cta:hover .btn-icon {
-    background-color: rgba(255, 255, 255, 0.25) !important;
-  }
-
-  /* --- Submit CTA: For forms (full width on mobile) --- */
-  .btn-submit-cta {
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 0.625rem !important;
-    border-radius: 9999px !important;
-    background-color: var(--color-blue) !important;
-    color: #ffffff !important;
-    padding: 0.45rem 0.45rem 0.45rem 1.375rem !important;
-    font-family: var(--font-sans), sans-serif !important;
-    font-size: 0.7rem !important;
-    font-weight: 900 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.14em !important;
-    border: 1.5px solid var(--color-blue) !important;
-    box-shadow: 0 4px 20px rgba(3, 6, 172, 0.22), 0 1px 3px rgba(0,0,0,0.08) !important;
-    transition: background-color 220ms ease, box-shadow 220ms ease, transform 150ms ease !important;
-    cursor: pointer !important;
-    text-decoration: none !important;
-    line-height: 1 !important;
-    vertical-align: middle !important;
-  }
-
-  .btn-submit-cta > span:first-child {
-    color: #ffffff !important;
-    flex: 1 !important;
-    text-align: center !important;
-  }
-
+  /* ---- Icon chip ---- */
+  .btn-primary-cta .btn-icon,
+  .btn-secondary-cta .btn-icon,
   .btn-submit-cta .btn-icon {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    height: 2.125rem !important;
-    width: 2.125rem !important;
-    border-radius: 9999px !important;
-    background-color: #080710 !important;
-    color: var(--color-yellow) !important;
     flex-shrink: 0 !important;
-    transition: transform 200ms ease !important;
+    width: 2.4rem !important;
+    height: 2.4rem !important;
+    border-radius: 9999px !important;
+    transition:
+      transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 250ms ease,
+      color 250ms ease !important;
   }
 
-  .btn-submit-cta:hover:not(:disabled) {
-    background-color: #0408d9 !important;
-    box-shadow: 0 8px 30px rgba(3, 6, 172, 0.35) !important;
-    transform: translateY(-1px) !important;
+  .btn-primary-cta .btn-icon svg,
+  .btn-secondary-cta .btn-icon svg,
+  .btn-submit-cta .btn-icon svg {
+    width: 1rem !important;
+    height: 1rem !important;
+    transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
+  .btn-primary-cta .btn-icon,
+  .btn-submit-cta .btn-icon {
+    background-color: var(--cta-chip-bg) !important;
+    color: var(--cta-chip-fg) !important;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.18);
+  }
+
+  .btn-secondary-cta .btn-icon {
+    background-color: var(--cta-sec-chip-bg) !important;
+    color: var(--cta-sec-chip-fg) !important;
+  }
+
+  .btn-secondary-cta:hover .btn-icon {
+    background-color: var(--cta-sec-chip-hover-bg) !important;
+    color: var(--cta-sec-chip-hover-fg) !important;
+  }
+
+  .btn-primary-cta:hover .btn-icon,
+  .btn-secondary-cta:hover .btn-icon,
   .btn-submit-cta:hover:not(:disabled) .btn-icon {
-    transform: translateX(2px) !important;
+    transform: scale(1.08) !important;
   }
 
-  .btn-submit-cta:disabled {
-    opacity: 0.65 !important;
-    cursor: not-allowed !important;
+  .btn-primary-cta:hover .btn-icon svg,
+  .btn-secondary-cta:hover .btn-icon svg,
+  .btn-submit-cta:hover:not(:disabled) .btn-icon svg {
+    transform: translateX(2px);
   }
 
+  /* No icon chip: even padding */
+  :is(.btn-primary-cta, .btn-secondary-cta, .btn-submit-cta):not(:has(.btn-icon)) {
+    padding: 0.3rem 1.75rem !important;
+  }
+
+  /* ---- Sizes ---- */
+  .btn-sm {
+    min-height: 2.5rem !important;
+    padding-left: 1.15rem !important;
+    gap: 0.6rem !important;
+    font-size: 0.66rem !important;
+  }
+  .btn-sm .btn-icon {
+    width: 1.9rem !important;
+    height: 1.9rem !important;
+  }
+  .btn-lg {
+    min-height: 3.6rem !important;
+    padding-left: 1.9rem !important;
+    font-size: 0.78rem !important;
+  }
+  .btn-lg .btn-icon {
+    width: 2.8rem !important;
+    height: 2.8rem !important;
+  }
+
+  /* ---- States ---- */
+  .btn-primary-cta:active,
+  .btn-secondary-cta:active,
   .btn-submit-cta:active:not(:disabled) {
     transform: translateY(0) scale(0.98) !important;
   }
 
-  /* Dark mode: yellow submit button */
-  .dark .btn-submit-cta {
-    background-color: var(--color-yellow) !important;
-    border-color: var(--color-yellow) !important;
-    color: #080710 !important;
-    box-shadow: 0 4px 20px rgba(233, 189, 54, 0.28) !important;
+  .btn-primary-cta:focus-visible,
+  .btn-secondary-cta:focus-visible,
+  .btn-submit-cta:focus-visible {
+    outline: 2px solid var(--cta-ring) !important;
+    outline-offset: 3px !important;
   }
 
-  .dark .btn-submit-cta > span:first-child {
-    color: #080710 !important;
+  .btn-primary-cta:disabled,
+  .btn-secondary-cta:disabled,
+  .btn-submit-cta:disabled,
+  .btn-primary-cta[aria-disabled="true"],
+  .btn-secondary-cta[aria-disabled="true"] {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+    pointer-events: none;
+    transform: none !important;
   }
 
-  .dark .btn-submit-cta .btn-icon {
-    background-color: #080710 !important;
-    color: var(--color-yellow) !important;
-  }
-
-  .dark .btn-submit-cta:hover:not(:disabled) {
-    background-color: #f5ca4a !important;
-    box-shadow: 0 8px 30px rgba(233, 189, 54, 0.42) !important;
+  @media (prefers-reduced-motion: reduce) {
+    .btn-primary-cta,
+    .btn-secondary-cta,
+    .btn-submit-cta,
+    .btn-primary-cta .btn-icon,
+    .btn-secondary-cta .btn-icon,
+    .btn-submit-cta .btn-icon {
+      transition-duration: 0.01ms !important;
+    }
+    .btn-primary-cta::before,
+    .btn-secondary-cta::before,
+    .btn-submit-cta::before {
+      display: none;
+    }
   }
 
   /* Ultra-Narrow Viewport (< 360px) */
@@ -1013,8 +1075,8 @@
     .btn-secondary-cta,
     .btn-submit-cta {
       width: 100% !important;
-      padding: 0.4rem 0.4rem 0.4rem 1rem !important;
-      font-size: 0.65rem !important;
+      padding-left: 1.1rem !important;
+      font-size: 0.66rem !important;
       letter-spacing: 0.1em !important;
     }
   }

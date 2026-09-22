@@ -1,3 +1,4 @@
+import CtaButton from "@/components/ui/CtaButton";
 import Link from "@/components/ui/Link";
 
 export default function NotFound() {
@@ -13,12 +14,7 @@ export default function NotFound() {
         <p className="mb-8 text-sm sm:text-base text-[#646970] leading-relaxed">
           The page you are looking for might have been moved, deleted, or does not exist.
         </p>
-        <Link
-          href="/"
-          className="inline-flex items-center justify-center px-6 py-3 bg-[#0306AC] text-white text-sm font-semibold rounded-full hover:bg-[#02058a] transition-all shadow-md hover:shadow-lg"
-        >
-          Return to Homepage
-        </Link>
+        <CtaButton href="/" className="cta-on-light">Return to Homepage</CtaButton>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import CtaButton from "@/components/ui/CtaButton";
 import { withTrailingSlash } from "@/lib/url";
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import { motion } from "framer-motion";
@@ -280,7 +281,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
         {/* Floating Blurred Mesh Blobs */}
         <div className="absolute top-[3%] left-[-15%] w-[50vw] h-[50vw] rounded-full bg-brand-blue/[0.03] dark:bg-brand-blue/[0.06] blur-[120px] pointer-events-none select-none -z-10 animate-float-blob" />
-        <div className="absolute top-[28%] right-[-10%] w-[45vw] h-[45vw] rounded-full bg-brand-yellow/[0.02] dark:bg-brand-yellow/[0.05] blur-[150px] pointer-events-none select-none -z-10 animate-float-blob-delayed" />
+        <div className="absolute top-[28%] right-[-10%] w-[45vw] h-[45vw] rounded-full bg-brand-blue/[0.02] dark:bg-brand-yellow/[0.05] blur-[150px] pointer-events-none select-none -z-10 animate-float-blob-delayed" />
         <div className="absolute bottom-[30%] left-[-12%] w-[48vw] h-[48vw] rounded-full bg-brand-blue/[0.02] dark:bg-brand-blue/[0.04] blur-[140px] pointer-events-none select-none -z-10 animate-float-blob" />
         <div className="absolute bottom-[5%] right-[-12%] w-[42vw] h-[42vw] rounded-full bg-brand-yellow/[0.015] dark:bg-brand-yellow/[0.035] blur-[160px] pointer-events-none select-none -z-10 animate-float-blob-delayed" />
 
@@ -303,8 +304,8 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                 <PageBreadcrumbs page={pageData} />
                 {hero.badgeText && (
                   <div className="inline-flex pointer-events-auto">
-                    <span className="inline-flex items-center gap-2 rounded-full bg-brand-yellow px-4 py-1.5 text-[10px] font-black tracking-wider uppercase text-[#080710] select-none shadow-sm">
-                      <Star className="h-3.5 w-3.5 fill-[#080710] text-[#080710] shrink-0" />
+                    <span className="inline-flex items-center gap-2 rounded-full bg-brand-accent px-4 py-1.5 text-[10px] font-black tracking-wider uppercase text-white dark:text-[#080710] select-none shadow-sm">
+                      <Star className="h-3.5 w-3.5 fill-white text-white dark:fill-[#080710] dark:text-[#080710] shrink-0" />
                       {hero.badgeText}
                     </span>
                   </div>
@@ -314,7 +315,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   {hero.titleIntro || "Architecting Digital Products With "}
                   <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1">
                     {hero.titleHighlight || "Zero Fluff & Pure Precision."}
-                    <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-yellow opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
+                    <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
                       <motion.path
                         d="M 2 5 Q 50 1.5, 98 3.5 C 99 3.5, 99 4.5, 98 5 Q 50 7, 2 5.5 Z"
                         fill="currentColor"
@@ -336,17 +337,11 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                 <div className="flex flex-wrap items-center gap-4 pt-2">
                   {hero.ctaPrimaryText && (
-                    <a href={withTrailingSlash(hero.ctaPrimaryHref || "#")} className="btn-primary-cta">
-                      <span>{hero.ctaPrimaryText}</span>
-                      <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
-                    </a>
+                    <CtaButton href={hero.ctaPrimaryHref || "#"}>{hero.ctaPrimaryText}</CtaButton>
                   )}
 
                   {hero.ctaSecondaryText && (
-                    <a href={withTrailingSlash(hero.ctaSecondaryHref || "#")} className="btn-secondary-cta">
-                      <span>{hero.ctaSecondaryText}</span>
-                      <span className="btn-icon"><Play className="h-3.5 w-3.5 fill-current ml-0.5" /></span>
-                    </a>
+                    <CtaButton href={hero.ctaSecondaryHref || "#"} variant="secondary" icon={<Play className="fill-current ml-0.5" />}>{hero.ctaSecondaryText}</CtaButton>
                   )}
                 </div>
               </motion.div>
@@ -539,7 +534,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   )}
 
                   {whoWeAre.imgUiDetail && (
-                    <div className="absolute right-2 bottom-6 w-[55%] aspect-[1.28] rounded-2xl overflow-hidden border border-[#E9BD36]/20 dark:border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.12)] dark:shadow-[0_30px_60px_rgba(0,0,0,0.5)] bg-white dark:bg-[#12121e]">
+                    <div className="absolute right-2 bottom-6 w-[55%] aspect-[1.28] rounded-2xl overflow-hidden border border-[#0306AC]/15 dark:border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.12)] dark:shadow-[0_30px_60px_rgba(0,0,0,0.5)] bg-white dark:bg-[#12121e]">
                       <FullImage src={whoWeAre.imgUiDetail} alt={whoWeAre.imgUiDetailAlt || "UI Detail"} />
                       <div className="absolute inset-0 bg-gradient-to-tr from-[#0306AC]/10 to-transparent mix-blend-overlay pointer-events-none" />
                     </div>
@@ -883,13 +878,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                     {servicesDirectory.consultationBtnText && (
                       <div className="pt-2 border-t border-brand-zinc-200/80 dark:border-white/10">
-                        <a
-                          href={withTrailingSlash(servicesDirectory.consultationBtnHref || "#contact")}
-                          className="w-full py-3.5 rounded-2xl bg-[#E9BD36] text-[#080710] font-mono text-[11px] font-black uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#ffe554] hover:scale-[1.02] transition-all duration-300 shadow-lg"
-                        >
-                          <span>{servicesDirectory.consultationBtnText}</span>
-                          <ArrowRight className="h-4 w-4 text-[#080710]" />
-                        </a>
+                        <CtaButton href={servicesDirectory.consultationBtnHref || "#contact"} fullWidth>{servicesDirectory.consultationBtnText}</CtaButton>
                       </div>
                     )}
                   </div>
@@ -1339,17 +1328,11 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                 <div className="flex items-center gap-4 flex-wrap pt-2">
                   {ctaBanner.ctaPrimaryText && (
-                    <a href={withTrailingSlash(ctaBanner.ctaPrimaryHref || "#contact")} className="btn-primary-cta">
-                      <span>{ctaBanner.ctaPrimaryText}</span>
-                      <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
-                    </a>
+                    <CtaButton href={ctaBanner.ctaPrimaryHref || "#contact"}>{ctaBanner.ctaPrimaryText}</CtaButton>
                   )}
 
                   {ctaBanner.ctaSecondaryText && (
-                    <a href={withTrailingSlash(ctaBanner.ctaSecondaryHref || "#")} className="btn-secondary-cta">
-                      <span>{ctaBanner.ctaSecondaryText}</span>
-                      <span className="btn-icon"><Play className="h-3.5 w-3.5 fill-current ml-0.5" /></span>
-                    </a>
+                    <CtaButton href={ctaBanner.ctaSecondaryHref || "#"} variant="secondary" icon={<Play className="fill-current ml-0.5" />}>{ctaBanner.ctaSecondaryText}</CtaButton>
                   )}
                 </div>
               </div>

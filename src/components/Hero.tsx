@@ -1,5 +1,6 @@
 "use client";
 
+import CtaButton from "@/components/ui/CtaButton";
 import { withTrailingSlash } from "@/lib/url";
 import { useRef, useEffect, type ReactNode } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -168,8 +169,8 @@ export default function Hero({ data, content: overrideContent, breadcrumb }: { d
 
             {/* Pill Badge */}
             <motion.div variants={itemVariants} className="inline-flex pointer-events-auto">
-              <span className="inline-flex items-center gap-2 rounded-full bg-brand-yellow px-4 py-1.5 text-[10px] font-black tracking-wider uppercase text-[#080710] select-none shadow-sm">
-                <Star className="h-3.5 w-3.5 fill-[#080710] text-[#080710] shrink-0" />
+              <span className="inline-flex items-center gap-2 rounded-full bg-brand-accent px-4 py-1.5 text-[10px] font-black tracking-wider uppercase text-white select-none shadow-sm">
+                <Star className="h-3.5 w-3.5 fill-white text-white shrink-0" />
                 {badgeText}
               </span>
             </motion.div>
@@ -188,11 +189,11 @@ export default function Hero({ data, content: overrideContent, breadcrumb }: { d
               >
                 {titleLine2}
                 {/* Custom animated hand-drawn SVG underline with gradient and hover interaction */}
-                <svg className="absolute -bottom-3.5 left-0 w-full h-5 pointer-events-none drop-shadow-[0_1.5px_2px_rgba(233,189,54,0.45)]" viewBox="0 0 100 14" preserveAspectRatio="none">
+                <svg className="absolute -bottom-3.5 left-0 w-full h-5 pointer-events-none" style={{ filter: 'var(--underline-glow)' }} viewBox="0 0 100 14" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="brushGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#E9BD36" />
-                      <stop offset="100%" stopColor="#FFA800" />
+                      <stop offset="0%" stopColor="var(--color-brand-accent)" />
+                      <stop offset="100%" stopColor="var(--color-brand-accent-hover)" />
                     </linearGradient>
                     <clipPath id="underlineClip1">
                       <motion.rect
@@ -235,7 +236,7 @@ export default function Hero({ data, content: overrideContent, breadcrumb }: { d
                   <motion.path
                     d="M 6 10 Q 38 7, 70 8.5 T 94 9.5"
                     fill="none"
-                    stroke="#FFA800"
+                    stroke="var(--color-brand-accent-hover)"
                     strokeWidth="2.2"
                     strokeLinecap="round"
                     opacity="0.85"
@@ -269,18 +270,15 @@ export default function Hero({ data, content: overrideContent, breadcrumb }: { d
                   const isPrimary = btn.primary !== undefined ? Boolean(btn.primary) : idx === 0;
 
                   return (
-                    <a
+                    <CtaButton
                       key={idx}
-                      href={withTrailingSlash(btnHref)}
-                      className={`${isPrimary ? "btn-primary-cta" : "btn-secondary-cta"} pointer-events-auto`}
+                      href={btnHref}
+                      variant={isPrimary ? "primary" : "secondary"}
+                      className="pointer-events-auto"
+                      icon={btnIcon ? <Icon name={btnIcon} /> : false}
                     >
-                      <span>{btnText}</span>
-                      {btnIcon && (
-                        <span className="btn-icon">
-                          <Icon name={btnIcon} className="h-3.5 w-3.5" />
-                        </span>
-                      )}
-                    </a>
+                      {btnText}
+                    </CtaButton>
                   );
                 })}
               </motion.div>

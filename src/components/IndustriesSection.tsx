@@ -125,7 +125,7 @@ export default function IndustriesSection({ data }: IndustriesSectionProps) {
             {industries.titleIntro}{" "}
             <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
               {industries.titleHighlight}
-              <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-yellow opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
+              <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
                 <motion.path
                   d="M 2 5 Q 50 1.5, 98 3.5 C 99 3.5, 99 4.5, 98 5 Q 50 7, 2 5.5 Z"
                   fill="currentColor"

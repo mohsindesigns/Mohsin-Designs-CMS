@@ -1,5 +1,7 @@
 "use client";
 
+import CtaButton from "@/components/ui/CtaButton";
+import ThemedSelect from "@/components/ui/ThemedSelect";
 import { withTrailingSlash } from "@/lib/url";
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import React, { use, useState, useEffect, useRef } from "react";
@@ -19,7 +21,6 @@ import {
   Send,
   Mail,
   Check,
-  ChevronDown,
   Search,
   Monitor,
   Megaphone,
@@ -282,7 +283,7 @@ function AnimatedStat({
           <defs>
             <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#0306AC" />
-              <stop offset="100%" stopColor="#E9BD36" />
+              <stop offset="100%" stopColor="var(--color-brand-accent)" />
             </linearGradient>
           </defs>
           <circle
@@ -302,7 +303,7 @@ function AnimatedStat({
           />
           <circle
             cx={dotX} cy={dotY} r="4.5"
-            fill="#E9BD36"
+            fill="var(--color-brand-accent)"
             stroke="white"
             strokeWidth="1.5"
           />
@@ -333,7 +334,7 @@ const differentiatorsIllustrations = [
     <rect x="16" y="33" width="30" height="5" rx="2.5" fill="#0306AC" fillOpacity="0.1" />
     <rect x="16" y="43" width="40" height="5" rx="2.5" fill="#0306AC" fillOpacity="0.1" />
     <circle cx="16" cy="73" r="6" fill="#0306AC" />
-    <circle cx="28" cy="73" r="6" fill="#E9BD36" />
+    <circle cx="28" cy="73" r="6" fill="var(--color-brand-accent)" />
     <rect x="84" y="8" width="68" height="42" rx="8" fill="#0306AC" fillOpacity="0.07" stroke="#0306AC" strokeWidth="1" strokeOpacity="0.18" />
     <circle cx="102" cy="28" r="10" fill="#0306AC" fillOpacity="0.15" />
     <rect x="118" y="21" width="26" height="4" rx="2" fill="#0306AC" fillOpacity="0.2" />
@@ -345,23 +346,23 @@ const differentiatorsIllustrations = [
     <circle cx="33" cy="17" r="3.5" fill="#0306AC" fillOpacity="0.2" />
     <rect x="18" y="34" width="20" height="4" rx="2" fill="#0306AC" fillOpacity="0.5" />
     <rect x="44" y="34" width="48" height="4" rx="2" fill="#0306AC" fillOpacity="0.2" />
-    <rect x="98" y="34" width="24" height="4" rx="2" fill="#E9BD36" fillOpacity="0.7" />
+    <rect x="98" y="34" width="24" height="4" rx="2" fill="var(--color-brand-accent)" fillOpacity="0.7" />
   </svg>,
   <svg key="3" viewBox="0 0 160 100" fill="none" className="w-full h-full">
     <line x1="8" y1="92" x2="152" y2="92" stroke="#0306AC" strokeWidth="1" strokeOpacity="0.12" />
     <rect x="16" y="68" width="16" height="24" rx="3" fill="#0306AC" fillOpacity="0.12" />
     <rect x="38" y="52" width="16" height="40" rx="3" fill="#0306AC" fillOpacity="0.2" />
     <rect x="60" y="38" width="16" height="54" rx="3" fill="#0306AC" fillOpacity="0.32" />
-    <polyline points="24,66 46,50 68,36 90,22 112,10" stroke="#E9BD36" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-    <circle cx="24" cy="66" r="3.5" fill="#E9BD36" />
-    <circle cx="46" cy="50" r="3.5" fill="#E9BD36" />
-    <circle cx="68" cy="36" r="3.5" fill="#E9BD36" />
+    <polyline points="24,66 46,50 68,36 90,22 112,10" stroke="var(--color-brand-accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    <circle cx="24" cy="66" r="3.5" fill="var(--color-brand-accent)" />
+    <circle cx="46" cy="50" r="3.5" fill="var(--color-brand-accent)" />
+    <circle cx="68" cy="36" r="3.5" fill="var(--color-brand-accent)" />
   </svg>,
   <svg key="4" viewBox="0 0 160 100" fill="none" className="w-full h-full">
     <rect x="8" y="8" width="88" height="34" rx="10" fill="#0306AC" fillOpacity="0.09" stroke="#0306AC" strokeWidth="1" strokeOpacity="0.18" />
     <path d="M18 42 L14 50 L24 42" fill="#0306AC" fillOpacity="0.09" />
     <rect x="16" y="18" width="64" height="4" rx="2" fill="#0306AC" fillOpacity="0.3" />
-    <rect x="64" y="52" width="88" height="34" rx="10" fill="#E9BD36" fillOpacity="0.22" stroke="#E9BD36" strokeOpacity="0.55" strokeWidth="1" />
+    <rect x="64" y="52" width="88" height="34" rx="10" fill="var(--color-brand-accent)" fillOpacity="0.22" stroke="var(--color-brand-accent)" strokeOpacity="0.55" strokeWidth="1" />
     <rect x="72" y="62" width="64" height="4" rx="2" fill="#0306AC" fillOpacity="0.22" />
   </svg>
 ];
@@ -1027,7 +1028,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
       {/* ── Ambient Blobs ── */}
       <div className="absolute top-[2%] left-[-15%] w-[50vw] h-[50vw] rounded-full bg-brand-blue/[0.03] dark:bg-brand-blue/[0.06] blur-[120px] pointer-events-none select-none -z-10 animate-float-blob" />
-      <div className="absolute top-[28%] right-[-10%] w-[45vw] h-[45vw] rounded-full bg-brand-yellow/[0.02] dark:bg-brand-yellow/[0.05] blur-[150px] pointer-events-none select-none -z-10 animate-float-blob-delayed" />
+      <div className="absolute top-[28%] right-[-10%] w-[45vw] h-[45vw] rounded-full bg-brand-blue/[0.02] dark:bg-brand-yellow/[0.05] blur-[150px] pointer-events-none select-none -z-10 animate-float-blob-delayed" />
       <div className="absolute bottom-[20%] left-[-12%] w-[48vw] h-[48vw] rounded-full bg-brand-blue/[0.02] dark:bg-brand-blue/[0.04] blur-[140px] pointer-events-none select-none -z-10 animate-float-blob" />
 
       {/* ── 01. SERVICE HERO ── */}
@@ -1065,7 +1066,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                   {service.hero.titleIntro}{" "}
                   <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                     {service.hero.titleHighlight}
-                    <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-yellow opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
+                    <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
                       <motion.path
                         d="M 2 5 Q 50 1.5, 98 3.5 C 99 3.5, 99 4.5, 98 5 Q 50 7, 2 5.5 Z"
                         fill="currentColor"
@@ -1096,14 +1097,8 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
                 {/* CTA Buttons */}
                 <div className="flex flex-wrap items-center gap-4 pt-4">
-                  <a href={withTrailingSlash(service.hero.primaryCta?.link || "#contact-form")} className="btn-primary-cta">
-                    <span>{service.hero.primaryCta?.text || "Start Your Project"}</span>
-                    <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
-                  </a>
-                  <a href={withTrailingSlash(service.hero.secondaryCta?.link || "#what-included")} className="btn-secondary-cta">
-                    <span>{service.hero.secondaryCta?.text || "Explore Inclusions"}</span>
-                    <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
-                  </a>
+                  <CtaButton href={service.hero.primaryCta?.link || "#contact-form"}>{service.hero.primaryCta?.text || "Start Your Project"}</CtaButton>
+                  <CtaButton href={service.hero.secondaryCta?.link || "#what-included"} variant="secondary">{service.hero.secondaryCta?.text || "Explore Inclusions"}</CtaButton>
                 </div>
               </motion.div>
 
@@ -1185,19 +1180,12 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                     </div>
 
                     <div className="relative">
-                      <select
+                      <ThemedSelect
                         value={formData.service}
                         onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                        className="contact-input appearance-none cursor-pointer pr-10 text-xs sm:text-sm bg-transparent"
-                      >
-                        <option value={service.title}>{service.title}</option>
-                        {rawServices.filter((s: any) => s.title !== service.title).map((srv: any, idx: number) => (
-                          <option key={idx} value={srv.title} className="bg-white dark:bg-[#12121e]">
-                            {srv.title}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown className="w-4 h-4 text-brand-zinc-400 pointer-events-none absolute right-4 top-1/2 -translate-y-1/2" />
+                        className="contact-input !flex text-xs sm:text-sm"
+                        options={[service, ...rawServices.filter((s: any) => s.title !== service.title)].map((srv: any) => ({ value: srv.title, label: srv.title }))}
+                      />
                     </div>
 
                     <textarea
@@ -1230,13 +1218,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                       theme="auto"
                     />
 
-                    <button
-                      type="submit"
-                      className="w-full py-3.5 px-6 rounded-2xl bg-brand-yellow hover:bg-amber-400 text-[#080710] font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-brand-yellow/15 hover:shadow-brand-yellow/30 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 cursor-pointer mt-1"
-                    >
-                      <Send className="w-3.5 h-3.5" />
-                      <span>{service.hero.formButtonText || "Request Free Proposal"}</span>
-                    </button>
+                    <CtaButton type="submit" fullWidth icon={<Send />}>
+                      {service.hero.formButtonText || "Request Free Proposal"}
+                    </CtaButton>
                   </form>
                 </div>
               </motion.div>
@@ -1332,9 +1316,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               )}
               <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
                 {service.whatIncluded.titleIntro}{" "}
-                <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
+                <span className="relative inline-block text-brand-blue dark:text-brand-accent pb-1 ml-1 font-black">
                   {service.whatIncluded.titleHighlight}
-                  <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-yellow opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
+                  <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
                     <motion.path
                       d="M 2 5 Q 50 1.5, 98 3.5 C 99 3.5, 99 4.5, 98 5 Q 50 7, 2 5.5 Z"
                       fill="currentColor"
@@ -1461,7 +1445,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 {service.benefits.titleIntro}{" "}
                 <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                   {service.benefits.titleHighlight}
-                  <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-yellow opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
+                  <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
                     <motion.path
                       d="M 2 5 Q 50 1.5, 98 3.5 C 99 3.5, 99 4.5, 98 5 Q 50 7, 2 5.5 Z"
                       fill="currentColor"
@@ -1803,7 +1787,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 {service.industries.titleIntro}{" "}
                 <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                   {service.industries.titleHighlight}
-                  <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-yellow opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
+                  <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
                     <motion.path
                       d="M 2 5 Q 50 1.5, 98 3.5 C 99 3.5, 99 4.5, 98 5 Q 50 7, 2 5.5 Z"
                       fill="currentColor"
@@ -2089,7 +2073,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 {service.pricing.titleIntro}{" "}
                 <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                   {service.pricing.titleHighlight}
-                  <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-yellow opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
+                  <svg className="absolute -bottom-1.5 left-0 w-full h-3.5 pointer-events-none text-brand-accent opacity-90" viewBox="0 0 100 10" preserveAspectRatio="none">
                     <motion.path
                       d="M 2 5 Q 50 1.5, 98 3.5 C 99 3.5, 99 4.5, 98 5 Q 50 7, 2 5.5 Z"
                       fill="currentColor"
@@ -2172,13 +2156,13 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                     </div>
 
                     <div className="pt-6 mt-8 border-t border-brand-zinc-200/80 dark:border-white/5 w-full relative z-10">
-                      <Link
+                      <CtaButton
                         href={plan.ctaLink || `/contact?service=${service.slug}&plan=${encodeURIComponent(plan.name || "")}`}
-                        className={`w-full justify-center ${isPopular ? "btn-primary-cta" : "btn-secondary-cta"}`}
+                        variant={isPopular ? "primary" : "secondary"}
+                        fullWidth
                       >
-                        <span>{plan.ctaText || "Select Plan"}</span>
-                        <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
-                      </Link>
+                        {plan.ctaText || "Select Plan"}
+                      </CtaButton>
                     </div>
 
                   </SpotlightCard>
@@ -2368,16 +2352,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
                 <div className="flex flex-wrap items-center gap-4 pt-2">
                   {service.finalCta.primaryCtaText && (
-                    <a href={withTrailingSlash(service.finalCta.primaryCtaLink || "#contact-form")} className="btn-primary-cta">
-                      <span>{service.finalCta.primaryCtaText}</span>
-                      <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
-                    </a>
+                    <CtaButton href={service.finalCta.primaryCtaLink || "#contact-form"}>{service.finalCta.primaryCtaText}</CtaButton>
                   )}
                   {service.finalCta.secondaryCtaText && (
-                    <a href={withTrailingSlash(service.finalCta.secondaryCtaLink || "/contact-us")} className="btn-secondary-cta">
-                      <span>{service.finalCta.secondaryCtaText}</span>
-                      <span className="btn-icon"><ArrowRight className="h-3.5 w-3.5" /></span>
-                    </a>
+                    <CtaButton href={service.finalCta.secondaryCtaLink || "/contact-us"} variant="secondary">{service.finalCta.secondaryCtaText}</CtaButton>
                   )}
                 </div>
               </div>

@@ -207,7 +207,7 @@ const getPortfolioScreenshot = (num: string, study: any) => {
               </div>
               <div className="flex justify-between items-center leading-none">
                 <span className="text-[6.5px] font-black text-brand-dark">{s.price}</span>
-                <span className="text-[4.5px] bg-brand-yellow text-brand-dark font-black px-1.5 py-0.5 rounded-xs scale-90">{s.button}</span>
+                <span className="text-[4.5px] bg-brand-accent text-white font-black px-1.5 py-0.5 rounded-xs scale-90">{s.button}</span>
               </div>
             </div>
             <div className="w-16 shrink-0 flex flex-col gap-1">
@@ -251,7 +251,7 @@ const getPortfolioScreenshot = (num: string, study: any) => {
                 <svg className="w-full h-full text-brand-blue" viewBox="0 0 100 30" preserveAspectRatio="none">
                   <path d="M 0 25 Q 25 22, 45 12 T 90 2 L 100 2" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
                   <path d="M 0 25 Q 25 22, 45 12 T 90 2 L 100 2 L 100 30 L 0 30 Z" fill="currentColor" fillOpacity="0.05" />
-                  <circle cx="90" cy="2" r="2.5" fill="#E9BD36" stroke="currentColor" strokeWidth="1" />
+                  <circle cx="90" cy="2" r="2.5" fill="var(--color-brand-accent)" stroke="currentColor" strokeWidth="1" />
                 </svg>
               </div>
             </div>
@@ -662,7 +662,7 @@ export default function Portfolio({ data }: { data?: any }) {
                                 <span className="font-heading font-black text-base sm:text-xl text-brand-blue dark:text-brand-yellow leading-none tracking-tight">
                                   {stat.value}
                                 </span>
-                                <StatIcon className="h-4.5 w-4.5 text-brand-yellow fill-brand-yellow/10" strokeWidth={2.5} />
+                                <StatIcon className="h-4.5 w-4.5 text-brand-accent fill-brand-accent/10" strokeWidth={2.5} />
                               </div>
                               <p className="text-[9px] font-bold text-brand-zinc-500 dark:text-zinc-400 uppercase tracking-widest mt-3 leading-snug">
                                 {stat.label}
@@ -677,14 +677,14 @@ export default function Portfolio({ data }: { data?: any }) {
                         <div className="flex gap-2">
                           <button
                             onClick={handlePrev}
-                            className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-zinc-200 dark:border-white/15 text-brand-dark dark:text-white hover:border-brand-blue hover:bg-brand-blue hover:text-white dark:hover:text-[#080710] transition-all duration-300 shadow-xs cursor-pointer"
+                            className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-zinc-200 dark:border-white/15 text-brand-dark dark:text-white hover:border-brand-blue hover:bg-brand-blue hover:text-white dark:hover:border-brand-yellow dark:hover:bg-brand-yellow dark:hover:text-brand-dark transition-all duration-300 shadow-xs cursor-pointer"
                             aria-label={portfolio.ariaPrev}
                           >
                             <ArrowLeft className="h-4.5 w-4.5" />
                           </button>
                           <button
                             onClick={handleNext}
-                            className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-zinc-200 dark:border-white/15 text-brand-dark dark:text-white hover:border-brand-blue hover:bg-brand-blue hover:text-white dark:hover:text-[#080710] transition-all duration-300 shadow-xs cursor-pointer"
+                            className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-zinc-200 dark:border-white/15 text-brand-dark dark:text-white hover:border-brand-blue hover:bg-brand-blue hover:text-white dark:hover:border-brand-yellow dark:hover:bg-brand-yellow dark:hover:text-brand-dark transition-all duration-300 shadow-xs cursor-pointer"
                             aria-label={portfolio.ariaNext}
                           >
                             <ArrowRight className="h-4.5 w-4.5" />

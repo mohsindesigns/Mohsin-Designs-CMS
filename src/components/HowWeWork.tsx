@@ -92,7 +92,7 @@ function AnimatedStat({
           <defs>
             <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#0306AC" />
-              <stop offset="100%" stopColor="#E9BD36" />
+              <stop offset="100%" stopColor="var(--color-brand-accent)" />
             </linearGradient>
           </defs>
           {/* Track */}
@@ -113,13 +113,13 @@ function AnimatedStat({
             strokeDasharray={CIRCUMFERENCE}
             strokeDashoffset={CIRCUMFERENCE * (1 - safePercentage)}
           />
-          {/* Yellow dot */}
+          {/* Accent dot */}
           <circle
             cx={dotX} cy={dotY} r="4.5"
-            fill="#E9BD36"
+            fill="var(--color-brand-accent)"
             stroke="white"
             strokeWidth="1.5"
-            style={{ filter: "drop-shadow(0 2px 4px rgba(233,189,54,0.5))" }}
+            style={{ filter: "var(--svg-dot-shadow)" }}
           />
         </svg>
         {/* Number */}

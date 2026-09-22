@@ -1,5 +1,6 @@
 "use client";
 
+import CtaButton from "@/components/ui/CtaButton";
 import { withTrailingSlash } from "@/lib/url";
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
@@ -123,7 +124,8 @@ export default function AboutOwner() {
 
             {/* Hand-drawn marker/brush drawing frame */}
             <svg
-              className="absolute -inset-5 sm:-inset-6 w-[110%] sm:w-[112%] h-[110%] sm:h-[112%] pointer-events-none stroke-[#E9BD36] fill-none z-0 opacity-90"
+              className="absolute -inset-5 sm:-inset-6 w-[110%] sm:w-[112%] h-[110%] sm:h-[112%] pointer-events-none fill-none z-0 opacity-90"
+              style={{ stroke: 'var(--color-brand-accent)' }}
               viewBox="0 0 100 100"
               preserveAspectRatio="none"
             >
@@ -190,8 +192,8 @@ export default function AboutOwner() {
                 </text>
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="h-5 w-5 rounded-full bg-[#E9BD36] flex items-center justify-center shadow-md">
-                  <span className="text-[10px] font-black text-[#080710]">{circleLetter}</span>
+                <div className="h-5 w-5 rounded-full bg-brand-accent flex items-center justify-center shadow-md">
+                  <span className="text-[10px] font-black text-white">{circleLetter}</span>
                 </div>
               </div>
             </motion.div>
@@ -253,7 +255,7 @@ export default function AboutOwner() {
             {/* Stats Row */}
             <div className="grid grid-cols-3 gap-1.5 xs:gap-3 sm:gap-6 pt-8 border-t border-brand-zinc-200 dark:border-white/10 mt-8 w-full">
               {statsList.map((s: any, i: number) => (
-                <div key={i} className="relative pl-2 sm:pl-6 border-l-2 border-brand-yellow">
+                <div key={i} className="relative pl-2 sm:pl-6 border-l-2 border-brand-accent">
                   <div className="text-xl xs:text-2xl sm:text-4xl md:text-5xl font-heading font-black text-brand-blue dark:text-white leading-none">
                     <RollingNumber value={s.value || 0} suffix={s.suffix || ""} />
                   </div>
@@ -266,15 +268,7 @@ export default function AboutOwner() {
 
             {/* Premium CTA Button */}
             <div className="pt-4">
-              <a
-                href={withTrailingSlash(ctaHref)}
-                className="btn-secondary-cta"
-              >
-                <span>{ctaText}</span>
-                <span className="btn-icon">
-                  <ArrowUpRight className="h-3.5 w-3.5" />
-                </span>
-              </a>
+              <CtaButton href={ctaHref} variant="secondary" icon={<ArrowUpRight />}>{ctaText}</CtaButton>
             </div>
 
           </motion.div>
