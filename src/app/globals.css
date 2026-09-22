@@ -225,6 +225,17 @@
 
   html {
     scroll-behavior: smooth;
+    /* The Navbar is `fixed top-0`, so any #hash jump (CTA links, mega-menu
+       items, in-page nav) needs this reserved or the floating pill navbar
+       lands directly on top of - and hides - whatever scrolled into view
+       (most visibly: form headings right under a "#contact-form" anchor). */
+    scroll-padding-top: 100px;
+  }
+
+  @media (min-width: 640px) {
+    html {
+      scroll-padding-top: 116px;
+    }
   }
 
   body {
