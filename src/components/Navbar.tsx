@@ -3,7 +3,7 @@
 import { withTrailingSlash } from "@/lib/url";
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ArrowUpRight, MapPin, Menu, X, Star, Sun, Moon } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Globe, MapPin, Menu, X, Star, Sun, Moon } from "lucide-react";
 import { Icon } from "../config/icons";
 import { useContent } from "../hooks/useContent";
 import Image from "next/image";
@@ -12,7 +12,7 @@ import CtaButton from "@/components/ui/CtaButton";
 import { parseMapEmbed } from "@/lib/mapEmbed";
 
 const stripHtml = (html: string) => {
-  if (!html) return"";
+  if (!html) return "";
   return html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, "");
 };
 
@@ -288,73 +288,98 @@ export default function Navbar() {
                         exit={{ opacity: 0, y: 10, x: "-50%" }}
                         onMouseEnter={handleMegaMenuMouseEnter}
                         onMouseLeave={handleMegaMenuMouseLeave}
-                        className={`${PANEL_BASE} w-[900px]`}
+                        className={`${PANEL_BASE} w-[980px]`}
                         style={{ zIndex: 1000 }}
                       >
                         <div className="grid grid-cols-12">
-                          {/* Left: intro + locations */}
-                          <div className="col-span-5 flex flex-col p-7">
-                            <p className="flex items-center gap-1.5 text-[11px] font-mono font-bold uppercase tracking-[0.18em] text-brand-blue dark:text-brand-yellow">
+                          {/* Col 1: intro */}
+                          <div className="col-span-4 flex flex-col justify-center border-r border-brand-zinc-100 dark:border-white/10 p-7">
+                            <p className="flex items-center gap-1.5 text-[11px] font-mono font-bold uppercase tracking-[0.18em] text-brand-zinc-500 dark:text-zinc-400">
                               <MapPin className="h-3.5 w-3.5" />
                               {menu.eyebrow || "Where we work"}
                             </p>
-                            <h3 className="mt-2 font-heading text-2xl font-black leading-tight tracking-tight text-brand-dark dark:text-white">
-                              {menu.title || "Our locations"}
+                            <h3 className="mt-3 font-heading text-3xl font-black leading-[1.05] tracking-tight text-brand-dark dark:text-white">
+                              {menu.title || "Our Locations"}
                             </h3>
                             {menu.description && (
-                              <p className="mt-2 text-[13px] leading-relaxed text-brand-zinc-600 dark:text-zinc-400">
+                              <p className="mt-3 text-[13px] leading-relaxed text-brand-zinc-600 dark:text-zinc-400">
                                 {stripHtml(menu.description)}
                               </p>
                             )}
 
-                            <div className="mt-5 -mx-2 flex max-h-[300px] flex-col gap-0.5 overflow-y-auto pr-1">
-                              {locItems.map((item: any, i: number) => (
+                            <span className="mt-5 block h-[3px] w-9 rounded-full bg-brand-blue dark:bg-brand-yellow" />
+
+                            {menu.ctaLabel && menu.ctaHref && (
+                              <Link
+                                href={menu.ctaHref}
+                                onClick={handleLinkClick}
+                                className="group/all mt-5 inline-flex items-center gap-2.5"
+                              >
+                                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-blue/10 text-brand-blue transition-colors group-hover/all:bg-brand-blue group-hover/all:text-white dark:bg-brand-yellow/10 dark:text-brand-yellow dark:group-hover/all:bg-brand-yellow dark:group-hover/all:text-brand-dark">
+                                  <Globe className="h-4 w-4" />
+                                </span>
+                                <span className="text-sm font-bold text-brand-dark dark:text-white">
+                                  {menu.ctaLabel}
+                                </span>
+                                <ArrowRight className="h-4 w-4 text-brand-blue transition-transform group-hover/all:translate-x-0.5 dark:text-brand-yellow" />
+                              </Link>
+                            )}
+                          </div>
+
+                          {/* Col 2: locations list */}
+                          <div className="col-span-3 flex max-h-[420px] flex-col gap-2 overflow-y-auto p-5">
+                            {locItems.map((item: any, i: number) => {
+                              const active = hoveredLocation === i;
+                              return (
                                 <Link
                                   key={i}
                                   href={item.href}
                                   onMouseEnter={() => setHoveredLocation(i)}
                                   onFocus={() => setHoveredLocation(i)}
                                   onClick={handleLinkClick}
-                                  className="group flex items-center gap-3 rounded-xl px-2 py-2.5 transition-colors hover:bg-brand-blue/[0.06] dark:hover:bg-brand-yellow/[0.08]"
+                                  className={`group relative flex items-center gap-3 overflow-hidden rounded-xl px-3 py-3 transition-colors ${
+                                    active
+                                      ? "bg-brand-blue/[0.08] dark:bg-brand-yellow/[0.1]"
+                                      : "bg-brand-zinc-50 hover:bg-brand-zinc-100 dark:bg-white/[0.04] dark:hover:bg-white/[0.07]"
+                                  }`}
                                 >
-                                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-blue/10 text-brand-blue transition-colors group-hover:bg-brand-blue group-hover:text-white dark:bg-brand-yellow/10 dark:text-brand-yellow dark:group-hover:bg-brand-yellow dark:group-hover:text-brand-dark">
+                                  <span
+                                    className={`absolute inset-y-0 left-0 w-[3px] rounded-r-full transition-colors ${
+                                      active ? "bg-brand-blue dark:bg-brand-yellow" : "bg-transparent"
+                                    }`}
+                                  />
+                                  <span
+                                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors ${
+                                      active
+                                        ? "bg-brand-blue text-white dark:bg-brand-yellow dark:text-brand-dark"
+                                        : "bg-white text-brand-zinc-400 dark:bg-white/10 dark:text-zinc-400"
+                                    }`}
+                                  >
                                     <MapPin className="h-4 w-4" />
                                   </span>
-                                  <span className="min-w-0 flex-1">
-                                    <span className="block truncate text-[15px] font-semibold leading-tight text-brand-dark transition-colors group-hover:text-brand-blue dark:text-white dark:group-hover:text-brand-yellow">
-                                      {item.label}
-                                    </span>
-                                    {item.subtitle && (
-                                      <span className="mt-0.5 block truncate text-[13px] font-normal text-brand-zinc-600 dark:text-zinc-400">
-                                        {item.subtitle}
-                                      </span>
-                                    )}
+                                  <span className="min-w-0 flex-1 truncate text-[15px] font-semibold leading-tight text-brand-dark dark:text-white">
+                                    {item.label}
                                   </span>
-                                  <ArrowRight className="h-4 w-4 shrink-0 -translate-x-1 text-brand-blue opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100 dark:text-brand-yellow" />
+                                  <ArrowRight
+                                    className={`h-4 w-4 shrink-0 transition-all ${
+                                      active
+                                        ? "translate-x-0 text-brand-blue dark:text-brand-yellow"
+                                        : "-translate-x-1 text-brand-zinc-400 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
+                                    }`}
+                                  />
                                 </Link>
-                              ))}
-                              {locItems.length === 0 && (
-                                <p className="px-2 py-3 text-[13px] text-brand-zinc-600 dark:text-zinc-400">
-                                  Add locations in Admin &gt; Settings &gt; Header.
-                                </p>
-                              )}
-                            </div>
-
-                            {menu.ctaLabel && menu.ctaHref && (
-                              <Link
-                                href={menu.ctaHref}
-                                onClick={handleLinkClick}
-                                className="group/all mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-blue dark:text-brand-yellow hover:underline underline-offset-4"
-                              >
-                                {menu.ctaLabel}
-                                <ArrowRight className="h-4 w-4 transition-transform group-hover/all:translate-x-0.5" />
-                              </Link>
+                              );
+                            })}
+                            {locItems.length === 0 && (
+                              <p className="px-2 py-3 text-[13px] text-brand-zinc-600 dark:text-zinc-400">
+                                Add locations in Admin &gt; Settings &gt; Header.
+                              </p>
                             )}
                           </div>
 
-                          {/* Right: map / image */}
-                          <div className="relative col-span-7 min-h-[400px] bg-brand-blue/[0.05] dark:bg-white/[0.04]">
-                            {map.kind ==="embed" ? (
+                          {/* Col 3: featured map / image */}
+                          <div className="relative col-span-5 min-h-[420px] overflow-hidden bg-brand-blue/[0.05] dark:bg-white/[0.04]">
+                            {map.kind === "embed" ? (
                               <iframe
                                 key={map.value}
                                 src={map.value}
@@ -364,7 +389,7 @@ export default function Navbar() {
                                 sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
                                 className="absolute inset-0 h-full w-full border-0 dark:[filter:invert(0.92)_hue-rotate(180deg)_contrast(0.9)]"
                               />
-                            ) : map.kind ==="image" ? (
+                            ) : map.kind === "image" ? (
                               <img key={map.value} src={map.value} alt={`${caption} map`} className="absolute inset-0 h-full w-full object-cover" />
                             ) : (
                               <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-brand-blue/40 dark:text-brand-yellow/40">
@@ -372,7 +397,26 @@ export default function Navbar() {
                                 <span className="text-[13px] font-medium">Add a map in Admin &gt; Settings &gt; Header</span>
                               </div>
                             )}
-                            <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 via-black/25 to-transparent px-5 pb-4 pt-12">
+                            {map.kind !== "none" && (
+                              <>
+                                <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/65" />
+                                <div className="pointer-events-none absolute inset-x-0 top-0 p-6">
+                                  <span className="text-[11px] font-mono font-bold uppercase tracking-[0.18em] text-white/80">
+                                    Featured Location
+                                  </span>
+                                  <h4 className="mt-1 font-heading text-3xl font-black leading-none text-white">
+                                    {caption}
+                                  </h4>
+                                  {activeItem?.subtitle && (
+                                    <p className="mt-1.5 text-[13px] font-medium text-white/85">
+                                      {activeItem.subtitle}
+                                    </p>
+                                  )}
+                                  <span className="mt-2.5 block h-[3px] w-9 rounded-full bg-brand-yellow" />
+                                </div>
+                              </>
+                            )}
+                            <div className="pointer-events-none absolute inset-x-0 bottom-0 px-5 pb-4 pt-10">
                               <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-[13px] font-semibold text-brand-dark shadow-md">
                                 <MapPin className="h-3.5 w-3.5 text-brand-blue" />
                                 {caption}
