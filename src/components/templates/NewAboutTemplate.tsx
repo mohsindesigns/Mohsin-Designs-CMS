@@ -385,8 +385,8 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   )}
 
                   <h2 className="font-heading text-3xl sm:text-4xl font-black tracking-tight leading-[1.12] text-brand-dark dark:text-white">
-                    {stats.titleIntro || "Compound Growth &"}
- <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
+                    {stats.titleIntro || "Compound Growth &"}{" "}
+                    <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
                       {stats.titleHighlight || "Measurable ROI"}
                     </span>
                   </h2>
@@ -425,7 +425,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                         <MetricIcon className="h-4.5 w-4.5 text-[#0306AC] dark:text-[#E9BD36] transition-transform duration-300 group-hover:rotate-[15deg]" />
                         <span className="text-[8px] font-mono tracking-widest text-brand-zinc-400 dark:text-zinc-500 select-none">{metric.num || `0${idx + 1}`}</span>
                         <div className="absolute bottom-0 left-0 w-full h-[1px] bg-brand-zinc-100 dark:bg-white/5" />
-                        <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-[#0306AC] dark:text-[#E9BD36] group-hover:w-full transition-all duration-500 ease-out" />
+                        <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-[#0306AC] dark:bg-[#E9BD36] group-hover:w-full transition-all duration-500 ease-out" />
                       </div>
                       <div className="flex items-baseline gap-0.5 text-brand-dark dark:text-white">
                         <span className="font-heading font-black text-5xl sm:text-6xl md:text-7xl tracking-tighter leading-none text-brand-dark dark:text-white">
