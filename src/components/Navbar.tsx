@@ -212,7 +212,7 @@ export default function Navbar() {
                             hover) so the grid reads as clearly separated tiles, and the whole
                             grid scrolls once it's taller than the viewport can fit, so the
                             footer strip below is never pushed off-screen. */}
-                        <div className="grid max-h-[min(56vh,460px)] grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 overflow-y-auto px-5 pb-5 pt-2">
+                        <div className="custom-scrollbar grid max-h-[min(56vh,460px)] grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 overflow-y-auto px-5 pb-5 pt-2">
                           {services.map((service: any) => (
                             <Link
                               key={service.slug}
@@ -315,7 +315,7 @@ export default function Navbar() {
                           </div>
 
                           {/* Col 2: locations list */}
-                          <div className="col-span-3 flex max-h-[420px] flex-col gap-2 overflow-y-auto p-5">
+                          <div className="custom-scrollbar col-span-3 flex max-h-[420px] flex-col gap-2 overflow-y-auto p-5">
                             {locItems.map((item: any, i: number) => {
                               const active = hoveredLocation === i;
                               return (

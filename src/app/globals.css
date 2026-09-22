@@ -837,22 +837,29 @@
   }
 
   /* Eyebrow badge for INSIDE a permanently-dark CTA card (.cta-banner-card / .on-dark-surface).
-     Always yellow-on-translucent-white, same rule as the CTA button itself: the card's own
-     background never changes with site theme, so this shouldn't either. */
+     Same light/dark split as the CTA button on these cards: the card's own background never
+     changes with site theme, so a plain blue badge would be unreadable in light mode - solid
+     white + blue text instead (crisp, matches the button), yellow-on-translucent in dark mode. */
   .eyebrow-pill-yellow {
     display: inline-flex;
     width: fit-content;
     align-items: center;
     gap: 0.5rem;
     border-radius: 9999px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: #ffffff;
+    border: 1px solid rgba(3, 6, 172, 0.15);
     padding: 0.375rem 1rem;
     font-family: monospace;
     font-size: 10px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.1em;
+    color: #0306AC;
+  }
+
+  .dark .eyebrow-pill-yellow {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
     color: #E9BD36;
   }
 

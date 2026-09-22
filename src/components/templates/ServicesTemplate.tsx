@@ -343,21 +343,26 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                   {hero.titleIntro}{" "}
                   <span className="relative inline-block text-[#0306ac] dark:text-[#e9bd36] pb-1 ml-1">
                     {hero.titleHighlight}
-                    <svg className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-[#E9BD36] dark:text-[#F3CB5C]" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true">
-                      <motion.path
+                    <motion.svg
+                      className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-[#E9BD36] dark:text-[#F3CB5C]"
+                      viewBox="0 0 100 10"
+                      preserveAspectRatio="none"
+                      aria-hidden="true"
+                      style={{ transformOrigin: "0% 50%" }}
+                      initial={{ scaleX: 0, opacity: 0 }}
+                      whileInView={{ scaleX: 1, opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.6, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      <path
                         d="M2 7.2C24 2.6 54 2.2 77 3.6C87 4.3 94 5.6 98 7.6"
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="2.4"
                         strokeLinecap="round"
                         vectorEffect="non-scaling-stroke"
-                        custom={{ delay: 0.45, duration: 0.7 }}
-                        variants={drawVariants}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true }}
                       />
-                    </svg>
+                    </motion.svg>
                   </span>
                 </h1>
 
@@ -403,21 +408,26 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                 {grid.titleIntro}{" "}
                 <span className="relative inline-block text-[#0306ac] dark:text-[#e9bd36] pb-1 ml-1">
                   {grid.titleHighlight}
-                  <svg className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-[#E9BD36] dark:text-[#F3CB5C]" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true">
-                    <motion.path
+                  <motion.svg
+                    className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-[#E9BD36] dark:text-[#F3CB5C]"
+                    viewBox="0 0 100 10"
+                    preserveAspectRatio="none"
+                    aria-hidden="true"
+                    style={{ transformOrigin: "0% 50%" }}
+                    initial={{ scaleX: 0, opacity: 0 }}
+                    whileInView={{ scaleX: 1, opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <path
                       d="M2 7.2C24 2.6 54 2.2 77 3.6C87 4.3 94 5.6 98 7.6"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2.4"
                       strokeLinecap="round"
                       vectorEffect="non-scaling-stroke"
-                      custom={{ delay: 0.45, duration: 0.7 }}
-                      variants={drawVariants}
-                      initial="hidden"
-                      whileInView="visible"
-                      viewport={{ once: true }}
                     />
-                  </svg>
+                  </motion.svg>
                 </span>
               </h2>
               <RichTextRenderer
@@ -467,21 +477,26 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                     <span className="font-cursive text-[#E9BD36] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
                       {ctaBanner.titleHighlight}
                     </span>
-                    <svg className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-[#E9BD36] dark:text-[#F3CB5C]" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true">
-                      <motion.path
+                    <motion.svg
+                      className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-[#E9BD36] dark:text-[#F3CB5C]"
+                      viewBox="0 0 100 10"
+                      preserveAspectRatio="none"
+                      aria-hidden="true"
+                      style={{ transformOrigin: "0% 50%" }}
+                      initial={{ scaleX: 0, opacity: 0 }}
+                      whileInView={{ scaleX: 1, opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.6, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      <path
                         d="M2 7.2C24 2.6 54 2.2 77 3.6C87 4.3 94 5.6 98 7.6"
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="2.4"
                         strokeLinecap="round"
                         vectorEffect="non-scaling-stroke"
-                        custom={{ delay: 0.45, duration: 0.7 }}
-                        variants={drawVariants}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true }}
                       />
-                    </svg>
+                    </motion.svg>
                   </span>{" "}
                   {ctaBanner.titleLine2}
                 </h2>
