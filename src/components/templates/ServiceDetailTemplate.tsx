@@ -1067,7 +1067,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                   <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                     {service.hero.titleHighlight}
                     <motion.svg
-                      className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-[#E9BD36] dark:text-[#F3CB5C]"
+                      className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-brand-blue dark:text-brand-yellow"
                       viewBox="0 0 100 10"
                       preserveAspectRatio="none"
                       aria-hidden="true"
@@ -1329,7 +1329,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 <span className="relative inline-block text-brand-blue dark:text-brand-accent pb-1 ml-1 font-black">
                   {service.whatIncluded.titleHighlight}
                   <motion.svg
-                    className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-[#E9BD36] dark:text-[#F3CB5C]"
+                    className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-brand-blue dark:text-brand-yellow"
                     viewBox="0 0 100 10"
                     preserveAspectRatio="none"
                     aria-hidden="true"
@@ -1465,7 +1465,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                   {service.benefits.titleHighlight}
                   <motion.svg
-                    className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-[#E9BD36] dark:text-[#F3CB5C]"
+                    className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-brand-blue dark:text-brand-yellow"
                     viewBox="0 0 100 10"
                     preserveAspectRatio="none"
                     aria-hidden="true"
@@ -1816,7 +1816,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                   {service.industries.titleHighlight}
                   <motion.svg
-                    className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-[#E9BD36] dark:text-[#F3CB5C]"
+                    className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-brand-blue dark:text-brand-yellow"
                     viewBox="0 0 100 10"
                     preserveAspectRatio="none"
                     aria-hidden="true"
@@ -2111,7 +2111,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                   {service.pricing.titleHighlight}
                   <motion.svg
-                    className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-[#E9BD36] dark:text-[#F3CB5C]"
+                    className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-brand-blue dark:text-brand-yellow"
                     viewBox="0 0 100 10"
                     preserveAspectRatio="none"
                     aria-hidden="true"

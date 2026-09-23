@@ -10,18 +10,6 @@ import { useContent } from "../hooks/useContent";
 import { Icon } from "../config/icons";
 import RichTextRenderer from "./ui/RichTextRenderer";
 
-const clipVariants = {
-  hidden: { width: "0%" },
-  visible: (custom: { delay: number; duration: number }) => ({
-    width: "100%",
-    transition: {
-      duration: custom?.duration ?? 0.85,
-      delay: custom?.delay ?? 0.5,
-      ease: [0.16, 1, 0.3, 1] as any
-    }
-  })
-};
-
 export default function Hero({ data, content: overrideContent, breadcrumb }: { data?: any; content?: any; breadcrumb?: ReactNode } = {}) {
   const content = useContent();
   const hero = data || overrideContent || content.hero;
@@ -184,68 +172,30 @@ export default function Hero({ data, content: overrideContent, breadcrumb }: { d
               {titleConnector && titleConnector.trim() ? ` ${titleConnector.trim()}` : ""}
               <br />
               <motion.span
-                whileHover="hover"
                 className="text-brand-blue dark:text-brand-yellow relative inline-block pointer-events-auto cursor-pointer"
               >
                 {titleLine2}
-                {/* Custom animated hand-drawn SVG underline with gradient and hover interaction */}
-                <svg className="absolute -bottom-3.5 left-0 w-full h-5 pointer-events-none" style={{ filter: 'var(--underline-glow)' }} viewBox="0 0 100 14" preserveAspectRatio="none">
-                  <defs>
-                    <linearGradient id="brushGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="var(--color-brand-accent)" />
-                      <stop offset="100%" stopColor="var(--color-brand-accent-hover)" />
-                    </linearGradient>
-                    <clipPath id="underlineClip1">
-                      <motion.rect
-                        x="0"
-                        y="0"
-                        height="100%"
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true }}
-                        variants={clipVariants}
-                        custom={{ delay: 0.45, duration: 0.8 }}
-                      />
-                    </clipPath>
-                    <clipPath id="underlineClip2">
-                      <motion.rect
-                        x="0"
-                        y="0"
-                        height="100%"
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true }}
-                        variants={clipVariants}
-                        custom={{ delay: 0.65, duration: 0.7 }}
-                      />
-                    </clipPath>
-                  </defs>
-                  {/* Primary bold sweeping stroke */}
-                  <motion.path
-                    d="M 2 7 Q 28 2, 54 4.5 T 98 7"
+                {/* Unified hand-drawn SVG underline (matches the same accent underline used site-wide) */}
+                <motion.svg
+                  className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-brand-blue dark:text-brand-yellow"
+                  viewBox="0 0 100 10"
+                  preserveAspectRatio="none"
+                  aria-hidden="true"
+                  style={{ transformOrigin: "0% 50%" }}
+                  initial={{ scaleX: 0, opacity: 0 }}
+                  whileInView={{ scaleX: 1, opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <path
+                    d="M2 7.2C24 2.6 54 2.2 77 3.6C87 4.3 94 5.6 98 7.6"
                     fill="none"
-                    stroke="url(#brushGradient)"
-                    strokeWidth="4"
+                    stroke="currentColor"
+                    strokeWidth="2.4"
                     strokeLinecap="round"
-                    clipPath="url(#underlineClip1)"
-                    variants={{
-                      hover: { y: 2.2, x: 1, scaleX: 1.025, transition: { type: "spring", stiffness: 350, damping: 14 } }
-                    }}
+                    vectorEffect="non-scaling-stroke"
                   />
-                  {/* Secondary organic textured baseline accent */}
-                  <motion.path
-                    d="M 6 10 Q 38 7, 70 8.5 T 94 9.5"
-                    fill="none"
-                    stroke="var(--color-brand-accent-hover)"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                    opacity="0.85"
-                    clipPath="url(#underlineClip2)"
-                    variants={{
-                      hover: { y: 3.2, x: 1.2, scaleX: 1.035, transition: { type: "spring", stiffness: 350, damping: 14 } }
-                    }}
-                  />
-                </svg>
+                </motion.svg>
               </motion.span>
             </motion.h1>
 

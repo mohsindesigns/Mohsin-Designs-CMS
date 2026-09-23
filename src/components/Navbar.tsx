@@ -64,6 +64,10 @@ export default function Navbar() {
 
   const toggleTheme = () => {
     const html = document.documentElement;
+    // Briefly flag the whole page so every element's color/background/border animates
+    // together instead of snapping instantly, then drop the flag once the transition
+    // finishes so it never lingers and fights other animations.
+    html.classList.add('theme-transition');
     if (html.classList.contains('dark')) {
       html.classList.remove('dark');
       localStorage.setItem('theme', 'light');
@@ -73,6 +77,9 @@ export default function Navbar() {
       localStorage.setItem('theme', 'dark');
       setIsDark(true);
     }
+    window.setTimeout(() => {
+      html.classList.remove('theme-transition');
+    }, 400);
   };
 
   const openMenu = (id: string) => {

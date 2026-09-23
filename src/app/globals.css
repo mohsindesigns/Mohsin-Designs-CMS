@@ -4,6 +4,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Smooth light/dark theme toggle ──
+   Navbar's toggleTheme() briefly adds `.theme-transition` to <html> around the class
+   swap, so every element's color-related properties animate together instead of
+   snapping instantly. Scoped to this short-lived class (not left on permanently) so it
+   never fights hover/entrance transitions or the initial no-flash theme script in
+   layout.tsx, which runs before paint and before this class is ever present. */
+.theme-transition,
+.theme-transition * {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow, opacity !important;
+  transition-timing-function: ease !important;
+  transition-duration: 0.35s !important;
+}
+
 /* ── Brand Map Styling (CartoDB Tiles) ── */
 .map-tiles-light {
   filter: contrast(1.04) brightness(1.02) saturate(1.1);
