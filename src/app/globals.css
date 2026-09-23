@@ -291,13 +291,18 @@
     @apply text-foreground;
   }
 
-  /* Links default to BLACK, hover to BLUE */
+  /* Links default to BLACK, hover to BLUE (or YELLOW in dark mode). This used to be
+     `@apply text-primary`, but --primary is defined with the exact same value in both
+     :root and .dark (it's shared with shadcn admin components, which don't split by
+     brand color) - so every plain link's hover color was stuck on blue even in dark
+     mode. Using the actual brand tokens here instead, matching how every other
+     accent/hover color on the public site already splits by theme. */
   a {
     @apply text-foreground transition-colors duration-300;
   }
 
   a:hover {
-    @apply text-primary;
+    @apply text-brand-blue dark:text-brand-yellow;
   }
 
 }
