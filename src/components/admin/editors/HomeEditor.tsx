@@ -25,6 +25,7 @@ const QuillEditor = dynamic(() => import("@/components/admin/QuillEditor"), {
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
 import SchemaEditor from "@/components/admin/SchemaEditor";
+import VideoTestimonialsEditor from "./VideoTestimonialsEditor";
 
 export default function HomeEditor({ pageId, data, setData, aboutClean = false }: { pageId: string, data: any, setData: (d: any) => void, aboutClean?: boolean }) {
    const [activeTab, setActiveTab] = useState("hero");
@@ -103,6 +104,7 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
    const tabs = [
       { id: "hero", label: "Home" },
       { id: "trustedBrands", label: "Trusted Brands" },
+      { id: "videoTestimonials", label: "Video Testimonials" },
       { id: "about", label: "About" },
       { id: "services", label: "Services" },
       { id: "industries", label: "Industries" },
@@ -491,6 +493,14 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                         </div>
                      </div>
                   </div>
+               )}
+
+               {/* VIDEO TESTIMONIALS SECTION */}
+               {activeTab === "videoTestimonials" && (
+                  <VideoTestimonialsEditor
+                     value={data.videoTestimonials}
+                     onChange={(next) => updateSection("videoTestimonials", null, next)}
+                  />
                )}
 
                {/* ABOUT SECTION */}

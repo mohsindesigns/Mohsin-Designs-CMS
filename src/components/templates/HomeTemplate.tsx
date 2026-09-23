@@ -7,6 +7,7 @@ import { useContent } from "@/hooks/useContent";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 
 const TrustedBrandsSection = dynamic(() => import("@/components/sections/TrustedBrandsSection"), { ssr: false });
+const VideoTestimonials = dynamic(() => import("@/components/sections/VideoTestimonials"), { ssr: false });
 const AboutOwner = dynamic(() => import("@/components/AboutOwner"), { ssr: false });
 const Portfolio = dynamic(() => import("@/components/Portfolio"));
 const Testimonials = dynamic(() => import("@/components/Testimonials"), { ssr: false });
@@ -56,6 +57,12 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any; par
       {(content.trustedBrands?.enabled !== false && content.clientTrust?.enabled !== false && content.trustedBy?.enabled !== false) && (
         <section id="trusted-brands">
           <TrustedBrandsSection data={content.trustedBrands || content.clientTrust || content.trustedBy} />
+        </section>
+      )}
+
+      {content.videoTestimonials?.enabled !== false && (
+        <section id="video-testimonials">
+          <VideoTestimonials data={content.videoTestimonials} />
         </section>
       )}
 

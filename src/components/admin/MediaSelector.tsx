@@ -11,9 +11,15 @@ interface MediaSelectorProps {
   onSelect: (item: any) => void;
   onClose: () => void;
   title?: string;
+  // Defaults to images only (the original behavior every existing caller relies on).
+  // Pass "video/*" or "image/*,video/*" to also allow/show video files.
+  accept?: string;
 }
 
-export default function MediaSelector({ onSelect, onClose, title = "Select Asset" }: MediaSelectorProps) {
+export default function MediaSelector({ onSelect, onClose, title = "Select Asset", accept = "image/*" }: MediaSelectorProps) {
+  const isVideoItem = (item: any) => typeof item?.type === "string" && item.type.startsWith("video/");
+  // When the caller only wants video, don't show images already in the library either.
+  const isSelectable = (item: any) => (accept === "video/*" ? isVideoItem(item) : true);
   const [media, setMedia] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -69,10 +75,12 @@ export default function MediaSelector({ onSelect, onClose, title = "Select Asset
     }
   };
 
-  const filteredMedia = media.filter(m => 
-    m.name.toLowerCase().includes(search.toLowerCase()) ||
-    m.alt?.toLowerCase().includes(search.toLowerCase()) ||
-    m.title?.toLowerCase().includes(search.toLowerCase())
+  const filteredMedia = media.filter(m =>
+    isSelectable(m) && (
+      m.name.toLowerCase().includes(search.toLowerCase()) ||
+      m.alt?.toLowerCase().includes(search.toLowerCase()) ||
+      m.title?.toLowerCase().includes(search.toLowerCase())
+    )
   );
 
   return (
@@ -158,13 +166,30 @@ export default function MediaSelector({ onSelect, onClose, title = "Select Asset
                             : "border-[#dcdcde] hover:border-[#c3c4c7]"
                         }`}
                       >
-                        <img
-                          src={item.url}
-                          alt={item.alt || item.name}
-                          className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${
-                            selectedItem && String(selectedItem._id) === String(item._id) ? "opacity-90" : ""
-                          }`}
-                        />
+                        {isVideoItem(item) ? (
+                          <video
+                            src={item.url}
+                            muted
+                            playsInline
+                            preload="metadata"
+                            className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${
+                              selectedItem && String(selectedItem._id) === String(item._id) ? "opacity-90" : ""
+                            }`}
+                          />
+                        ) : (
+                          <img
+                            src={item.url}
+                            alt={item.alt || item.name}
+                            className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${
+                              selectedItem && String(selectedItem._id) === String(item._id) ? "opacity-90" : ""
+                            }`}
+                          />
+                        )}
+                        {isVideoItem(item) && (
+                          <div className="pointer-events-none absolute bottom-1 right-1 rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-bold uppercase text-white">
+                            Video
+                          </div>
+                        )}
                         {selectedItem && String(selectedItem._id) === String(item._id) && (
                           <div className="absolute inset-0 bg-[#2271b1]/10 flex items-center justify-center">
                             <div className="bg-[#2271b1] p-1.5 rounded-full shadow-lg">
@@ -199,7 +224,7 @@ export default function MediaSelector({ onSelect, onClose, title = "Select Asset
                         </button>
                         <input
                           type="file"
-                          accept="image/*"
+                          accept={accept}
                           className="hidden"
                           ref={fileInputRef}
                           onChange={handleDirectUpload}
@@ -220,7 +245,11 @@ export default function MediaSelector({ onSelect, onClose, title = "Select Asset
               {selectedItem ? (
                 <div className="space-y-4">
                   <div className="aspect-square bg-white border border-[#c3c4c7] p-2">
-                    <img src={selectedItem.url} alt="" className="w-full h-full object-contain" />
+                    {isVideoItem(selectedItem) ? (
+                      <video src={selectedItem.url} controls className="w-full h-full object-contain" />
+                    ) : (
+                      <img src={selectedItem.url} alt="" className="w-full h-full object-contain" />
+                    )}
                   </div>
                   <div className="space-y-1">
                     <p className="text-[13px] font-bold text-[#1d2327] truncate">{selectedItem.name}</p>
