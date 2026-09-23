@@ -291,12 +291,12 @@ export default function Hero({ data, content: overrideContent, breadcrumb }: { d
         </div>
       </div>
 
-      {/* HORIZONTAL MARQUEE: Solid Dark Tape in normal document flow at the bottom with Load Animation */}
+      {/* HORIZONTAL MARQUEE: theme-adaptive tape in normal document flow at the bottom with Load Animation */}
       <motion.div
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.9, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-        className="relative w-full h-16 md:h-20 bg-[#080710] dark:bg-[#161622] text-white flex items-center overflow-hidden z-30 border-t border-brand-zinc-800 dark:border-white/10 mt-14 sm:mt-16 lg:mt-20"
+        className="relative w-full h-16 md:h-20 bg-white dark:bg-[#080710] text-brand-dark dark:text-white flex items-center overflow-hidden z-30 border-t border-brand-zinc-200 dark:border-white/10 mt-14 sm:mt-16 lg:mt-20"
       >
         <div className="flex whitespace-nowrap gap-12 md:gap-16 select-none w-full">
           <div
@@ -307,8 +307,8 @@ export default function Hero({ data, content: overrideContent, breadcrumb }: { d
               <div key={loopIdx} className="flex items-center gap-12 md:gap-16">
                 {marqueeItems.map((item, idx) => (
                   <div key={idx} className="flex items-center gap-12 md:gap-16">
-                    <span className="font-sans font-black text-xs md:text-sm uppercase tracking-[0.25em] text-white select-none">{item}</span>
-                    <span className="h-2.5 w-2.5 rounded-full bg-brand-yellow shrink-0" />
+                    <span className="font-sans font-black text-xs md:text-sm uppercase tracking-[0.25em] text-brand-dark dark:text-white select-none">{item}</span>
+                    <span className="h-2.5 w-2.5 rounded-full bg-brand-accent shrink-0" />
                   </div>
                 ))}
               </div>
