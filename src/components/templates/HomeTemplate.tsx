@@ -126,11 +126,11 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any; par
         </section>
       )}
 
-      {/* Direct Contact Form Section */}
+      {/* Direct Contact Form Section - ContactForm's own root element already declares
+          id="contact" (it's the actual anchor target for #contact links), so this wrapper
+          must not repeat it: a duplicate id makes anchor-scroll/getElementById unreliable. */}
       {content.contact?.enabled !== false && (
-        <section id="contact">
-          <ContactForm data={content.contact} />
-        </section>
+        <ContactForm data={content.contact} />
       )}
     </div>
   );

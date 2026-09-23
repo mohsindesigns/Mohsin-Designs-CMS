@@ -160,6 +160,10 @@ export default {
                 lg: "var(--radius)",
                 md: "calc(var(--radius) - 2px)",
                 sm: "calc(var(--radius) - 4px)",
+                // "xs" isn't part of Tailwind 3's default scale (it's a v4-only addition) but
+                // several small mockup badges/pills in Portfolio.tsx use rounded-xs / rounded-b-xs
+                // expecting a subtle corner - those were silently rendering perfectly square.
+                xs: "0.125rem",
             },
             // Same story as the color/spacing gaps above: Tailwind's duration scale only has
             // 75/100/150/200/300/500/700/1000 by default, but several components use
@@ -199,10 +203,20 @@ export default {
                     "0%, 100%": { opacity: "1" },
                     "50%": { opacity: "0.8" },
                 },
+                // Used by the decorative "pointer" arrow next to the cursive annotation on
+                // LocationTemplate's presence section (animate-bounce-slow) - was never defined,
+                // so the arrow just sat static instead of gently bobbing. The 15deg tilt is baked
+                // into every frame so it composes correctly with that element's own rotate-[15deg]
+                // utility class instead of the animation's translateY wiping the rotation out.
+                "bounce-slow": {
+                    "0%, 100%": { transform: "translateY(0) rotate(15deg)" },
+                    "50%": { transform: "translateY(-6px) rotate(15deg)" },
+                },
             },
             animation: {
                 "accordion-down": "accordion-down 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
                 "accordion-up": "accordion-up 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+                "bounce-slow": "bounce-slow 2.2s ease-in-out infinite",
                 "fade-in": "fade-in 0.5s ease-out",
                 "slide-up": "slide-up 0.6s ease-out",
                 "pulse-subtle": "pulse-subtle 2s ease-in-out infinite",

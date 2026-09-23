@@ -588,7 +588,7 @@ export default function Portfolio({ data }: { data?: any }) {
                         {/* Keyboard keys slot decoration */}
                         <div className="w-14 h-0.5 bg-neutral-400 rounded-xs mb-0.5" />
                         {/* Display Open Notch in center */}
-                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.75 bg-neutral-300 rounded-b-xs border-b border-neutral-400" />
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-[3px] bg-neutral-300 rounded-b-xs border-b border-neutral-400" />
                       </div>
                     </motion.div>
 
