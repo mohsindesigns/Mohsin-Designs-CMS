@@ -9,6 +9,7 @@ import dynamic from "next/dynamic";
 import { useContent } from "@/hooks/useContent";
 import { resolveCountryLocation, COUNTRIES_DATABASE } from "@/lib/countryLocations";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
+import AccentHighlight from "@/components/ui/AccentHighlight";
 
 // Dynamic import with SSR disabled for Leaflet map
 const RealWorldMap = dynamic(() => import("@/components/RealWorldMap"), {
@@ -85,9 +86,9 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
 
             <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-[1.15]">
               {titleIntro}{" "}
- <span className="text-primary dark:text-yellow-400 font-cursive font-normal">
+ <AccentHighlight className="text-primary dark:text-yellow-400 font-cursive font-normal">
                 {titleHighlight}
-              </span>
+              </AccentHighlight>
             </h2>
 
             <RichTextRenderer

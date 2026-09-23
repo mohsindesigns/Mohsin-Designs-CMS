@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "@/components/ui/Link";
 import { useContent } from "@/hooks/useContent";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
+import AccentHighlight from "@/components/ui/AccentHighlight";
 
 export default function Services({ data: propData, masterCatalog: masterCatalogProp }: { data?: any; masterCatalog?: any[] }) {
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -124,9 +125,9 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
 
             <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
               {services.titleIntro}{" "}
- <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
+              <AccentHighlight className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
                 {services.titleHighlight}
-              </span>
+              </AccentHighlight>
             </h2>
 
             <RichTextRenderer

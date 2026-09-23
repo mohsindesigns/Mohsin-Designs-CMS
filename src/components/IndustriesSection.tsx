@@ -4,7 +4,7 @@ import React from "react";
 import Link from "@/components/ui/Link";
 import { motion, useMotionValue } from "framer-motion";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
-import AccentUnderline from "@/components/ui/AccentUnderline";
+import AccentHighlight from "@/components/ui/AccentHighlight";
 import { isSafeHref, getValidHref } from "@/lib/utils";
 import {
   Globe,
@@ -124,9 +124,9 @@ export default function IndustriesSection({ data }: IndustriesSectionProps) {
 
           <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
             {industries.titleIntro}{" "}
-            <AccentUnderline className="text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
+            <AccentHighlight className="text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
               {industries.titleHighlight}
-            </AccentUnderline>
+            </AccentHighlight>
           </h2>
 
           {industries.description && (

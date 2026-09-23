@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
-import AccentUnderline from "@/components/ui/AccentUnderline";
+import AccentHighlight from "@/components/ui/AccentHighlight";
 
 // Hand-drawn accent underline draw-in animation (used under cursive-highlighted heading words)
 const drawVariants = {
@@ -285,9 +285,9 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
                 <h1 className="font-heading text-3xl sm:text-4xl lg:text-[42px] font-extrabold leading-[1.18] tracking-tight text-brand-dark dark:text-white">
                   {hero.titleLine1} <br />
                   {hero.titleLine2}{" "}
-                  <AccentUnderline className="text-brand-blue dark:text-brand-yellow">
+                  <AccentHighlight className="text-brand-blue dark:text-brand-yellow">
                     {hero.titleHighlight}
-                  </AccentUnderline>
+                  </AccentHighlight>
                 </h1>
 
                 {/* Subtitle */}
@@ -574,9 +574,9 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
                 {/* Headline */}
                 <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.35] tracking-tight text-white">
                   {ctaBanner.titleIntro}{" "}
-                  <AccentUnderline className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
+                  <AccentHighlight className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
                     {ctaBanner.titleHighlight}
-                  </AccentUnderline>{" "}
+                  </AccentHighlight>{" "}
                   <br className="hidden sm:block" />
                   {ctaBanner.titleLine2}
                 </h2>

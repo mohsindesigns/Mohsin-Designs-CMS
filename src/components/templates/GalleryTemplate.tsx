@@ -26,7 +26,7 @@ import {
 import * as LucideIcons from "lucide-react";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
-import AccentUnderline from "@/components/ui/AccentUnderline";
+import AccentHighlight from "@/components/ui/AccentHighlight";
 
 // Hand-Drawn SVG Brush stroke variants
 const drawVariants = {
@@ -271,9 +271,9 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
             {/* Headline */}
             <h1 className="font-heading text-3xl sm:text-4xl lg:text-[42px] font-extrabold leading-[1.18] tracking-tight text-brand-dark dark:text-white">
               {hero.titlePrefix} <br />
-              <AccentUnderline className="text-brand-blue dark:text-brand-yellow pb-1">
+              <AccentHighlight className="text-brand-blue dark:text-brand-yellow pb-1">
                 {hero.titleHighlight}
-              </AccentUnderline>
+              </AccentHighlight>
             </h1>
 
             {/* Subtitle */}
@@ -370,9 +370,9 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
             {/* Section Heading */}
             <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white mb-3 relative z-10">
               {processSection.titlePrefix}
-              <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal text-4xl sm:text-5xl lg:text-6xl pl-1">
+              <AccentHighlight className="text-brand-blue dark:text-brand-yellow font-cursive font-normal text-4xl sm:text-5xl lg:text-6xl pl-1">
                 {processSection.titleHighlight}
-              </span>
+              </AccentHighlight>
             </h2>
 
             {/* Subtitle */}
@@ -455,9 +455,9 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
                 {ctaBanner.titleIntro} <br />
                 <span className="inline-block">
                   {ctaBanner.titleHighlight}{" "}
-                  <AccentUnderline className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
+                  <AccentHighlight className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
                     {ctaBanner.titleCursive}
-                  </AccentUnderline>
+                  </AccentHighlight>
                 </span>
               </h2>
 

@@ -5,6 +5,7 @@ import { Star, Quote } from "lucide-react";
 import { useRef } from "react";
 import { useContent } from "@/hooks/useContent";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
+import AccentHighlight from "@/components/ui/AccentHighlight";
 
 export default function Testimonials({ data: overrideData }: { data?: any }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -277,9 +278,9 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
             </div>
             <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-[1.15]">
               {titleIntro}{" "}
- <span className="text-primary dark:text-yellow-400 font-cursive font-normal">
+ <AccentHighlight className="text-primary dark:text-yellow-400 font-cursive font-normal">
                 {titleHighlight}
-              </span>
+              </AccentHighlight>
             </h2>
             <RichTextRenderer
               content={description}

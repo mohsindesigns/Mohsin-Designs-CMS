@@ -44,7 +44,7 @@ import { useContent } from "../../hooks/useContent";
 import BlogSection from "../sections/BlogSection";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
-import AccentUnderline from "@/components/ui/AccentUnderline";
+import AccentHighlight from "@/components/ui/AccentHighlight";
 
 // ── Icon resolver ─────────────────────────────────────────────────────────────
 const iconMap: Record<string, React.ElementType> = {
@@ -342,9 +342,9 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                 {/* Headline */}
                 <h1 className="font-heading text-3xl xs:text-3xl sm:text-4xl lg:text-[42px] font-black tracking-tight leading-[1.18] text-gray-900 dark:text-white max-w-3xl">
                   {hero.titleIntro}{" "}
-                  <AccentUnderline className="text-[#0306ac] dark:text-[#e9bd36] pb-1 ml-1">
+                  <AccentHighlight className="text-[#0306ac] dark:text-[#e9bd36] pb-1 ml-1">
                     {hero.titleHighlight}
-                  </AccentUnderline>
+                  </AccentHighlight>
                 </h1>
 
                 <RichTextRenderer
@@ -387,9 +387,9 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
               </div>
               <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.12] text-gray-900 dark:text-white">
                 {grid.titleIntro}{" "}
-                <AccentUnderline className="text-[#0306ac] dark:text-[#e9bd36] pb-1 ml-1">
+                <AccentHighlight className="text-[#0306ac] dark:text-[#e9bd36] pb-1 ml-1">
                   {grid.titleHighlight}
-                </AccentUnderline>
+                </AccentHighlight>
               </h2>
               <RichTextRenderer
                 content={grid.subtext}
@@ -434,9 +434,9 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                 {/* Headline */}
                 <h2 className="font-heading text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.35] tracking-tight text-white">
                   {ctaBanner.titleIntro}{" "}
-                  <AccentUnderline className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
+                  <AccentHighlight className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
                     {ctaBanner.titleHighlight}
-                  </AccentUnderline>{" "}
+                  </AccentHighlight>{" "}
                   {ctaBanner.titleLine2}
                 </h2>
 

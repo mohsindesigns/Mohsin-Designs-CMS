@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { useContent } from "../hooks/useContent";
 import RichTextRenderer from "./ui/RichTextRenderer";
+import AccentHighlight from "./ui/AccentHighlight";
 
 // Variants for repeating hand-drawn paths animations on scroll
 const drawVariants = {
@@ -129,9 +130,9 @@ export default function AboutOwnerClean({ data: propData }: { data?: any }) {
               {/* Header */}
               <h2 className="font-heading text-4xl sm:text-5xl font-black leading-[1.15] text-brand-dark dark:text-white tracking-tight">
                 {titleIntro}{" "}
- <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
+ <AccentHighlight className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
                   {titleHighlight}
-                </span>
+                </AccentHighlight>
               </h2>
             </div>
 

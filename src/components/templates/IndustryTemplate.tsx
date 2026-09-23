@@ -48,7 +48,7 @@ import * as LucideIcons from "lucide-react";
 import { useContent } from "@/hooks/useContent";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
-import AccentUnderline from "@/components/ui/AccentUnderline";
+import AccentHighlight from "@/components/ui/AccentHighlight";
 
 // ── Icon Resolver Helper ──────────────────────────────────────────────────────
 function getIcon(name?: string, FallbackComponent = Briefcase) {
@@ -396,9 +396,9 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
 
               <h1 className="font-heading text-3xl sm:text-3xl md:text-[36px] lg:text-[40px] font-black leading-[1.18] tracking-tight text-brand-dark dark:text-white">
                 {hero.titleIntro}{" "}
-                <AccentUnderline className="text-[#0306AC] dark:text-[#E9BD36] font-heading font-normal">
+                <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-heading font-normal">
                   {hero.titleHighlight}
-                </AccentUnderline>{" "}
+                </AccentHighlight>{" "}
                 {hero.titleSuffix}
               </h1>
 
@@ -609,9 +609,9 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
               )}
               <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
                 {servicesSec.titleIntro}
- <span className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+ <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
                   {servicesSec.titleHighlight}
-                </span>
+                </AccentHighlight>
               </h2>
             </div>
             {servicesSec.description && (
@@ -688,9 +688,9 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
               )}
               <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
                 {domainExpertise.titleIntro}
- <span className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+ <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
                   {domainExpertise.titleHighlight}
-                </span>
+                </AccentHighlight>
               </h2>
             </div>
             {domainExpertise.description && (
@@ -799,9 +799,9 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
 
               <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
                 {founder.titleIntro}
- <span className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+ <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
                   {founder.titleHighlight}
-                </span>
+                </AccentHighlight>
               </h2>
 
               <div className="text-sm sm:text-base font-sans leading-relaxed text-brand-zinc-600 dark:text-zinc-300">
@@ -844,9 +844,9 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
 
             <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
               {whyChooseUs.titleIntro}
- <span className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+ <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
                 {whyChooseUs.titleHighlight}
-              </span>
+              </AccentHighlight>
             </h2>
 
             {whyChooseUs.description && (
@@ -938,9 +938,9 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                 {ctaBanner.titleIntro}
                 <span className="inline-block">
                   {ctaBanner.titleWord1}
-                  <AccentUnderline className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
+                  <AccentHighlight className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
                     {ctaBanner.titleWord2}
-                  </AccentUnderline>
+                  </AccentHighlight>
                 </span>
               </h2>
 

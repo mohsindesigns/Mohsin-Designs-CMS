@@ -31,6 +31,7 @@ import { makeLinksDoFollow } from "@/lib/utils";
 import { resolveRobotsMetadata } from "@/lib/seo";
 import CustomSchemaMarkup, { extractSchemaBlocks } from "@/components/CustomSchemaMarkup";
 import { extractLocationInfo, getResolvedSchemaBlocks } from "@/lib/dynamicSchema";
+import AccentHighlight from "@/components/ui/AccentHighlight";
 
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
@@ -628,14 +629,9 @@ export default async function BlogPostPage({ params }: Props) {
               {detailCtaBanner.titleIntro} <br className="hidden sm:block" />
               <span className="inline-block">
                 {detailCtaBanner.titleLine2}{" "}
-                <span className="relative inline-block">
-                  <span className="font-cursive text-[#E9BD36] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
-                    {detailCtaBanner.titleHighlight}
-                  </span>
-                  <svg className="absolute left-0 bottom-[-2px] w-full h-3 text-[#E9BD36]" viewBox="0 0 100 10" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
-                    <path d="M 5 6 C 30 9, 70 9, 95 4" />
-                  </svg>
-                </span>
+                <AccentHighlight className="font-cursive text-[#E9BD36] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
+                  {detailCtaBanner.titleHighlight}
+                </AccentHighlight>
               </span>
             </h2>
 

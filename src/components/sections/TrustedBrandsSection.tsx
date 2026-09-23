@@ -4,6 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Globe, ArrowUpRight } from "lucide-react";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
+import AccentHighlight from "@/components/ui/AccentHighlight";
 
 // Standard vector logos for premier fallbacks
 const GoogleLogo = () => (
@@ -142,9 +143,9 @@ export default function TrustedBrandsSection({ data }: { data?: any }) {
           className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-black text-brand-dark dark:text-white tracking-tight leading-tight"
         >
           {titleIntro}{" "}
-          <span className="relative inline-block text-brand-blue dark:text-brand-yellow font-normal font-cursive text-3xl sm:text-4xl lg:text-[46px] ml-1">
+          <AccentHighlight className="relative inline-block text-brand-blue dark:text-brand-yellow font-normal font-cursive text-3xl sm:text-4xl lg:text-[46px] ml-1">
             {titleHighlight}
-          </span>
+          </AccentHighlight>
         </motion.h2>
 
         {/* Description */}

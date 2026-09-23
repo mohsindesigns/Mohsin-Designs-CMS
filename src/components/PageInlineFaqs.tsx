@@ -8,6 +8,7 @@ import { useState, type ReactNode } from "react";
 import { useContent } from "@/hooks/useContent";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import { isSafeHref } from "@/lib/utils";
+import AccentHighlight from "@/components/ui/AccentHighlight";
 
 interface FAQItem {
   id?: string;
@@ -175,9 +176,9 @@ export default function PageInlineFaqs({
                 {titleIntro ? (
                   <>
                     {titleIntro}{" "}
- <span className="text-primary dark:text-yellow-400 font-cursive font-normal">
+ <AccentHighlight className="text-primary dark:text-yellow-400 font-cursive font-normal">
                       {titleHighlight}
-                    </span>
+                    </AccentHighlight>
                   </>
                 ) : (
                   <span className="text-slate-900 dark:text-white">

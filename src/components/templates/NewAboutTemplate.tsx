@@ -40,7 +40,7 @@ import {
 } from "lucide-react";
 import { useContent } from "@/hooks/useContent";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
-import AccentUnderline from "@/components/ui/AccentUnderline";
+import AccentHighlight from "@/components/ui/AccentHighlight";
 
 // ── Drawing Animation for Hand-Drawn SVG Underlines ────────────────
 const drawVariants = {
@@ -314,9 +314,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                 <h1 className="font-heading text-3xl sm:text-4xl lg:text-[42px] font-black tracking-tight leading-[1.18] text-brand-dark dark:text-white max-w-xl">
                   {hero.titleIntro || "Architecting Digital Products With"}
-                  <AccentUnderline className="text-brand-blue dark:text-brand-yellow pb-1">
+                  <AccentHighlight className="text-brand-blue dark:text-brand-yellow pb-1">
                     {hero.titleHighlight || "Zero Fluff & Pure Precision."}
-                  </AccentUnderline>
+                  </AccentHighlight>
                 </h1>
 
                 {hero.description && (
@@ -377,9 +377,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                   <h2 className="font-heading text-3xl sm:text-4xl font-black tracking-tight leading-[1.12] text-brand-dark dark:text-white">
                     {stats.titleIntro || "Compound Growth &"}{" "}
-                    <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
+                    <AccentHighlight className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
                       {stats.titleHighlight || "Measurable ROI"}
-                    </span>
+                    </AccentHighlight>
                   </h2>
 
                   {stats.description && (
@@ -466,9 +466,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                   <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
                     {whoWeAre.titleIntro || "Built by Engineers, "}
- <span className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+ <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
                       {whoWeAre.titleHighlight || "Guided by Craft."}
-                    </span>
+                    </AccentHighlight>
                   </h2>
 
                   {whoWeAre.description && (
@@ -571,9 +571,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
               <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
                 {philosophy.titleIntro || "The Three Principles That"}
- <span className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+ <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
                   {philosophy.titleHighlight || "Drive Our Work"}
-                </span>
+                </AccentHighlight>
               </h2>
             </div>
 
@@ -594,9 +594,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                     <h3 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-black text-brand-dark dark:text-white leading-[1.15] tracking-tight">
                       {(philosophy.mission.titleIntro || "Eliminating Technical Debt Through").trimEnd()}{" "}
- <span className="font-cursive text-[#0306AC] dark:text-[#E9BD36] font-light">
+ <AccentHighlight className="font-cursive text-[#0306AC] dark:text-[#E9BD36] font-light">
                         {philosophy.mission.titleHighlight || "Intentional Design"}
-                      </span>
+                      </AccentHighlight>
                     </h3>
 
                     {philosophy.mission.desc && (
@@ -678,9 +678,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                     <h3 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-black text-brand-dark dark:text-white leading-[1.15] tracking-tight">
                       {(philosophy.vision.titleIntro || "Setting the Global Standard in").trimEnd()}{" "}
- <span className="font-cursive text-[#0306AC] dark:text-[#E9BD36] font-light">
+ <AccentHighlight className="font-cursive text-[#0306AC] dark:text-[#E9BD36] font-light">
                         {philosophy.vision.titleHighlight || "Modern Web Engineering"}
-                      </span>
+                      </AccentHighlight>
                     </h3>
 
                     {philosophy.vision.desc && (
@@ -726,9 +726,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                     <h3 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-black text-brand-dark dark:text-white leading-[1.15] tracking-tight">
                       {(philosophy.values.titleIntro || "Radical Transparency &").trimEnd()}{" "}
- <span className="font-cursive text-[#0306AC] dark:text-[#E9BD36] font-light">
+ <AccentHighlight className="font-cursive text-[#0306AC] dark:text-[#E9BD36] font-light">
                         {philosophy.values.titleHighlight || "Relentless Ownership"}
-                      </span>
+                      </AccentHighlight>
                     </h3>
 
                     {philosophy.values.desc && (
@@ -828,9 +828,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                       <h2 className="font-heading text-2xl sm:text-3xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
                         {servicesDirectory.titleIntro || "Full-Spectrum Digital"}
- <span className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+ <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
                           {servicesDirectory.titleHighlight || "Engineering Services"}
-                        </span>
+                        </AccentHighlight>
                       </h2>
                     </div>
 
@@ -964,9 +964,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                 )}
                 <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
                   {methodology.titleIntro || "Engineering Precision From"}
- <span className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+ <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
                     {methodology.titleHighlight || "Concept to Production"}
-                  </span>
+                  </AccentHighlight>
                 </h2>
               </div>
               {methodology.description && (
@@ -1055,9 +1055,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                 )}
                 <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
                   {domainExpertise.titleIntro || "Deep Experience Across"}
- <span className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+ <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
                     {domainExpertise.titleHighlight || "Diverse Industries"}
-                  </span>
+                  </AccentHighlight>
                 </h2>
               </div>
               {domainExpertise.description && (
@@ -1153,9 +1153,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
               <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
                 {whyChooseUs.titleIntro || "Why Visionary Leaders"}
- <span className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+ <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
                   {whyChooseUs.titleHighlight || "Choose Mohsin Designs"}
-                </span>
+                </AccentHighlight>
               </h2>
 
               {whyChooseUs.description && (
@@ -1235,9 +1235,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                   <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
                     {executiveLeadership.titleIntro || "Driven by Vision, "}
- <span className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+ <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
                       {executiveLeadership.titleHighlight || "Grounded in Craft"}
-                    </span>
+                    </AccentHighlight>
                   </h2>
                 </div>
 
@@ -1301,9 +1301,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   {ctaBanner.titleIntro || "Let's Engineer Something"}
                   <span className="inline-block">
                     {ctaBanner.titleWord1 || "Truly"}
-                    <AccentUnderline className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
+                    <AccentHighlight className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
                       {ctaBanner.titleWord2 || "Remarkable."}
-                    </AccentUnderline>
+                    </AccentHighlight>
                   </span>
                 </h2>
 
@@ -1396,9 +1396,9 @@ function ReviewsCarousel({ reviewsData }: { reviewsData: any }) {
 
           <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15] max-w-2xl">
             {reviewsData.titleIntro || "Trusted by Founders, "}
- <span className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+ <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
               {reviewsData.titleHighlight || "Loved by Engineering Teams"}
-            </span>
+            </AccentHighlight>
           </h2>
 
           {reviewsData.description && (

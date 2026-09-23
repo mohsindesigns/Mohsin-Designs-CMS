@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useContent } from "../hooks/useContent";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
+import AccentHighlight from "@/components/ui/AccentHighlight";
 
 const iconMap: Record<string, any> = {
   LayoutGrid,
@@ -462,9 +463,9 @@ export default function Portfolio({ data }: { data?: any }) {
           </div>
           <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
             {portfolio.titleIntro}{" "}
- <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
+ <AccentHighlight className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
               {portfolio.titleHighlight}
-            </span>
+            </AccentHighlight>
           </h2>
           <RichTextRenderer
             content={portfolio.description}

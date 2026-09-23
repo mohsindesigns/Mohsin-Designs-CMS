@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "@/components/ui/Link";
 import { useContent } from "@/hooks/useContent";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
+import AccentHighlight from "@/components/ui/AccentHighlight";
 
 interface BlogPost {
   _id?: string;
@@ -297,9 +298,9 @@ export default function BlogSection({
             {titleIntro ? (
               <>
                 {titleIntro}{" "}
- <span className="text-primary dark:text-yellow-400 font-cursive font-normal">
+ <AccentHighlight className="text-primary dark:text-yellow-400 font-cursive font-normal">
                   {titleHighlight}
-                </span>
+                </AccentHighlight>
               </>
             ) : (
               <span className="text-slate-900 dark:text-white">

@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useContent } from "@/hooks/useContent";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
+import AccentHighlight from "@/components/ui/AccentHighlight";
 
 // ── Animated Circular Stat ────────────────────────────────────
 const RADIUS = 34;
@@ -226,9 +227,9 @@ export default function HowWeWork({ data: overrideData }: { data?: any }) {
               {/* Heading */}
               <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white leading-[1.15] tracking-tight">
                 {titleIntro}{" "}
- <span className="text-primary dark:text-yellow-400 font-cursive font-normal">
+ <AccentHighlight className="text-primary dark:text-yellow-400 font-cursive font-normal">
                   {titleHighlight}
-                </span>
+                </AccentHighlight>
               </h2>
 
               {/* Subtext */}

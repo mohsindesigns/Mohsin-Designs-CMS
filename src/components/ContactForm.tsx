@@ -9,6 +9,7 @@ import contentDefaults from "@/data/content.json";
 import { useContent } from "@/hooks/useContent";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
+import AccentHighlight from "@/components/ui/AccentHighlight";
 
 export default function ContactForm({ data }: { data?: any }) {
   const dynamicContent = useContent();
@@ -181,9 +182,9 @@ export default function ContactForm({ data }: { data?: any }) {
               </div>
               <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
                 {contact.titleIntro}{" "}
- <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
+ <AccentHighlight className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
                   {contact.titleHighlight}
-                </span>
+                </AccentHighlight>
               </h2>
               <RichTextRenderer
                 content={contact.description}

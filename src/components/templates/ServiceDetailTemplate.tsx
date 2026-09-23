@@ -56,7 +56,7 @@ import ServiceArea from "@/components/ServiceArea";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
-import AccentUnderline from "@/components/ui/AccentUnderline";
+import AccentHighlight from "@/components/ui/AccentHighlight";
 
 // ── Dynamic Icon Map Resolver ──
 const baseIconMap: Record<string, React.ElementType> = {
@@ -1065,9 +1065,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
                 <h1 className="font-heading text-3xl xs:text-3xl sm:text-4xl lg:text-[40px] font-black tracking-tight leading-[1.18] text-brand-dark dark:text-white max-w-2xl">
                   {service.hero.titleIntro}{" "}
-                  <AccentUnderline className="text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
+                  <AccentHighlight className="text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                     {service.hero.titleHighlight}
-                  </AccentUnderline>
+                  </AccentHighlight>
                 </h1>
 
                 <div className="text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line">
@@ -1307,9 +1307,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               )}
               <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
                 {service.whatIncluded.titleIntro}{" "}
-                <AccentUnderline className="text-brand-blue dark:text-brand-accent pb-1 ml-1 font-black">
+                <AccentHighlight className="text-brand-blue dark:text-brand-accent pb-1 ml-1 font-black">
                   {service.whatIncluded.titleHighlight}
-                </AccentUnderline>
+                </AccentHighlight>
               </h2>
               {service.whatIncluded.description && (
                 <div className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
@@ -1367,9 +1367,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 <span className="eyebrow-pill">{service.strategy.eyebrow}</span>
                 <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12] max-w-sm">
                   {service.strategy.titleIntro}{" "}
- <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
+ <AccentHighlight className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
                     {service.strategy.titleHighlight}
-                  </span>
+                  </AccentHighlight>
                 </h2>
                 <div className="text-sm sm:text-base font-sans text-brand-zinc-605 dark:text-zinc-350 font-normal leading-relaxed max-w-sm">
                   <RichTextRenderer content={service.strategy.description} />
@@ -1423,9 +1423,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               )}
               <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
                 {service.benefits.titleIntro}{" "}
-                <AccentUnderline className="text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
+                <AccentHighlight className="text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                   {service.benefits.titleHighlight}
-                </AccentUnderline>
+                </AccentHighlight>
               </h2>
               {service.benefits.description && (
                 <div className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
@@ -1487,9 +1487,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 {service.process.eyebrow && <span className="eyebrow-pill">{service.process.eyebrow}</span>}
                 <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12] max-w-sm">
                   {service.process.titleIntro}{" "}
- <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
+ <AccentHighlight className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
                     {service.process.titleHighlight}
-                  </span>
+                  </AccentHighlight>
                 </h2>
                 <div className="text-sm font-sans text-brand-zinc-605 dark:text-zinc-355 font-normal leading-relaxed max-w-sm">
                   <RichTextRenderer content={service.process.description} />
@@ -1591,9 +1591,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                   {service.results.eyebrow && <span className="eyebrow-pill">{service.results.eyebrow}</span>}
                   <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl font-black text-brand-dark dark:text-white leading-[1.15]">
                     {service.results.titleIntro}
- <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal block mt-1">
+ <AccentHighlight className="text-brand-blue dark:text-brand-yellow font-cursive font-normal block mt-1">
                       {service.results.titleHighlight}
-                    </span>
+                    </AccentHighlight>
                   </h2>
                   <div className="text-xs sm:text-sm font-sans text-brand-zinc-655 dark:text-zinc-355 leading-relaxed font-normal">
                     <RichTextRenderer content={service.results.description} />
@@ -1754,9 +1754,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               )}
               <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
                 {service.industries.titleIntro}{" "}
-                <AccentUnderline className="text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
+                <AccentHighlight className="text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                   {service.industries.titleHighlight}
-                </AccentUnderline>
+                </AccentHighlight>
               </h2>
               {service.industries.description && (
                 <div className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
@@ -1916,9 +1916,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                   {service.whyChooseUs.eyebrow && <span className="eyebrow-pill">{service.whyChooseUs.eyebrow}</span>}
                   <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white leading-[1.15] tracking-tight">
                     {service.whyChooseUs.titleIntro}{" "}
- <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
+ <AccentHighlight className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
                       {service.whyChooseUs.titleHighlight}
-                    </span>
+                    </AccentHighlight>
                   </h2>
                   <div className="text-sm font-sans text-brand-zinc-655 dark:text-zinc-355 leading-relaxed font-normal">
                     <RichTextRenderer content={service.whyChooseUs.description} />
@@ -2029,9 +2029,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               )}
               <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
                 {service.pricing.titleIntro}{" "}
-                <AccentUnderline className="text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
+                <AccentHighlight className="text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                   {service.pricing.titleHighlight}
-                </AccentUnderline>
+                </AccentHighlight>
               </h2>
               {service.pricing.description && (
                 <div className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
@@ -2136,9 +2136,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 )}
                 <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
                   {service.recommendedSection.titleIntro}{" "}
- <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-2 font-black font-cursive font-normal">
+ <AccentHighlight className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-2 font-black font-cursive font-normal">
                     {service.recommendedSection.titleHighlight}
-                  </span>
+                  </AccentHighlight>
                 </h2>
                 {service.recommendedSection.description && (
                   <div className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-xl leading-relaxed">
@@ -2274,9 +2274,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
                 <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-[46px] font-black leading-[1.25] tracking-tight text-white">
                   {service.finalCta.titleIntro}{" "}
-                  <AccentUnderline className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-[46px] font-normal pl-1">
+                  <AccentHighlight className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-[46px] font-normal pl-1">
                     {service.finalCta.titleHighlight}
-                  </AccentUnderline>
+                  </AccentHighlight>
                   {service.finalCta.titleLine2 ? (
                     <>
                       <br />

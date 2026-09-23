@@ -31,7 +31,7 @@ import {
   Smartphone
 } from "lucide-react";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
-import AccentUnderline from "@/components/ui/AccentUnderline";
+import AccentHighlight from "@/components/ui/AccentHighlight";
 
 // Hand-Drawn SVG Brush stroke variants
 const drawVariants = {
@@ -325,9 +325,9 @@ export default function BlogTemplate({
             {/* Headline */}
             <h1 className="font-heading text-3xl sm:text-4xl lg:text-[42px] font-extrabold leading-[1.18] tracking-tight text-brand-dark dark:text-white">
               {hero.titleLine1} <br />
-              <AccentUnderline className="text-brand-blue dark:text-brand-yellow pb-1">
+              <AccentHighlight className="text-brand-blue dark:text-brand-yellow pb-1">
                 {hero.titleHighlight}
-              </AccentUnderline>
+              </AccentHighlight>
             </h1>
 
             {/* Subtitle */}
@@ -483,9 +483,9 @@ export default function BlogTemplate({
                 {ctaBanner.titleIntro} <br className="hidden sm:block" />
                 <span className="inline-block">
                   {ctaBanner.titleLine2}{" "}
-                  <AccentUnderline className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
+                  <AccentHighlight className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
                     {ctaBanner.titleHighlight}
-                  </AccentUnderline>
+                  </AccentHighlight>
                 </span>
               </h2>
 

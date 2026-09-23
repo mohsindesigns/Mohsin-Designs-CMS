@@ -9,7 +9,7 @@ import Image from "next/image";
 import { useContent } from "../hooks/useContent";
 import { Icon } from "../config/icons";
 import RichTextRenderer from "./ui/RichTextRenderer";
-import AccentUnderline from "./ui/AccentUnderline";
+import AccentHighlight from "./ui/AccentHighlight";
 
 export default function Hero({ data, content: overrideContent, breadcrumb }: { data?: any; content?: any; breadcrumb?: ReactNode } = {}) {
   const content = useContent();
@@ -172,9 +172,9 @@ export default function Hero({ data, content: overrideContent, breadcrumb }: { d
               {titleLine1}
               {titleConnector && titleConnector.trim() ? ` ${titleConnector.trim()}` : ""}
               <br />
-              <AccentUnderline className="text-brand-blue dark:text-brand-yellow pointer-events-auto cursor-pointer">
+              <AccentHighlight className="text-brand-blue dark:text-brand-yellow pointer-events-auto cursor-pointer">
                 {titleLine2}
-              </AccentUnderline>
+              </AccentHighlight>
             </motion.h1>
 
             {/* Description */}
