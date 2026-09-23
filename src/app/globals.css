@@ -397,6 +397,19 @@
     --cta-sec-sheen: rgb(255 255 255 / 0.14);
     --cta-accent: #E9BD36;
   }
+
+  /* The site footer (bg-[#090A29] dark:bg-[#080710]) is the same "permanently-dark surface"
+     story as .cta-banner-card, just not marked with that class - its section labels and link
+     hover states used fixed gold (#E9BD36) with no light-mode counterpart at all, so they
+     stayed gold even in light mode. Scoped to just --cta-accent (not the full on-dark-surface
+     override) so the newsletter button's own --cta-bg/--cta-fg keep inheriting the normal
+     page-level blue/yellow pair they already correctly use. */
+  footer {
+    --cta-accent: #A6B8FF;
+  }
+  .dark footer {
+    --cta-accent: #E9BD36;
+  }
 }
 
 @layer utilities {

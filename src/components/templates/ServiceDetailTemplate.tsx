@@ -56,6 +56,7 @@ import ServiceArea from "@/components/ServiceArea";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
+import AccentUnderline from "@/components/ui/AccentUnderline";
 
 // ── Dynamic Icon Map Resolver ──
 const baseIconMap: Record<string, React.ElementType> = {
@@ -1064,29 +1065,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
                 <h1 className="font-heading text-3xl xs:text-3xl sm:text-4xl lg:text-[40px] font-black tracking-tight leading-[1.18] text-brand-dark dark:text-white max-w-2xl">
                   {service.hero.titleIntro}{" "}
-                  <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
+                  <AccentUnderline className="text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                     {service.hero.titleHighlight}
-                    <motion.svg
-                      className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-brand-blue dark:text-brand-yellow"
-                      viewBox="0 0 100 10"
-                      preserveAspectRatio="none"
-                      aria-hidden="true"
-                      style={{ transformOrigin: "0% 50%" }}
-                      initial={{ scaleX: 0, opacity: 0 }}
-                      whileInView={{ scaleX: 1, opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.6, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                    >
-                      <path
-                        d="M2 7.2C24 2.6 54 2.2 77 3.6C87 4.3 94 5.6 98 7.6"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.4"
-                        strokeLinecap="round"
-                        vectorEffect="non-scaling-stroke"
-                      />
-                    </motion.svg>
-                  </span>
+                  </AccentUnderline>
                 </h1>
 
                 <div className="text-sm sm:text-base font-sans text-brand-zinc-655 dark:text-zinc-300 leading-relaxed max-w-xl font-normal whitespace-pre-line">
@@ -1326,29 +1307,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               )}
               <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
                 {service.whatIncluded.titleIntro}{" "}
-                <span className="relative inline-block text-brand-blue dark:text-brand-accent pb-1 ml-1 font-black">
+                <AccentUnderline className="text-brand-blue dark:text-brand-accent pb-1 ml-1 font-black">
                   {service.whatIncluded.titleHighlight}
-                  <motion.svg
-                    className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-brand-blue dark:text-brand-yellow"
-                    viewBox="0 0 100 10"
-                    preserveAspectRatio="none"
-                    aria-hidden="true"
-                    style={{ transformOrigin: "0% 50%" }}
-                    initial={{ scaleX: 0, opacity: 0 }}
-                    whileInView={{ scaleX: 1, opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                  >
-                    <path
-                      d="M2 7.2C24 2.6 54 2.2 77 3.6C87 4.3 94 5.6 98 7.6"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.4"
-                      strokeLinecap="round"
-                      vectorEffect="non-scaling-stroke"
-                    />
-                  </motion.svg>
-                </span>
+                </AccentUnderline>
               </h2>
               {service.whatIncluded.description && (
                 <div className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
@@ -1462,29 +1423,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               )}
               <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
                 {service.benefits.titleIntro}{" "}
-                <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
+                <AccentUnderline className="text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                   {service.benefits.titleHighlight}
-                  <motion.svg
-                    className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-brand-blue dark:text-brand-yellow"
-                    viewBox="0 0 100 10"
-                    preserveAspectRatio="none"
-                    aria-hidden="true"
-                    style={{ transformOrigin: "0% 50%" }}
-                    initial={{ scaleX: 0, opacity: 0 }}
-                    whileInView={{ scaleX: 1, opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                  >
-                    <path
-                      d="M2 7.2C24 2.6 54 2.2 77 3.6C87 4.3 94 5.6 98 7.6"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.4"
-                      strokeLinecap="round"
-                      vectorEffect="non-scaling-stroke"
-                    />
-                  </motion.svg>
-                </span>
+                </AccentUnderline>
               </h2>
               {service.benefits.description && (
                 <div className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
@@ -1813,29 +1754,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               )}
               <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
                 {service.industries.titleIntro}{" "}
-                <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
+                <AccentUnderline className="text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                   {service.industries.titleHighlight}
-                  <motion.svg
-                    className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-brand-blue dark:text-brand-yellow"
-                    viewBox="0 0 100 10"
-                    preserveAspectRatio="none"
-                    aria-hidden="true"
-                    style={{ transformOrigin: "0% 50%" }}
-                    initial={{ scaleX: 0, opacity: 0 }}
-                    whileInView={{ scaleX: 1, opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                  >
-                    <path
-                      d="M2 7.2C24 2.6 54 2.2 77 3.6C87 4.3 94 5.6 98 7.6"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.4"
-                      strokeLinecap="round"
-                      vectorEffect="non-scaling-stroke"
-                    />
-                  </motion.svg>
-                </span>
+                </AccentUnderline>
               </h2>
               {service.industries.description && (
                 <div className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
@@ -2108,29 +2029,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               )}
               <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
                 {service.pricing.titleIntro}{" "}
-                <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
+                <AccentUnderline className="text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
                   {service.pricing.titleHighlight}
-                  <motion.svg
-                    className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-brand-blue dark:text-brand-yellow"
-                    viewBox="0 0 100 10"
-                    preserveAspectRatio="none"
-                    aria-hidden="true"
-                    style={{ transformOrigin: "0% 50%" }}
-                    initial={{ scaleX: 0, opacity: 0 }}
-                    whileInView={{ scaleX: 1, opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                  >
-                    <path
-                      d="M2 7.2C24 2.6 54 2.2 77 3.6C87 4.3 94 5.6 98 7.6"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.4"
-                      strokeLinecap="round"
-                      vectorEffect="non-scaling-stroke"
-                    />
-                  </motion.svg>
-                </span>
+                </AccentUnderline>
               </h2>
               {service.pricing.description && (
                 <div className="text-xs sm:text-sm text-brand-zinc-555 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal">
@@ -2373,31 +2274,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
                 <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-[46px] font-black leading-[1.25] tracking-tight text-white">
                   {service.finalCta.titleIntro}{" "}
-                  <span className="relative inline-block">
-                    <span className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-[46px] font-normal pl-1">
-                      {service.finalCta.titleHighlight}
-                    </span>
-                    <motion.svg
-                      className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-[var(--cta-accent)]"
-                      viewBox="0 0 100 10"
-                      preserveAspectRatio="none"
-                      aria-hidden="true"
-                      style={{ transformOrigin: "0% 50%" }}
-                      initial={{ scaleX: 0, opacity: 0 }}
-                      whileInView={{ scaleX: 1, opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.6, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                    >
-                      <path
-                        d="M2 7.2C24 2.6 54 2.2 77 3.6C87 4.3 94 5.6 98 7.6"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.4"
-                        strokeLinecap="round"
-                        vectorEffect="non-scaling-stroke"
-                      />
-                    </motion.svg>
-                  </span>
+                  <AccentUnderline className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-[46px] font-normal pl-1">
+                    {service.finalCta.titleHighlight}
+                  </AccentUnderline>
                   {service.finalCta.titleLine2 ? (
                     <>
                       <br />

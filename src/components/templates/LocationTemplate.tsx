@@ -23,6 +23,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
+import AccentUnderline from "@/components/ui/AccentUnderline";
 
 function slugify(text: string): string {
   if (!text) return "";
@@ -393,29 +394,9 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
 
               <h1 className="font-heading text-3xl sm:text-4xl lg:text-[42px] font-black tracking-tight leading-[1.18] text-brand-dark dark:text-white max-w-xl">
                 {hero.titleIntro}
-                <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 font-black">
+                <AccentUnderline className="text-brand-blue dark:text-brand-yellow pb-1 font-black">
                   {hero.titleHighlight}
-                  <motion.svg
-                    className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-brand-blue dark:text-brand-yellow"
-                    viewBox="0 0 100 10"
-                    preserveAspectRatio="none"
-                    aria-hidden="true"
-                    style={{ transformOrigin: "0% 50%" }}
-                    initial={{ scaleX: 0, opacity: 0 }}
-                    whileInView={{ scaleX: 1, opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                  >
-                    <path
-                      d="M2 7.2C24 2.6 54 2.2 77 3.6C87 4.3 94 5.6 98 7.6"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.4"
-                      strokeLinecap="round"
-                      vectorEffect="non-scaling-stroke"
-                    />
-                  </motion.svg>
-                </span>
+                </AccentUnderline>
               </h1>
 
               <div className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 font-normal leading-relaxed max-w-lg">
@@ -761,29 +742,9 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
                 {ctaBanner.titleIntro}
                 <span className="inline-block">
                   {ctaBanner.titleWord1}
-                  <span className="relative inline-block">
-                    <span className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">{ctaBanner.titleWord2}</span>
-                    <motion.svg
-                      className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-[var(--cta-accent)]"
-                      viewBox="0 0 100 10"
-                      preserveAspectRatio="none"
-                      aria-hidden="true"
-                      style={{ transformOrigin: "0% 50%" }}
-                      initial={{ scaleX: 0, opacity: 0 }}
-                      whileInView={{ scaleX: 1, opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.6, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                    >
-                      <path
-                        d="M2 7.2C24 2.6 54 2.2 77 3.6C87 4.3 94 5.6 98 7.6"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.4"
-                        strokeLinecap="round"
-                        vectorEffect="non-scaling-stroke"
-                      />
-                    </motion.svg>
-                  </span>
+                  <AccentUnderline className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
+                    {ctaBanner.titleWord2}
+                  </AccentUnderline>
                 </span>
               </h2>
 

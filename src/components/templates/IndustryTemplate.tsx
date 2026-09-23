@@ -48,6 +48,7 @@ import * as LucideIcons from "lucide-react";
 import { useContent } from "@/hooks/useContent";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
+import AccentUnderline from "@/components/ui/AccentUnderline";
 
 // ── Icon Resolver Helper ──────────────────────────────────────────────────────
 function getIcon(name?: string, FallbackComponent = Briefcase) {
@@ -395,29 +396,9 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
 
               <h1 className="font-heading text-3xl sm:text-3xl md:text-[36px] lg:text-[40px] font-black leading-[1.18] tracking-tight text-brand-dark dark:text-white">
                 {hero.titleIntro}{" "}
-                <span className="relative inline-block text-[#0306AC] dark:text-[#E9BD36]">
-                  <span className="font-heading font-normal">{hero.titleHighlight}</span>
-                  <motion.svg
-                    className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-brand-blue dark:text-brand-yellow"
-                    viewBox="0 0 100 10"
-                    preserveAspectRatio="none"
-                    aria-hidden="true"
-                    style={{ transformOrigin: "0% 50%" }}
-                    initial={{ scaleX: 0, opacity: 0 }}
-                    whileInView={{ scaleX: 1, opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                  >
-                    <path
-                      d="M2 7.2C24 2.6 54 2.2 77 3.6C87 4.3 94 5.6 98 7.6"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.4"
-                      strokeLinecap="round"
-                      vectorEffect="non-scaling-stroke"
-                    />
-                  </motion.svg>
-                </span>{" "}
+                <AccentUnderline className="text-[#0306AC] dark:text-[#E9BD36] font-heading font-normal">
+                  {hero.titleHighlight}
+                </AccentUnderline>{" "}
                 {hero.titleSuffix}
               </h1>
 
@@ -957,29 +938,9 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                 {ctaBanner.titleIntro}
                 <span className="inline-block">
                   {ctaBanner.titleWord1}
-                  <span className="relative inline-block">
-                    <span className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">{ctaBanner.titleWord2}</span>
-                    <motion.svg
-                      className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-[var(--cta-accent)]"
-                      viewBox="0 0 100 10"
-                      preserveAspectRatio="none"
-                      aria-hidden="true"
-                      style={{ transformOrigin: "0% 50%" }}
-                      initial={{ scaleX: 0, opacity: 0 }}
-                      whileInView={{ scaleX: 1, opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.6, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                    >
-                      <path
-                        d="M2 7.2C24 2.6 54 2.2 77 3.6C87 4.3 94 5.6 98 7.6"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.4"
-                        strokeLinecap="round"
-                        vectorEffect="non-scaling-stroke"
-                      />
-                    </motion.svg>
-                  </span>
+                  <AccentUnderline className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
+                    {ctaBanner.titleWord2}
+                  </AccentUnderline>
                 </span>
               </h2>
 

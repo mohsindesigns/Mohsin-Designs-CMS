@@ -4,6 +4,7 @@ import React from "react";
 import Link from "@/components/ui/Link";
 import { motion, useMotionValue } from "framer-motion";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
+import AccentUnderline from "@/components/ui/AccentUnderline";
 import { isSafeHref, getValidHref } from "@/lib/utils";
 import {
   Globe,
@@ -123,29 +124,9 @@ export default function IndustriesSection({ data }: IndustriesSectionProps) {
 
           <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.12]">
             {industries.titleIntro}{" "}
-            <span className="relative inline-block text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
+            <AccentUnderline className="text-brand-blue dark:text-brand-yellow pb-1 ml-1 font-black">
               {industries.titleHighlight}
-              <motion.svg
-                className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-brand-blue dark:text-brand-yellow"
-                viewBox="0 0 100 10"
-                preserveAspectRatio="none"
-                aria-hidden="true"
-                style={{ transformOrigin: "0% 50%" }}
-                initial={{ scaleX: 0, opacity: 0 }}
-                whileInView={{ scaleX: 1, opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <path
-                  d="M2 7.2C24 2.6 54 2.2 77 3.6C87 4.3 94 5.6 98 7.6"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.4"
-                  strokeLinecap="round"
-                  vectorEffect="non-scaling-stroke"
-                />
-              </motion.svg>
-            </span>
+            </AccentUnderline>
           </h2>
 
           {industries.description && (
@@ -158,8 +139,6 @@ export default function IndustriesSection({ data }: IndustriesSectionProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {industries.list.map((ind: any, idx: number) => {
             const FallbackIcon = defaultIcons[idx % defaultIcons.length];
-            const words = String(ind.title || "").split(" ");
-            const abbreviation = ind.watermark || words.map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
             const rawHref = ind.link || ind.href || ind.url;
             const validHref = getValidHref(rawHref);
             const isExternal = !!validHref && /^https?:\/\//i.test(validHref);
@@ -169,10 +148,6 @@ export default function IndustriesSection({ data }: IndustriesSectionProps) {
                 key={idx}
                 className={`bg-white dark:bg-[#0c0b18] border border-slate-200/80 dark:border-white/10 p-6 sm:p-8 rounded-[28px] hover:shadow-2xl hover:border-blue-600/30 dark:hover:border-yellow-400/30 transition-all duration-500 flex flex-col justify-between min-h-[250px] relative group text-left overflow-hidden ${validHref ? "cursor-pointer" : ""}`}
               >
-                {/* Floating Watermark */}
- <span className="absolute top-5 right-7 font-heading text-6xl sm:text-7xl font-black text-slate-100 dark:text-white/[0.04] select-none pointer-events-none transition-transform duration-500 group-hover:scale-110">
-                  {abbreviation}
-                </span>
 
                 <div className="space-y-5 relative z-10">
                   {/* Icon Container with subtle shadow and hover transition */}

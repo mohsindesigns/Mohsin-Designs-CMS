@@ -9,6 +9,7 @@ import Image from "next/image";
 import { useContent } from "../hooks/useContent";
 import { Icon } from "../config/icons";
 import RichTextRenderer from "./ui/RichTextRenderer";
+import AccentUnderline from "./ui/AccentUnderline";
 
 export default function Hero({ data, content: overrideContent, breadcrumb }: { data?: any; content?: any; breadcrumb?: ReactNode } = {}) {
   const content = useContent();
@@ -171,32 +172,9 @@ export default function Hero({ data, content: overrideContent, breadcrumb }: { d
               {titleLine1}
               {titleConnector && titleConnector.trim() ? ` ${titleConnector.trim()}` : ""}
               <br />
-              <motion.span
-                className="text-brand-blue dark:text-brand-yellow relative inline-block pointer-events-auto cursor-pointer"
-              >
+              <AccentUnderline className="text-brand-blue dark:text-brand-yellow pointer-events-auto cursor-pointer">
                 {titleLine2}
-                {/* Unified hand-drawn SVG underline (matches the same accent underline used site-wide) */}
-                <motion.svg
-                  className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-brand-blue dark:text-brand-yellow"
-                  viewBox="0 0 100 10"
-                  preserveAspectRatio="none"
-                  aria-hidden="true"
-                  style={{ transformOrigin: "0% 50%" }}
-                  initial={{ scaleX: 0, opacity: 0 }}
-                  whileInView={{ scaleX: 1, opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                >
-                  <path
-                    d="M2 7.2C24 2.6 54 2.2 77 3.6C87 4.3 94 5.6 98 7.6"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.4"
-                    strokeLinecap="round"
-                    vectorEffect="non-scaling-stroke"
-                  />
-                </motion.svg>
-              </motion.span>
+              </AccentUnderline>
             </motion.h1>
 
             {/* Description */}

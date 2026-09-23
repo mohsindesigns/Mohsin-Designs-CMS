@@ -226,7 +226,7 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
 
                       {/* Category pill */}
                       {category && (
-                        <div className="inline-flex items-center self-start gap-1.5 mb-5 px-3 py-1 rounded-full bg-brand-blue/8 border border-brand-blue/15 text-brand-blue dark:text-brand-yellow group-hover:bg-white/15 group-hover:border-white/20 group-hover:text-brand-yellow transition-all duration-300">
+                        <div className="inline-flex items-center self-start gap-1.5 mb-5 px-3 py-1 rounded-full bg-brand-blue/8 border border-brand-blue/15 text-brand-blue dark:text-brand-yellow group-hover:bg-white/15 group-hover:border-white/20 group-hover:text-white dark:group-hover:text-brand-yellow transition-all duration-300">
                           <span className="w-1.5 h-1.5 rounded-full bg-current" />
                           <span className="font-mono text-[8px] font-black uppercase tracking-widest">{category}</span>
                         </div>
@@ -266,9 +266,9 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
                     <div className="flex items-center justify-between mt-6 pt-5 border-t border-brand-blue/10 dark:border-white/10 group-hover:border-white/15 transition-colors duration-300">
                       <div className="flex items-center gap-2">
                         <span className="text-[9px] font-mono font-black text-brand-blue/60 dark:text-zinc-400 group-hover:text-white/60 transition-colors duration-300 uppercase tracking-widest">{services.serviceLabel}</span>
-                        <span className="text-[11px] font-mono font-black text-brand-blue dark:text-brand-yellow group-hover:text-brand-yellow transition-colors duration-300">{num}</span>
+                        <span className="text-[11px] font-mono font-black text-brand-blue dark:text-brand-yellow group-hover:text-white dark:group-hover:text-brand-yellow transition-colors duration-300">{num}</span>
                       </div>
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-blue/8 border border-brand-blue/20 text-brand-blue dark:text-brand-yellow dark:border-brand-yellow/30 group-hover:bg-brand-yellow group-hover:border-brand-yellow group-hover:text-brand-dark group-hover:rotate-45 transition-all duration-500 shadow-sm">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-blue/8 border border-brand-blue/20 text-brand-blue dark:text-brand-yellow dark:border-brand-yellow/30 group-hover:bg-white group-hover:border-white group-hover:text-brand-blue dark:group-hover:bg-brand-yellow dark:group-hover:border-brand-yellow dark:group-hover:text-brand-dark group-hover:rotate-45 transition-all duration-500 shadow-sm">
                         <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
                       </div>
                     </div>

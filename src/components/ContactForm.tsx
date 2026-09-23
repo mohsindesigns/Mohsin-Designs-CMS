@@ -8,6 +8,7 @@ import { useState, FormEvent, MouseEvent } from "react";
 import contentDefaults from "@/data/content.json";
 import { useContent } from "@/hooks/useContent";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
+import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
 
 export default function ContactForm({ data }: { data?: any }) {
   const dynamicContent = useContent();
@@ -32,6 +33,7 @@ export default function ContactForm({ data }: { data?: any }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [serverError, setServerError] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
 
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -77,6 +79,7 @@ export default function ContactForm({ data }: { data?: any }) {
           message: formData.message,
           type: "Contact Form",
           source: typeof window !=="undefined" ? window.location.pathname : "Contact Form",
+          captchaToken,
         }),
       });
 
@@ -86,6 +89,7 @@ export default function ContactForm({ data }: { data?: any }) {
       }
 
       setIsSuccess(true);
+      setCaptchaToken("");
     } catch (err: any) {
       console.error("Contact Form Submission Error: ", err);
       setServerError(err.message || "Failed to send message. Please try again.");
@@ -350,6 +354,12 @@ export default function ContactForm({ data }: { data?: any }) {
                     {errors.message && <span className="text-[10px] font-bold text-red-500 block">{errors.message}</span>}
                   </div>
 
+                  <TurnstileCaptcha
+                    onVerify={(token) => setCaptchaToken(token)}
+                    onExpire={() => setCaptchaToken("")}
+                    theme="auto"
+                  />
+
                   {/* Submit Button */}
                   <div className="pt-2">
                     <CtaButton type="submit" loading={isSubmitting} icon={<ArrowRight />}>
@@ -382,6 +392,7 @@ export default function ContactForm({ data }: { data?: any }) {
                     onClick={() => {
                       setIsSuccess(false);
                       setFormData({ name: "", email: "", phone: "", message: "" });
+                      setCaptchaToken("");
                     }}
                     className="inline-flex items-center gap-2 text-xs font-mono font-black uppercase tracking-widest text-brand-blue dark:text-brand-yellow hover:underline cursor-pointer pt-4"
                   >
