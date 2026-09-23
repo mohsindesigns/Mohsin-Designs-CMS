@@ -285,14 +285,6 @@
     @apply text-primary;
   }
 
-  /* Footer links safe default — footer is always on dark background */
-  footer a {
-    color: #cbd5e1;
-  }
-  footer a:hover {
-    color: var(--color-yellow) !important;
-  }
-
 }
 
 @layer base {

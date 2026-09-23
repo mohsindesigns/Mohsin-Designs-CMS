@@ -115,14 +115,19 @@ export default function Footer() {
           <div className="lg:col-span-3 min-w-0 space-y-6 lg:pr-6">
             <div className="flex items-center gap-2.5">
               {footer?.company?.logo || footer?.company?.logoDark ? (
-                <div className="relative flex h-10 w-24 items-center justify-start overflow-hidden">
+                <div className="relative flex h-14 w-36 items-center justify-start overflow-hidden">
                   {/* Light-theme logo (footer.company.logo). Falls back to the dark one if only that is set. */}
                   <img
                     src={footer.company.logo || footer.company.logoDark}
                     alt={footer?.company?.name || "Mohsin Designs Logo"}
                     className="object-contain h-full max-w-full dark:hidden"
                   />
-                  {/* Dark-theme logo (footer.company.logoDark). Falls back to the light one. */}
+                  {/* Dark-theme logo (footer.company.logoDark). Falls back to the light one - if no
+                      separate dark-mode logo has been uploaded in Admin > Settings, this renders
+                      the exact same light-mode logo image, including whatever accent color is baked
+                      into that image file. No amount of CSS can recolor an arbitrary uploaded raster/
+                      vector logo's internal colors; a real dark-mode variant needs to be uploaded
+                      there for the logo to carry an actually-visible accent in dark mode. */}
                   <img
                     src={footer.company.logoDark || footer.company.logo}
                     alt={footer?.company?.name || "Mohsin Designs Logo"}
@@ -132,16 +137,16 @@ export default function Footer() {
                 </div>
               ) : (
                 <>
-                  <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 overflow-hidden border border-white/10">
-                    <div className="absolute top-1 left-1 w-6 h-6 rounded-full bg-brand-yellow/80 mix-blend-screen" />
-                    <div className="absolute bottom-1 right-1 w-6 h-6 rounded-full bg-brand-blue/80 mix-blend-screen" />
-                    <span className="relative font-heading font-extrabold text-white text-base z-10">{footer?.logoLetter || "M"}</span>
+                  <div className="relative flex h-14 w-14 items-center justify-center rounded-xl bg-white/10 overflow-hidden border border-white/10">
+                    <div className="absolute top-1 left-1 w-8 h-8 rounded-full bg-brand-yellow/80 mix-blend-screen" />
+                    <div className="absolute bottom-1 right-1 w-8 h-8 rounded-full bg-brand-blue/80 mix-blend-screen" />
+                    <span className="relative font-heading font-extrabold text-white text-xl z-10">{footer?.logoLetter || "M"}</span>
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-sans font-black text-lg leading-none tracking-tight text-white uppercase">
+                    <span className="font-sans font-black text-2xl leading-none tracking-tight text-white uppercase">
                       {footer?.logoText || "MOHSIN"}
                     </span>
-                    <span className="font-sans font-bold text-[9px] tracking-widest text-[var(--cta-accent)] uppercase leading-none mt-1">
+                    <span className="font-sans font-bold text-xs tracking-widest text-[var(--cta-accent)] uppercase leading-none mt-1.5">
                       {footer?.logoSub || "DESIGNS"}
                     </span>
                   </div>
@@ -184,7 +189,7 @@ export default function Footer() {
  
           {/* Quick Links Column */}
           <div className="lg:col-span-2 min-w-0 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
-            <p className="font-mono font-bold text-[10px] uppercase tracking-widest text-[var(--cta-accent)]">
+            <p className="font-mono font-bold text-sm uppercase tracking-widest text-[var(--cta-accent)]">
               {quickLinksTitle}
             </p>
             <ul className="space-y-2.5 text-xs md:text-sm font-semibold text-slate-300 dark:text-zinc-300">
@@ -200,7 +205,7 @@ export default function Footer() {
 
           {/* Services Column */}
           <div className="lg:col-span-2 min-w-0 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
-            <p className="font-mono font-bold text-[10px] uppercase tracking-widest text-[var(--cta-accent)]">
+            <p className="font-mono font-bold text-sm uppercase tracking-widest text-[var(--cta-accent)]">
               {servicesListTitle}
             </p>
             <ul className="space-y-2.5 text-xs md:text-sm font-semibold text-slate-300 dark:text-zinc-300">
@@ -216,7 +221,7 @@ export default function Footer() {
 
           {/* Contact Info Column */}
           <div className="lg:col-span-3 min-w-0 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
-            <p className="font-mono font-bold text-[10px] uppercase tracking-widest text-[var(--cta-accent)]">
+            <p className="font-mono font-bold text-sm uppercase tracking-widest text-[var(--cta-accent)]">
               {footer?.labelContactInfo || "Contact Info"}
             </p>
             <ul className="space-y-4 text-xs md:text-sm font-semibold text-slate-300 dark:text-zinc-300">
@@ -247,7 +252,7 @@ export default function Footer() {
 
           {/* Newsletter Column */}
           <div className="lg:col-span-2 min-w-0 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
-            <p className="font-mono font-bold text-[10px] uppercase tracking-widest text-[var(--cta-accent)]">
+            <p className="font-mono font-bold text-sm uppercase tracking-widest text-[var(--cta-accent)]">
               {footer?.labelNewsletter || "Newsletter"}
             </p>
             <p className="text-xs text-slate-300 dark:text-zinc-300 font-medium leading-relaxed">
