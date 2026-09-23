@@ -319,6 +319,7 @@
     --cta-sec-chip-hover-bg: #0306AC;
     --cta-sec-chip-hover-fg: #ffffff;
     --cta-sec-sheen: rgb(3 6 172 / 0.1);
+    --cta-accent: #0306AC;
   }
 
   .dark {
@@ -339,13 +340,18 @@
     --cta-sec-chip-hover-bg: #E9BD36;
     --cta-sec-chip-hover-fg: #080710;
     --cta-sec-sheen: rgb(255 255 255 / 0.14);
+    --cta-accent: #E9BD36;
   }
 
   /* Buttons on a permanently-dark banner (.cta-banner-card / .on-dark-surface / .cta-on-dark)
      need their OWN light/dark split, separate from the page's theme, because the card itself
      never goes light - a plain blue button would vanish against its own blue background.
      Light mode: crisp white button + blue text/chip (unmistakably "light", full contrast).
-     Dark mode: the site's normal yellow accent, same as everywhere else. */
+     Dark mode: the site's normal yellow accent, same as everywhere else.
+     --cta-accent is the small decorative highlight color used for the cursive accent word,
+     its underline, the eyebrow-pill's pulsing dot, and the glow dot beside the portrait photo.
+     The card's own background never changes, so the site's normal brand-blue would blend
+     straight into it in light mode - it needs its own light tint instead of the page's blue. */
   .cta-banner-card,
   .on-dark-surface,
   .cta-on-dark {
@@ -366,6 +372,7 @@
     --cta-sec-chip-hover-bg: #ffffff;
     --cta-sec-chip-hover-fg: #0306AC;
     --cta-sec-sheen: rgb(255 255 255 / 0.14);
+    --cta-accent: #A6B8FF;
   }
 
   .dark .cta-banner-card,
@@ -388,6 +395,7 @@
     --cta-sec-chip-hover-bg: #E9BD36;
     --cta-sec-chip-hover-fg: #080710;
     --cta-sec-sheen: rgb(255 255 255 / 0.14);
+    --cta-accent: #E9BD36;
   }
 }
 

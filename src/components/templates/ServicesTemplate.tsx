@@ -464,8 +464,8 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                 {/* Eyebrow */}
                 <div className="eyebrow-pill-yellow">
                   <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E9BD36] opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E9BD36]" />
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--cta-accent)] opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--cta-accent)]" />
                   </span>
                   {ctaBanner.eyebrow}
                 </div>
@@ -474,11 +474,11 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                 <h2 className="font-heading text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.35] tracking-tight text-white">
                   {ctaBanner.titleIntro}{" "}
                   <span className="relative inline-block">
-                    <span className="font-cursive text-[#E9BD36] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
+                    <span className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
                       {ctaBanner.titleHighlight}
                     </span>
                     <motion.svg
-                      className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-[#E9BD36] dark:text-[#F3CB5C]"
+                      className="pointer-events-none absolute -bottom-1.5 left-0 h-3.5 w-full overflow-visible text-[var(--cta-accent)]"
                       viewBox="0 0 100 10"
                       preserveAspectRatio="none"
                       aria-hidden="true"
@@ -527,7 +527,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#010356]/80 via-transparent to-transparent pointer-events-none" />
                 </div>
-                <div className="absolute top-12 right-24 h-3.5 w-3.5 rounded-full bg-[#E9BD36] shadow-[0_0_15px_#E9BD36] z-20" />
+                <div className="absolute top-12 right-24 h-3.5 w-3.5 rounded-full bg-[var(--cta-accent)] shadow-[0_0_15px_var(--cta-accent)] z-20" />
               </div>
             </motion.div>
           </div>
