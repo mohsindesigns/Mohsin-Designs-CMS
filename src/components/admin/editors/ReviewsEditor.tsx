@@ -14,6 +14,7 @@ const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor")
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
 import SchemaEditor from "@/components/admin/SchemaEditor";
+import VideoTestimonialsEditor from "./VideoTestimonialsEditor";
 
 export default function ReviewsEditor({ data, setData }: { pageId: string, data: any, setData: (d: any) => void }) {
   const [activeTab, setActiveTab] = useState("header");
@@ -55,6 +56,7 @@ export default function ReviewsEditor({ data, setData }: { pageId: string, data:
 
   const tabs = [
     { id: "header", label: "Review Header", icon: Type, title: "Social Proof Introduction" },
+    { id: "videoTestimonials", label: "Video Testimonials", icon: Quote, title: "Video Testimonials" },
     { id: "items", label: "Testimonials", icon: Quote, title: "Individual Review Management" },
     { id: "schema", label: "Schema Markup", icon: Quote, title: "Reviews Schema Markup" },
   ];
@@ -141,6 +143,14 @@ export default function ReviewsEditor({ data, setData }: { pageId: string, data:
                     </div>
                  </div>
               </div>
+            )}
+
+            {/* VIDEO TESTIMONIALS SECTION */}
+            {activeTab === "videoTestimonials" && (
+              <VideoTestimonialsEditor
+                value={data.videoTestimonials}
+                onChange={(next: any) => setData({ ...data, videoTestimonials: next })}
+              />
             )}
 
              {/* TESTIMONIALS SECTION */}

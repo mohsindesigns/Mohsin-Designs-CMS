@@ -6,6 +6,7 @@ import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import { motion } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import Link from "@/components/ui/Link";
 import { getValidHref } from "@/lib/utils";
 import {
@@ -41,6 +42,8 @@ import {
 import { useContent } from "@/hooks/useContent";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import AccentHighlight from "@/components/ui/AccentHighlight";
+
+const VideoTestimonials = dynamic(() => import("@/components/sections/VideoTestimonials"), { ssr: false });
 
 // ── Drawing Animation for Hand-Drawn SVG Underlines ────────────────
 const drawVariants = {
@@ -356,6 +359,12 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
             </div>
           </div>
         </section>
+        )}
+
+        {rawAbout.videoTestimonials?.enabled !== false && (
+          <section id="video-testimonials">
+            <VideoTestimonials data={rawAbout.videoTestimonials} />
+          </section>
         )}
 
         {/* ── 2. STATS BAR SECTION ── */}

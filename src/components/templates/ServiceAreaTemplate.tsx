@@ -20,6 +20,7 @@ import PageInlineFaqs from "@/components/PageInlineFaqs";
 import dynamic from "next/dynamic";
 
 const QuickQuote = dynamic(() => import("@/components/QuickQuote"), { ssr: false });
+const VideoTestimonials = dynamic(() => import("@/components/sections/VideoTestimonials"), { ssr: false });
 
 const iconMap: Record<string, any> = {
   Home, Layout, TreePine, Building2, Building, Droplets,
@@ -275,6 +276,13 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
             </div>
           ))}
         </div>
+      </section>
+      )}
+
+      {/* ================= VIDEO TESTIMONIALS ================= */}
+      {content.videoTestimonials?.enabled !== false && (
+      <section id="video-testimonials">
+        <VideoTestimonials data={content.videoTestimonials} />
       </section>
       )}
 

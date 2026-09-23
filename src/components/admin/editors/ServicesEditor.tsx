@@ -16,6 +16,7 @@ import ImageField from "@/components/admin/ImageField";
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
 import SchemaEditor from "@/components/admin/SchemaEditor";
+import VideoTestimonialsEditor from "./VideoTestimonialsEditor";
 
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), { 
   ssr: false,
@@ -72,10 +73,11 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
 
   const tabs = [
     { id: "hero", label: "Hero Banner", title: "1. Hero Banner Section", desc: "Configure top badge, dynamic headlines, description narrative, buttons, and bleed background." },
-    { id: "grid", label: "Services Grid Header", title: "2. Services Grid Intro Header", desc: "Introductory eyebrow, title, description, and card action button labels for the catalog." },
-    { id: "cta", label: "Bottom CTA Banner", title: "3. Bottom Conversion Banner", desc: "High-converting strategy session CTA banner with portrait photo and action links." },
-    { id: "blog", label: "Featured Blog Posts", title: "4. Curated Insights & Articles", desc: "Featured blog articles shown below the services listing." },
-    { id: "schema", label: "Schema Markup", title: "5. Schema Markup", desc: "Structured data JSON-LD configuration for the services listing page." },
+    { id: "videoTestimonials", label: "Video Testimonials", title: "2. Video Testimonials", desc: "Manage the video testimonial carousel shown below the hero." },
+    { id: "grid", label: "Services Grid Header", title: "3. Services Grid Intro Header", desc: "Introductory eyebrow, title, description, and card action button labels for the catalog." },
+    { id: "cta", label: "Bottom CTA Banner", title: "4. Bottom Conversion Banner", desc: "High-converting strategy session CTA banner with portrait photo and action links." },
+    { id: "blog", label: "Featured Blog Posts", title: "5. Curated Insights & Articles", desc: "Featured blog articles shown below the services listing." },
+    { id: "schema", label: "Schema Markup", title: "6. Schema Markup", desc: "Structured data JSON-LD configuration for the services listing page." },
   ];
 
   const currentTabInfo = tabs.find(t => t.id === activeTab) || tabs[0];
@@ -241,6 +243,14 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
                   />
                 </div>
               </div>
+            )}
+
+            {/* TAB: VIDEO TESTIMONIALS */}
+            {activeTab === "videoTestimonials" && (
+              <VideoTestimonialsEditor
+                value={data.videoTestimonials}
+                onChange={(next) => setData({ ...data, videoTestimonials: next })}
+              />
             )}
 
             {/* TAB 2: GRID SECTION */}

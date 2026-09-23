@@ -24,6 +24,9 @@ import { useRouter } from "next/navigation";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import AccentHighlight from "@/components/ui/AccentHighlight";
+import dynamic from "next/dynamic";
+
+const VideoTestimonials = dynamic(() => import("@/components/sections/VideoTestimonials"), { ssr: false });
 
 function slugify(text: string): string {
   if (!text) return "";
@@ -544,6 +547,13 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
             animation-play-state: paused;
           }
         `}</style>
+      </section>
+      )}
+
+      {/* ── VIDEO TESTIMONIALS ── */}
+      {pageContent.videoTestimonials?.enabled !== false && (
+      <section id="video-testimonials">
+        <VideoTestimonials data={pageContent.videoTestimonials} />
       </section>
       )}
 

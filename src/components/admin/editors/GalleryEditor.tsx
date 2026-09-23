@@ -14,6 +14,7 @@ import ImageField from "@/components/admin/ImageField";
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
 import SchemaEditor from "@/components/admin/SchemaEditor";
+import VideoTestimonialsEditor from "./VideoTestimonialsEditor";
 
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), { ssr: false });
 
@@ -242,6 +243,7 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
 
   const tabs = [
     { id: "hero", label: "Portfolio Hero" },
+    { id: "videoTestimonials", label: "Video Testimonials" },
     { id: "projects", label: "Project Showcase" },
     { id: "process", label: "Creative Process" },
     { id: "cta", label: "Bottom CTA Banner" },
@@ -419,6 +421,19 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
                 </div>
               </div>
             </div>
+          )}
+
+          {/* ── TAB: VIDEO TESTIMONIALS ──────────────────────────────────── */}
+          {activeTab === "videoTestimonials" && (
+            <VideoTestimonialsEditor
+              value={data.videoTestimonials}
+              onChange={(next: any) =>
+                setData((prev: any) => ({
+                  ...(prev || {}),
+                  videoTestimonials: next
+                }))
+              }
+            />
           )}
 
           {/* ── TAB 2: PROJECTS SHOWCASE (DUAL SELECTION MODE) ───────────── */}

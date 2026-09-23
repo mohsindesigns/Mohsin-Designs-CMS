@@ -10,6 +10,7 @@ import { UI } from "./styles";
 import dynamic from "next/dynamic";
 import SectionToggle from "@/components/admin/SectionToggle";
 import SchemaEditor from "@/components/admin/SchemaEditor";
+import VideoTestimonialsEditor from "./VideoTestimonialsEditor";
 
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
   ssr: false,
@@ -97,6 +98,7 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
 
   const tabs = [
     { id: "hero", label: "1. Hero Section" },
+    { id: "videoTestimonials", label: "Video Testimonials" },
     { id: "stats", label: "2. Stats & Metrics" },
     { id: "whoWeAre", label: "3. Who We Are" },
     { id: "philosophy", label: "4. Mission & Vision" },
@@ -208,6 +210,13 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                 />
               </div>
             </div>
+          )}
+
+          {activeTab === "videoTestimonials" && (
+            <VideoTestimonialsEditor
+              value={data.videoTestimonials}
+              onChange={(next: any) => updateSection("videoTestimonials", null, next)}
+            />
           )}
 
           {/* 2. STATS & METRICS */}

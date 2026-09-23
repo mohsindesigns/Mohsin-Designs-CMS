@@ -11,6 +11,7 @@ const Portfolio = dynamic(() => import("@/components/Portfolio"));
 const Testimonials = dynamic(() => import("@/components/Testimonials"), { ssr: false });
 const AboutOwnerClean = dynamic(() => import("@/components/AboutOwnerClean"), { ssr: false });
 const TrustedBrandsSection = dynamic(() => import("@/components/sections/TrustedBrandsSection"), { ssr: false });
+const VideoTestimonials = dynamic(() => import("@/components/sections/VideoTestimonials"), { ssr: false });
 const ContactForm = dynamic(() => import("@/components/ContactForm"), { ssr: false });
 const QAForm = dynamic(() => import("@/components/QAForm"), { ssr: false });
 const BlogSection = dynamic(() => import("@/components/sections/BlogSection"), { ssr: false });
@@ -44,6 +45,13 @@ export default function CityTemplate({ pageData, params }: { pageData?: any; par
       {(content.trustedBrands?.enabled !== false && content.clientTrust?.enabled !== false && content.trustedBy?.enabled !== false) &&
         (hasContent(content.trustedBrands) || hasContent(content.clientTrust) || hasContent(content.trustedBy)) && (
         <TrustedBrandsSection data={content.trustedBrands || content.clientTrust || content.trustedBy} />
+      )}
+
+      {/* 1.6 Video Testimonials */}
+      {content.videoTestimonials?.enabled !== false && hasContent(content.videoTestimonials) && (
+        <section id="video-testimonials">
+          <VideoTestimonials data={content.videoTestimonials} />
+        </section>
       )}
 
       {/* 2. About The Owner (Clean - No stats, No CTA button) */}

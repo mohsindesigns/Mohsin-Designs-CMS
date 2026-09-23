@@ -15,6 +15,7 @@ import IconSelector from "@/components/admin/IconSelector";
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
 import SchemaEditor from "@/components/admin/SchemaEditor";
+import VideoTestimonialsEditor from "./VideoTestimonialsEditor";
 
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
   ssr: false,
@@ -319,9 +320,10 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
     { id: "hero", label: "01. Hero Banner" },
     { id: "stats", label: "02. Stats Counters" },
     { id: "marquee", label: "03. Brand Marquee" },
-    { id: "presence", label: "04. Countries & States" },
-    { id: "cta", label: "05. Bottom CTA Banner" },
-    { id: "schema", label: "06. Schema Markup" }
+    { id: "videoTestimonials", label: "04. Video Testimonials" },
+    { id: "presence", label: "05. Countries & States" },
+    { id: "cta", label: "06. Bottom CTA Banner" },
+    { id: "schema", label: "07. Schema Markup" }
   ];
 
   return (
@@ -819,6 +821,14 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
                 </div>
               </div>
             </div>
+          )}
+
+          {/* ── TAB: VIDEO TESTIMONIALS ───────────────────────────────────── */}
+          {activeTab === "videoTestimonials" && (
+            <VideoTestimonialsEditor
+              value={data.videoTestimonials}
+              onChange={(next) => setData((prev: any) => ({ ...(prev || {}), videoTestimonials: next }))}
+            />
           )}
 
           {/* ── TAB 4: COUNTRIES & STATES ─────────────────────────────────── */}

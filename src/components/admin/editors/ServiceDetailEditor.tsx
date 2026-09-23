@@ -18,6 +18,7 @@ import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
 import SchemaEditor from "@/components/admin/SchemaEditor";
 import { syncFaqSchema } from "@/lib/faqSchema";
+import VideoTestimonialsEditor from "./VideoTestimonialsEditor";
 
 // Safe comma separated input helper to prevent cursor swallowing
 function CommaSeparatedInput({ value, onChange, placeholder, className }: { value: string[]; onChange: (v: string[]) => void; placeholder?: string; className?: string }) {
@@ -301,6 +302,7 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
   const tabs = [
     { id: "hero", label: "1. Hero & Form" },
     { id: "clientTrust", label: "2. Client Trust" },
+    { id: "videoTestimonials", label: "Video Testimonials" },
     { id: "whatIncluded", label: "3. Deliverables" },
     { id: "strategy", label: "4. Strategic Approach" },
     { id: "benefits", label: "5. Measurable Outcomes" },
@@ -542,6 +544,14 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
                   ))}
                 </div>
               </div>
+            )}
+
+            {/* VIDEO TESTIMONIALS */}
+            {activeTab === "videoTestimonials" && (
+              <VideoTestimonialsEditor
+                value={data.videoTestimonials}
+                onChange={(next: any) => updateSection("videoTestimonials", null, next)}
+              />
             )}
 
             {/* 3. DELIVERABLES (WHAT'S INCLUDED) */}

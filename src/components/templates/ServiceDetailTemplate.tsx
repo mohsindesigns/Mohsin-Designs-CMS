@@ -7,6 +7,7 @@ import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import React, { use, useState, useEffect, useRef } from "react";
 import Link from "@/components/ui/Link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
 import { isSafeHref, getValidHref } from "@/lib/utils";
 import { motion, AnimatePresence, useMotionValue, useInView } from "framer-motion";
@@ -57,6 +58,8 @@ import PageInlineFaqs from "@/components/PageInlineFaqs";
 import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import AccentHighlight from "@/components/ui/AccentHighlight";
+
+const VideoTestimonials = dynamic(() => import("@/components/sections/VideoTestimonials"), { ssr: false });
 
 // ── Dynamic Icon Map Resolver ──
 const baseIconMap: Record<string, React.ElementType> = {
@@ -1286,6 +1289,12 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             animation-play-state: paused;
           }
         `}</style>
+        </section>
+      )}
+
+      {dbService?.videoTestimonials?.enabled !== false && (
+        <section id="video-testimonials">
+          <VideoTestimonials data={dbService?.videoTestimonials} />
         </section>
       )}
 

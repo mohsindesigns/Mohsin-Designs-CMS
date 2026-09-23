@@ -5,6 +5,7 @@ import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import React, { useMemo } from "react";
 import Image from "next/image";
 import Link from "@/components/ui/Link";
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -27,6 +28,8 @@ import * as LucideIcons from "lucide-react";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import AccentHighlight from "@/components/ui/AccentHighlight";
+
+const VideoTestimonials = dynamic(() => import("@/components/sections/VideoTestimonials"), { ssr: false });
 
 // Hand-Drawn SVG Brush stroke variants
 const drawVariants = {
@@ -291,6 +294,13 @@ export default function GalleryTemplate({ pageData }: { pageData?: any; params?:
           </motion.div>
         </div>
       </section>
+      )}
+
+      {/* ── VIDEO TESTIMONIALS SECTION ──────────────────────────────── */}
+      {pageContent.videoTestimonials?.enabled !== false && (
+        <section id="video-testimonials">
+          <VideoTestimonials data={pageContent.videoTestimonials} />
+        </section>
       )}
 
       {/* Main Content Container */}

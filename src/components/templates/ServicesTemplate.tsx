@@ -5,6 +5,7 @@ import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import React, { useState } from "react";
 import Link from "@/components/ui/Link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -45,6 +46,8 @@ import BlogSection from "../sections/BlogSection";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import AccentHighlight from "@/components/ui/AccentHighlight";
+
+const VideoTestimonials = dynamic(() => import("@/components/sections/VideoTestimonials"), { ssr: false });
 
 // ── Icon resolver ─────────────────────────────────────────────────────────────
 const iconMap: Record<string, React.ElementType> = {
@@ -360,6 +363,13 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
 
             </div>
           </div>
+        </section>
+      )}
+
+      {/* ── VIDEO TESTIMONIALS ─────────────────────────────────────────────── */}
+      {content.videoTestimonials?.enabled !== false && (
+        <section id="video-testimonials">
+          <VideoTestimonials data={content.videoTestimonials} />
         </section>
       )}
 

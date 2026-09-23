@@ -3,11 +3,14 @@
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import { useRef, useState, useEffect } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
+import dynamic from "next/dynamic";
 import { Icon } from "../../config/icons";
 import { useContent } from "../../hooks/useContent";
 import Image from "next/image";
 import RichTextRenderer from "../ui/RichTextRenderer";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
+
+const VideoTestimonials = dynamic(() => import("@/components/sections/VideoTestimonials"), { ssr: false });
 
 const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=800&h=450&fit=crop&q=80";
 const GOOGLE_MAPS_REVIEW_URL = "https://maps.app.goo.gl/PbvRBs4tJsDAJVMy6";
@@ -62,6 +65,7 @@ export default function ReviewsTemplate({ pageData, params }: { pageData?: any, 
     const data = pageData?.content?.testimonials || pageData?.content || globalData;
     const { section, testimonials = [], videos = [], stats = {} as any } = data || {};
     const [selectedVideo, setSelectedVideo] = useState<{ id: string; title: string } | null>(null);
+    const content = pageData?.content || {};
 
     return (
         <main className="relative min-h-screen bg-gray-50 dark:bg-background pt-28 md:pt-36 lg:pt-40 pb-16 sm:pb-20 lg:pb-24">
@@ -85,6 +89,12 @@ export default function ReviewsTemplate({ pageData, params }: { pageData?: any, 
                 </div>
                 )}
             </div>
+            )}
+
+            {content.videoTestimonials?.enabled !== false && (
+                <section id="video-testimonials">
+                    <VideoTestimonials data={content.videoTestimonials} />
+                </section>
             )}
 
         </main>
