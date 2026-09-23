@@ -16,8 +16,6 @@ interface LineRect {
   height: number;
 }
 
-const PAD = 10; // breathing room around the text the wobbly edge is allowed to roam into
-
 // Deterministic pseudo-random in [0, 1), seeded so the same line always gets the same
 // "hand-drawn" wobble across re-measures (resize, font load) instead of jittering.
 function seededRand(seed: number) {
@@ -25,16 +23,33 @@ function seededRand(seed: number) {
   return x - Math.floor(x);
 }
 
+// Padding is proportional to the line's own height (i.e. to font size), not a fixed
+// pixel amount - a fixed ~10px pad looked fine on smaller text but was wildly oversized
+// on big headings, where getClientRects() already returns a line box tall enough to
+// cover the font's own ascenders/descenders. That extra fixed padding on top of an
+// already-generous line box is what pushed the stroke into the line above/below it
+// (and, stacked on both of two wrapped lines, made them overlap each other too).
+// Horizontal gets a bit more room than vertical, since a highlighter naturally
+// overshoots slightly past the start/end of a word but shouldn't loom over the line
+// above or below it.
+function padFor(height: number) {
+  return {
+    x: Math.max(4, height * 0.12),
+    y: Math.max(1, height * 0.025),
+  };
+}
+
 // A rectangle traced as if by hand: each of the 4 corners and each edge's midpoint is
 // nudged a few px off its "true" position, then the 4 edges are drawn as quadratic
 // curves through those midpoints instead of straight lines. That's what actually reads
 // as a rough highlighter stroke - a uniform border-radius on an otherwise-crisp
 // rectangle is still visibly a geometric shape at this size, a wavy hand-drawn outline
-// isn't. Seeded per line so it's stable, not re-randomized on every remeasure.
+// isn't. Seeded per line so it's stable, not re-randomized on every remeasure. The
+// wobble itself also scales with the box size so it stays proportionate instead of
+// swallowing a small box or looking flat on a huge one.
 function roughRectPath(w: number, h: number, seed: number) {
   const jitter = (n: number, mag: number) => (seededRand(seed + n * 7.31) - 0.5) * 2 * mag;
-  const corner = (mag: number) => mag;
-  const c = corner(4);
+  const c = Math.min(4, Math.max(1, h * 0.035));
   const tl = { x: jitter(1, c), y: jitter(2, c) };
   const tr = { x: w + jitter(3, c), y: jitter(4, c) };
   const br = { x: w + jitter(5, c), y: h + jitter(6, c) };
@@ -131,16 +146,17 @@ export default function AccentHighlight({ children, className = "", delay = 0.45
       {rects.map((r, i) => {
         const seed = i + 1;
         const rotate = (seededRand(seed * 3.7) - 0.5) * 3; // ~ -1.5deg to 1.5deg, varies per line
-        const boxW = r.width + PAD * 2;
-        const boxH = r.height + PAD * 2;
+        const pad = padFor(r.height);
+        const boxW = r.width + pad.x * 2;
+        const boxH = r.height + pad.y * 2;
         return (
           <motion.svg
             key={i}
             aria-hidden="true"
             className="pointer-events-none absolute -z-10 opacity-[0.16] dark:opacity-[0.22]"
             style={{
-              left: r.left - PAD,
-              top: r.top - PAD,
+              left: r.left - pad.x,
+              top: r.top - pad.y,
               width: boxW,
               height: boxH,
               rotate,

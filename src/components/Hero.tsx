@@ -167,7 +167,16 @@ export default function Hero({ data, content: overrideContent, breadcrumb }: { d
             {/* Headline */}
             <motion.h1
               variants={itemVariants}
-              className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-[50px] font-semibold leading-[1.3] tracking-tight text-brand-dark dark:text-white select-none"
+              // Each text-size utility (text-3xl, md:text-5xl, ...) bundles its own default
+              // line-height in Tailwind's config, which silently wins over a separate
+              // `leading-[…]` utility regardless of class order (Tailwind emits the fontSize
+              // plugin's paired line-height after the lineHeight plugin's own utilities) - that
+              // is what made an earlier `leading-[1.3]` on this element a no-op, stuck at
+              // line-height:1, and is why two wrapped lines of the accent highlight visibly
+              // overlapped. Using the text-size/leading slash syntax pairs the intended
+              // line-height directly to each breakpoint's own font-size utility instead, so
+              // there's no separate utility for a later one to silently outrank.
+              className="font-heading text-3xl/[1.3] sm:text-4xl/[1.3] md:text-5xl/[1.3] lg:text-[50px]/[1.3] font-semibold tracking-tight text-brand-dark dark:text-white select-none"
             >
               {titleLine1}
               {titleConnector && titleConnector.trim() ? ` ${titleConnector.trim()}` : ""}
