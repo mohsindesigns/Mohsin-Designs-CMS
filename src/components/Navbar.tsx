@@ -53,6 +53,15 @@ export default function Navbar() {
     setIsDark(document.documentElement.classList.contains('dark'));
   }, []);
 
+  // Auto-select the first location the instant the Locations menu opens, so the featured
+  // panel shows something right away instead of sitting on the empty "add a map" state until
+  // the visitor happens to hover a specific row.
+  useEffect(() => {
+    if (activeMegaMenu?.startsWith("loc-")) {
+      setHoveredLocation((prev) => (prev === null ? 0 : prev));
+    }
+  }, [activeMegaMenu]);
+
   const toggleTheme = () => {
     const html = document.documentElement;
     if (html.classList.contains('dark')) {
@@ -180,9 +189,10 @@ export default function Navbar() {
                   <AnimatePresence>
                     {isOpen && services.length > 0 && (
                       <motion.div
-                        initial={{ opacity: 0, y: 15, x: "-50%" }}
-                        animate={{ opacity: 1, y: 0, x: "-50%" }}
-                        exit={{ opacity: 0, y: 10, x: "-50%" }}
+                        initial={{ opacity: 0, y: 12, scale: 0.98, x: "-50%" }}
+                        animate={{ opacity: 1, y: 0, scale: 1, x: "-50%" }}
+                        exit={{ opacity: 0, y: 8, scale: 0.98, x: "-50%" }}
+                        transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                         onMouseEnter={handleMegaMenuMouseEnter}
                         onMouseLeave={handleMegaMenuMouseLeave}
                         className={`${PANEL_BASE} w-[960px]`}
@@ -218,7 +228,7 @@ export default function Navbar() {
                               key={service.slug}
                               href={`/services/${service.slug}`}
                               onClick={handleLinkClick}
-                              className="group flex items-center gap-3.5 rounded-2xl border border-brand-zinc-100 bg-brand-zinc-50/60 p-3.5 transition-all duration-300 hover:border-brand-blue/25 hover:bg-brand-blue/[0.05] hover:shadow-sm dark:border-white/[0.06] dark:bg-white/[0.02] dark:hover:border-brand-yellow/25 dark:hover:bg-brand-yellow/[0.07]"
+                              className="group flex items-center gap-3.5 rounded-2xl border border-brand-zinc-100 bg-brand-zinc-50/60 p-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-blue/25 hover:bg-brand-blue/[0.05] hover:shadow-md dark:border-white/[0.06] dark:bg-white/[0.02] dark:hover:border-brand-yellow/25 dark:hover:bg-brand-yellow/[0.07]"
                             >
                               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-brand-blue shadow-sm transition-all duration-300 group-hover:bg-brand-blue group-hover:text-white group-hover:shadow-lg group-hover:shadow-brand-blue/25 dark:bg-white/5 dark:text-brand-yellow dark:group-hover:bg-brand-yellow dark:group-hover:text-brand-dark">
                                 <Icon name={service.icon} className="h-5 w-5" />
@@ -276,9 +286,10 @@ export default function Navbar() {
                   <AnimatePresence>
                     {isOpen && (
                       <motion.div
-                        initial={{ opacity: 0, y: 15, x: "-50%" }}
-                        animate={{ opacity: 1, y: 0, x: "-50%" }}
-                        exit={{ opacity: 0, y: 10, x: "-50%" }}
+                        initial={{ opacity: 0, y: 12, scale: 0.98, x: "-50%" }}
+                        animate={{ opacity: 1, y: 0, scale: 1, x: "-50%" }}
+                        exit={{ opacity: 0, y: 8, scale: 0.98, x: "-50%" }}
+                        transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                         onMouseEnter={handleMegaMenuMouseEnter}
                         onMouseLeave={handleMegaMenuMouseLeave}
                         className={`${PANEL_BASE} w-[980px]`}
@@ -378,7 +389,21 @@ export default function Navbar() {
                                 className="absolute inset-0 h-full w-full border-0 dark:[filter:invert(0.92)_hue-rotate(180deg)_contrast(0.9)]"
                               />
                             ) : map.kind === "image" ? (
-                              <img key={map.value} src={map.value} alt={`${caption} map`} className="absolute inset-0 h-full w-full object-cover" />
+                              // Crossfade instead of an abrupt swap when hovering between locations -
+                              // both the leaving and entering photo are absolutely positioned in the
+                              // same spot, so one dissolves into the other instead of flashing.
+                              <AnimatePresence>
+                                <motion.img
+                                  key={map.value}
+                                  src={map.value}
+                                  alt={`${caption} map`}
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  exit={{ opacity: 0 }}
+                                  transition={{ duration: 0.35, ease: "easeOut" }}
+                                  className="absolute inset-0 h-full w-full object-cover"
+                                />
+                              </AnimatePresence>
                             ) : (
                               <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-brand-blue/40 dark:text-brand-yellow/40">
                                 <MapPin className="h-10 w-10" />
