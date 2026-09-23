@@ -105,17 +105,23 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, margin: "-100px" }}
           transition={{ duration: 0.6 }}
-          className="flex flex-col gap-4 mb-8 md:mb-12"
+          className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 md:mb-12"
         >
-          <div className="eyebrow-pill self-start">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-blue dark:bg-brand-yellow opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-blue dark:bg-brand-yellow" />
-            </span>
-            {services.sectionTag}
-          </div>
+          {/* Text block: eyebrow + heading + description stay grouped together on the
+              left instead of racing the nav arrows for the same row - previously the
+              arrows sat pinned next to just the heading's first line via items-center,
+              so a wrapping 2-line heading left them crowded and off-balance against
+              a lopsided line break. Arrows now anchor to the bottom of this whole
+              block instead, beside the description, which stays clean at any length. */}
+          <div className="flex flex-col gap-4 min-w-0">
+            <div className="eyebrow-pill self-start">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-blue dark:bg-brand-yellow opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-blue dark:bg-brand-yellow" />
+              </span>
+              {services.sectionTag}
+            </div>
 
-          <div className="flex items-center justify-between gap-4 w-full">
             <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
               {services.titleIntro}{" "}
  <span className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
@@ -123,33 +129,33 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
               </span>
             </h2>
 
-            {/* Arrow navigation */}
-            <div className="flex gap-2 sm:gap-3 select-none shrink-0">
-              <button
-                onClick={() => scroll("prev")}
-                className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-full border border-brand-zinc-300 dark:border-white/20 text-brand-dark dark:text-white hover:border-brand-blue hover:bg-brand-blue hover:text-white dark:hover:border-brand-yellow dark:hover:bg-brand-yellow dark:hover:text-brand-dark transition-all duration-300 active:scale-95 shadow-sm"
-                aria-label={services.ariaPrev}
-              >
-                <ArrowLeft className="h-4 w-4 md:h-5 md:w-5" />
-              </button>
-              <button
-                onClick={() => scroll("next")}
-                className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-full border border-brand-zinc-300 dark:border-white/20 text-brand-dark dark:text-white hover:border-brand-blue hover:bg-brand-blue hover:text-white dark:hover:border-brand-yellow dark:hover:bg-brand-yellow dark:hover:text-brand-dark transition-all duration-300 active:scale-95 shadow-sm"
-                aria-label={services.ariaNext}
-              >
-                <ArrowRight className="h-4 w-4 md:h-5 md:w-5" />
-              </button>
-            </div>
+            <RichTextRenderer
+              content={typeof services.description ==="string"
+                ? services.description
+                : Array.isArray(services.description)
+                ? (services.description as string[]).join(" ")
+                : ""}
+              className="text-brand-zinc-500 dark:text-zinc-300 font-medium leading-relaxed text-xs md:text-sm max-w-xl"
+            />
           </div>
 
-          <RichTextRenderer
-            content={typeof services.description ==="string"
-              ? services.description
-              : Array.isArray(services.description)
-              ? (services.description as string[]).join(" ")
-              : ""}
-            className="text-brand-zinc-500 dark:text-zinc-300 font-medium leading-relaxed text-xs md:text-sm max-w-xl"
-          />
+          {/* Arrow navigation */}
+          <div className="flex gap-2 sm:gap-3 select-none shrink-0">
+            <button
+              onClick={() => scroll("prev")}
+              className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-full border border-brand-zinc-300 dark:border-white/20 text-brand-dark dark:text-white hover:border-brand-blue hover:bg-brand-blue hover:text-white dark:hover:border-brand-yellow dark:hover:bg-brand-yellow dark:hover:text-brand-dark transition-all duration-300 active:scale-95 shadow-sm"
+              aria-label={services.ariaPrev}
+            >
+              <ArrowLeft className="h-4 w-4 md:h-5 md:w-5" />
+            </button>
+            <button
+              onClick={() => scroll("next")}
+              className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-full border border-brand-zinc-300 dark:border-white/20 text-brand-dark dark:text-white hover:border-brand-blue hover:bg-brand-blue hover:text-white dark:hover:border-brand-yellow dark:hover:bg-brand-yellow dark:hover:text-brand-dark transition-all duration-300 active:scale-95 shadow-sm"
+              aria-label={services.ariaNext}
+            >
+              <ArrowRight className="h-4 w-4 md:h-5 md:w-5" />
+            </button>
+          </div>
         </motion.div>
 
         {/* Carousel */}

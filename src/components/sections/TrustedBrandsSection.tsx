@@ -109,8 +109,13 @@ export default function TrustedBrandsSection({ data }: { data?: any }) {
   };
 
   return (
-    <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/40 dark:bg-[#0c0b18]/40 section-y">
-      
+    <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/40 dark:bg-[#0c0b18]/40 pt-8 sm:pt-10 lg:pt-12 pb-16 sm:pb-20 lg:pb-24">
+      {/* This section sits directly below the Hero marquee, which already reads as a
+          visual break on its own - the full `section-y` top padding on top of the
+          marquee's own margin left a very large dead gap before "Trusted by" even
+          appeared, so the top padding here is intentionally smaller than the shared
+          rhythm; bottom padding stays at the normal section-y scale. */}
+
       {/* Background Ambience Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-brand-blue/[0.03] dark:bg-brand-yellow/[0.02] blur-[120px] pointer-events-none -z-10" />
 

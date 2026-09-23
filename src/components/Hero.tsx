@@ -274,7 +274,7 @@ export default function Hero({ data, content: overrideContent, breadcrumb }: { d
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.9, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-        className="relative w-full h-16 md:h-20 bg-white dark:bg-[#080710] text-brand-dark dark:text-white flex items-center overflow-hidden z-30 border-t border-brand-zinc-200 dark:border-white/10 mt-14 sm:mt-16 lg:mt-20"
+        className="relative w-full h-16 md:h-20 bg-white dark:bg-[#080710] text-brand-dark dark:text-white flex items-center overflow-hidden z-30 border-t border-brand-zinc-200 dark:border-white/10 mt-8 sm:mt-10 lg:mt-12"
       >
         <div className="flex whitespace-nowrap gap-12 md:gap-16 select-none w-full">
           <div

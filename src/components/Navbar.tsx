@@ -333,7 +333,7 @@ export default function Navbar() {
                           </div>
 
                           {/* Col 2: locations list */}
-                          <div className="custom-scrollbar col-span-3 flex max-h-[420px] flex-col gap-2 overflow-y-auto p-5">
+                          <div className="custom-scrollbar col-span-3 flex max-h-[340px] flex-col gap-2 overflow-y-auto p-5">
                             {locItems.map((item: any, i: number) => {
                               const active = hoveredLocation === i;
                               return (
@@ -383,8 +383,9 @@ export default function Navbar() {
                             )}
                           </div>
 
-                          {/* Col 3: featured map / image */}
-                          <div className="relative col-span-5 min-h-[420px] overflow-hidden bg-brand-blue/[0.05] dark:bg-white/[0.04]">
+                          {/* Col 3: featured map / image - height matches the locations list
+                              column instead of towering over it at 420px */}
+                          <div className="relative col-span-5 min-h-[340px] overflow-hidden bg-brand-blue/[0.05] dark:bg-white/[0.04]">
                             {map.kind === "embed" ? (
                               <iframe
                                 key={map.value}
@@ -424,12 +425,17 @@ export default function Navbar() {
                                 editorial treatment, embed gets left alone to just be an interactive map. */}
                             {map.kind === "image" && (
                               <>
-                                <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/65" />
+                                {/* Was `via-transparent`, which left the middle of the photo fully
+                                    unshaded - fine over a dark patch, but any lighter midtone in the
+                                    photo (sky, siding, concrete) fought the white text on top of it.
+                                    A shallower, unbroken gradient keeps every stop dark enough for
+                                    white text regardless of what's actually in the photo. */}
+                                <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/80 via-black/25 to-black/80" />
                                 <div className="pointer-events-none absolute inset-x-0 top-0 p-6">
                                   <span className="text-[11px] font-mono font-bold uppercase tracking-[0.18em] text-white/80">
                                     Featured Location
                                   </span>
-                                  <h4 className="mt-1 font-heading text-3xl font-black leading-none text-white">
+                                  <h4 className="mt-1 font-heading text-3xl font-black leading-none text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.45)]">
                                     {caption}
                                   </h4>
                                   {activeItem?.subtitle && (

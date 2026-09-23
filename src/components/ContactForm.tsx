@@ -3,7 +3,7 @@
 import CtaButton from "@/components/ui/CtaButton";
 import { withTrailingSlash } from "@/lib/url";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle, Mail, MapPin, Phone, ArrowRight } from "lucide-react";
+import { CheckCircle, Mail, MapPin, Phone, ArrowRight, ChevronDown } from "lucide-react";
 import { useState, FormEvent, MouseEvent } from "react";
 import contentDefaults from "@/data/content.json";
 import { useContent } from "@/hooks/useContent";
@@ -13,7 +13,7 @@ import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
 export default function ContactForm({ data }: { data?: any }) {
   const dynamicContent = useContent();
   const cmsContact = dynamicContent?.contact || {};
-  
+
   // Merge hierarchy: explicit data prop > CMS dynamic context > content.json defaults
   const contact = {
     ...contentDefaults.contact,
@@ -21,10 +21,26 @@ export default function ContactForm({ data }: { data?: any }) {
     ...(data || {})
   };
 
+  // Service options for the "which service" dropdown, sourced from the real published
+  // services catalog (same pattern QuickQuote.tsx uses) so it always matches whatever is
+  // actually configured in Admin > Services instead of a hardcoded list.
+  const serviceOptions = (() => {
+    const anyContent = dynamicContent as any;
+    const servicesList = Array.isArray(anyContent?.services?.services)
+      ? anyContent.services.services
+      : Array.isArray(anyContent?.services)
+      ? anyContent.services
+      : [];
+    return servicesList
+      .filter((s: any) => (s?.status === "published" || s?.status === undefined) && !s?.isTrashed && s?.title)
+      .map((s: any) => ({ value: s.title as string, label: s.title as string }));
+  })();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
+    service: "",
     message: ""
   });
 
@@ -76,6 +92,7 @@ export default function ContactForm({ data }: { data?: any }) {
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
+          service: formData.service,
           message: formData.message,
           type: "Contact Form",
           source: typeof window !=="undefined" ? window.location.pathname : "Contact Form",
@@ -338,6 +355,30 @@ export default function ContactForm({ data }: { data?: any }) {
                     {errors.phone && <span className="text-[10px] font-bold text-red-500 block">{errors.phone}</span>}
                   </div>
 
+                  {/* Service Interested In */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-mono font-black text-brand-zinc-500 dark:text-zinc-400 uppercase tracking-widest block">
+                      {contact.labelService || "Service Interested In"}
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={formData.service}
+                        onChange={(e) => setFormData({ ...formData, service: e.target.value })}
+                        className="w-full appearance-none bg-brand-light dark:bg-white/5 border border-brand-zinc-200 dark:border-white/10 rounded-2xl px-4 py-3.5 pr-10 text-base sm:text-sm font-semibold text-brand-dark dark:text-white focus:ring-4 focus:ring-brand-blue/10 dark:focus:ring-brand-yellow/10 focus:border-brand-blue dark:focus:border-brand-yellow focus:bg-white dark:focus:bg-[#161622] outline-none transition-all cursor-pointer"
+                      >
+                        <option value="" className="text-brand-zinc-400">
+                          {contact.placeholderService || "Select a service (optional)"}
+                        </option>
+                        {serviceOptions.map((opt: { value: string; label: string }) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-brand-zinc-400" />
+                    </div>
+                  </div>
+
                   {/* Message */}
                   <div className="space-y-2">
                     <label className="text-[10px] font-mono font-black text-brand-zinc-500 dark:text-zinc-400 uppercase tracking-widest block">
@@ -391,7 +432,7 @@ export default function ContactForm({ data }: { data?: any }) {
                   <button
                     onClick={() => {
                       setIsSuccess(false);
-                      setFormData({ name: "", email: "", phone: "", message: "" });
+                      setFormData({ name: "", email: "", phone: "", service: "", message: "" });
                       setCaptchaToken("");
                     }}
                     className="inline-flex items-center gap-2 text-xs font-mono font-black uppercase tracking-widest text-brand-blue dark:text-brand-yellow hover:underline cursor-pointer pt-4"
