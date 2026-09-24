@@ -1447,18 +1447,19 @@
 }
 
 /* ── Accent heading highlight (components/ui/AccentHighlight.tsx) ─────────────────────
-   Dry-brush swipe behind the accent phrase: a translucent brand-BLUE highlighter in
-   light mode (multiplied into the page like ink, the blue text stays readable on top)
-   and a brand-YELLOW highlighter in dark mode (the phrase turns white on it - yellow
-   text on a yellow stroke would vanish). Always-dark cards keep yellow text over a
-   blue stroke. */
+   Dry-brush swipe behind the accent phrase, in the same hue family as the phrase itself:
+   a translucent brand-BLUE highlighter behind blue text in light mode (multiplied into
+   the page like ink) and a translucent brand-YELLOW highlighter behind yellow text in
+   dark mode. Kept translucent so the solid-coloured letters always stay brighter than
+   the stroke behind them. Always-dark cards (yellow text on navy) get a stronger blue
+   stroke so it still shows against the card. */
 :root {
   --accent-brush: #3644ff;
   --accent-brush-opacity: 0.48;
 }
 .dark {
   --accent-brush: #e9bd36;
-  --accent-brush-opacity: 0.78;
+  --accent-brush-opacity: 0.3;
 }
 .on-dark-surface,
 .cta-banner-card,
@@ -1476,11 +1477,4 @@
 .cta-banner-card .accent-brush,
 .cta-on-dark .accent-brush {
   mix-blend-mode: normal;
-}
-.dark .accent-text {
-  color: #ffffff !important;
-}
-.dark :is(.on-dark-surface, .cta-banner-card, .cta-on-dark) .accent-text,
-:is(.on-dark-surface, .cta-banner-card, .cta-on-dark) .accent-text {
-  color: #e9bd36 !important;
 }
