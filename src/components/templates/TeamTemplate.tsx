@@ -86,7 +86,7 @@ const TeamPortrait = ({ image, title, badge1, badge2, alignRight = false }: any)
   return (
     <motion.div ref={ref} initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} className={`relative group w-full ${alignRight ? 'lg:ml-auto' : ''}`} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
       <div className="relative z-10 w-full max-w-[500px] mx-auto lg:mx-0">
-        <div className="absolute -inset-2 sm:-inset-3 bg-gradient-to-br from-blue-500/10 via-slate-500/10 to-blue-700/10 rounded-[2rem] sm:rounded-[2.5rem] blur-xl sm:blur-2xl group-hover:from-blue-500/20 group-hover:via-slate-500/20 group-hover:to-blue-700/20 transition-all duration-700" />
+        <div className="absolute -inset-2 sm:-inset-3 bg-gradient-to-br from-blue-500/10 via-slate-500/10 to-blue-700/10 dark:from-brand-yellow/10 dark:via-white/5 dark:to-brand-yellow/10 rounded-[2rem] sm:rounded-[2.5rem] blur-xl sm:blur-2xl group-hover:from-blue-500/20 group-hover:via-slate-500/20 group-hover:to-blue-700/20 dark:group-hover:from-brand-yellow/20 dark:group-hover:via-white/10 dark:group-hover:to-brand-yellow/20 transition-all duration-700" />
         <div className="relative rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-[0_10px_40px_rgb(0,0,0,0.08)] group-hover:shadow-[0_20px_50px_rgb(0,0,0,0.15)] transition-shadow duration-700">
           <motion.img 
             src={imageError ? fallbackImage : image} 
@@ -99,13 +99,13 @@ const TeamPortrait = ({ image, title, badge1, badge2, alignRight = false }: any)
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/10 to-transparent opacity-80" />
         </div>
         <motion.div initial={{ opacity: 0, x: -10 }} animate={inView ? { opacity: 1, x: 0 } : {}} transition={{ delay: 0.3 }} className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20">
-          <div className="bg-white/95 backdrop-blur-md px-3 py-2 sm:px-5 sm:py-3 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white group-hover:-translate-y-1 transition-transform duration-500">
-            <span className="flex items-center gap-1.5 sm:gap-2 text-[9px] min-[350px]:text-[10px] sm:text-xs font-bold text-slate-800 tracking-[0.1em]"><Icons.Sparkle />{badge1}</span>
+          <div className="bg-white/95 dark:bg-[#12121e]/95 backdrop-blur-md px-3 py-2 sm:px-5 sm:py-3 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white dark:border-white/10 group-hover:-translate-y-1 transition-transform duration-500">
+            <span className="flex items-center gap-1.5 sm:gap-2 text-[9px] min-[350px]:text-[10px] sm:text-xs font-bold text-slate-800 dark:text-white tracking-[0.1em]"><Icons.Sparkle />{badge1}</span>
           </div>
         </motion.div>
         <motion.div initial={{ opacity: 0, x: 10 }} animate={inView ? { opacity: 1, x: 0 } : {}} transition={{ delay: 0.4 }} className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 z-20">
-          <div className="bg-slate-900/95 backdrop-blur-md px-3 py-2 sm:px-5 sm:py-3 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-700/50 group-hover:-translate-y-1 transition-transform duration-500">
-            <span className="flex items-center gap-1.5 sm:gap-2 text-[9px] min-[350px]:text-[10px] sm:text-xs font-bold text-blue-400 tracking-[0.1em]"><Icons.Award />{badge2}</span>
+          <div className="bg-slate-900/95 dark:bg-[#080710]/95 backdrop-blur-md px-3 py-2 sm:px-5 sm:py-3 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-700/50 dark:border-white/10 group-hover:-translate-y-1 transition-transform duration-500">
+            <span className="flex items-center gap-1.5 sm:gap-2 text-[9px] min-[350px]:text-[10px] sm:text-xs font-bold text-blue-400 dark:text-brand-yellow tracking-[0.1em]"><Icons.Award />{badge2}</span>
           </div>
         </motion.div>
       </div>
@@ -135,28 +135,28 @@ export default function TeamTemplate({ pageData, params }: { pageData?: any, par
   const headlineParts = rawHeadline.includes('with') ? rawHeadline.split('with') : [rawHeadline, ""];
 
   return (
-    <main className="bg-white">
+    <main className="bg-white dark:bg-[#080710] text-brand-dark dark:text-white transition-colors duration-300">
       {(teamData?.enabled !== false) && (
       <section ref={sectionRef} className="relative overflow-hidden pt-28 md:pt-36 lg:pt-40 pb-16 sm:pb-20 lg:pb-24">
-        <div className="absolute inset-0 pointer-events-none bg-[#f8fafc]">
-          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `linear-gradient(to right, #0f172a 1px, transparent 1px), linear-gradient(to bottom, #0f172a 1px, transparent 1px)`, backgroundSize: '100px 100px' }} />
+        <div className="absolute inset-0 pointer-events-none bg-[#f8fafc] dark:bg-[#0c0b18]">
+          <div className="absolute inset-0 opacity-[0.03] dark:invert" style={{ backgroundImage: `linear-gradient(to right, #0f172a 1px, transparent 1px), linear-gradient(to bottom, #0f172a 1px, transparent 1px)`, backgroundSize: '100px 100px' }} />
         </div>
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[90vw] sm:w-[800px] h-[300px] sm:h-[400px] bg-gradient-to-b from-blue-100/50 to-transparent opacity-80 blur-[80px] pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[90vw] sm:w-[800px] h-[300px] sm:h-[400px] bg-gradient-to-b from-blue-100/50 dark:from-brand-blue/20 to-transparent opacity-80 blur-[80px] pointer-events-none" />
         <div className="max-w-7xl mx-auto px-3 sm:px-6 md:px-8 relative z-30">
           {teamData?.section?.enabled !== false && (
           <div className="max-w-3xl mx-auto text-center mb-16 sm:mb-24 md:mb-32 leadership-reveal relative z-20">
             <PageBreadcrumbs page={pageData} align="center" className="mb-6" />
             <div className="flex items-center justify-center gap-2 sm:gap-3 mb-6">
-              <div className="w-6 sm:w-8 h-[2px] bg-gradient-to-r from-blue-300 to-blue-500" />
-              <span className="text-[10px] sm:text-xs font-semibold tracking-[0.2em] uppercase text-blue-600">{teamData?.section?.badge || "Our Leadership"}</span>
-              <div className="w-6 sm:w-8 h-[2px] bg-gradient-to-r from-blue-500 to-blue-300" />
+              <div className="w-6 sm:w-8 h-[2px] bg-gradient-to-r from-blue-300 to-blue-500 dark:from-brand-yellow/30 dark:to-brand-yellow" />
+              <span className="text-[10px] sm:text-xs font-semibold tracking-[0.2em] uppercase text-brand-blue dark:text-brand-yellow">{teamData?.section?.badge || "Our Leadership"}</span>
+              <div className="w-6 sm:w-8 h-[2px] bg-gradient-to-r from-blue-500 to-blue-300 dark:from-brand-yellow dark:to-brand-yellow/30" />
             </div>
-            <h1 className="text-3xl min-[350px]:text-4xl sm:text-4xl lg:text-[42px] font-light text-slate-900 mb-4 leading-tight">
+            <h1 className="text-3xl min-[350px]:text-4xl sm:text-4xl lg:text-[42px] font-light text-brand-dark dark:text-white mb-4 leading-tight">
               {teamData?.section?.headlinePrefix || teamData?.section?.headlineHighlight || teamData?.section?.headlineSuffix ? (
                 <>
                   {teamData.section.headlinePrefix} <br />
                   {teamData.section.headlineHighlight && (
-                    <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-950">
+                    <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-blue-950 dark:from-brand-yellow dark:to-brand-yellow">
                       {teamData.section.headlineHighlight}
                     </span>
                   )}
@@ -166,14 +166,14 @@ export default function TeamTemplate({ pageData, params }: { pageData?: any, par
                 <>
                   {headlineParts[0]} {headlineParts[1] ? <br /> : null}
                   {headlineParts[1] && (
-                    <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-950">
+                    <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-blue-950 dark:from-brand-yellow dark:to-brand-yellow">
                       {headlineParts[1]}
                     </span>
                   )}
                 </>
               )}
             </h1>
-            <div className="text-slate-500 text-[13px] min-[350px]:text-sm sm:text-lg font-light max-w-2xl mx-auto px-4 leading-relaxed">
+            <div className="text-slate-500 dark:text-zinc-300 text-[13px] min-[350px]:text-sm sm:text-lg font-light max-w-2xl mx-auto px-4 leading-relaxed">
               <RichTextRenderer content={teamData?.section?.description} />
             </div>
           </div>
@@ -184,28 +184,28 @@ export default function TeamTemplate({ pageData, params }: { pageData?: any, par
             return (
               <div key={member.id || index} className="grid lg:grid-cols-12 gap-8 items-center lg:items-start mb-24 sm:mb-32 md:mb-40 relative">
                 <div className={`lg:col-span-7 min-w-0 space-y-8 ${alignRight ? 'order-2 lg:order-1 lg:pr-6' : 'lg:pl-6 order-2 lg:order-2'} leadership-reveal relative z-10 w-full`}>
-                  <div className="bg-white/70 backdrop-blur-xl rounded-[2rem] p-6 sm:p-10 border border-white shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
+                  <div className="bg-white/70 dark:bg-[#12121e]/70 backdrop-blur-xl rounded-[2rem] p-6 sm:p-10 border border-white dark:border-white/10 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
-                      <h3 className="text-2xl sm:text-5xl font-light text-slate-900">
+                      <h3 className="text-2xl sm:text-5xl font-light text-brand-dark dark:text-white">
                         {member.name}
-                        <span className="block text-[10px] sm:text-xs font-mono font-bold text-blue-600 mt-2 tracking-[0.2em] uppercase">{member.role}</span>
+                        <span className="block text-[10px] sm:text-xs font-mono font-bold text-brand-blue dark:text-brand-yellow mt-2 tracking-[0.2em] uppercase">{member.role}</span>
                       </h3>
                       <div className="flex items-center gap-3">
                         {member.linkedin && (
-                          <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-blue-600 hover:border-blue-200 transition-all">
+                          <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 flex items-center justify-center text-slate-400 dark:text-zinc-400 hover:text-brand-blue dark:hover:text-brand-yellow hover:border-blue-200 dark:hover:border-brand-yellow/40 transition-all">
                             <Icons.Linkedin />
                           </a>
                         )}
                         {member.email && (
-                          <a href={`mailto:${member.email}`} className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-blue-600 hover:border-blue-200 transition-all">
+                          <a href={`mailto:${member.email}`} className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 flex items-center justify-center text-slate-400 dark:text-zinc-400 hover:text-brand-blue dark:hover:text-brand-yellow hover:border-blue-200 dark:hover:border-brand-yellow/40 transition-all">
                             <Icons.Mail />
                           </a>
                         )}
                       </div>
                     </div>
                     <div className="mt-8 relative">
-                      <div className="absolute -left-3 sm:-left-6 -top-4 text-blue-100/60 scale-[1.2] sm:scale-[1.8] pointer-events-none"><Icons.Quote /></div>
-                      <div className="space-y-4 text-slate-600 text-[13px] sm:text-lg leading-relaxed relative z-10">
+                      <div className="absolute -left-3 sm:-left-6 -top-4 text-blue-100/60 dark:text-brand-yellow/10 scale-[1.2] sm:scale-[1.8] pointer-events-none"><Icons.Quote /></div>
+                      <div className="space-y-4 text-slate-600 dark:text-zinc-300 text-[13px] sm:text-lg leading-relaxed relative z-10">
                         <RichTextRenderer content={member.description} />
                       </div>
                     </div>

@@ -151,11 +151,11 @@ export default function ThemedSelect({
         onBlur={onBlur}
         className={`${DEFAULT_TRIGGER} ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"} ${className}`}
       >
-        <span className={selected ? "" : "text-brand-zinc-400 dark:text-zinc-500"}>
+        <span className={selected ? "" : "text-brand-zinc-400 dark:text-zinc-400"}>
           {selected ? selected.label : placeholder}
         </span>
         <ChevronDown
-          className={`h-4 w-4 shrink-0 text-brand-zinc-400 dark:text-zinc-500 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          className={`h-4 w-4 shrink-0 text-brand-zinc-400 dark:text-zinc-400 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
         />
       </button>
 

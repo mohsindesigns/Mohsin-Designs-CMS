@@ -42,7 +42,7 @@ const ServiceCard = ({ service, index }: any) => {
 
   // Alternating highlight accent bars for visual diversity
   const borderColors = [
-"border-t-primary",
+"border-t-brand-blue dark:border-t-brand-yellow",
 "border-t-amber-500",
 "border-t-indigo-650"
   ];
@@ -57,20 +57,20 @@ const ServiceCard = ({ service, index }: any) => {
       className="group"
     >
       <Link href={service.buttonHref || `/services/${slug}`} className="block h-full">
-        <div className={`relative h-full bg-white border-t-4 ${activeBorder} border-x border-b border-slate-200 rounded-2xl p-8 shadow-sm hover:shadow-2xl hover:border-slate-300 transition-all duration-300 group-hover:-translate-y-1`}>
+        <div className={`relative h-full bg-white dark:bg-[#12121e] border-t-4 ${activeBorder} border-x border-b border-slate-200 dark:border-x-white/10 dark:border-b-white/10 rounded-2xl p-8 shadow-sm hover:shadow-2xl hover:border-slate-300 dark:hover:border-x-white/20 dark:hover:border-b-white/20 transition-all duration-300 group-hover:-translate-y-1`}>
           <div className="relative z-10 flex flex-col h-full">
             {/* Styled Icon */}
-            <div className="w-14 h-14 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:border-primary transition-colors duration-300">
-              <Icon className="w-6 h-6 text-primary group-hover:text-white transition-colors duration-300" />
+            <div className="w-14 h-14 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-blue group-hover:border-brand-blue dark:group-hover:bg-brand-yellow dark:group-hover:border-brand-yellow transition-colors duration-300">
+              <Icon className="w-6 h-6 text-brand-blue dark:text-brand-yellow group-hover:text-white dark:group-hover:text-[#080710] transition-colors duration-300" />
             </div>
 
             {/* Title */}
-            <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-primary transition-colors">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors">
               {service.title}
             </h3>
 
             {/* Description - High readability charcoal */}
-            <div className="text-slate-600 text-sm leading-relaxed mb-6 flex-grow">
+            <div className="text-slate-600 dark:text-zinc-300 text-sm leading-relaxed mb-6 flex-grow">
               <RichTextRenderer content={service.tagline || service.description} />
             </div>
 
@@ -78,7 +78,7 @@ const ServiceCard = ({ service, index }: any) => {
             {service.features && service.features.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-6">
                 {service.features.slice(0, 3).map((f: any, i: number) => (
-                  <span key={i} className="text-xs bg-slate-50 text-slate-700 border border-slate-200 px-3 py-1 rounded-full font-bold">
+                  <span key={i} className="text-xs bg-slate-50 dark:bg-white/5 text-slate-700 dark:text-zinc-200 border border-slate-200 dark:border-white/10 px-3 py-1 rounded-full font-bold">
                     {typeof f === 'string' ? f : f.text}
                   </span>
                 ))}
@@ -86,7 +86,7 @@ const ServiceCard = ({ service, index }: any) => {
             )}
 
             {/* CTA anchor link */}
-            <div className="flex items-center gap-2 text-primary font-black text-xs uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-brand-blue dark:text-brand-yellow font-black text-xs uppercase tracking-wider">
               {service.buttonText || "Explore Service"} <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform" />
             </div>
           </div>
@@ -223,7 +223,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
   })();
 
   return (
-    <div className="relative bg-slate-50 text-slate-900 min-h-screen font-body overflow-x-hidden">
+    <div className="relative bg-slate-50 dark:bg-[#0c0b18] text-slate-900 dark:text-white min-h-screen font-body overflow-x-hidden">
 
       {/* ================= 1. HERO BANNER - 100% PURE WHITE TEXT OVERRIDES ================= */}
       {(hero?.enabled !== false && content.hero?.enabled !== false) && (
@@ -261,16 +261,16 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
       {/* ================= 2. STATS SECTION ================= */}
       {(stats?.enabled !== false && content.stats?.enabled !== false) && (
       <section className="relative z-20 -mt-10 px-6 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-0 bg-white border border-slate-200 rounded-3xl p-8 md:p-10 shadow-xl text-center">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-0 bg-white dark:bg-[#12121e] border border-slate-200 dark:border-white/10 rounded-3xl p-8 md:p-10 shadow-xl text-center">
           {stats.map((stat: any, idx: number) => (
             <div
               key={idx}
-              className={`space-y-2 py-4 ${idx < stats.length - 1 ? 'md:border-r-2 border-slate-200' : ''}`}
+              className={`space-y-2 py-4 ${idx < stats.length - 1 ? 'md:border-r-2 border-slate-200 dark:border-white/10' : ''}`}
             >
-              <h3 className="text-4xl sm:text-5xl font-heading font-black text-slate-900 leading-none">
+              <h3 className="text-4xl sm:text-5xl font-heading font-black text-slate-900 dark:text-white leading-none">
                 {stat.value}
               </h3>
-              <p className="text-xs sm:text-sm font-black text-slate-600 uppercase tracking-widest">
+              <p className="text-xs sm:text-sm font-black text-slate-600 dark:text-zinc-400 uppercase tracking-widest">
                 {stat.label}
               </p>
             </div>
@@ -294,47 +294,47 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
           {/* Left Side: Local Highlight Details */}
           <div className="lg:col-span-5 min-w-0 space-y-8">
             <div>
-              <span className="text-primary text-xs font-bold tracking-widest uppercase mb-3 block">{mapData.headline}</span>
-              <h2 className="text-3xl sm:text-4xl font-heading font-extrabold text-slate-900 tracking-tight leading-tight">
+              <span className="text-brand-blue dark:text-brand-yellow text-xs font-bold tracking-widest uppercase mb-3 block">{mapData.headline}</span>
+              <h2 className="text-3xl sm:text-4xl font-heading font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
                 {mapData.title}
               </h2>
-              <div className="w-12 h-0.5 bg-primary/60 mt-4 rounded-full" />
+              <div className="w-12 h-0.5 bg-brand-blue/60 dark:bg-brand-yellow/60 mt-4 rounded-full" />
             </div>
 
-            <div className="text-slate-700 text-sm sm:text-base leading-relaxed font-semibold">
+            <div className="text-slate-700 dark:text-zinc-300 text-sm sm:text-base leading-relaxed font-semibold">
               <RichTextRenderer content={mapData.description} />
             </div>
 
             {/* List Widgets with custom borders */}
             <div className="space-y-4">
-              <div className="flex items-start gap-4 p-4.5 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow transition-shadow">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+              <div className="flex items-start gap-4 p-4.5 bg-white dark:bg-[#12121e] border border-slate-200 dark:border-white/10 rounded-2xl shadow-sm hover:shadow transition-shadow">
+                <div className="w-10 h-10 rounded-xl bg-brand-blue/10 dark:bg-brand-yellow/10 text-brand-blue dark:text-brand-yellow flex items-center justify-center flex-shrink-0">
                   <MapPin className="w-5 h-5 animate-pulse" />
                 </div>
                 <div>
-                  <h4 className="font-extrabold text-slate-900 text-sm">{mapData.bullet1Title}</h4>
-                  <p className="text-xs text-slate-600 font-bold mt-0.5">{mapData.bullet1Text}</p>
+                  <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">{mapData.bullet1Title}</h4>
+                  <p className="text-xs text-slate-600 dark:text-zinc-400 font-bold mt-0.5">{mapData.bullet1Text}</p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-4 p-4.5 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow transition-shadow">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+              <div className="flex items-start gap-4 p-4.5 bg-white dark:bg-[#12121e] border border-slate-200 dark:border-white/10 rounded-2xl shadow-sm hover:shadow transition-shadow">
+                <div className="w-10 h-10 rounded-xl bg-brand-blue/10 dark:bg-brand-yellow/10 text-brand-blue dark:text-brand-yellow flex items-center justify-center flex-shrink-0">
                   <Calendar className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-extrabold text-slate-900 text-sm">{mapData.bullet2Title}</h4>
-                  <p className="text-xs text-slate-600 font-bold mt-0.5">{mapData.bullet2Text}</p>
+                  <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">{mapData.bullet2Title}</h4>
+                  <p className="text-xs text-slate-600 dark:text-zinc-400 font-bold mt-0.5">{mapData.bullet2Text}</p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-4 p-4.5 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow transition-shadow">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+              <div className="flex items-start gap-4 p-4.5 bg-white dark:bg-[#12121e] border border-slate-200 dark:border-white/10 rounded-2xl shadow-sm hover:shadow transition-shadow">
+                <div className="w-10 h-10 rounded-xl bg-brand-blue/10 dark:bg-brand-yellow/10 text-brand-blue dark:text-brand-yellow flex items-center justify-center flex-shrink-0">
                   <Phone className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-extrabold text-slate-900 text-sm">{mapData.bullet3Title}</h4>
-                  <p className="text-xs text-slate-600 font-bold mt-0.5">
-                    Call <a href={`tel:${mapData.bullet3Text.replace(/[^0-9]/g, '')}`} className="font-black text-primary hover:underline">{mapData.bullet3Text}</a> to request dispatch.
+                  <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">{mapData.bullet3Title}</h4>
+                  <p className="text-xs text-slate-600 dark:text-zinc-400 font-bold mt-0.5">
+                    Call <a href={`tel:${mapData.bullet3Text.replace(/[^0-9]/g, '')}`} className="font-black text-brand-blue dark:text-brand-yellow hover:underline">{mapData.bullet3Text}</a> to request dispatch.
                   </p>
                 </div>
               </div>
@@ -342,10 +342,10 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
           </div>
 
           {/* Right Side: macOS styled browser mockup frame around map */}
-          <div className="lg:col-span-7 min-w-0 w-full bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+          <div className="lg:col-span-7 min-w-0 w-full bg-white dark:bg-[#12121e] border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
 
             {/* macOS Browser Header */}
-            <div className="bg-slate-100 border-b border-slate-200 px-5 py-3.5 flex items-center gap-4">
+            <div className="bg-slate-100 dark:bg-white/5 border-b border-slate-200 dark:border-white/10 px-5 py-3.5 flex items-center gap-4">
               {/* Window Controls Dots */}
               <div className="flex gap-2">
                 <span className="w-3 h-3 rounded-full bg-[#FF5F56] inline-block" />
@@ -353,8 +353,8 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
                 <span className="w-3 h-3 rounded-full bg-[#27C93F] inline-block" />
               </div>
               {/* Fake URL Bar */}
-              <div className="bg-white border border-slate-200/80 rounded-lg text-[11px] text-slate-500 font-semibold px-4 py-1 flex-1 flex items-center gap-2 select-none shadow-inner">
-                <Globe className="w-3.5 h-3.5 text-slate-400" />
+              <div className="bg-white dark:bg-[#080710] border border-slate-200/80 dark:border-white/10 rounded-lg text-[11px] text-slate-500 dark:text-zinc-400 font-semibold px-4 py-1 flex-1 flex items-center gap-2 select-none shadow-inner">
+                <Globe className="w-3.5 h-3.5 text-slate-400 dark:text-zinc-500" />
                 <span className="truncate">{pageUrlDisplay}</span>
               </div>
             </div>
@@ -377,17 +377,17 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
       {/* ================= PROCESS SECTION - DYNAMIC TIMELINE CARDS ================= */}
       {(processSection?.enabled !== false && content.process?.enabled !== false) && (
-      <section className="bg-white border-y border-slate-200/60 section-y">
+      <section className="bg-white dark:bg-[#080710] border-y border-slate-200/60 dark:border-white/10 section-y">
         <div className="max-w-7xl mx-auto px-6">
 
           <div className="text-center mb-16">
             {processSection.headline && (
-              <span className="text-primary text-xs font-bold tracking-widest uppercase mb-3 block">{processSection.headline}</span>
+              <span className="text-brand-blue dark:text-brand-yellow text-xs font-bold tracking-widest uppercase mb-3 block">{processSection.headline}</span>
             )}
-            <h2 className="text-3xl sm:text-5xl font-heading font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-3xl sm:text-5xl font-heading font-extrabold text-slate-900 dark:text-white tracking-tight">
               {processSection.title}
             </h2>
-            <div className="w-16 h-0.5 bg-primary/60 mx-auto mt-5 rounded-full" />
+            <div className="w-16 h-0.5 bg-brand-blue/60 dark:bg-brand-yellow/60 mx-auto mt-5 rounded-full" />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
@@ -397,30 +397,30 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
               // Alternating dynamic colors for watermark numbers
               const watermarkColors = [
-"group-hover:text-primary/10",
-"group-hover:text-amber-500/10",
-"group-hover:text-indigo-500/10",
-"group-hover:text-emerald-500/10"
+"group-hover:text-brand-blue/10 dark:group-hover:text-brand-yellow/10",
+"group-hover:text-amber-500/10 dark:group-hover:text-amber-400/10",
+"group-hover:text-indigo-500/10 dark:group-hover:text-indigo-400/10",
+"group-hover:text-emerald-500/10 dark:group-hover:text-emerald-400/10"
               ];
               const activeColor = watermarkColors[pIdx % watermarkColors.length];
 
               return (
                 <div
                   key={pIdx}
-                  className="bg-slate-50 border border-slate-200 rounded-3xl p-8 relative overflow-hidden group hover:border-primary/40 hover:shadow-xl transition-all duration-300"
+                  className="bg-slate-50 dark:bg-[#12121e] border border-slate-200 dark:border-white/10 rounded-3xl p-8 relative overflow-hidden group hover:border-brand-blue/40 dark:hover:border-brand-yellow/40 hover:shadow-xl transition-all duration-300"
                 >
                   {/* Distinct Color Watermark Numbers */}
-                  <span className={`text-6xl font-black text-slate-200/50 ${activeColor} transition-colors absolute -right-2 -bottom-2 z-0 select-none`}>
+                  <span className={`text-6xl font-black text-slate-200/50 dark:text-white/[0.05] ${activeColor} transition-colors absolute -right-2 -bottom-2 z-0 select-none`}>
                     {String(pIdx + 1).padStart(2, '0')}
                   </span>
                   <div className="relative z-10 space-y-4">
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
+                    <div className="w-12 h-12 rounded-xl bg-brand-blue/10 dark:bg-brand-yellow/10 text-brand-blue dark:text-brand-yellow flex items-center justify-center mb-6">
                       <StepIcon className="w-6 h-6" />
                     </div>
-                    <h3 className="font-heading font-bold text-xl text-slate-900">
+                    <h3 className="font-heading font-bold text-xl text-slate-900 dark:text-white">
                       {step.title}
                     </h3>
-                    <div className="text-slate-600 text-sm leading-relaxed font-semibold">
+                    <div className="text-slate-600 dark:text-zinc-300 text-sm leading-relaxed font-semibold">
                       <RichTextRenderer content={step.description} />
                     </div>
                   </div>
@@ -435,15 +435,15 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
       {/* ================= PREMIUM MATERIALS WE INSTALL (Fully Dynamic) ================= */}
       {(materialsData?.enabled !== false && content.materials?.enabled !== false) && (
-      <section className="bg-slate-50 section-y">
+      <section className="bg-slate-50 dark:bg-[#0c0b18] section-y">
         <div className="max-w-7xl mx-auto px-6">
 
           <div className="text-center mb-16">
-            <span className="text-primary text-xs font-bold tracking-widest uppercase mb-3 block">{materialsData.headline}</span>
-            <h2 className="text-3xl sm:text-5xl font-heading font-extrabold text-slate-900 tracking-tight">
+            <span className="text-brand-blue dark:text-brand-yellow text-xs font-bold tracking-widest uppercase mb-3 block">{materialsData.headline}</span>
+            <h2 className="text-3xl sm:text-5xl font-heading font-extrabold text-slate-900 dark:text-white tracking-tight">
               {materialsData.title}
             </h2>
-            <div className="w-16 h-0.5 bg-primary/60 mx-auto mt-5 rounded-full" />
+            <div className="w-16 h-0.5 bg-brand-blue/60 dark:bg-brand-yellow/60 mx-auto mt-5 rounded-full" />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -454,45 +454,45 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
               const MaterialIcon = iconMap[item.icon] || materialIcons[mIdx % materialIcons.length];
 
               const cardClasses = [
-"border-t-amber-500 hover:border-amber-300 hover:shadow-2xl",
-"border-t-indigo-600 hover:border-indigo-300 hover:shadow-2xl",
-"border-t-emerald-600 hover:border-emerald-300 hover:shadow-2xl",
-"border-t-sky-500 hover:border-sky-300 hover:shadow-2xl"
+"border-t-amber-500 hover:border-amber-300 dark:hover:border-x-amber-400/40 dark:hover:border-b-amber-400/40 hover:shadow-2xl",
+"border-t-indigo-600 hover:border-indigo-300 dark:hover:border-x-indigo-400/40 dark:hover:border-b-indigo-400/40 hover:shadow-2xl",
+"border-t-emerald-600 hover:border-emerald-300 dark:hover:border-x-emerald-400/40 dark:hover:border-b-emerald-400/40 hover:shadow-2xl",
+"border-t-sky-500 hover:border-sky-300 dark:hover:border-x-sky-400/40 dark:hover:border-b-sky-400/40 hover:shadow-2xl"
               ];
               const activeCardClass = cardClasses[mIdx % cardClasses.length];
 
               const iconClasses = [
-"bg-amber-50 text-amber-600 border border-amber-100 group-hover:bg-amber-500 group-hover:text-white",
-"bg-indigo-50 text-indigo-650 border border-indigo-105 group-hover:bg-indigo-600 group-hover:text-white",
-"bg-emerald-50 text-emerald-600 border border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white",
-"bg-sky-50 text-sky-600 border border-sky-100 group-hover:bg-sky-500 group-hover:text-white"
+"bg-amber-50 text-amber-600 border border-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20 group-hover:bg-amber-500 group-hover:text-white",
+"bg-indigo-50 text-indigo-650 border border-indigo-105 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/20 group-hover:bg-indigo-600 group-hover:text-white",
+"bg-emerald-50 text-emerald-600 border border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20 group-hover:bg-emerald-600 group-hover:text-white",
+"bg-sky-50 text-sky-600 border border-sky-100 dark:bg-sky-500/10 dark:text-sky-400 dark:border-sky-500/20 group-hover:bg-sky-500 group-hover:text-white"
               ];
               const activeIconClass = iconClasses[mIdx % iconClasses.length];
 
               const textColors = [
-"group-hover:text-amber-600",
-"group-hover:text-indigo-600",
-"group-hover:text-emerald-600",
-"group-hover:text-sky-550"
+"group-hover:text-amber-600 dark:group-hover:text-amber-400",
+"group-hover:text-indigo-600 dark:group-hover:text-indigo-400",
+"group-hover:text-emerald-600 dark:group-hover:text-emerald-400",
+"group-hover:text-sky-550 dark:group-hover:text-sky-400"
               ];
               const activeTextColor = textColors[mIdx % textColors.length];
 
               return (
-                <div key={mIdx} className={`bg-white border-t-4 ${activeCardClass} border-x border-b border-slate-200 rounded-3xl p-8 shadow-sm transition-all duration-355 flex flex-col h-full group`}>
+                <div key={mIdx} className={`bg-white dark:bg-[#12121e] border-t-4 ${activeCardClass} border-x border-b border-slate-200 dark:border-x-white/10 dark:border-b-white/10 rounded-3xl p-8 shadow-sm transition-all duration-355 flex flex-col h-full group`}>
                   <div className={`w-12 h-12 rounded-2xl ${activeIconClass} flex items-center justify-center mb-6 transition-colors duration-300`}>
                     <MaterialIcon className="w-6 h-6" />
                   </div>
-                  <h3 className={`font-heading font-bold text-xl text-slate-900 mb-3 ${activeTextColor} transition-colors`}>
+                  <h3 className={`font-heading font-bold text-xl text-slate-900 dark:text-white mb-3 ${activeTextColor} transition-colors`}>
                     {item.title}
                   </h3>
-                  <div className="text-slate-600 text-xs sm:text-sm leading-relaxed font-semibold flex-grow">
+                  <div className="text-slate-600 dark:text-zinc-300 text-xs sm:text-sm leading-relaxed font-semibold flex-grow">
                     <RichTextRenderer content={item.description} />
                   </div>
                   {item.buttonLabel && item.buttonHref && (
-                    <div className="mt-6 pt-4 border-t border-slate-100">
+                    <div className="mt-6 pt-4 border-t border-slate-100 dark:border-white/10">
                       <Link
                         href={item.buttonHref}
-                        className="inline-flex items-center gap-2 text-primary font-black text-xs uppercase tracking-wider hover:gap-3 transition-all duration-200"
+                        className="inline-flex items-center gap-2 text-brand-blue dark:text-brand-yellow font-black text-xs uppercase tracking-wider hover:gap-3 transition-all duration-200"
                       >
                         {item.buttonLabel}
                         <ArrowRight className="w-3.5 h-3.5" />
@@ -513,11 +513,11 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
       {(regionsSection?.enabled !== false && content.regions?.enabled !== false) && (
       <section className="px-6 max-w-7xl mx-auto section-y">
         <div className="text-center mb-12">
-          <h2 className="text-2xl sm:text-4xl font-heading font-bold text-slate-900 mb-4">
+          <h2 className="text-2xl sm:text-4xl font-heading font-bold text-slate-900 dark:text-white mb-4">
             {regionsSection.title}
           </h2>
           {regionsSection.description && (
-            <div className="text-slate-600 text-sm sm:text-base max-w-lg mx-auto font-semibold">
+            <div className="text-slate-600 dark:text-zinc-300 text-sm sm:text-base max-w-lg mx-auto font-semibold">
               <RichTextRenderer content={regionsSection.description} />
             </div>
           )}
@@ -534,11 +534,11 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
       transition={{ delay: idx * 0.03 }}
       className="group"
     >
-      <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white px-5 py-4 text-center transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg">
+      <div className="relative overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#12121e] px-5 py-4 text-center transition-all duration-300 hover:-translate-y-1 hover:border-brand-blue/30 dark:hover:border-brand-yellow/30 hover:shadow-lg">
         
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary/80 to-primary opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-blue/80 to-brand-blue dark:from-brand-yellow/80 dark:to-brand-yellow opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         
-        <h3 className="font-heading font-bold text-slate-900 text-base tracking-tight">
+        <h3 className="font-heading font-bold text-slate-900 dark:text-white text-base tracking-tight">
           {region.name}
         </h3>
 
@@ -551,14 +551,14 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
       {/* ================= 3. ACTIVE SERVICE CARDS ================= */}
       {(servicesSection?.enabled !== false && content.services?.enabled !== false) && (
-      <section className="bg-white border-y border-slate-200/60 section-y">
+      <section className="bg-white dark:bg-[#080710] border-y border-slate-200/60 dark:border-white/10 section-y">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <span className="text-primary text-xs font-bold tracking-widest uppercase mb-3 block">{servicesSection.headline}</span>
-            <h2 className="text-3xl sm:text-5xl font-heading font-extrabold text-slate-900 tracking-tight">
+            <span className="text-brand-blue dark:text-brand-yellow text-xs font-bold tracking-widest uppercase mb-3 block">{servicesSection.headline}</span>
+            <h2 className="text-3xl sm:text-5xl font-heading font-extrabold text-slate-900 dark:text-white tracking-tight">
               {servicesSection.title}
             </h2>
-            <div className="w-16 h-0.5 bg-primary/60 mx-auto mt-5 rounded-full" />
+            <div className="w-16 h-0.5 bg-brand-blue/60 dark:bg-brand-yellow/60 mx-auto mt-5 rounded-full" />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -572,14 +572,14 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
       {/* ================= WHY CHOOSE US - (Middle Card Highlighted in Premium Dark-Slate) (Fully Dynamic) ================= */}
       {(whyChooseData?.enabled !== false && content.whyChooseUs?.enabled !== false) && (
-      <section className="bg-slate-50 section-y">
+      <section className="bg-slate-50 dark:bg-[#0c0b18] section-y">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <span className="text-primary text-xs font-bold tracking-widest uppercase mb-3 block">{whyChooseData.headline}</span>
-            <h2 className="text-3xl sm:text-5xl font-heading font-extrabold text-slate-900 tracking-tight">
+            <span className="text-brand-blue dark:text-brand-yellow text-xs font-bold tracking-widest uppercase mb-3 block">{whyChooseData.headline}</span>
+            <h2 className="text-3xl sm:text-5xl font-heading font-extrabold text-slate-900 dark:text-white tracking-tight">
               {whyChooseData.title}
             </h2>
-            <div className="w-16 h-0.5 bg-primary/60 mx-auto mt-5 rounded-full" />
+            <div className="w-16 h-0.5 bg-brand-blue/60 dark:bg-brand-yellow/60 mx-auto mt-5 rounded-full" />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
@@ -609,12 +609,12 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
               // Standard white card
               return (
-                <div key={wIdx} className="flex flex-col items-center text-center p-8 bg-white border border-slate-200 rounded-3xl shadow-sm relative group hover:shadow-xl transition-all duration-300">
-                  <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-6 shadow-inner group-hover:scale-105 transition-transform">
+                <div key={wIdx} className="flex flex-col items-center text-center p-8 bg-white dark:bg-[#12121e] border border-slate-200 dark:border-white/10 rounded-3xl shadow-sm relative group hover:shadow-xl transition-all duration-300">
+                  <div className="w-14 h-14 rounded-2xl bg-brand-blue/10 dark:bg-brand-yellow/10 text-brand-blue dark:text-brand-yellow flex items-center justify-center mb-6 shadow-inner group-hover:scale-105 transition-transform">
                     <ChooseIcon className="w-7 h-7" />
                   </div>
-                  <h3 className="font-heading font-bold text-xl text-slate-900 mb-3">{item.title}</h3>
-                  <div className="text-sm text-slate-600 leading-relaxed font-semibold">
+                  <h3 className="font-heading font-bold text-xl text-slate-900 dark:text-white mb-3">{item.title}</h3>
+                  <div className="text-sm text-slate-600 dark:text-zinc-300 leading-relaxed font-semibold">
                     <RichTextRenderer content={item.description} />
                   </div>
                 </div>
@@ -628,21 +628,21 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
       {/* ================= DYNAMIC OVERVIEW SECTION (Heading left, Image right) ================= */}
       {(overviewData?.enabled !== false && content.overview?.enabled !== false) && (
-      <section className="bg-white border-y border-slate-200/60 section-y">
+      <section className="bg-white dark:bg-[#080710] border-y border-slate-200/60 dark:border-white/10 section-y">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
 
             {/* Left Side: Overview Details & CTA */}
             <div className="lg:col-span-6 min-w-0 space-y-6">
               {overviewData.headline && (
-                <span className="text-primary text-xs font-bold tracking-widest uppercase block">{overviewData.headline}</span>
+                <span className="text-brand-blue dark:text-brand-yellow text-xs font-bold tracking-widest uppercase block">{overviewData.headline}</span>
               )}
-              <h2 className="text-3xl sm:text-5xl font-heading font-extrabold text-slate-900 tracking-tight leading-tight">
+              <h2 className="text-3xl sm:text-5xl font-heading font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
                 {overviewData.title}
               </h2>
-              <div className="w-16 h-0.5 bg-primary/60 rounded-full" />
+              <div className="w-16 h-0.5 bg-brand-blue/60 dark:bg-brand-yellow/60 rounded-full" />
 
-              <div className="text-slate-700 text-sm sm:text-base leading-relaxed font-semibold [&_p]:!text-slate-700 [&_p]:!font-semibold [&_span]:!text-slate-700 [&_p]:!leading-relaxed">
+              <div className="text-slate-700 dark:text-zinc-300 text-sm sm:text-base leading-relaxed font-semibold [&_p]:!text-slate-700 dark:[&_p]:!text-zinc-300 [&_p]:!font-semibold [&_span]:!text-slate-700 dark:[&_span]:!text-zinc-300 [&_p]:!leading-relaxed">
                 <RichTextRenderer content={overviewData.description} />
               </div>
 
@@ -655,7 +655,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
             {/* Right Side: Showcase Illustration Image */}
             <div className="lg:col-span-6 min-w-0">
-              <div className="relative rounded-[2rem] overflow-hidden shadow-2xl border border-slate-200/80 group">
+              <div className="relative rounded-[2rem] overflow-hidden shadow-2xl border border-slate-200/80 dark:border-white/10 group">
                 <img
                   src={overviewData.image || "/images/service-area-overview.jpg"}
                   alt={overviewData.title}
@@ -672,7 +672,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
       {/* ================= FAQ SECTION ================= */}
       {(content.faqs?.enabled !== false && content.faqSection?.enabled !== false) && (
-      <section className="bg-white">
+      <section className="bg-white dark:bg-[#080710]">
         <PageInlineFaqs 
           faqs={(content.faqs && content.faqs.length > 0) ? content.faqs : faq.items} 
           faqSchemaMarkup={content.faqSchemaMarkup} 

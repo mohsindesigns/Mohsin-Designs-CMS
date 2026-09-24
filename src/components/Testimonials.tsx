@@ -305,7 +305,7 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
                 <span className="block text-[11px] font-black text-slate-900 dark:text-white uppercase tracking-wider leading-none">
                   {scorecardTitle}
                 </span>
-                <span className="block text-[9px] font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-widest">
+                <span className="block text-[9px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest">
                   {scorecardSub}
                 </span>
               </div>
@@ -348,7 +348,7 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
                     </div>
                     <div className="min-w-0 flex-1">
                       <span className="block text-[11px] font-black text-slate-900 dark:text-white leading-none truncate">{item.name}</span>
-                      <span className="block text-[9px] font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-widest mt-1 truncate">
+                      <span className="block text-[9px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest mt-1 truncate">
                         {item.role} <span className="opacity-40 mx-0.5">·</span> <span className="text-primary dark:text-yellow-400 font-black">{item.company}</span>
                       </span>
                     </div>
@@ -387,7 +387,7 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
                     </div>
                     <div className="min-w-0 flex-1">
                       <span className="block text-[11px] font-black text-slate-900 dark:text-white leading-none truncate">{item.name}</span>
-                      <span className="block text-[9px] font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-widest mt-1 truncate">
+                      <span className="block text-[9px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest mt-1 truncate">
                         {item.role} <span className="opacity-40 mx-0.5">·</span> <span className="text-primary dark:text-yellow-400 font-black">{item.company}</span>
                       </span>
                     </div>
@@ -426,7 +426,7 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
                     </div>
                     <div className="min-w-0 flex-1">
                       <span className="block text-[11px] font-black text-slate-900 dark:text-white leading-none truncate">{item.name}</span>
-                      <span className="block text-[9px] font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-widest mt-1 truncate">
+                      <span className="block text-[9px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest mt-1 truncate">
                         {item.role} <span className="opacity-40 mx-0.5">·</span> <span className="text-primary dark:text-yellow-400 font-black">{item.company}</span>
                       </span>
                     </div>

@@ -348,7 +348,7 @@ export default function BlogSection({
                 <div className="space-y-4">
                   {/* Date and Read Time Meta */}
                   <div className="flex items-center justify-between">
-                    <span className="block text-[10px] font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-wider">
+                    <span className="block text-[10px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider">
                       {posts[0].date}{dateSeparator}{posts[0].readTime}
                     </span>
                   </div>
@@ -408,7 +408,7 @@ export default function BlogSection({
                   <div className="flex-1 min-w-0 space-y-1.5 w-full">
                     {/* Meta date row */}
                     <div className="flex items-center justify-between gap-2">
-                      <span className="block text-[9px] font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-wider">
+                      <span className="block text-[9px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider">
                         {post.date}
                       </span>
                     </div>
@@ -419,7 +419,7 @@ export default function BlogSection({
                     </h3>
 
                     {/* Read info */}
-                    <div className="flex items-center gap-1 text-[9px] font-bold text-slate-400 group-hover:text-primary dark:group-hover:text-yellow-400 transition-colors duration-300 pt-0.5">
+                    <div className="flex items-center gap-1 text-[9px] font-bold text-slate-500 group-hover:text-primary dark:group-hover:text-yellow-400 transition-colors duration-300 pt-0.5">
                       <span>{post.readTime}</span>
                       <ArrowUpRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                     </div>

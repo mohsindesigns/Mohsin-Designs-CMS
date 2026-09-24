@@ -664,7 +664,7 @@
   }
 
   .dark .text-brand-zinc-400 {
-    color: #6B7280;
+    color: #8B8F9B; /* was #6B7280 - only ~3:1 on the dark card backgrounds */
   }
 
   .dark .bg-slate-50\/90 {

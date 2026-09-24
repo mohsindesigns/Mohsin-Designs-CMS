@@ -109,23 +109,23 @@ ${message}
   };
 
   return (
-    <main className="bg-white min-h-screen font-body w-full overflow-hidden">
+    <main className="bg-white dark:bg-[#080710] min-h-screen font-body w-full overflow-hidden">
       {(careersData?.enabled !== false) && (
       <section className="relative overflow-hidden w-full pt-28 md:pt-36 lg:pt-40 pb-16 sm:pb-20 lg:pb-24">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: `linear-gradient(to right, #2563eb 1px, transparent 1px), linear-gradient(to bottom, #2563eb 1px, transparent 1px)`, backgroundSize: '80px 80px' }} />
+          <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.04]" style={{ backgroundImage: `linear-gradient(to right, #2563eb 1px, transparent 1px), linear-gradient(to bottom, #2563eb 1px, transparent 1px)`, backgroundSize: '80px 80px' }} />
         </div>
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-blue-50 to-transparent opacity-80 blur-[100px]" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-blue-50 dark:from-brand-blue/20 to-transparent opacity-80 blur-[100px]" />
         <div className="max-w-5xl mx-auto px-4 relative z-30">
           {careersData?.section?.enabled !== false && (
           <div className="max-w-3xl mx-auto text-center mb-12 md:mb-24">
             <PageBreadcrumbs page={pageData} align="center" className="mb-6" />
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-center gap-3 mb-6">
-              <div className="w-8 h-[2px] bg-gradient-to-r from-blue-300 to-blue-500" />
-              <span className="text-xs font-medium tracking-[0.2em] uppercase text-blue-600">{careersData?.section?.badge || "Join Mohsin Designs"}</span>
-              <div className="w-8 h-[2px] bg-gradient-to-r from-blue-500 to-blue-300" />
+              <div className="w-8 h-[2px] bg-gradient-to-r from-blue-300 to-blue-500 dark:from-brand-yellow/40 dark:to-brand-yellow" />
+              <span className="text-xs font-medium tracking-[0.2em] uppercase text-brand-blue dark:text-brand-yellow">{careersData?.section?.badge || "Join Mohsin Designs"}</span>
+              <div className="w-8 h-[2px] bg-gradient-to-r from-blue-500 to-blue-300 dark:from-brand-yellow dark:to-brand-yellow/40" />
             </motion.div>
-            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-3xl sm:text-4xl md:text-[40px] lg:text-[44px] font-light text-slate-900 mb-6 leading-tight">
+            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-3xl sm:text-4xl md:text-[40px] lg:text-[44px] font-light text-brand-dark dark:text-white mb-6 leading-tight">
               {(() => {
                 const rawHeadline = careersData?.section?.headline || "Build the Future with Us";
                 const parts = rawHeadline.includes('with') ? rawHeadline.split('with') : [rawHeadline, ""];
@@ -133,7 +133,7 @@ ${message}
                   <>
                     {parts[0]} {parts[1] ? <br /> : null}
                     {parts[1] && (
-                      <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-900">
+                      <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-blue-900 dark:from-brand-yellow dark:to-amber-400">
                         {parts[1]}
                       </span>
                     )}
@@ -141,7 +141,7 @@ ${message}
                 );
               })()}
             </motion.h1>
-            <div className="text-slate-600 text-lg md:text-xl font-light max-w-2xl mx-auto px-4">
+            <div className="text-brand-zinc-600 dark:text-zinc-300 text-lg md:text-xl font-light max-w-2xl mx-auto px-4">
               <RichTextRenderer content={careersData?.section?.description} />
             </div>
           </div>
@@ -149,12 +149,12 @@ ${message}
 
           {(careersData?.formEnabled !== false && careersData?.form?.enabled !== false) && (
           <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}>
-            <div className="relative bg-white/80 backdrop-blur-xl rounded-[2rem] shadow-2xl overflow-hidden border border-white">
+            <div className="relative bg-white/80 dark:bg-[#12121e] backdrop-blur-xl rounded-[2rem] shadow-2xl dark:shadow-[0_20px_60px_rgba(0,0,0,0.4)] overflow-hidden border border-white dark:border-white/10">
               {isSuccess ? (
                 <div className="p-8 md:p-16 text-center flex flex-col items-center justify-center min-h-[400px]">
-                  <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6"><CheckCircle className="w-10 h-10 text-green-600" /></div>
-                  <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4">{careersData?.success?.title}</h2>
-                  <div className="text-lg text-slate-600 max-w-md mx-auto">
+                  <div className="w-20 h-20 bg-green-100 dark:bg-emerald-500/15 rounded-full flex items-center justify-center mb-6"><CheckCircle className="w-10 h-10 text-green-600 dark:text-emerald-400" /></div>
+                  <h2 className="text-2xl md:text-3xl font-bold text-brand-dark dark:text-white mb-4">{careersData?.success?.title}</h2>
+                  <div className="text-lg text-brand-zinc-600 dark:text-zinc-300 max-w-md mx-auto">
                     <RichTextRenderer content={careersData?.success?.description} />
                   </div>
                 </div>
@@ -162,26 +162,26 @@ ${message}
                 <form onSubmit={handleSubmit} className="p-8 md:p-16 space-y-10">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
                     <div className="space-y-3">
-                      <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2"><User className="w-4 h-4 text-blue-500" />{careersData?.labels?.name}</label>
-                      <input type="text" name="name" required className="w-full px-5 py-4 bg-slate-50/50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
+                      <label className="text-xs font-bold tracking-widest uppercase text-brand-zinc-500 dark:text-zinc-400 flex items-center gap-2"><User className="w-4 h-4 text-brand-blue dark:text-brand-yellow" />{careersData?.labels?.name}</label>
+                      <input type="text" name="name" required className="w-full px-5 py-4 bg-slate-50/50 dark:bg-white/5 border dark:border-white/10 rounded-xl text-brand-dark dark:text-white dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-brand-blue dark:focus:ring-brand-yellow outline-none transition-all" />
                     </div>
                     <div className="space-y-3">
-                      <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2"><Mail className="w-4 h-4 text-blue-500" />{careersData?.labels?.email}</label>
-                      <input type="email" name="email" required className="w-full px-5 py-4 bg-slate-50/50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
+                      <label className="text-xs font-bold tracking-widest uppercase text-brand-zinc-500 dark:text-zinc-400 flex items-center gap-2"><Mail className="w-4 h-4 text-brand-blue dark:text-brand-yellow" />{careersData?.labels?.email}</label>
+                      <input type="email" name="email" required className="w-full px-5 py-4 bg-slate-50/50 dark:bg-white/5 border dark:border-white/10 rounded-xl text-brand-dark dark:text-white dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-brand-blue dark:focus:ring-brand-yellow outline-none transition-all" />
                     </div>
                     <div className="space-y-3">
-                      <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2"><Phone className="w-4 h-4 text-blue-500" />{careersData?.labels?.phone || "Phone Number"}</label>
-                      <input type="tel" name="phone" required className="w-full px-5 py-4 bg-slate-50/50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
+                      <label className="text-xs font-bold tracking-widest uppercase text-brand-zinc-500 dark:text-zinc-400 flex items-center gap-2"><Phone className="w-4 h-4 text-brand-blue dark:text-brand-yellow" />{careersData?.labels?.phone || "Phone Number"}</label>
+                      <input type="tel" name="phone" required className="w-full px-5 py-4 bg-slate-50/50 dark:bg-white/5 border dark:border-white/10 rounded-xl text-brand-dark dark:text-white dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-brand-blue dark:focus:ring-brand-yellow outline-none transition-all" />
                     </div>
                   </div>
 
                   {careersData?.rolesEnabled !== false && (
                   <div className="space-y-3">
-                    <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2"><Briefcase className="w-4 h-4 text-blue-500" />{careersData?.labels?.role}</label>
+                    <label className="text-xs font-bold tracking-widest uppercase text-brand-zinc-500 dark:text-zinc-400 flex items-center gap-2"><Briefcase className="w-4 h-4 text-brand-blue dark:text-brand-yellow" />{careersData?.labels?.role}</label>
                     <ThemedSelect
                       name="role"
                       required
-                      className="!rounded-xl bg-slate-50/50"
+                      className="!rounded-xl bg-slate-50/50 dark:!bg-white/5"
                       placeholder={careersData?.labels?.roleSelector || "Select a Position"}
                       options={(careersData?.roles || []).map((role: any) => ({ value: role.value, label: role.label }))}
                     />
@@ -189,8 +189,8 @@ ${message}
                   )}
 
                   <div className="space-y-3">
-                    <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-blue-500" />
+                    <label className="text-xs font-bold tracking-widest uppercase text-brand-zinc-500 dark:text-zinc-400 flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-brand-blue dark:text-brand-yellow" />
                       {careersData?.labels?.attachment || "CV / RESUME (PDF)"}
                     </label>
                     <div className="relative group">
@@ -201,26 +201,26 @@ ${message}
                         onChange={handleFileChange}
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                       />
-                      <div className="w-full px-5 py-4 bg-slate-50/50 border border-dashed rounded-xl flex items-center justify-between group-hover:border-blue-400 transition-all">
-                        <span className="text-slate-500 font-medium">{fileName || careersData?.labels?.attachmentPlaceholder || "Upload your resume (PDF)..."}</span>
-                        <Upload className="w-5 h-5 text-slate-400 group-hover:text-blue-500" />
+                      <div className="w-full px-5 py-4 bg-slate-50/50 dark:bg-white/5 border border-dashed dark:border-white/20 rounded-xl flex items-center justify-between group-hover:border-blue-400 dark:group-hover:border-brand-yellow transition-all">
+                        <span className="text-brand-zinc-500 dark:text-zinc-400 font-medium">{fileName || careersData?.labels?.attachmentPlaceholder || "Upload your resume (PDF)..."}</span>
+                        <Upload className="w-5 h-5 text-slate-400 dark:text-zinc-400 group-hover:text-brand-blue dark:group-hover:text-brand-yellow" />
                       </div>
                     </div>
                   </div>
                   <div className="space-y-3">
-                    <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2"><FileText className="w-4 h-4 text-blue-500" />{careersData?.labels?.summary}</label>
-                    <textarea name="message" required rows={4} className="w-full px-5 py-4 bg-slate-50/50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"></textarea>
+                    <label className="text-xs font-bold tracking-widest uppercase text-brand-zinc-500 dark:text-zinc-400 flex items-center gap-2"><FileText className="w-4 h-4 text-brand-blue dark:text-brand-yellow" />{careersData?.labels?.summary}</label>
+                    <textarea name="message" required rows={4} className="w-full px-5 py-4 bg-slate-50/50 dark:bg-white/5 border dark:border-white/10 rounded-xl text-brand-dark dark:text-white dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-brand-blue dark:focus:ring-brand-yellow outline-none transition-all"></textarea>
                   </div>
                   <TurnstileCaptcha
                     onVerify={(token) => setCaptchaToken(token)}
                     onExpire={() => setCaptchaToken("")}
                     theme="light"
                   />
-                  <CtaButton type="submit" fullWidth loading={isSubmitting} className="cta-on-light">
+                  <CtaButton type="submit" fullWidth loading={isSubmitting}>
                     {isSubmitting ? 'SENDING...' : 'SUBMIT APPLICATION'}
                   </CtaButton>
                   {errorMsg && (
-                    <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm text-center">
+                    <div className="mt-4 p-4 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl text-red-700 dark:text-red-400 text-sm text-center">
                       {errorMsg}
                     </div>
                   )}

@@ -314,7 +314,7 @@ export default function HowWeWork({ data: overrideData }: { data?: any }) {
                       ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 dark:text-zinc-600 bg-slate-50 dark:bg-white/[0.02] p-2 text-center">
                           <IconComp className="w-6 h-6 text-brand-blue/40 dark:text-brand-yellow/40 mb-1" />
-                          <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">{reason.num || `0${index+1}`}</span>
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{reason.num || `0${index+1}`}</span>
                         </div>
                       )}
                     </div>

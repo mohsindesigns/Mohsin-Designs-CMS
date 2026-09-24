@@ -453,7 +453,7 @@ export default function PrivacyPolicyPage() {
             </div>
 
             {/* Footer Note */}
-            <p className="text-center text-xs text-muted-foreground/60 pt-8">
+            <p className="text-center text-xs text-muted-foreground/85 pt-8">
               © {new Date().getFullYear()} Mohsin Designs. All rights reserved.
             </p>
           </motion.div>

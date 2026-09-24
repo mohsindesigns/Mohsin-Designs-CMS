@@ -124,7 +124,7 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
                       className={`shrink-0 transition-colors duration-250 h-2.5 w-2.5 ${
                         isActive
                           ? "text-[#0306AC] dark:text-[#E9BD36]"
-                          : "text-slate-400 dark:text-zinc-500"
+                          : "text-slate-500 dark:text-zinc-500"
                       }`}
                       strokeWidth={3}
                     />
@@ -176,7 +176,7 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="w-full h-16 flex items-center justify-center text-xs text-slate-400 dark:text-zinc-500 border border-dashed border-slate-200 dark:border-white/10 rounded-2xl px-4"
+                    className="w-full h-16 flex items-center justify-center text-xs text-slate-500 dark:text-zinc-500 border border-dashed border-slate-200 dark:border-white/10 rounded-2xl px-4"
                   >
                     Hover or click any location or map pin to inspect regional operations
                   </motion.div>

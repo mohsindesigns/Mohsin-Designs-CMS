@@ -115,7 +115,7 @@ export default {
                     "zinc-150": "#ECEDF0",
                     "zinc-200": "var(--color-border)",
                     "zinc-300": "#D1D5DB",
-                    "zinc-400": "#9CA3AF",
+                    "zinc-400": "#6F7787", // was #9CA3AF (2.5:1 on white - too faint for the 8-11px mono labels that use it)
                     "zinc-500": "var(--color-gray)",
                     "zinc-550": "#61616A",
                     "zinc-555": "#5F5F68",
