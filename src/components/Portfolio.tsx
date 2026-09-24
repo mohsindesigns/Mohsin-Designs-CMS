@@ -537,7 +537,7 @@ export default function Portfolio({ data }: { data?: any }) {
 
             {/* Drag/Swipe Indicator Badge */}
             <div className="absolute top-4 right-4 md:top-6 md:right-8 z-20 flex items-center gap-1.5 px-3 py-1 bg-slate-50/90 dark:bg-white/10 border border-slate-200/40 dark:border-white/10 rounded-full text-[9px] font-bold text-neutral-400 dark:text-neutral-300 select-none pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-blue animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-blue dark:bg-brand-yellow animate-pulse" />
               <span>{portfolio.swipeHint}</span>
             </div>
 

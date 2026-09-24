@@ -304,7 +304,7 @@ export default function HowWeWork({ data: overrideData }: { data?: any }) {
                     </div>
 
                     {/* RIGHT: Dynamic Image Managed from Dashboard */}
-                    <div className="hidden md:block shrink-0 w-[140px] h-[95px] rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 overflow-hidden group-hover:border-primary/30 group-hover:shadow-md transition-all duration-300">
+                    <div className="hidden md:block shrink-0 w-[140px] h-[95px] rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 overflow-hidden group-hover:border-brand-blue/30 dark:group-hover:border-brand-yellow/30 group-hover:shadow-md transition-all duration-300">
                       {reason.image ? (
                         <img
                           src={reason.image}
@@ -313,7 +313,7 @@ export default function HowWeWork({ data: overrideData }: { data?: any }) {
                         />
                       ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 dark:text-zinc-600 bg-slate-50 dark:bg-white/[0.02] p-2 text-center">
-                          <IconComp className="w-6 h-6 text-primary/40 mb-1" />
+                          <IconComp className="w-6 h-6 text-brand-blue/40 dark:text-brand-yellow/40 mb-1" />
                           <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">{reason.num || `0${index+1}`}</span>
                         </div>
                       )}

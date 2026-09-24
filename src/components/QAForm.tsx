@@ -60,22 +60,22 @@ const HolographicInput = ({ icon: IconName, label, type = "text", options = [], 
           opacity: isHovered ? 0.1 : 0,
           scale: 1,
         }}
-        className="absolute -inset-0.5 bg-gradient-to-r from-primary to-primary rounded-xl blur-lg"
+        className="absolute -inset-0.5 bg-gradient-to-r from-brand-blue dark:from-brand-yellow to-brand-blue dark:to-brand-yellow rounded-xl blur-lg"
         transition={{ duration: 0.3 }}
       />
 
       <div className={`
         relative flex items-center bg-card/95 backdrop-blur-sm rounded-xl border transition-all duration-500
         ${isFocused
-          ? 'border-primary/50 shadow-[0_0_30px_hsl(var(--primary)/0.15)]'
+          ? 'border-brand-blue/50 dark:border-brand-yellow/50 shadow-[0_0_30px_rgb(var(--color-brand-accent-rgb)/0.15)]'
           : hasValue
-            ? 'border-primary/30'
+            ? 'border-brand-blue/30 dark:border-brand-yellow/30'
             : 'border-border/80 hover:border-border/80'
         }
       `}>
         <div className={`
           absolute left-4 transition-all duration-500
-          ${isFocused ? 'text-primary scale-110' : hasValue ? 'text-primary' : 'text-muted-foreground group-hover:text-muted-foreground/80'}
+          ${isFocused ? 'text-brand-blue dark:text-brand-yellow scale-110' : hasValue ? 'text-brand-blue dark:text-brand-yellow' : 'text-muted-foreground group-hover:text-muted-foreground/80'}
         `}>
           <Icon name={IconName} className="w-5 h-5" />
         </div>
@@ -115,7 +115,7 @@ const HolographicInput = ({ icon: IconName, label, type = "text", options = [], 
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
             exit={{ scaleX: 0 }}
-            className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-primary rounded-full"
+            className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-brand-blue dark:from-brand-yellow to-brand-blue dark:to-brand-yellow rounded-full"
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
           />
         )}
@@ -143,22 +143,22 @@ const QuantumTextarea = ({ icon: IconName, label, ...props }: { icon: string; la
           opacity: isHovered ? 0.1 : 0,
           scale: 1,
         }}
-        className="absolute -inset-0.5 bg-gradient-to-r from-primary to-primary rounded-xl blur-lg"
+        className="absolute -inset-0.5 bg-gradient-to-r from-brand-blue dark:from-brand-yellow to-brand-blue dark:to-brand-yellow rounded-xl blur-lg"
         transition={{ duration: 0.3 }}
       />
 
       <div className={`
         relative flex bg-card/95 backdrop-blur-sm rounded-xl border transition-all duration-500
         ${isFocused
-          ? 'border-primary/50 shadow-[0_0_30px_hsl(var(--primary)/0.15)]'
+          ? 'border-brand-blue/50 dark:border-brand-yellow/50 shadow-[0_0_30px_rgb(var(--color-brand-accent-rgb)/0.15)]'
           : hasValue
-            ? 'border-primary/30'
+            ? 'border-brand-blue/30 dark:border-brand-yellow/30'
             : 'border-border/80 hover:border-border/80'
         }
       `}>
         <div className={`
           absolute left-4 top-4 transition-all duration-500
-          ${isFocused ? 'text-primary scale-110' : hasValue ? 'text-primary' : 'text-muted-foreground'}
+          ${isFocused ? 'text-brand-blue dark:text-brand-yellow scale-110' : hasValue ? 'text-brand-blue dark:text-brand-yellow' : 'text-muted-foreground'}
         `}>
           <Icon name={IconName} className="w-5 h-5" />
         </div>
@@ -193,15 +193,15 @@ const CrystalServiceCard = ({ title, desc, icon, isSelected, onClick }: { title:
       className={`
         relative p-5 sm:p-6 rounded-2xl cursor-pointer transition-all duration-700
         ${isSelected
-          ? 'bg-gradient-to-br from-primary/5 via-card to-primary/5 shadow-2xl'
+          ? 'bg-gradient-to-br from-brand-blue/5 dark:from-brand-yellow/5 via-card to-brand-blue/5 dark:to-brand-yellow/5 shadow-2xl'
           : 'bg-card/80 backdrop-blur-sm hover:bg-card'
         }
       `}
       style={{
         boxShadow: isSelected
-          ? '0 20px 40px -15px hsl(var(--primary)/0.2), inset 0 0 0 1px hsl(var(--primary)/0.3)'
+          ? '0 20px 40px -15px rgb(var(--color-brand-accent-rgb)/0.2), inset 0 0 0 1px rgb(var(--color-brand-accent-rgb)/0.3)'
           : isHovered
-            ? '0 15px 30px -12px hsl(var(--foreground)/0.1), inset 0 0 0 1px hsl(var(--primary)/0.2)'
+            ? '0 15px 30px -12px hsl(var(--foreground)/0.1), inset 0 0 0 1px rgb(var(--color-brand-accent-rgb)/0.2)'
             : '0 10px 25px -8px hsl(var(--foreground)/0.05), inset 0 0 0 1px hsl(var(--border)/0.3)'
       }}
     >
@@ -209,7 +209,7 @@ const CrystalServiceCard = ({ title, desc, icon, isSelected, onClick }: { title:
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="absolute inset-0 rounded-2xl bg-primary/5 blur-xl"
+          className="absolute inset-0 rounded-2xl bg-brand-blue/5 dark:bg-brand-yellow/5 blur-xl"
         />
       )}
 
@@ -222,7 +222,7 @@ const CrystalServiceCard = ({ title, desc, icon, isSelected, onClick }: { title:
           transition={{ duration: 0.5 }}
           className={`
             text-2xl sm:text-3xl mb-3 sm:mb-4 transition-colors duration-500
-            ${isSelected ? 'text-primary' : 'text-primary/70 group-hover:text-primary'}
+            ${isSelected ? 'text-brand-blue dark:text-brand-yellow' : 'text-brand-blue/70 dark:text-brand-yellow/70 group-hover:text-brand-blue dark:group-hover:text-brand-yellow'}
           `}
         >
           {icon}
@@ -246,16 +246,16 @@ const CrystalServiceCard = ({ title, desc, icon, isSelected, onClick }: { title:
           transition={{ type: "spring", stiffness: 500, damping: 30 }}
           className="absolute top-3 right-3 sm:top-4 sm:right-4"
         >
-          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-gradient-to-r from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/30">
-            <Icon name="Check" className="w-3 h-3 text-white" />
+          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-gradient-to-r from-brand-blue dark:from-brand-yellow to-brand-blue/80 dark:to-brand-yellow/80 flex items-center justify-center shadow-lg shadow-brand-blue/30 dark:shadow-brand-yellow/30">
+            <Icon name="Check" className="w-3 h-3 text-white dark:text-[#080710]" />
           </div>
         </motion.div>
       )}
 
       {isSelected && (
         <>
-          <div className="absolute top-0 left-0 w-8 h-8 sm:w-12 sm:h-12 border-t-2 border-l-2 border-primary/30 rounded-tl-2xl" />
-          <div className="absolute bottom-0 right-0 w-8 h-8 sm:w-12 sm:h-12 border-b-2 border-r-2 border-primary/30 rounded-br-2xl" />
+          <div className="absolute top-0 left-0 w-8 h-8 sm:w-12 sm:h-12 border-t-2 border-l-2 border-brand-blue/30 dark:border-brand-yellow/30 rounded-tl-2xl" />
+          <div className="absolute bottom-0 right-0 w-8 h-8 sm:w-12 sm:h-12 border-b-2 border-r-2 border-brand-blue/30 dark:border-brand-yellow/30 rounded-br-2xl" />
         </>
       )}
     </motion.div>
@@ -274,7 +274,7 @@ const StageIndicator = ({ currentStep }: { currentStep: number }) => {
       <div className="absolute top-4 sm:top-6 left-0 right-0 h-[2px] bg-border hidden sm:block" />
 
       <motion.div
-        className="absolute top-4 sm:top-6 left-0 h-[2px] bg-gradient-to-r from-primary to-primary hidden sm:block"
+        className="absolute top-4 sm:top-6 left-0 h-[2px] bg-gradient-to-r from-brand-blue dark:from-brand-yellow to-brand-blue dark:to-brand-yellow hidden sm:block"
         initial={{ width: "0%" }}
         animate={{ width: `${((currentStep - 1) / 2) * 100}%` }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -286,8 +286,8 @@ const StageIndicator = ({ currentStep }: { currentStep: number }) => {
             <motion.div
               animate={currentStep >= stage.number ? {
                 scale: 1.1,
-                backgroundColor: "hsl(var(--primary))",
-                borderColor: "hsl(var(--primary))",
+                backgroundColor: "var(--color-brand-accent)",
+                borderColor: "var(--color-brand-accent)",
               } : {
                 scale: 1,
                 backgroundColor: "hsl(var(--background))",
@@ -296,7 +296,7 @@ const StageIndicator = ({ currentStep }: { currentStep: number }) => {
               className={`
                 relative w-10 h-10 sm:w-14 sm:h-14 rounded-full border-2 
                 flex items-center justify-center mb-2 sm:mb-3
-                ${currentStep >= stage.number ? 'bg-primary border-primary' : 'bg-background border-border'}
+                ${currentStep >= stage.number ? 'bg-brand-blue dark:bg-brand-yellow border-brand-blue dark:border-brand-yellow' : 'bg-background border-border'}
                 shadow-md transition-all duration-300
               `}
             >
@@ -306,10 +306,10 @@ const StageIndicator = ({ currentStep }: { currentStep: number }) => {
                   animate={{ scale: 1 }}
                   transition={{ type: "spring" }}
                 >
-                  <Icon name="Check" className="w-5 h-5 text-white" />
+                  <Icon name="Check" className="w-5 h-5 text-white dark:text-[#080710]" />
                 </motion.div>
               ) : (
-                <div className={`${currentStep >= stage.number ? 'text-primary-foreground' : 'text-muted-foreground'}`}>
+                <div className={`${currentStep >= stage.number ? 'text-primary-foreground dark:text-[#080710]' : 'text-muted-foreground'}`}>
                   <Icon name={stage.icon} className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
               )}
@@ -317,7 +317,7 @@ const StageIndicator = ({ currentStep }: { currentStep: number }) => {
 
             <span className={`
               text-[10px] sm:text-xs font-semibold tracking-wider text-center
-              ${currentStep >= stage.number ? 'text-primary' : 'text-muted-foreground'}
+              ${currentStep >= stage.number ? 'text-brand-blue dark:text-brand-yellow' : 'text-muted-foreground'}
             `}>
               <span className="hidden xs:inline">{stage.name}</span>
               <span className="xs:hidden">{stage.number}</span>
@@ -375,7 +375,7 @@ const SuccessModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
             }}
             className="relative bg-card rounded-2xl sm:rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-card to-primary/5" />
+            <div className="absolute inset-0 bg-gradient-to-br from-brand-blue/5 dark:from-brand-yellow/5 via-card to-brand-blue/5 dark:to-brand-yellow/5" />
 
             <div className="relative pt-10 sm:pt-12 pb-6 sm:pb-8 px-6 sm:px-8 text-center">
               <motion.div
@@ -387,14 +387,14 @@ const SuccessModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                   damping: 30,
                   delay: 0.2
                 }}
-                className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 rounded-full bg-gradient-to-r from-primary to-primary/80 flex items-center justify-center shadow-2xl shadow-primary/30"
+                className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 rounded-full bg-gradient-to-r from-brand-blue dark:from-brand-yellow to-brand-blue/80 dark:to-brand-yellow/80 flex items-center justify-center shadow-2xl shadow-brand-blue/30 dark:shadow-brand-yellow/30"
               >
                 <motion.div
                   initial={{ pathLength: 0 }}
                   animate={{ pathLength: 1 }}
                   transition={{ duration: 0.6, delay: 0.4 }}
                 >
-                  <Icon name="Check" className="w-8 h-8 text-white" />
+                  <Icon name="Check" className="w-8 h-8 text-white dark:text-[#080710]" />
                 </motion.div>
               </motion.div>
 
@@ -414,7 +414,7 @@ const SuccessModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                 className="text-muted-foreground text-xs sm:text-sm leading-relaxed"
               >
                 <RichTextRenderer content={success.message} className="mb-2" stripParagraphs={true} />
-                <span className="font-medium text-primary mt-2 block">
+                <span className="font-medium text-brand-blue dark:text-brand-yellow mt-2 block">
                   <RichTextRenderer content={success.response} stripParagraphs={true} />
                 </span>
               </motion.div>
@@ -424,8 +424,8 @@ const SuccessModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
               </CtaButton>
             </div>
 
-            <div className="absolute top-4 left-4 sm:top-6 sm:left-6 w-8 h-8 sm:w-12 sm:h-12 border-t-2 border-l-2 border-primary/20" />
-            <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 w-8 h-8 sm:w-12 sm:h-12 border-b-2 border-r-2 border-primary/20" />
+            <div className="absolute top-4 left-4 sm:top-6 sm:left-6 w-8 h-8 sm:w-12 sm:h-12 border-t-2 border-l-2 border-brand-blue/20 dark:border-brand-yellow/20" />
+            <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 w-8 h-8 sm:w-12 sm:h-12 border-b-2 border-r-2 border-brand-blue/20 dark:border-brand-yellow/20" />
           </motion.div>
         </motion.div>
       )}
@@ -450,8 +450,8 @@ const SMSConsentCheckbox = ({ checked, onChange, showError }: { checked: boolean
       <div className={`
         relative flex items-start gap-3 p-4 rounded-xl transition-all duration-500
         ${showError ? 'bg-red-500/5 border border-red-500/50' :
-          isFocused ? 'bg-primary/5 border border-primary/30' :
-            'bg-muted/30 border border-border/50 hover:border-primary/20'}
+          isFocused ? 'bg-brand-blue/5 dark:bg-brand-yellow/5 border border-brand-blue/30 dark:border-brand-yellow/30' :
+            'bg-muted/30 border border-border/50 hover:border-brand-blue/20 dark:hover:border-brand-yellow/20'}
       `}>
         <div className="relative">
           <input
@@ -465,8 +465,8 @@ const SMSConsentCheckbox = ({ checked, onChange, showError }: { checked: boolean
           />
           <motion.div
             animate={checked ? {
-              backgroundColor: "hsl(var(--primary))",
-              borderColor: "hsl(var(--primary))"
+              backgroundColor: "var(--color-brand-accent)",
+              borderColor: "var(--color-brand-accent)"
             } : {
               backgroundColor: "transparent",
               borderColor: showError ? "hsl(0, 84%, 60%)" : "hsl(var(--border))"
@@ -475,7 +475,7 @@ const SMSConsentCheckbox = ({ checked, onChange, showError }: { checked: boolean
             whileTap={{ scale: 0.95 }}
             className={`
               w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all duration-300
-              ${isHovered && !checked ? 'border-primary/50' : ''}
+              ${isHovered && !checked ? 'border-brand-blue/50 dark:border-brand-yellow/50' : ''}
             `}
           >
             {checked && (
@@ -484,7 +484,7 @@ const SMSConsentCheckbox = ({ checked, onChange, showError }: { checked: boolean
                 animate={{ scale: 1 }}
                 transition={{ type: "spring", stiffness: 500, damping: 30 }}
               >
-                <Icon name="Check" className="w-3 h-3 text-white" />
+                <Icon name="Check" className="w-3 h-3 text-white dark:text-[#080710]" />
               </motion.div>
             )}
           </motion.div>
@@ -495,9 +495,9 @@ const SMSConsentCheckbox = ({ checked, onChange, showError }: { checked: boolean
           className={`flex-1 text-[11px] sm:text-xs leading-relaxed cursor-pointer ${showError ? 'text-red-400' : 'text-muted-foreground'}`}
         >
           I agree to receive informational SMS text messages from Mohsin Designs related to my request, including appointment scheduling and service updates, at the number I provided. Message frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help. Consent is not a condition of purchase. Please see{' '}
-          <Link href="/privacy" className="text-primary hover:underline transition-colors">Privacy Policy</Link>
+          <Link href="/privacy" className="text-brand-blue dark:text-brand-yellow hover:underline transition-colors">Privacy Policy</Link>
           {' '}and{' '}
-          <Link href="/terms" className="text-primary hover:underline transition-colors">Terms and Conditions</Link>.
+          <Link href="/terms" className="text-brand-blue dark:text-brand-yellow hover:underline transition-colors">Terms and Conditions</Link>.
         </label>
       </div>
 
@@ -722,15 +722,15 @@ ${formData.message}
           className="absolute inset-0 opacity-[0.02]"
           style={{
             backgroundImage: `
-              linear-gradient(to right, hsl(var(--primary)) 1px, transparent 1px),
-              linear-gradient(to bottom, hsl(var(--primary)) 1px, transparent 1px)
+              linear-gradient(to right, var(--color-brand-accent) 1px, transparent 1px),
+              linear-gradient(to bottom, var(--color-brand-accent) 1px, transparent 1px)
             `,
             backgroundSize: '60px 60px',
           }}
         />
       </div>
 
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] sm:w-[1000px] h-[400px] sm:h-[500px] bg-gradient-to-b from-primary/5 to-transparent opacity-60 blur-3xl" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] sm:w-[1000px] h-[400px] sm:h-[500px] bg-gradient-to-b from-brand-blue/5 dark:from-brand-yellow/5 to-transparent opacity-60 blur-3xl" />
 
       <LiquidParallax speed={0.05} className="z-0">
         <div className="absolute top-20 right-0 w-2/5 h-3/5">
@@ -760,7 +760,7 @@ ${formData.message}
         {isClient && [...Array(20)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-0.5 h-0.5 bg-primary/20 rounded-full"
+            className="absolute w-0.5 h-0.5 bg-brand-blue/20 dark:bg-brand-yellow/20 rounded-full"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
@@ -782,11 +782,11 @@ ${formData.message}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 relative z-30">
         <div className="max-w-3xl mx-auto text-center mb-12 sm:mb-16 md:mb-20 quote-cinematic">
           <div className="flex items-center justify-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-            <div className="w-8 sm:w-12 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent" />
-            <span className="text-[10px] sm:text-xs font-mono tracking-[0.2em] sm:tracking-[0.3em] uppercase text-primary/80">
+            <div className="w-8 sm:w-12 h-[2px] bg-gradient-to-r from-transparent via-brand-blue dark:via-brand-yellow to-transparent" />
+            <span className="text-[10px] sm:text-xs font-mono tracking-[0.2em] sm:tracking-[0.3em] uppercase text-brand-blue/80 dark:text-brand-yellow/80">
               {section?.badge}
             </span>
-            <div className="w-8 sm:w-12 h-[2px] bg-gradient-to-r from-primary via-primary to-transparent" />
+            <div className="w-8 sm:w-12 h-[2px] bg-gradient-to-r from-brand-blue dark:from-brand-yellow via-brand-blue dark:via-brand-yellow to-transparent" />
           </div>
 
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light text-foreground mb-4 sm:mb-6 leading-tight">
@@ -796,7 +796,7 @@ ${formData.message}
                   <span>{section.headlinePrefix} </span>
                 )}
                 {section?.headlineHighlight && (
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/80 font-semibold">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue dark:from-brand-yellow to-brand-blue/80 dark:to-brand-yellow/80 font-semibold">
                     {section.headlineHighlight}
                   </span>
                 )}
@@ -821,7 +821,7 @@ ${formData.message}
           transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
           className="relative max-w-5xl mx-auto"
         >
-          <div className="relative bg-card/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-primary/10 shadow-2xl overflow-hidden">
+          <div className="relative bg-card/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-brand-blue/10 dark:border-brand-yellow/10 shadow-2xl overflow-hidden">
             <svg className="absolute inset-0 w-full h-full pointer-events-none">
               <motion.rect
                 x="2"
@@ -839,8 +839,8 @@ ${formData.message}
               />
               <defs>
                 <linearGradient id="formGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.8" />
-                  <stop offset="100%" stopColor="hsl(var(--primary)/0.8)" stopOpacity="0.8" />
+                  <stop offset="0%" stopColor="var(--color-brand-accent)" stopOpacity="0.8" />
+                  <stop offset="100%" stopColor="rgb(var(--color-brand-accent-rgb)/0.8)" stopOpacity="0.8" />
                 </linearGradient>
               </defs>
             </svg>
@@ -977,10 +977,10 @@ ${formData.message}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="relative p-4 sm:p-6 bg-gradient-to-br from-primary/5 via-card to-primary/5 rounded-xl border border-primary/10"
+                        className="relative p-4 sm:p-6 bg-gradient-to-br from-brand-blue/5 dark:from-brand-yellow/5 via-card to-brand-blue/5 dark:to-brand-yellow/5 rounded-xl border border-brand-blue/10 dark:border-brand-yellow/10"
                       >
                         <div className="relative z-10">
-                          <h4 className="text-[10px] sm:text-xs font-mono tracking-[0.2em] uppercase text-primary mb-3 sm:mb-4 flex items-center gap-2">
+                          <h4 className="text-[10px] sm:text-xs font-mono tracking-[0.2em] uppercase text-brand-blue dark:text-brand-yellow mb-3 sm:mb-4 flex items-center gap-2">
                             <Icon name="Sparkles" className="w-4 h-4" />
                             TRANSMISSION SUMMARY
                           </h4>
@@ -1021,7 +1021,7 @@ ${formData.message}
                   )}
                 </AnimatePresence>
 
-                <div className="flex items-center justify-between pt-4 sm:pt-6 border-t border-primary/10">
+                <div className="flex items-center justify-between pt-4 sm:pt-6 border-t border-brand-blue/10 dark:border-brand-yellow/10">
                   <CtaButton
                     variant="secondary"
                     size="sm"
@@ -1063,9 +1063,9 @@ ${formData.message}
           />
           <defs>
             <linearGradient id="quantumWave" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.05" />
-              <stop offset="50%" stopColor="hsl(var(--primary))" stopOpacity="0.08" />
-              <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.05" />
+              <stop offset="0%" stopColor="var(--color-brand-accent)" stopOpacity="0.05" />
+              <stop offset="50%" stopColor="var(--color-brand-accent)" stopOpacity="0.08" />
+              <stop offset="100%" stopColor="var(--color-brand-accent)" stopOpacity="0.05" />
             </linearGradient>
           </defs>
         </svg>

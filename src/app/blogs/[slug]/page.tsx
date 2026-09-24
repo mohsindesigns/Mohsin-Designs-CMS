@@ -469,7 +469,7 @@ export default async function BlogPostPage({ params }: Props) {
                           className={`shrink-0 w-2 h-2 rounded-full transition-all duration-300 ${
                             item.level <= 2
                               ? "bg-brand-blue dark:bg-brand-yellow scale-100 shadow-[0_0_8px_rgba(3,6,172,0.4)] dark:shadow-[0_0_8px_rgba(233,189,54,0.4)]"
-                              : "bg-brand-zinc-300 dark:bg-zinc-700 scale-75 group-hover:bg-brand-blue group-hover:scale-100"
+                              : "bg-brand-zinc-300 dark:bg-zinc-700 scale-75 group-hover:bg-brand-blue dark:group-hover:bg-brand-yellow group-hover:scale-100"
                           }`}
                         />
                         <span className="text-xs sm:text-sm font-semibold line-clamp-1 flex-1">

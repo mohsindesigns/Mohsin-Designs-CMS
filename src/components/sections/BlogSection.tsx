@@ -238,13 +238,13 @@ export default function BlogSection({
     >
       {/* Decorative Background Glows */}
       <div className="absolute top-1/3 -right-32 w-96 h-96 rounded-full bg-brand-accent/10 blur-3xl pointer-events-none z-0" />
-      <div className="absolute bottom-1/3 -left-32 w-96 h-96 rounded-full bg-primary/5 blur-3xl pointer-events-none z-0" />
+      <div className="absolute bottom-1/3 -left-32 w-96 h-96 rounded-full bg-brand-blue/5 dark:bg-brand-yellow/5 blur-3xl pointer-events-none z-0" />
 
       {/* Crossing structural grid lines */}
-      <div className="absolute inset-x-0 top-12 h-[1px] bg-primary/[0.03] pointer-events-none" />
-      <div className="absolute inset-x-0 bottom-12 h-[1px] bg-primary/[0.03] pointer-events-none" />
-      <div className="absolute left-1/4 top-0 bottom-0 w-[1px] bg-primary/[0.03] pointer-events-none" />
-      <div className="absolute right-1/4 top-0 bottom-0 w-[1px] bg-primary/[0.03] pointer-events-none" />
+      <div className="absolute inset-x-0 top-12 h-[1px] bg-brand-blue/[0.03] dark:bg-brand-yellow/[0.03] pointer-events-none" />
+      <div className="absolute inset-x-0 bottom-12 h-[1px] bg-brand-blue/[0.03] dark:bg-brand-yellow/[0.03] pointer-events-none" />
+      <div className="absolute left-1/4 top-0 bottom-0 w-[1px] bg-brand-blue/[0.03] dark:bg-brand-yellow/[0.03] pointer-events-none" />
+      <div className="absolute right-1/4 top-0 bottom-0 w-[1px] bg-brand-blue/[0.03] dark:bg-brand-yellow/[0.03] pointer-events-none" />
 
       {/* Local keyframe animations for premium hover card glass sweep reflections */}
       <style>{`
@@ -287,7 +287,7 @@ export default function BlogSection({
           transition={{ duration: 0.6 }}
           className="flex flex-col gap-4 mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary dark:text-yellow-400 text-xs font-bold uppercase tracking-widest self-start">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-blue/10 dark:bg-brand-yellow/10 border border-brand-blue/20 dark:border-brand-yellow/20 text-primary dark:text-yellow-400 text-xs font-bold uppercase tracking-widest self-start">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary dark:bg-yellow-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-primary dark:bg-yellow-400" />
@@ -329,7 +329,7 @@ export default function BlogSection({
             {posts[0] && (
               <Link
                 href={posts[0].link}
-                className="group flex flex-col rounded-[2.5rem] border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#12121e] p-6 md:p-8 shadow-[0_2px_12px_rgba(3,6,172,0.015)] hover:shadow-[0_20px_40px_rgba(3,6,172,0.08)] hover:border-primary/30 dark:hover:border-primary/30 transition-all duration-300 overflow-hidden card-sweep-glare select-none block no-underline"
+                className="group flex flex-col rounded-[2.5rem] border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#12121e] p-6 md:p-8 shadow-[0_2px_12px_rgba(3,6,172,0.015)] hover:shadow-[0_20px_40px_rgba(3,6,172,0.08)] hover:border-primary/30 dark:hover:border-brand-yellow/30 transition-all duration-300 overflow-hidden card-sweep-glare select-none block no-underline"
               >
                 {/* Image Wrapper */}
                 <div className="relative aspect-[1200/627] overflow-hidden bg-slate-100 dark:bg-zinc-800 border border-slate-200/40 dark:border-white/10 rounded-3xl mb-6">
@@ -389,7 +389,7 @@ export default function BlogSection({
               <Link
                 key={idx}
                 href={post.link}
-                className="group block rounded-[2rem] border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#12121e] p-4 sm:p-5 shadow-[0_2px_12px_rgba(3,6,172,0.01)] hover:shadow-[0_16px_36px_rgba(3,6,172,0.06)] hover:border-primary/30 dark:hover:border-primary/30 transition-all duration-300 overflow-hidden card-sweep-glare select-none no-underline"
+                className="group block rounded-[2rem] border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#12121e] p-4 sm:p-5 shadow-[0_2px_12px_rgba(3,6,172,0.01)] hover:shadow-[0_16px_36px_rgba(3,6,172,0.06)] hover:border-primary/30 dark:hover:border-brand-yellow/30 transition-all duration-300 overflow-hidden card-sweep-glare select-none no-underline"
               >
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 w-full">
                   {/* Small Thumbnail */}

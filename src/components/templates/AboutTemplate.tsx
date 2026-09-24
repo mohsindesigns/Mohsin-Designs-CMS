@@ -95,11 +95,11 @@ const StatCounter = ({ value, label, suffix = "", delay = 0, iconName, descripti
       className="group relative bg-card rounded-xl sm:rounded-2xl p-3 sm:p-6 md:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 text-center sm:text-left"
       style={{ transitionDelay: `${delay}s` }}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-xl sm:rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute inset-0 bg-gradient-to-br from-brand-blue/5 dark:from-brand-yellow/5 to-transparent rounded-xl sm:rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
       <div className="relative mb-3 sm:mb-4 md:mb-6 flex justify-center sm:justify-start">
-        <div className="inline-flex p-2 sm:p-3 bg-primary/10 rounded-xl sm:rounded-2xl group-hover:bg-primary/20 transition-all duration-500 group-hover:scale-110">
-          <Icon name={iconName} className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-primary" strokeWidth={1.5} />
+        <div className="inline-flex p-2 sm:p-3 bg-brand-blue/10 dark:bg-brand-yellow/10 rounded-xl sm:rounded-2xl group-hover:bg-brand-blue/20 dark:group-hover:bg-brand-yellow/20 transition-all duration-500 group-hover:scale-110">
+          <Icon name={iconName} className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-brand-blue dark:text-brand-yellow" strokeWidth={1.5} />
         </div>
       </div>
 
@@ -108,7 +108,7 @@ const StatCounter = ({ value, label, suffix = "", delay = 0, iconName, descripti
           <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground tracking-tight">
             {count}
           </span>
-          <span className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-primary">
+          <span className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-brand-blue dark:text-brand-yellow">
             {suffix}
           </span>
         </div>
@@ -124,7 +124,7 @@ const StatCounter = ({ value, label, suffix = "", delay = 0, iconName, descripti
         )}
       </div>
 
-      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 sm:w-12 h-0.5 bg-primary/30 group-hover:w-12 sm:group-hover:w-20 group-hover:bg-primary transition-all duration-500" />
+      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 sm:w-12 h-0.5 bg-brand-blue/30 dark:bg-brand-yellow/30 group-hover:w-12 sm:group-hover:w-20 group-hover:bg-brand-blue dark:group-hover:bg-brand-yellow transition-all duration-500" />
     </div>
   );
 };
@@ -138,9 +138,9 @@ const StatsSection = ({ content: passedContent }: { content?: any }) => {
     <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gradient-to-b from-muted/30 to-background">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         <div className="text-center mb-8 sm:mb-12 md:mb-16">
-          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-primary/10 rounded-full mb-4 sm:mb-6">
-            <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
-            <span className="text-[10px] sm:text-xs md:text-sm font-medium text-primary uppercase tracking-wider">
+          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-brand-blue/10 dark:bg-brand-yellow/10 rounded-full mb-4 sm:mb-6">
+            <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-brand-blue dark:text-brand-yellow" />
+            <span className="text-[10px] sm:text-xs md:text-sm font-medium text-brand-blue dark:text-brand-yellow uppercase tracking-wider">
               {statsData.badge || "Impact"}
             </span>
           </div>
@@ -172,7 +172,7 @@ const StatsSection = ({ content: passedContent }: { content?: any }) => {
           <div className="flex flex-wrap justify-center gap-3 sm:gap-4 md:gap-8 items-center opacity-60">
             {(statsData.trustBadges || []).map((badge: any, i: number) => (
               <div key={i} className="flex items-center gap-1.5 sm:gap-2">
-                <Icon name={badge.icon} className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-primary" />
+                <Icon name={badge.icon} className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-brand-blue dark:text-brand-yellow" />
                 <span className="text-[10px] sm:text-xs md:text-sm text-muted-foreground">{badge.text}</span>
               </div>
             ))}
@@ -214,8 +214,8 @@ const Hero = ({ content: passedContent }: { content?: any }) => {
 
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/80 to-background z-10 md:bg-gradient-to-r md:from-background md:via-background/90 md:to-transparent" />
 
-        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-[-5%] left-[10%] w-[30%] h-[30%] bg-primary/5 rounded-full blur-[100px]" />
+        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-brand-blue/10 dark:bg-brand-yellow/10 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-[-5%] left-[10%] w-[30%] h-[30%] bg-brand-blue/5 dark:bg-brand-yellow/5 rounded-full blur-[100px]" />
       </div>
 
       <div className="absolute inset-0 z-10 opacity-[0.03] sm:opacity-[0.05] pointer-events-none"
@@ -232,7 +232,7 @@ const Hero = ({ content: passedContent }: { content?: any }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           >
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[50px] font-black leading-[1.15] tracking-tight text-primary mb-4 sm:mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[50px] font-black leading-[1.15] tracking-tight text-brand-blue dark:text-brand-yellow mb-4 sm:mb-6">
               {hero.headline?.line1} <br />
               <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-foreground via-foreground/70 to-foreground/90">
                 {hero.headline?.line2}
@@ -252,7 +252,7 @@ const Hero = ({ content: passedContent }: { content?: any }) => {
                 <motion.div
                   whileHover={{ y: -5, boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}
                   whileTap={{ scale: 0.98 }}
-                  className="px-12 sm:px-14 md:px-16 py-3 sm:py-4 md:py-5 bg-primary text-primary-foreground font-bold text-lg rounded-xl flex items-center justify-center gap-2 sm:gap-3 group transition-all hover:text-white"
+                  className="px-12 sm:px-14 md:px-16 py-3 sm:py-4 md:py-5 bg-brand-blue dark:bg-brand-yellow text-primary-foreground dark:text-[#080710] font-bold text-lg rounded-xl flex items-center justify-center gap-2 sm:gap-3 group transition-all hover:text-white dark:hover:text-[#080710]"
                 >
                   {hero.cta || "Get a Quote"}
                   <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
@@ -268,7 +268,7 @@ const Hero = ({ content: passedContent }: { content?: any }) => {
             className="w-full max-w-sm lg:w-5/12 mx-auto"
           >
             <div className="relative">
-              <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full opacity-50" />
+              <div className="absolute inset-0 bg-brand-blue/20 dark:bg-brand-yellow/20 blur-3xl rounded-full opacity-50" />
               <div className="relative bg-card/80 backdrop-blur-xl border border-border/60 p-6 sm:p-8 rounded-3xl shadow-2xl">
                 <div className="text-center mb-6">
                   <div className="flex items-center justify-center gap-1 mb-2">
@@ -283,8 +283,8 @@ const Hero = ({ content: passedContent }: { content?: any }) => {
                   {(hero.stats || []).map((stat: any, i: number) => {
                     return (
                       <div key={i} className="flex items-center gap-4 p-3 rounded-xl bg-background/40 border border-border/40">
-                        <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-                          <Icon name={stat.icon || "Shield"} className="text-primary w-5 h-5" />
+                        <div className="w-10 h-10 bg-brand-blue/10 dark:bg-brand-yellow/10 rounded-xl flex items-center justify-center">
+                          <Icon name={stat.icon || "Shield"} className="text-brand-blue dark:text-brand-yellow w-5 h-5" />
                         </div>
                         <div>
                           <p className="text-muted-foreground text-[10px] uppercase tracking-wider font-bold">{stat.label}</p>
@@ -299,7 +299,7 @@ const Hero = ({ content: passedContent }: { content?: any }) => {
                   <div className="text-center">
                     <a
                       href={`tel:${(hero.phone || "").replace(/-/g, '')}`}
-                      className="text-lg font-bold text-foreground hover:text-primary transition-colors"
+                      className="text-lg font-bold text-foreground hover:text-brand-blue dark:hover:text-brand-yellow transition-colors"
                     >
                       {hero.phone}
                     </a>
@@ -333,7 +333,7 @@ const FounderPortrait = ({ content }: { content?: any }) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="relative">
-        <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-primary/20 to-primary/20 rounded-2xl sm:rounded-3xl blur-lg group-hover:blur-xl transition-all duration-700" />
+        <div className="absolute -inset-1 bg-gradient-to-r from-brand-blue/20 dark:from-brand-yellow/20 via-brand-blue/20 dark:via-brand-yellow/20 to-brand-blue/20 dark:to-brand-yellow/20 rounded-2xl sm:rounded-3xl blur-lg group-hover:blur-xl transition-all duration-700" />
 
         <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl shadow-gray-300/50 h-[350px] xs:h-[400px] sm:h-[450px] md:h-[500px] lg:h-[600px]">
           {story.portrait?.image && (story.portrait.image.startsWith('http') || story.portrait.image.startsWith('/')) ? (
@@ -343,7 +343,7 @@ const FounderPortrait = ({ content }: { content?: any }) => {
               className="object-cover w-full h-full"
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-primary/30 via-primary/20 to-slate-200" />
+            <div className="w-full h-full bg-gradient-to-br from-brand-blue/30 dark:from-brand-yellow/30 via-brand-blue/20 dark:via-brand-yellow/20 to-slate-200" />
           )}
 
           <div className="absolute inset-0 bg-gradient-to-t from-secondary/80 via-secondary/20 to-transparent" />
@@ -363,8 +363,8 @@ const FounderPortrait = ({ content }: { content?: any }) => {
             />
             <defs>
               <linearGradient id="founderGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="hsl(var(--primary))" />
-                <stop offset="100%" stopColor="hsl(var(--primary)/0.8)" />
+                <stop offset="0%" stopColor="var(--color-brand-accent)" />
+                <stop offset="100%" stopColor="rgb(var(--color-brand-accent-rgb)/0.8)" />
               </linearGradient>
             </defs>
           </svg>
@@ -378,7 +378,7 @@ const FounderPortrait = ({ content }: { content?: any }) => {
             className="absolute top-3 sm:top-4 md:top-6 left-3 sm:left-4 md:left-6 z-10"
           >
             <div className="bg-card/95 backdrop-blur-sm px-2 sm:px-3 md:px-5 py-1 sm:py-2 md:py-2.5 rounded-full shadow-xl border border-border">
-              <span className="flex items-center gap-1 sm:gap-2 text-[8px] sm:text-[10px] md:text-xs font-bold text-primary">
+              <span className="flex items-center gap-1 sm:gap-2 text-[8px] sm:text-[10px] md:text-xs font-bold text-brand-blue dark:text-brand-yellow">
                 <Icon name="Flag" className="w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4" />
                 {story.portrait.badgeLeft}
               </span>
@@ -394,7 +394,7 @@ const FounderPortrait = ({ content }: { content?: any }) => {
             className="absolute bottom-3 sm:bottom-4 md:bottom-6 right-3 sm:right-4 md:right-6 z-10"
           >
             <div className="bg-card/95 backdrop-blur-sm px-2 sm:px-3 md:px-5 py-1 sm:py-2 md:py-2.5 rounded-full shadow-xl border border-border">
-              <span className="flex items-center gap-1 sm:gap-2 text-[8px] sm:text-[10px] md:text-xs font-bold text-primary">
+              <span className="flex items-center gap-1 sm:gap-2 text-[8px] sm:text-[10px] md:text-xs font-bold text-brand-blue dark:text-brand-yellow">
                 <Icon name="Award" className="w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4" />
                 {story.portrait.badgeRight}
               </span>
@@ -454,30 +454,30 @@ const FounderStory = ({ content: passedContent }: { content?: any }) => {
           className="absolute inset-0 opacity-[0.02]"
           style={{
             backgroundImage: `
-              linear-gradient(to right, hsl(var(--primary)) 1px, transparent 1px),
-              linear-gradient(to bottom, hsl(var(--primary)) 1px, transparent 1px)
+              linear-gradient(to right, var(--color-brand-accent) 1px, transparent 1px),
+              linear-gradient(to bottom, var(--color-brand-accent) 1px, transparent 1px)
             `,
             backgroundSize: '60px 60px sm:80px 80px',
           }}
         />
       </div>
 
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] sm:w-[800px] h-[300px] sm:h-[400px] bg-gradient-to-b from-primary/5 to-transparent opacity-60 blur-3xl" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] sm:w-[800px] h-[300px] sm:h-[400px] bg-gradient-to-b from-brand-blue/5 dark:from-brand-yellow/5 to-transparent opacity-60 blur-3xl" />
 
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 relative z-30">
         <div className="max-w-3xl mx-auto text-center mb-12 sm:mb-16 md:mb-20 founder-reveal">
           {story.badge && (
             <div className="flex items-center justify-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-              <div className="w-6 sm:w-8 h-[2px] bg-gradient-to-r from-primary/30 to-primary" />
-              <span className="text-[10px] sm:text-xs font-medium tracking-[0.2em] uppercase text-primary">
+              <div className="w-6 sm:w-8 h-[2px] bg-gradient-to-r from-brand-blue/30 dark:from-brand-yellow/30 to-brand-blue dark:to-brand-yellow" />
+              <span className="text-[10px] sm:text-xs font-medium tracking-[0.2em] uppercase text-brand-blue dark:text-brand-yellow">
                 {story.badge}
               </span>
-              <div className="w-6 sm:w-8 h-[2px] bg-gradient-to-r from-primary to-primary/30" />
+              <div className="w-6 sm:w-8 h-[2px] bg-gradient-to-r from-brand-blue dark:from-brand-yellow to-brand-blue/30 dark:to-brand-yellow/30" />
             </div>
           )}
 
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-light text-foreground mb-4 sm:mb-6 leading-tight px-2">
-            {story.headline?.replace(story.highlight || '', '')} <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/80">{story.highlight}</span>
+            {story.headline?.replace(story.highlight || '', '')} <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-brand-blue dark:from-brand-yellow to-brand-blue/80 dark:to-brand-yellow/80">{story.highlight}</span>
           </h2>
 
           <RichTextRenderer
@@ -496,13 +496,13 @@ const FounderStory = ({ content: passedContent }: { content?: any }) => {
             <div>
               <h3 className="text-2xl sm:text-3xl md:text-4xl font-light text-foreground mb-3 sm:mb-4 text-left">
                 {story.founder?.name}
-                <span className="block text-xs sm:text-sm font-mono text-primary mt-1 sm:mt-2 tracking-[0.15em] sm:tracking-[0.2em] uppercase">
+                <span className="block text-xs sm:text-sm font-mono text-brand-blue dark:text-brand-yellow mt-1 sm:mt-2 tracking-[0.15em] sm:tracking-[0.2em] uppercase">
                   {story.founder?.title}
                 </span>
               </h3>
 
               <div className="mt-6 sm:mt-8 relative">
-                <div className="absolute -left-2 sm:-left-4 -top-2 text-primary/20">
+                <div className="absolute -left-2 sm:-left-4 -top-2 text-brand-blue/20 dark:text-brand-yellow/20">
                   <Icon name="Quote" className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />
                 </div>
                 <RichTextRenderer
@@ -516,12 +516,12 @@ const FounderStory = ({ content: passedContent }: { content?: any }) => {
                 className="mt-6 sm:mt-8 space-y-4"
               />
 
-              <blockquote className="border-l-4 border-primary pl-3 sm:pl-4 md:pl-6 py-2 my-6 sm:my-8">
+              <blockquote className="border-l-4 border-brand-blue dark:border-brand-yellow pl-3 sm:pl-4 md:pl-6 py-2 my-6 sm:my-8">
                 <RichTextRenderer
                   content={story.founder?.secondaryQuote}
  className="text-sm sm:text-base md:text-lg font-medium text-foreground"
                 />
-                <footer className="mt-2 sm:mt-3 font-bold text-[10px] sm:text-xs text-primary uppercase tracking-widest">
+                <footer className="mt-2 sm:mt-3 font-bold text-[10px] sm:text-xs text-brand-blue dark:text-brand-yellow uppercase tracking-widest">
                   {story.founder?.footer}
                 </footer>
               </blockquote>
@@ -533,7 +533,7 @@ const FounderStory = ({ content: passedContent }: { content?: any }) => {
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
-                  className="p-2 sm:p-3 rounded-full bg-primary/5 text-primary hover:bg-primary/10 transition-colors"
+                  className="p-2 sm:p-3 rounded-full bg-brand-blue/5 dark:bg-brand-yellow/5 text-brand-blue dark:text-brand-yellow hover:bg-brand-blue/10 dark:hover:bg-brand-yellow/10 transition-colors"
                   aria-label="LinkedIn"
                 >
                   <Icon name="Linkedin" className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -542,7 +542,7 @@ const FounderStory = ({ content: passedContent }: { content?: any }) => {
                   href={`mailto:${story.founder?.email}`}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
-                  className="p-2 sm:p-3 rounded-full bg-primary/5 text-primary hover:bg-primary/10 transition-colors"
+                  className="p-2 sm:p-3 rounded-full bg-brand-blue/5 dark:bg-brand-yellow/5 text-brand-blue dark:text-brand-yellow hover:bg-brand-blue/10 dark:hover:bg-brand-yellow/10 transition-colors"
                   aria-label="Email"
                 >
                   <Icon name="Mail" className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -584,12 +584,12 @@ const MissionSection = ({ content: passedContent }: { content?: any }) => {
           <motion.div initial={{ opacity: 0, x: -60 }} animate={inView ? { opacity: 1, x: 0 } : {}} transition={{ duration: 1 }} className="w-full lg:w-5/12 text-center lg:text-left">
             <div className="mb-6 sm:mb-8">
               {mission.badge && (
-                <span className="inline-block text-primary text-xs font-black uppercase tracking-[0.5em] mb-4">
+                <span className="inline-block text-brand-blue dark:text-brand-yellow text-xs font-black uppercase tracking-[0.5em] mb-4">
                   {mission.badge}
                 </span>
               )}
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold">{mission.headline}</h2>
-              <motion.div initial={{ width: 0 }} animate={inView ? { width: 60 } : {}} className="h-[2px] bg-primary mt-3 sm:mt-4 mx-auto lg:mx-0" />
+              <motion.div initial={{ width: 0 }} animate={inView ? { width: 60 } : {}} className="h-[2px] bg-brand-blue dark:bg-brand-yellow mt-3 sm:mt-4 mx-auto lg:mx-0" />
             </div>
             <RichTextRenderer
               content={mission.description}
@@ -611,7 +611,7 @@ const MissionSection = ({ content: passedContent }: { content?: any }) => {
               return (
                 <motion.div key={i} initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: i * 0.15 }} whileHover={{ y: -5 }} className="p-4 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl border shadow-md hover:shadow-xl transition bg-card">
                   <div className="flex justify-between mb-3 sm:mb-4">
-                    <Icon name={item.icon || "Scale"} className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+                    <Icon name={item.icon || "Scale"} className="w-5 h-5 sm:w-6 sm:h-6 text-brand-blue dark:text-brand-yellow" />
                     <span className="text-[10px] sm:text-xs text-muted-foreground">{item.val}</span>
                   </div>
                   <h3 className="text-base sm:text-lg md:text-xl font-bold mb-1 sm:mb-2">{item.title}</h3>
@@ -624,7 +624,7 @@ const MissionSection = ({ content: passedContent }: { content?: any }) => {
             })}
           </div>
         </div>
-        <motion.div initial={{ scaleX: 0 }} animate={inView ? { scaleX: 1 } : {}} className="mt-12 sm:mt-16 h-px bg-primary origin-left" />
+        <motion.div initial={{ scaleX: 0 }} animate={inView ? { scaleX: 1 } : {}} className="mt-12 sm:mt-16 h-px bg-brand-blue dark:bg-brand-yellow origin-left" />
       </div>
     </section>
   );
@@ -643,10 +643,10 @@ const RecognitionMarquee = ({ content: passedContent }: { content?: any }) => {
           <motion.div animate={{ x: ["0%", "-50%"] }} transition={{ duration: 35, repeat: Infinity, ease: "linear" }} className="flex items-center gap-2 sm:gap-4 md:gap-8">
             {[...certs, ...certs].map((text, i) => (
               <div key={i} className="flex items-center gap-2 sm:gap-4 md:gap-8 group cursor-default">
-                <span className="text-5xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-[8rem] font-black uppercase tracking-tighter transition-all duration-500 text-transparent group-hover:text-primary group-hover:[-webkit-text-stroke:1px_hsl(var(--primary))]" style={{ WebkitTextStroke: '1px hsl(var(--border))', WebkitTextStrokeColor: 'hsl(var(--border))' }}>
+                <span className="text-5xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-[8rem] font-black uppercase tracking-tighter transition-all duration-500 text-transparent group-hover:text-brand-blue dark:group-hover:text-brand-yellow group-hover:[-webkit-text-stroke:1px_var(--color-brand-accent)]" style={{ WebkitTextStroke: '1px hsl(var(--border))', WebkitTextStrokeColor: 'hsl(var(--border))' }}>
                   {text}
                 </span>
-                <div className="w-4 sm:w-6 md:w-8 lg:w-12 xl:w-16 h-[2px] bg-border group-hover:bg-primary group-hover:scale-x-125 transition-all duration-500" />
+                <div className="w-4 sm:w-6 md:w-8 lg:w-12 xl:w-16 h-[2px] bg-border group-hover:bg-brand-blue dark:group-hover:bg-brand-yellow group-hover:scale-x-125 transition-all duration-500" />
               </div>
             ))}
           </motion.div>
@@ -683,7 +683,7 @@ const ServiceCard = ({ service, index }: { service: any; index: number }) => {
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-primary/20 via-primary/10 to-transparent" />
+              <div className="w-full h-full bg-gradient-to-br from-brand-blue/20 dark:from-brand-yellow/20 via-brand-blue/10 dark:via-brand-yellow/10 to-transparent" />
             )}
 
 
@@ -693,17 +693,17 @@ const ServiceCard = ({ service, index }: { service: any; index: number }) => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             <div className="absolute top-6 left-6 z-10">
               <div className="px-5 py-2.5 bg-white/95 backdrop-blur-md rounded-xl border border-white/30 shadow-lg">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">{service.tag}</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-blue dark:text-brand-yellow">{service.tag}</span>
               </div>
             </div>
             <motion.div className="absolute bottom-6 right-6 z-10" initial={{ opacity: 0, scale: 0.8 }} animate={isHovered ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }} transition={{ duration: 0.3 }}>
-              <div className="w-12 h-12 rounded-xl bg-primary text-white flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow">
+              <div className="w-12 h-12 rounded-xl bg-brand-blue dark:bg-brand-yellow text-white dark:text-[#080710] flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow">
                 <ArrowUpRight className="w-6 h-6" />
               </div>
             </motion.div>
           </div>
           <div className="flex-1 mt-6 px-4 flex flex-col items-center text-center">
-            <h3 className="text-xl sm:text-2xl lg:text-3xl font-heading font-black text-foreground tracking-tighter leading-tight group-hover:text-primary transition-colors duration-300">{service.title}</h3>
+            <h3 className="text-xl sm:text-2xl lg:text-3xl font-heading font-black text-foreground tracking-tighter leading-tight group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors duration-300">{service.title}</h3>
           </div>
         </div>
       </Link>
@@ -740,20 +740,20 @@ const ServicesSection = ({ content: passedContent, featuredServices: passedFeatu
     <section className="py-16 md:py-24 px-6 lg:px-12 bg-transparent relative z-30">
       <div className="w-full max-w-7xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center mb-16">
-          <span className="inline-block text-primary text-xs font-black uppercase tracking-[0.5em] mb-4">{capabilities.badge || "Services"}</span>
+          <span className="inline-block text-brand-blue dark:text-brand-yellow text-xs font-black uppercase tracking-[0.5em] mb-4">{capabilities.badge || "Services"}</span>
           <h2 className="text-4xl md:text-6xl font-heading font-bold mb-6 tracking-tighter text-foreground">
             {capabilities.headline ? (
               <>
                 {capabilities.headline.replace(capabilities.highlight || '', '')}{' '}
                 {capabilities.highlight && (
-                  <span className="text-primary">{capabilities.highlight}</span>
+                  <span className="text-brand-blue dark:text-brand-yellow">{capabilities.highlight}</span>
                 )}
               </>
             ) : (
 "Our Capabilities"
             )}
           </h2>
-          <div className="w-24 h-1 bg-primary mx-auto rounded-full mb-6" />
+          <div className="w-24 h-1 bg-brand-blue dark:bg-brand-yellow mx-auto rounded-full mb-6" />
           <RichTextRenderer
             content={capabilities.description}
             className="max-w-3xl mx-auto text-muted-foreground text-lg md:text-xl leading-relaxed"
@@ -767,7 +767,7 @@ const ServicesSection = ({ content: passedContent, featuredServices: passedFeatu
         </div>
         <div className="text-center mt-12 sm:mt-16">
           <Link href="/services">
-            <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="group relative px-8 py-4 bg-primary text-primary-foreground font-semibold rounded-full overflow-hidden shadow-lg">
+            <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="group relative px-8 py-4 bg-brand-blue dark:bg-brand-yellow text-primary-foreground dark:text-[#080710] font-semibold rounded-full overflow-hidden shadow-lg">
               <span className="relative z-10 flex items-center gap-2">View All Services <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></span>
             </motion.button>
           </Link>
@@ -788,12 +788,12 @@ const AwardCTABanner = ({ content: passedContent }: { content?: any }) => {
         <div className="max-w-2xl">
           {ctaBanner.badge && (
             <div className="flex items-center justify-center lg:justify-start gap-2 mb-4">
-              <span className="w-8 h-[2px] bg-primary" />
-              <span className="text-xs font-bold tracking-[0.3em] uppercase text-primary">{ctaBanner.badge}</span>
+              <span className="w-8 h-[2px] bg-brand-blue dark:bg-brand-yellow" />
+              <span className="text-xs font-bold tracking-[0.3em] uppercase text-brand-blue dark:text-brand-yellow">{ctaBanner.badge}</span>
             </div>
           )}
           <h3 className="text-3xl lg:text-5xl font-bold text-foreground mb-4 leading-tight">
-            {ctaBanner.headline?.replace(ctaBanner.highlight || '', '')} <span className="text-primary">{ctaBanner.highlight}</span>
+            {ctaBanner.headline?.replace(ctaBanner.highlight || '', '')} <span className="text-brand-blue dark:text-brand-yellow">{ctaBanner.highlight}</span>
           </h3>
           <RichTextRenderer
             content={ctaBanner.description}
@@ -803,15 +803,15 @@ const AwardCTABanner = ({ content: passedContent }: { content?: any }) => {
           <div className="flex flex-wrap justify-center lg:justify-start items-center gap-4 mt-6">
             {(ctaBanner.features || []).map((feature: string, i: number) => (
               <div key={i} className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 bg-primary rounded-full" />
+                <div className="w-1.5 h-1.5 bg-brand-blue dark:bg-brand-yellow rounded-full" />
                 <span className="text-xs text-muted-foreground">{feature}</span>
               </div>
             ))}
           </div>
         </div>
         <div className="flex flex-col sm:flex-row gap-4">
-          <Link href={"https://www.greensky.com/prequal/gs/prequalify-for-loan?merchant=81115616&channel=External-Button-Prequal"}><button className="px-8 py-4 bg-primary text-primary-foreground font-bold rounded-full shadow-lg hover:scale-105 transition-transform">{ctaBanner.primaryCta || "Contact Us"}</button></Link>
-          <Link href={"/contact-us"}><button className="px-8 py-4 bg-background text-primary border-2 border-primary font-bold rounded-full hover:bg-primary hover:text-white transition-all">{ctaBanner.secondaryCta || "Free Estimate"}</button></Link>
+          <Link href={"https://www.greensky.com/prequal/gs/prequalify-for-loan?merchant=81115616&channel=External-Button-Prequal"}><button className="px-8 py-4 bg-brand-blue dark:bg-brand-yellow text-primary-foreground dark:text-[#080710] font-bold rounded-full shadow-lg hover:scale-105 transition-transform">{ctaBanner.primaryCta || "Contact Us"}</button></Link>
+          <Link href={"/contact-us"}><button className="px-8 py-4 bg-background text-brand-blue dark:text-brand-yellow border-2 border-brand-blue dark:border-brand-yellow font-bold rounded-full hover:bg-brand-blue dark:hover:bg-brand-yellow hover:text-white dark:hover:text-[#080710] transition-all">{ctaBanner.secondaryCta || "Free Estimate"}</button></Link>
         </div>
       </div>
     </motion.div>
@@ -828,13 +828,13 @@ const ValuesGrid = ({ content: passedContent }: { content?: any }) => {
       <div className="relative z-10 max-w-7xl mx-auto px-4">
         <div className="text-center mb-20">
           {valuesData.badge && (
-            <span className="inline-block text-primary text-xs font-black uppercase tracking-[0.5em] mb-4">
+            <span className="inline-block text-brand-blue dark:text-brand-yellow text-xs font-black uppercase tracking-[0.5em] mb-4">
               {valuesData.badge}
             </span>
           )}
           <h2 className="text-4xl lg:text-7xl font-bold tracking-tight mb-6">
             {valuesData.headline?.replace(valuesData.highlight || '', '')} <br />
-            <span className="bg-gradient-to-r from-primary to-primary/95 bg-clip-text text-transparent">{valuesData.highlight}</span>
+            <span className="bg-gradient-to-r from-brand-blue dark:from-brand-yellow to-brand-blue/95 dark:to-brand-yellow/95 bg-clip-text text-transparent">{valuesData.highlight}</span>
           </h2>
           <RichTextRenderer
             content={valuesData.description}
@@ -844,9 +844,9 @@ const ValuesGrid = ({ content: passedContent }: { content?: any }) => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {(valuesData.items || []).map((value: any, idx: number) => {
             return (
-              <motion.div key={idx} initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.1 }} className="bg-card p-8 rounded-3xl border border-border hover:border-primary/50 transition-all shadow-lg hover:shadow-2xl group">
-                <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary/10 transition-colors">
-                  <Icon name={value.icon || "BadgeCheck"} className="w-8 h-8 text-muted-foreground group-hover:text-primary transition-colors" />
+              <motion.div key={idx} initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.1 }} className="bg-card p-8 rounded-3xl border border-border hover:border-brand-blue/50 dark:hover:border-brand-yellow/50 transition-all shadow-lg hover:shadow-2xl group">
+                <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-blue/10 dark:group-hover:bg-brand-yellow/10 transition-colors">
+                  <Icon name={value.icon || "BadgeCheck"} className="w-8 h-8 text-muted-foreground group-hover:text-brand-blue dark:group-hover:text-brand-yellow transition-colors" />
                 </div>
                 <h3 className="text-2xl font-bold mb-4">{value.title}</h3>
                 <RichTextRenderer
@@ -855,7 +855,7 @@ const ValuesGrid = ({ content: passedContent }: { content?: any }) => {
                 />
                 <div className="pt-6 border-t border-border/50 flex items-center justify-between">
                   <span className="text-xs text-muted-foreground uppercase tracking-widest">{value.statLabel}</span>
-                  <span className="text-2xl font-bold text-primary">{value.stat}</span>
+                  <span className="text-2xl font-bold text-brand-blue dark:text-brand-yellow">{value.stat}</span>
                 </div>
               </motion.div>
             );

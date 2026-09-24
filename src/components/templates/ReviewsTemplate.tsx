@@ -41,7 +41,7 @@ const TestimonialCard = ({ testimonial, index, onPlay }: any) => {
     const inView = useInView(ref, { once: true, margin: "-50px" });
     return (
         <motion.div ref={ref} initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.5, delay: index * 0.1 }} className="group relative bg-white dark:bg-card rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-100 dark:border-white/5 transition-all duration-300">
- <div className="absolute top-6 right-6 text-5xl text-primary/10 font-cursive">"</div>
+ <div className="absolute top-6 right-6 text-5xl text-brand-blue/10 dark:text-brand-yellow/10 font-cursive">"</div>
             <div className="flex gap-1 mb-5">
                 {[...Array(5)].map((_, i) => (
                     <svg key={i} className="w-4 h-4 text-yellow-500 fill-yellow-500" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z" /></svg>

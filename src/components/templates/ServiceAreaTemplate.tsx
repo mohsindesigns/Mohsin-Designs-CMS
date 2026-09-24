@@ -591,11 +591,11 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
               if (wIdx === 1) {
                 // Highlighted centerpiece dark-slate card
                 return (
-                  <div key={wIdx} className="on-dark-surface flex flex-col items-center text-center p-10 bg-slate-900 text-white rounded-3xl shadow-2xl relative scale-105 border-2 border-primary/40 group hover:border-primary transition-all duration-300 z-10">
-                    <div className="absolute top-4 right-4 bg-primary text-white text-[10px] font-black uppercase tracking-wider px-3.5 py-1 rounded-full shadow-md">
+                  <div key={wIdx} className="on-dark-surface flex flex-col items-center text-center p-10 bg-slate-900 text-white rounded-3xl shadow-2xl relative scale-105 border-2 border-brand-blue/40 dark:border-brand-yellow/40 group hover:border-brand-blue dark:hover:border-brand-yellow transition-all duration-300 z-10">
+                    <div className="absolute top-4 right-4 bg-brand-blue dark:bg-brand-yellow text-white dark:text-[#080710] text-[10px] font-black uppercase tracking-wider px-3.5 py-1 rounded-full shadow-md">
                       Highly Requested
                     </div>
-                    <div className="w-16 h-16 rounded-2xl bg-primary text-white flex items-center justify-center mb-8 shadow-lg group-hover:scale-105 transition-transform">
+                    <div className="w-16 h-16 rounded-2xl bg-brand-blue dark:bg-brand-yellow text-white dark:text-[#080710] flex items-center justify-center mb-8 shadow-lg group-hover:scale-105 transition-transform">
                       <ChooseIcon className="w-8 h-8 animate-pulse" />
                     </div>
                     <h3 className="font-heading font-black text-2xl text-white mb-4">{item.title}</h3>
@@ -688,7 +688,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
       <section className="px-6 max-w-5xl mx-auto section-y">
         <div className="on-dark-surface relative bg-slate-950 rounded-[2rem] p-10 sm:p-16 text-center border border-slate-800 shadow-xl overflow-hidden">
           <div className="absolute inset-0 z-0">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 opacity-70" />
+            <div className="absolute inset-0 bg-gradient-to-br from-brand-blue/20 dark:from-brand-yellow/20 via-transparent to-brand-blue/10 dark:to-brand-yellow/10 opacity-70" />
           </div>
 
           <div className="relative z-10 space-y-6">

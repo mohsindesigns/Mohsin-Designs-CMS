@@ -259,14 +259,14 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
       `}</style>
 
       {/* Decorative Background Glows */}
-      <div className="absolute top-1/4 -left-32 w-96 h-96 rounded-full bg-primary/5 blur-3xl pointer-events-none z-0" />
+      <div className="absolute top-1/4 -left-32 w-96 h-96 rounded-full bg-brand-blue/5 dark:bg-brand-yellow/5 blur-3xl pointer-events-none z-0" />
       <div className="absolute bottom-1/4 -right-32 w-96 h-96 rounded-full bg-primary/5 dark:bg-yellow-400/10 blur-3xl pointer-events-none z-0" />
 
       {/* Crossing structural grid lines */}
-      <div className="absolute inset-x-0 top-12 h-[1px] bg-primary/[0.03] pointer-events-none" />
-      <div className="absolute inset-x-0 bottom-12 h-[1px] bg-primary/[0.03] pointer-events-none" />
-      <div className="absolute left-1/4 top-0 bottom-0 w-[1px] bg-primary/[0.03] pointer-events-none" />
-      <div className="absolute right-1/4 top-0 bottom-0 w-[1px] bg-primary/[0.03] pointer-events-none" />
+      <div className="absolute inset-x-0 top-12 h-[1px] bg-brand-blue/[0.03] dark:bg-brand-yellow/[0.03] pointer-events-none" />
+      <div className="absolute inset-x-0 bottom-12 h-[1px] bg-brand-blue/[0.03] dark:bg-brand-yellow/[0.03] pointer-events-none" />
+      <div className="absolute left-1/4 top-0 bottom-0 w-[1px] bg-brand-blue/[0.03] dark:bg-brand-yellow/[0.03] pointer-events-none" />
+      <div className="absolute right-1/4 top-0 bottom-0 w-[1px] bg-brand-blue/[0.03] dark:bg-brand-yellow/[0.03] pointer-events-none" />
 
       <div className="w-full relative z-10">
 
@@ -292,7 +292,7 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
           <div className="bg-white dark:bg-[#12121e] border border-slate-200 dark:border-white/10 rounded-2xl p-4 sm:p-5 shadow-[0_8px_24px_rgba(3,6,172,0.04)] relative overflow-hidden group/scorecard shrink-0 min-w-[260px] md:max-w-sm">
             <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-primary to-primary/40 dark:from-yellow-400 dark:to-yellow-400/40" />
             <div className="flex items-center gap-4 relative z-10">
-              <div className="flex flex-col items-center justify-center h-14 w-14 rounded-xl bg-primary dark:bg-yellow-400 text-white dark:text-slate-950 shadow-sm border border-primary/10">
+              <div className="flex flex-col items-center justify-center h-14 w-14 rounded-xl bg-primary dark:bg-yellow-400 text-white dark:text-slate-950 shadow-sm border border-brand-blue/10 dark:border-brand-yellow/10">
                 <span className="font-heading font-black text-lg leading-none">{scorecardRating}</span>
                 <span className="font-mono text-[7px] font-bold uppercase tracking-widest text-white/80 dark:text-slate-950/80 mt-1">{scorecardRatingLabel}</span>
               </div>
@@ -310,7 +310,7 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
                 </span>
               </div>
             </div>
-            <div className="absolute -bottom-8 -right-8 w-20 h-20 rounded-full bg-primary/5 blur-xl group-hover/scorecard:scale-150 transition-transform duration-500" />
+            <div className="absolute -bottom-8 -right-8 w-20 h-20 rounded-full bg-brand-blue/5 dark:bg-brand-yellow/5 blur-xl group-hover/scorecard:scale-150 transition-transform duration-500" />
           </div>
         </div>
 
@@ -329,7 +329,7 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
               {tripleArray(row1).map((item, idx) => (
                 <div
                   key={idx}
-                  className="group w-[320px] sm:w-[350px] shrink-0 bg-white dark:bg-[#12121e] border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:border-primary/20 dark:hover:border-primary/30 transition-all duration-300 flex flex-col justify-between h-[180px] sm:h-[190px] card-sweep-glare text-left"
+                  className="group w-[320px] sm:w-[350px] shrink-0 bg-white dark:bg-[#12121e] border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:border-primary/20 dark:hover:border-brand-yellow/30 transition-all duration-300 flex flex-col justify-between h-[180px] sm:h-[190px] card-sweep-glare text-left"
                 >
                   <div className="space-y-3">
                     <div className="flex gap-0.5 text-brand-star">
@@ -368,7 +368,7 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
               {tripleArray(row2).map((item, idx) => (
                 <div
                   key={idx}
-                  className="group w-[320px] sm:w-[350px] shrink-0 bg-white dark:bg-[#12121e] border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:border-primary/20 dark:hover:border-primary/30 transition-all duration-300 flex flex-col justify-between h-[180px] sm:h-[190px] card-sweep-glare text-left"
+                  className="group w-[320px] sm:w-[350px] shrink-0 bg-white dark:bg-[#12121e] border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:border-primary/20 dark:hover:border-brand-yellow/30 transition-all duration-300 flex flex-col justify-between h-[180px] sm:h-[190px] card-sweep-glare text-left"
                 >
                   <div className="space-y-3">
                     <div className="flex gap-0.5 text-brand-star">
@@ -407,7 +407,7 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
               {tripleArray(row3).map((item, idx) => (
                 <div
                   key={idx}
-                  className="group w-[320px] sm:w-[350px] shrink-0 bg-white dark:bg-[#12121e] border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:border-primary/20 dark:hover:border-primary/30 transition-all duration-300 flex flex-col justify-between h-[180px] sm:h-[190px] card-sweep-glare text-left"
+                  className="group w-[320px] sm:w-[350px] shrink-0 bg-white dark:bg-[#12121e] border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:border-primary/20 dark:hover:border-brand-yellow/30 transition-all duration-300 flex flex-col justify-between h-[180px] sm:h-[190px] card-sweep-glare text-left"
                 >
                   <div className="space-y-3">
                     <div className="flex gap-0.5 text-brand-star">

@@ -24,7 +24,7 @@ const SMSConsentCheckbox = ({ checked, onChange }: { checked: boolean; onChange:
         >
             <div className={`
                 relative flex items-start gap-3 p-4 rounded-xl transition-all duration-500
-                ${isFocused ? 'bg-primary/5 border border-primary/30' : 'bg-muted/30 border border-border/50 hover:border-primary/20'}
+                ${isFocused ? 'bg-brand-blue/5 dark:bg-brand-yellow/5 border border-brand-blue/30 dark:border-brand-yellow/30' : 'bg-muted/30 border border-border/50 hover:border-brand-blue/20 dark:hover:border-brand-yellow/20'}
             `}>
                 <div className="relative">
                     <input
@@ -38,8 +38,8 @@ const SMSConsentCheckbox = ({ checked, onChange }: { checked: boolean; onChange:
                     />
                     <motion.div
                         animate={checked ? {
-                            backgroundColor: "hsl(var(--primary))",
-                            borderColor: "hsl(var(--primary))"
+                            backgroundColor: "var(--color-brand-accent)",
+                            borderColor: "var(--color-brand-accent)"
                         } : {
                             backgroundColor: "transparent",
                             borderColor: "hsl(var(--border))"
@@ -48,7 +48,7 @@ const SMSConsentCheckbox = ({ checked, onChange }: { checked: boolean; onChange:
                         whileTap={{ scale: 0.95 }}
                         className={`
                             w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all duration-300
-                            ${isHovered && !checked ? 'border-primary/50' : ''}
+                            ${isHovered && !checked ? 'border-brand-blue/50 dark:border-brand-yellow/50' : ''}
                         `}
                     >
                         {checked && (
@@ -57,7 +57,7 @@ const SMSConsentCheckbox = ({ checked, onChange }: { checked: boolean; onChange:
                                 animate={{ scale: 1 }}
                                 transition={{ type: "spring", stiffness: 500, damping: 30 }}
                             >
-                                <Icon name="Check" className="w-3 h-3 text-white" />
+                                <Icon name="Check" className="w-3 h-3 text-white dark:text-[#080710]" />
                             </motion.div>
                         )}
                     </motion.div>
@@ -68,9 +68,9 @@ const SMSConsentCheckbox = ({ checked, onChange }: { checked: boolean; onChange:
                     className="flex-1 text-[11px] text-muted-foreground leading-relaxed cursor-pointer"
                 >
                     I agree to receive informational SMS text messages from Mohsin Designs related to my request, including appointment scheduling and service updates, at the number I provided. Message frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help. Consent is not a condition of purchase. Please see{' '}
-                    <Link href="/privacy" className="text-primary hover:underline transition-colors">Privacy Policy</Link>
+                    <Link href="/privacy" className="text-brand-blue dark:text-brand-yellow hover:underline transition-colors">Privacy Policy</Link>
                     {' '}and{' '}
-                    <Link href="/terms" className="text-primary hover:underline transition-colors">Terms and Conditions</Link>.
+                    <Link href="/terms" className="text-brand-blue dark:text-brand-yellow hover:underline transition-colors">Terms and Conditions</Link>.
                 </label>
             </div>
 
@@ -78,7 +78,7 @@ const SMSConsentCheckbox = ({ checked, onChange }: { checked: boolean; onChange:
                 <motion.div
                     initial={{ scaleX: 0 }}
                     animate={{ scaleX: 1 }}
-                    className="absolute -bottom-0.5 left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-primary rounded-full"
+                    className="absolute -bottom-0.5 left-0 right-0 h-0.5 bg-gradient-to-r from-brand-blue dark:from-brand-yellow to-brand-blue dark:to-brand-yellow rounded-full"
                 />
             )}
         </motion.div>
@@ -279,7 +279,7 @@ ${formData.message}
                         {[...Array(8)].map((_, i) => (
                             <motion.div
                                 key={i}
-                                className="absolute w-1 h-1 bg-primary rounded-full"
+                                className="absolute w-1 h-1 bg-brand-blue dark:bg-brand-yellow rounded-full"
                                 initial={{
                                     x: 0,
                                     y: 0,
@@ -303,7 +303,7 @@ ${formData.message}
                 )}
 
                 <motion.div
-                    className="relative w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-primary via-primary to-primary/90 shadow-2xl flex items-center justify-center cursor-pointer border-2 border-white/30"
+                    className="relative w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-brand-blue dark:from-brand-yellow via-brand-blue dark:via-brand-yellow to-brand-blue/90 dark:to-brand-yellow/90 shadow-2xl flex items-center justify-center cursor-pointer border-2 border-white/30"
                     animate={{
                         boxShadow: isHovered
                             ? '0 30px 50px -15px rgba(36, 48, 210, 0.7), 0 0 0 3px rgba(255,255,255,0.4)'
@@ -362,14 +362,14 @@ ${formData.message}
                                 animate={{ opacity: 1, x: 0, scale: 1 }}
                                 exit={{ opacity: 0, x: -20, scale: 0.8 }}
                                 transition={{ type: "spring", damping: 15 }}
-                                className="absolute right-20 top-1/2 -translate-y-1/2 bg-gradient-to-r from-secondary to-secondary/80 text-white text-sm font-medium px-5 py-2.5 rounded-2xl whitespace-nowrap shadow-2xl border border-primary/30"
+                                className="absolute right-20 top-1/2 -translate-y-1/2 bg-gradient-to-r from-secondary to-secondary/80 text-white text-sm font-medium px-5 py-2.5 rounded-2xl whitespace-nowrap shadow-2xl border border-brand-blue/30 dark:border-brand-yellow/30"
                             >
                                 <span className="flex items-center gap-2">
-                                    <Icon name="Sparkles" className="w-4 h-4 text-primary" />
+                                    <Icon name="Sparkles" className="w-4 h-4 text-brand-blue dark:text-brand-yellow" />
                                     {quickQuote.button?.text || "Get Free Quote"}
-                                    <Icon name="ChevronRight" className="w-4 h-4 text-primary" />
+                                    <Icon name="ChevronRight" className="w-4 h-4 text-brand-blue dark:text-brand-yellow" />
                                 </span>
-                                <div className="absolute right-[-4px] top-1/2 -translate-y-1/2 w-3 h-3 bg-gradient-to-r from-secondary to-secondary/80 rotate-45 border-r border-t border-primary/30" />
+                                <div className="absolute right-[-4px] top-1/2 -translate-y-1/2 w-3 h-3 bg-gradient-to-r from-secondary to-secondary/80 rotate-45 border-r border-t border-brand-blue/30 dark:border-brand-yellow/30" />
                             </motion.div>
                         )}
                     </AnimatePresence>
@@ -402,7 +402,7 @@ ${formData.message}
                                 onClick={(e) => e.stopPropagation()}
                             >
                                 <motion.div
-                                    className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-primary/30 via-primary/20 to-primary/30 blur-2xl"
+                                    className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-brand-blue/30 dark:from-brand-yellow/30 via-brand-blue/20 dark:via-brand-yellow/20 to-brand-blue/30 dark:to-brand-yellow/30 blur-2xl"
                                     animate={{
                                         scale: [1, 1.05, 1],
                                         opacity: [0.3, 0.5, 0.3]
@@ -414,11 +414,11 @@ ${formData.message}
                                     }}
                                 />
 
-                                <div className="relative bg-card rounded-3xl shadow-2xl overflow-hidden border border-primary/10">
-                                    <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-primary/5 to-transparent" />
+                                <div className="relative bg-card rounded-3xl shadow-2xl overflow-hidden border border-brand-blue/10 dark:border-brand-yellow/10">
+                                    <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-brand-blue/5 dark:from-brand-yellow/5 to-transparent" />
 
-                                    <div className="absolute top-0 left-0 w-20 h-20 border-t-2 border-l-2 border-primary/20 rounded-tl-3xl" />
-                                    <div className="absolute top-0 right-0 w-20 h-20 border-t-2 border-r-2 border-primary/20 rounded-tr-3xl" />
+                                    <div className="absolute top-0 left-0 w-20 h-20 border-t-2 border-l-2 border-brand-blue/20 dark:border-brand-yellow/20 rounded-tl-3xl" />
+                                    <div className="absolute top-0 right-0 w-20 h-20 border-t-2 border-r-2 border-brand-blue/20 dark:border-brand-yellow/20 rounded-tr-3xl" />
 
                                     <motion.button
                                         whileHover={{ scale: 1.1, rotate: 90 }}
@@ -445,7 +445,7 @@ ${formData.message}
                                                         damping: 15,
                                                         stiffness: 200
                                                     }}
-                                                    className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mb-6 shadow-2xl shadow-primary/30"
+                                                    className="w-24 h-24 rounded-full bg-gradient-to-br from-brand-blue dark:from-brand-yellow to-brand-blue/80 dark:to-brand-yellow/80 flex items-center justify-center mb-6 shadow-2xl shadow-brand-blue/30 dark:shadow-brand-yellow/30"
                                                 >
                                                     <motion.svg
                                                         className="w-12 h-12 text-white"
@@ -482,10 +482,10 @@ ${formData.message}
                                                     initial={{ scale: 0 }}
                                                     animate={{ scale: 1 }}
                                                     transition={{ delay: 0.5 }}
-                                                    className="absolute bottom-8 left-1/2 -translate-x-1/2 w-16 h-1 bg-primary/20 rounded-full overflow-hidden"
+                                                    className="absolute bottom-8 left-1/2 -translate-x-1/2 w-16 h-1 bg-brand-blue/20 dark:bg-brand-yellow/20 rounded-full overflow-hidden"
                                                 >
                                                     <motion.div
-                                                        className="h-full bg-primary"
+                                                        className="h-full bg-brand-blue dark:bg-brand-yellow"
                                                         initial={{ width: "0%" }}
                                                         animate={{ width: "100%" }}
                                                         transition={{ duration: 3, ease: "linear" }}
@@ -503,8 +503,8 @@ ${formData.message}
                                             className="mb-8"
                                         >
                                             <div className="flex items-center gap-3 mb-2">
-                                                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                                                    <Icon name="Award" className="w-5 h-5 text-primary" />
+                                                <div className="w-10 h-10 rounded-xl bg-brand-blue/10 dark:bg-brand-yellow/10 flex items-center justify-center">
+                                                    <Icon name="Award" className="w-5 h-5 text-brand-blue dark:text-brand-yellow" />
                                                 </div>
                                                 <div>
                                                     <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
@@ -534,7 +534,7 @@ ${formData.message}
                                                     >
                                                         <motion.div
                                                             className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 transition-all duration-500 ${i <= step
-                                                                ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30'
+                                                                ? 'bg-brand-blue dark:bg-brand-yellow text-primary-foreground dark:text-[#080710] shadow-lg shadow-brand-blue/30 dark:shadow-brand-yellow/30'
                                                                 : 'bg-muted text-muted-foreground'
                                                                 }`}
                                                             animate={i === step ? {
@@ -562,7 +562,7 @@ ${formData.message}
 
                                             <div className="absolute top-5 left-0 right-0 h-[2px] bg-border -z-10 hidden md:block">
                                                 <motion.div
-                                                    className="h-full bg-primary"
+                                                    className="h-full bg-brand-blue dark:bg-brand-yellow"
                                                     initial={{ width: "0%" }}
                                                     animate={{ width: `${((step - 1) / 2) * 100}%` }}
                                                     transition={{ duration: 0.3 }}
@@ -583,7 +583,7 @@ ${formData.message}
                                                     >
                                                         <div>
                                                             <label className="block text-sm font-medium text-foreground mb-2">
-                                                                <Icon name="User" className="w-4 h-4 inline mr-2 text-primary" />
+                                                                <Icon name="User" className="w-4 h-4 inline mr-2 text-brand-blue dark:text-brand-yellow" />
                                                                 {quickQuote.formLabels?.name || "Your Name"}
                                                             </label>
                                                             <input
@@ -592,13 +592,13 @@ ${formData.message}
                                                                 value={formData.name}
                                                                 onChange={handleInputChange}
                                                                 required
-                                                                className="w-full px-5 py-4 bg-muted border border-border rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-foreground"
+                                                                className="w-full px-5 py-4 bg-muted border border-border rounded-xl focus:outline-none focus:border-brand-blue dark:focus:border-brand-yellow focus:ring-4 focus:ring-brand-blue/10 dark:focus:ring-brand-yellow/10 transition-all text-foreground"
                                                                 placeholder="John Doe"
                                                             />
                                                         </div>
                                                         <div>
                                                             <label className="block text-sm font-medium text-foreground mb-2">
-                                                                <Icon name="Mail" className="w-4 h-4 inline mr-2 text-primary" />
+                                                                <Icon name="Mail" className="w-4 h-4 inline mr-2 text-brand-blue dark:text-brand-yellow" />
                                                                 {quickQuote.formLabels?.email || "Email Address"}
                                                             </label>
                                                             <input
@@ -607,7 +607,7 @@ ${formData.message}
                                                                 value={formData.email}
                                                                 onChange={handleInputChange}
                                                                 required
-                                                                className="w-full px-5 py-4 bg-muted border border-border rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-foreground"
+                                                                className="w-full px-5 py-4 bg-muted border border-border rounded-xl focus:outline-none focus:border-brand-blue dark:focus:border-brand-yellow focus:ring-4 focus:ring-brand-blue/10 dark:focus:ring-brand-yellow/10 transition-all text-foreground"
                                                                 placeholder="john@example.com"
                                                             />
                                                         </div>
@@ -625,7 +625,7 @@ ${formData.message}
                                                     >
                                                         <div>
                                                             <label className="block text-sm font-medium text-foreground mb-2">
-                                                                <Icon name="Phone" className="w-4 h-4 inline mr-2 text-primary" />
+                                                                <Icon name="Phone" className="w-4 h-4 inline mr-2 text-brand-blue dark:text-brand-yellow" />
                                                                 {quickQuote.formLabels?.phone || "Phone Number"}
                                                             </label>
                                                             <input
@@ -634,13 +634,13 @@ ${formData.message}
                                                                 value={formData.phone}
                                                                 onChange={handleInputChange}
                                                                 required
-                                                                className="w-full px-5 py-4 bg-muted border border-border rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-foreground"
+                                                                className="w-full px-5 py-4 bg-muted border border-border rounded-xl focus:outline-none focus:border-brand-blue dark:focus:border-brand-yellow focus:ring-4 focus:ring-brand-blue/10 dark:focus:ring-brand-yellow/10 transition-all text-foreground"
                                                                 placeholder="(636) 449-9714"
                                                             />
                                                         </div>
                                                         <div>
                                                             <label className="block text-sm font-medium text-foreground mb-2">
-                                                                <Icon name="Home" className="w-4 h-4 inline mr-2 text-primary" />
+                                                                <Icon name="Home" className="w-4 h-4 inline mr-2 text-brand-blue dark:text-brand-yellow" />
                                                                 {quickQuote.formLabels?.projectType || "Project Type"}
                                                             </label>
                                                             <ThemedSelect
@@ -666,7 +666,7 @@ ${formData.message}
                                                     >
                                                         <div>
                                                             <label className="block text-sm font-medium text-foreground mb-2">
-                                                                <Icon name="MessageSquare" className="w-4 h-4 inline mr-2 text-primary" />
+                                                                <Icon name="MessageSquare" className="w-4 h-4 inline mr-2 text-brand-blue dark:text-brand-yellow" />
                                                                 {quickQuote.formLabels?.message || "Tell us about your project"}
                                                             </label>
                                                             <textarea
@@ -675,7 +675,7 @@ ${formData.message}
                                                                 onChange={handleInputChange}
                                                                 required
                                                                 rows={5}
-                                                                className="w-full px-5 py-4 bg-muted border border-border rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-foreground resize-none"
+                                                                className="w-full px-5 py-4 bg-muted border border-border rounded-xl focus:outline-none focus:border-brand-blue dark:focus:border-brand-yellow focus:ring-4 focus:ring-brand-blue/10 dark:focus:ring-brand-yellow/10 transition-all text-foreground resize-none"
                                                                 placeholder="Briefly describe your exterior remodeling needs..."
                                                             />
                                                         </div>
@@ -734,7 +734,7 @@ ${formData.message}
                                                     { text: "Veteran owned", icon: "Flag" }
                                                 ]).map((badge: any, idx: number) => (
                                                     <div key={idx} className="flex items-center gap-2">
-                                                        <div className="w-1.5 h-1.5 bg-primary rounded-full" />
+                                                        <div className="w-1.5 h-1.5 bg-brand-blue dark:bg-brand-yellow rounded-full" />
                                                         <span className="text-muted-foreground">{badge.text}</span>
                                                     </div>
                                                 ))}
@@ -742,7 +742,7 @@ ${formData.message}
                                         </form>
                                     </div>
 
-                                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent" />
+                                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-brand-blue dark:via-brand-yellow to-transparent" />
                                 </div>
                             </motion.div>
                         </div>

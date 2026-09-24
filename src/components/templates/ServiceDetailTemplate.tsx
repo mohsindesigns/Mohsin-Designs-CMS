@@ -1625,7 +1625,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                         onClick={() => setActiveCaseIdx(idx)}
                         className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${activeCaseIdx === idx
                             ? "bg-brand-blue dark:bg-brand-yellow text-white dark:text-[#080710] shadow-sm scale-[1.02]"
-                            : "bg-white dark:bg-[#12121e] border border-brand-zinc-200 dark:border-white/10 text-brand-zinc-600 dark:text-zinc-400 hover:border-brand-blue/30 hover:text-brand-blue dark:hover:text-brand-yellow"
+                            : "bg-white dark:bg-[#12121e] border border-brand-zinc-200 dark:border-white/10 text-brand-zinc-600 dark:text-zinc-400 hover:border-brand-blue/30 dark:hover:border-brand-yellow/30 hover:text-brand-blue dark:hover:text-brand-yellow"
                           }`}
                       >
                         {cs.title || `Case 0${idx + 1}`}

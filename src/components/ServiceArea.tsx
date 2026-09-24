@@ -16,7 +16,7 @@ const RealWorldMap = dynamic(() => import("@/components/RealWorldMap"), {
   ssr: false,
   loading: () => (
     <div className="w-full h-[440px] bg-slate-100 dark:bg-[#12121e] rounded-2xl flex flex-col items-center justify-center text-slate-400 gap-3 border border-slate-200 dark:border-white/10 animate-pulse">
-      <Globe className="w-8 h-8 text-primary animate-spin" />
+      <Globe className="w-8 h-8 text-brand-blue dark:text-brand-yellow animate-spin" />
       <span className="text-xs font-semibold">Loading Global Live Map...</span>
     </div>
   ),

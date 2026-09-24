@@ -417,8 +417,8 @@ export default function ContactForm({ data }: { data?: any }) {
                   animate={{ opacity: 1, scale: 1 }}
                   className="flex flex-col items-center justify-center text-center py-16 space-y-5"
                 >
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-blue text-white shadow-xl shadow-brand-blue/20 animate-bounce">
-                    <CheckCircle className="h-10 w-10 text-white" />
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-blue dark:bg-brand-yellow text-white dark:text-brand-dark shadow-xl shadow-brand-blue/20 dark:shadow-brand-yellow/20 animate-bounce">
+                    <CheckCircle className="h-10 w-10 text-white dark:text-brand-dark" />
                   </div>
 
                   <div className="space-y-2">

@@ -154,8 +154,8 @@ export default function PageInlineFaqs({
       <div className="absolute -right-32 bottom-1/3 h-96 w-96 rounded-full bg-primary/5 dark:bg-yellow-400/5 blur-3xl pointer-events-none" />
 
       {/* Structural accent grid lines */}
-      <div className="absolute inset-x-0 top-12 h-[1px] bg-primary/[0.03] pointer-events-none" />
-      <div className="absolute inset-x-0 bottom-12 h-[1px] bg-primary/[0.03] pointer-events-none" />
+      <div className="absolute inset-x-0 top-12 h-[1px] bg-brand-blue/[0.03] dark:bg-brand-yellow/[0.03] pointer-events-none" />
+      <div className="absolute inset-x-0 bottom-12 h-[1px] bg-brand-blue/[0.03] dark:bg-brand-yellow/[0.03] pointer-events-none" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
         

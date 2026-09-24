@@ -104,7 +104,7 @@ export default function AboutOwnerClean({ data: propData }: { data?: any }) {
               ) : null}
 
               {/* Overlay glow on hover */}
-              <div className="absolute inset-0 bg-brand-blue/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+              <div className="absolute inset-0 bg-brand-blue/5 dark:bg-brand-yellow/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
             </div>
 
           </motion.div>
