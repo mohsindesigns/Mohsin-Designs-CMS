@@ -23,50 +23,57 @@ function seededRand(seed: number) {
   return x - Math.floor(x);
 }
 
-// Padding is proportional to the line's own height (i.e. to font size), not a fixed
-// pixel amount - a fixed ~10px pad looked fine on smaller text but was wildly oversized
-// on big headings, where getClientRects() already returns a line box tall enough to
-// cover the font's own ascenders/descenders. That extra fixed padding on top of an
-// already-generous line box is what pushed the stroke into the line above/below it
-// (and, stacked on both of two wrapped lines, made them overlap each other too).
-// Horizontal gets a bit more room than vertical, since a highlighter naturally
-// overshoots slightly past the start/end of a word but shouldn't loom over the line
-// above or below it.
-function padFor(height: number) {
+// A real highlighter pen does not wash the whole line box - it lays a band across the
+// body of the letters (roughly x-height), a bit shorter than the line, with ragged ends
+// and an uneven top/bottom edge where the felt tip skipped. Cursive fonts have very tall
+// line boxes relative to their glyphs, so covering the full box (what this used to do)
+// looked huge. So the stroke is sized from the line's height: a band ~half the height,
+// sitting on the lower-middle of the line where the letter bodies are.
+function bandFor(height: number) {
   return {
-    x: Math.max(4, height * 0.12),
-    y: Math.max(1, height * 0.025),
+    padX: Math.max(3, height * 0.05),
+    top: height * 0.34,
+    height: height * 0.5,
   };
 }
 
-// A rectangle traced as if by hand: each of the 4 corners and each edge's midpoint is
-// nudged a few px off its "true" position, then the 4 edges are drawn as quadratic
-// curves through those midpoints instead of straight lines. That's what actually reads
-// as a rough highlighter stroke - a uniform border-radius on an otherwise-crisp
-// rectangle is still visibly a geometric shape at this size, a wavy hand-drawn outline
-// isn't. Seeded per line so it's stable, not re-randomized on every remeasure. The
-// wobble itself also scales with the box size so it stays proportionate instead of
-// swallowing a small box or looking flat on a huge one.
-function roughRectPath(w: number, h: number, seed: number) {
-  const jitter = (n: number, mag: number) => (seededRand(seed + n * 7.31) - 0.5) * 2 * mag;
-  const c = Math.min(4, Math.max(1, h * 0.035));
-  const tl = { x: jitter(1, c), y: jitter(2, c) };
-  const tr = { x: w + jitter(3, c), y: jitter(4, c) };
-  const br = { x: w + jitter(5, c), y: h + jitter(6, c) };
-  const bl = { x: jitter(7, c), y: h + jitter(8, c) };
-  const topMid = { x: w / 2 + jitter(9, c), y: jitter(10, c * 1.5) };
-  const rightMid = { x: w + jitter(11, c * 1.5), y: h / 2 + jitter(12, c) };
-  const bottomMid = { x: w / 2 + jitter(13, c), y: h + jitter(14, c * 1.5) };
-  const leftMid = { x: jitter(15, c * 1.5), y: h / 2 + jitter(16, c) };
+// Polygon for one rough marker stroke of size w x h. Top and bottom edges are many short
+// segments with small vertical wobble (plus a slow drift so the stroke isn't ruler-
+// straight), and the left/right ends are torn zig-zags instead of clean vertical cuts.
+// Everything is seeded so a line always renders the same wobble across re-measures.
+function roughStrokePath(w: number, h: number, seed: number) {
+  const j = (n: number, mag: number) => (seededRand(seed * 13.7 + n * 5.17) - 0.5) * 2 * mag;
+  const wob = Math.max(0.8, h * 0.07);
+  const steps = Math.max(6, Math.round(w / 22));
+  const driftTop = j(101, h * 0.06);
+  const driftBottom = j(102, h * 0.06);
+  const endJag = Math.max(1.5, h * 0.12);
 
-  return [
-    `M ${tl.x} ${tl.y}`,
-    `Q ${topMid.x} ${topMid.y} ${tr.x} ${tr.y}`,
-    `Q ${rightMid.x} ${rightMid.y} ${br.x} ${br.y}`,
-    `Q ${bottomMid.x} ${bottomMid.y} ${bl.x} ${bl.y}`,
-    `Q ${leftMid.x} ${leftMid.y} ${tl.x} ${tl.y}`,
-    "Z",
-  ].join(" ");
+  const pts: string[] = [];
+  const push = (x: number, y: number) => pts.push(`${x.toFixed(1)} ${y.toFixed(1)}`);
+
+  // Top edge, left -> right
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    push(t * w + (i === 0 || i === steps ? 0 : j(i, w * 0.008)), wob + driftTop * t + j(200 + i, wob));
+  }
+  // Right end, top -> bottom (torn)
+  const rightSegs = 4;
+  for (let k = 1; k < rightSegs; k++) {
+    const t = k / rightSegs;
+    push(w - Math.abs(j(300 + k, endJag)) * (k % 2 ? 1.6 : 0.4), wob + (h - 2 * wob) * t);
+  }
+  // Bottom edge, right -> left
+  for (let i = steps; i >= 0; i--) {
+    const t = i / steps;
+    push(t * w + (i === 0 || i === steps ? 0 : j(400 + i, w * 0.008)), h - wob + driftBottom * t + j(500 + i, wob));
+  }
+  // Left end, bottom -> top (torn)
+  for (let k = rightSegs - 1; k >= 1; k--) {
+    const t = k / rightSegs;
+    push(Math.abs(j(600 + k, endJag)) * (k % 2 ? 0.4 : 1.6), wob + (h - 2 * wob) * t);
+  }
+  return `M ${pts.join(" L ")} Z`;
 }
 
 // Marker-style accent for the cursive highlight word/phrase in headings, e.g.
@@ -145,32 +152,56 @@ export default function AccentHighlight({ children, className = "", delay = 0.45
     <span ref={wrapRef} className={`relative inline-block ${className}`}>
       {rects.map((r, i) => {
         const seed = i + 1;
-        const rotate = (seededRand(seed * 3.7) - 0.5) * 3; // ~ -1.5deg to 1.5deg, varies per line
-        const pad = padFor(r.height);
-        const boxW = r.width + pad.x * 2;
-        const boxH = r.height + pad.y * 2;
+        const rotate = (seededRand(seed * 3.7) - 0.5) * 1.6; // small per-line tilt
+        const band = bandFor(r.height);
+        const boxW = r.width + band.padX * 2;
+        const boxH = band.height;
+        const style = {
+          left: r.left - band.padX,
+          top: r.top + band.top,
+          width: boxW,
+          height: boxH,
+          rotate,
+          transformOrigin: "0% 50%",
+        };
+        const anim = {
+          initial: { scaleX: 0 },
+          whileInView: { scaleX: 1 },
+          viewport: { once: true },
+        };
         return (
-          <motion.svg
-            key={i}
-            aria-hidden="true"
-            className="pointer-events-none absolute -z-10 opacity-[0.16] dark:opacity-[0.22]"
-            style={{
-              left: r.left - pad.x,
-              top: r.top - pad.y,
-              width: boxW,
-              height: boxH,
-              rotate,
-              transformOrigin: "0% 50%",
-            }}
-            viewBox={`0 0 ${boxW} ${boxH}`}
-            preserveAspectRatio="none"
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: delay + i * 0.08, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <path d={roughRectPath(boxW, boxH, seed)} fill="currentColor" />
-          </motion.svg>
+          <span key={i} aria-hidden="true" className="pointer-events-none contents">
+            {/* Main pass */}
+            <motion.svg
+              className="absolute -z-10 opacity-[0.3] dark:opacity-[0.34]"
+              style={style}
+              viewBox={`0 0 ${boxW} ${boxH}`}
+              preserveAspectRatio="none"
+              {...anim}
+              transition={{ duration: 0.5, delay: delay + i * 0.08, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <path d={roughStrokePath(boxW, boxH, seed)} fill="currentColor" />
+            </motion.svg>
+            {/* Second, thinner overlapping pass - where two marker strokes overlap the
+                ink builds up darker, which is a big part of what reads as "real". */}
+            <motion.svg
+              className="absolute -z-10 opacity-[0.16] dark:opacity-[0.2]"
+              style={{
+                ...style,
+                left: r.left - band.padX * 0.4,
+                top: r.top + band.top + boxH * 0.22,
+                width: boxW * 0.9,
+                height: boxH * 0.62,
+                rotate: rotate * -1.4,
+              }}
+              viewBox={`0 0 ${boxW * 0.9} ${boxH * 0.62}`}
+              preserveAspectRatio="none"
+              {...anim}
+              transition={{ duration: 0.45, delay: delay + 0.12 + i * 0.08, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <path d={roughStrokePath(boxW * 0.9, boxH * 0.62, seed + 7)} fill="currentColor" />
+            </motion.svg>
+          </span>
         );
       })}
       <span ref={textRef} className="relative">
