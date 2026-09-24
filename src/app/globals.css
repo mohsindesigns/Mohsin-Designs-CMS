@@ -1446,3 +1446,50 @@
   scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
 }
 
+/* ── Accent heading text (components/ui/AccentHighlight.tsx) ─────────────────────────
+   Gradient-filled text built from the element's own color, so it follows whichever
+   text color class the caller set (brand blue / brand yellow). Two background layers:
+   a moving light sheen (animated by framer-motion) over a static color -> lighter-tint
+   gradient. Gated behind @supports so browsers without background-clip:text or
+   color-mix just show the plain colored text instead of invisible text. */
+.accent-gradient {
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+@supports ((background-clip: text) or (-webkit-background-clip: text)) and (color: color-mix(in srgb, red, blue)) {
+  .accent-gradient {
+    background-image:
+      linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.85) 50%, transparent 62%),
+      linear-gradient(100deg, currentColor 0%, color-mix(in srgb, currentColor 88%, #ffffff) 55%, color-mix(in srgb, currentColor 72%, #ffffff) 100%);
+    background-size: 260% 100%, 100% 100%;
+    background-repeat: no-repeat;
+    background-position: -35% 0, 0 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    padding-inline: 0.04em;
+  }
+  .accent-wrap {
+    filter: drop-shadow(0 6px 16px color-mix(in srgb, currentColor 24%, transparent));
+  }
+}
+.dark .accent-gradient {
+  /* Dark mode: a warmer, brighter sheen so the gradient reads on dark backgrounds. */
+  --accent-sheen: rgba(255, 246, 214, 0.9);
+}
+.accent-sparkle {
+  display: inline-block;
+  width: 0.34em;
+  height: 0.34em;
+  margin-left: 0.1em;
+  vertical-align: 0.72em;
+  color: currentColor;
+  animation: accent-sparkle-glow 3.2s ease-in-out 2.4s infinite;
+}
+@keyframes accent-sparkle-glow {
+  0%, 100% { filter: drop-shadow(0 0 0 transparent); }
+  50% { filter: drop-shadow(0 0 5px currentColor); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .accent-sparkle { animation: none; }
+}
