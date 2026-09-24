@@ -163,7 +163,7 @@ export default function IndustriesSection({ data }: IndustriesSectionProps) {
                       {validHref ? (
                         <Link
                           href={validHref}
-                          className="hover:underline focus:outline-none after:absolute after:inset-0 after:z-10 inline-flex items-center gap-1.5"
+                          className="text-brand-dark dark:text-white hover:text-[#0306AC] dark:hover:text-[#E9BD36] group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] hover:underline focus:outline-none after:absolute after:inset-0 after:z-10 inline-flex items-center gap-1.5"
                           {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                         >
                           <span>{ind.title}</span>

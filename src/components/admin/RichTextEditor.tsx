@@ -101,7 +101,7 @@ export default function RichTextEditor({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: "text-primary no-underline hover:opacity-80 transition-opacity",
+          class: "text-brand-blue dark:text-brand-yellow no-underline hover:opacity-80 transition-opacity",
         },
       }),
       Image.configure({

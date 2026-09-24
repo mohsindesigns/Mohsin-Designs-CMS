@@ -1326,6 +1326,26 @@
     @apply opacity-80;
   }
 
+  /* Links written in the admin rich-text editor. The editor tags every link
+     class="text-primary" (--primary is the same blue in light AND dark) and content
+     pasted from Docs/Word often carries an inline color too, so a plain class rule
+     leaves internal links dark blue on the dark background (unreadable). Force the
+     theme accent - brand blue in light mode, brand yellow in dark mode - on the link
+     and anything nested inside it (<strong>, <span style="color:...">). Dark
+     surfaces (.cta-banner-card / .on-dark-surface) keep their own rule above,
+     which is more specific. */
+  .rich-text-content a,
+  .rich-text-content a *,
+  .rich-text-link,
+  .prose a,
+  .prose a * {
+    color: var(--color-brand-accent) !important;
+  }
+  :is(.cta-banner-card, .on-dark-surface) .rich-text-content a *,
+  :is(.cta-banner-card, .on-dark-surface) .rich-text-link * {
+    color: inherit !important;
+  }
+
   /* Dark mode rich text fixes - override any hardcoded inline black text */
   .dark .rich-text-content,
   .dark .rich-text-content p,
