@@ -36,6 +36,9 @@ export default function VideoField({ label = "Testimonial Video", videoType, vid
   const urlDraft = videoUrl || "";
   const activeType: VideoType = videoType || "upload";
   const parsedEmbed = activeType === "embed" ? parseVideoEmbed(urlDraft) : null;
+  // A YouTube/Vimeo link pasted into the "Direct Video URL" tab can't play in a <video>
+  // tag; the live site detects it and plays it as an embed, so preview it the same way.
+  const urlTabEmbed = activeType === "url" ? parseVideoEmbed(urlDraft) : null;
 
   const handleTabChange = (type: VideoType) => {
     // Switching source type starts that tab fresh rather than carrying over a URL that
@@ -83,12 +86,14 @@ export default function VideoField({ label = "Testimonial Video", videoType, vid
               </div>
               <div className="flex flex-wrap gap-2 justify-center">
                 <button
+                  type="button"
                   onClick={() => setShowSelector(true)}
                   className="bg-[#2271b1] text-white text-[13px] px-4 py-1.5 rounded-sm hover:bg-[#135e96] transition-colors font-medium shadow-sm"
                 >
                   Replace Video
                 </button>
                 <button
+                  type="button"
                   onClick={() => onChange("upload", "")}
                   className="text-[#d63638] text-[13px] hover:underline px-4 py-1.5"
                 >
@@ -98,6 +103,7 @@ export default function VideoField({ label = "Testimonial Video", videoType, vid
             </div>
           ) : (
             <button
+              type="button"
               onClick={() => setShowSelector(true)}
               className="flex flex-col items-center gap-3 text-[#2271b1] hover:text-[#135e96] transition-colors py-10"
             >
@@ -150,10 +156,21 @@ export default function VideoField({ label = "Testimonial Video", videoType, vid
               placeholder="https://cdn.example.com/testimonial.mp4"
               className="w-full bg-white border border-[#c3c4c7] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] px-3 py-2 text-[13px] rounded-[3px] outline-none"
             />
-            {urlDraft && (
-              <div className="border border-[#c3c4c7] bg-black p-1 max-w-md mx-auto">
-                <video src={urlDraft} controls className="max-h-[200px] w-full object-contain block" />
-              </div>
+            {urlTabEmbed?.embedUrl ? (
+              <>
+                <p className="text-[12px] text-[#646970]">
+                  This is a YouTube/Vimeo link - it will play as an embedded video on the live site.
+                </p>
+                <div className="aspect-video w-full max-w-md mx-auto border border-[#c3c4c7] bg-black overflow-hidden">
+                  <iframe src={urlTabEmbed.embedUrl} className="w-full h-full" allowFullScreen title="Video preview" />
+                </div>
+              </>
+            ) : (
+              urlDraft && (
+                <div className="border border-[#c3c4c7] bg-black p-1 max-w-md mx-auto">
+                  <video src={urlDraft} controls className="max-h-[200px] w-full object-contain block" />
+                </div>
+              )
             )}
           </div>
         )}

@@ -1292,9 +1292,12 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
         </section>
       )}
 
-      {dbService?.videoTestimonials?.enabled !== false && (
+      {/* The service-detail editor saves onto this page's own content. dbService is usually the
+          global catalog entry for the slug (which never carries this section), so read the
+          page document first and only fall back to dbService. */}
+      {(pageData?.content?.videoTestimonials ?? dbService?.videoTestimonials)?.enabled !== false && (
         <section id="video-testimonials">
-          <VideoTestimonials data={dbService?.videoTestimonials} />
+          <VideoTestimonials data={pageData?.content?.videoTestimonials ?? dbService?.videoTestimonials} />
         </section>
       )}
 

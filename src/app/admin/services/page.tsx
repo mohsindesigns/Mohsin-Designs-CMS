@@ -26,6 +26,7 @@ import BlogSelector from "@/components/admin/BlogSelector";
 import { BASE_URL } from "@/lib/constants";
 import { syncFaqSchema } from "@/lib/faqSchema";
 import { UI } from "@/components/admin/editors/styles";
+import VideoTestimonialsEditor from "@/components/admin/editors/VideoTestimonialsEditor";
 import { AVAILABLE_COUNTRIES, resolveCountryLocation, COUNTRIES_DATABASE } from "@/lib/countryLocations";
 
 // ── Bullet Point / Array Input Helper ────────────────────────────────────────
@@ -806,6 +807,7 @@ export default function ServicesAdminPage() {
   const subTabs = [
     { id: "hero", label: "1. Hero & Form" },
     { id: "trust", label: "2. Trust Bar" },
+    { id: "videoTestimonials", label: "Video Testimonials" },
     { id: "what-included", label: "3. Deliverables" },
     { id: "strategy", label: "4. Strategy Roadmap" },
     { id: "benefits", label: "5. Outcomes" },
@@ -1286,6 +1288,14 @@ export default function ServicesAdminPage() {
                                   </div>
                                 </div>
                               </div>
+                            )}
+
+                            {/* SUBTAB: VIDEO TESTIMONIALS */}
+                            {activeSubTab === "videoTestimonials" && (
+                              <VideoTestimonialsEditor
+                                value={form.videoTestimonials}
+                                onChange={(next) => setForm({ ...form, videoTestimonials: next })}
+                              />
                             )}
 
                             {/* SUBTAB: WHAT'S INCLUDED */}
