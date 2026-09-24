@@ -114,7 +114,16 @@ export default function AccentHighlight({ children, className = "", delay = 0.3 
                   values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3 0 0 0 -0.6"
                   result="streakAlpha"
                 />
-                <feComposite in="rough" in2="streakAlpha" operator="in" />
+                <feComposite in="rough" in2="streakAlpha" operator="in" result="bristled" />
+                {/* Uneven pigment: slow low-frequency noise varies how dense the paint is along the stroke. */}
+                <feTurbulence type="fractalNoise" baseFrequency="0.011 0.04" numOctaves="2" seed={2 + v * 9} result="density" />
+                <feColorMatrix
+                  in="density"
+                  type="matrix"
+                  values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1.5 0 0 0 0.35"
+                  result="densityAlpha"
+                />
+                <feComposite in="bristled" in2="densityAlpha" operator="in" />
               </filter>
             ))}
           </defs>
@@ -145,16 +154,29 @@ export default function AccentHighlight({ children, className = "", delay = 0.3 
             viewport={{ once: true }}
             transition={{ duration: 0.75, delay: delay + i * 0.12, ease: [0.22, 1, 0.36, 1] }}
           >
-            <path
-              d={`M ${skew} ${h * 0.12} L ${w} 0 L ${w - skew} ${h} L 0 ${h * 0.92} Z`}
-              fill="currentColor"
-              filter={`url(#${uid}-brush-${i % 3})`}
-            />
+            <g filter={`url(#${uid}-brush-${i % 3})`} fill="currentColor">
+              {/* main stroke */}
+              <path d={`M ${skew} ${h * 0.12} L ${w} 0 L ${w - skew} ${h} L 0 ${h * 0.92} Z`} />
+              {/* second, shorter pass laid slightly higher: where two strokes overlap the paint builds up denser */}
+              <path
+                opacity="0.55"
+                d={`M ${w * 0.04} ${h * 0.02} L ${w * 0.93} ${-h * 0.04} L ${w * 0.9} ${h * 0.62} L ${w * 0.02} ${h * 0.58} Z`}
+              />
+              {/* lift-off bristles: thin dry streaks trailing past the end of the stroke, and a couple at the start */}
+              {[0.14, 0.3, 0.5, 0.68, 0.84].map((t, k) => {
+                const len = w * (0.012 + seededRand(i * 7.7 + k) * 0.03);
+                return <rect key={k} x={w - 1} y={h * t} width={len} height={Math.max(1.2, h * 0.045)} rx="1" />;
+              })}
+              {[0.3, 0.62, 0.8].map((t, k) => {
+                const len = w * (0.008 + seededRand(i * 4.1 + k + 9) * 0.02);
+                return <rect key={"l" + k} x={-len} y={h * t} width={len + 2} height={Math.max(1.2, h * 0.04)} rx="1" />;
+              })}
+            </g>
           </motion.svg>
         );
       })}
 
-      <span ref={textRef} className="relative">
+      <span ref={textRef} className="accent-text relative">
         {children}
       </span>
     </span>

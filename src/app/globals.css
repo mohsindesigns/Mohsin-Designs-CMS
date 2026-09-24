@@ -1447,21 +1447,28 @@
 }
 
 /* ── Accent heading highlight (components/ui/AccentHighlight.tsx) ─────────────────────
-   Dry-brush swipe behind the accent phrase. The two brand colours always swap so the
-   text never sits on its own colour: brand yellow behind blue text in light mode, brand
-   blue behind yellow text in dark mode and on always-dark cards. In light mode the
-   stroke multiplies into the page like ink; on dark it just paints. */
+   Dry-brush swipe behind the accent phrase: a translucent brand-BLUE highlighter in
+   light mode (multiplied into the page like ink, the blue text stays readable on top)
+   and a brand-YELLOW highlighter in dark mode (the phrase turns white on it - yellow
+   text on a yellow stroke would vanish). Always-dark cards keep yellow text over a
+   blue stroke. */
 :root {
-  --accent-brush: #f2c230;
+  --accent-brush: #3644ff;
+  --accent-brush-opacity: 0.48;
 }
-.dark,
+.dark {
+  --accent-brush: #e9bd36;
+  --accent-brush-opacity: 0.78;
+}
 .on-dark-surface,
 .cta-banner-card,
 .cta-on-dark {
   --accent-brush: #3a45ee;
+  --accent-brush-opacity: 0.9;
 }
 .accent-brush {
   color: var(--accent-brush);
+  opacity: var(--accent-brush-opacity);
   mix-blend-mode: multiply;
 }
 .dark .accent-brush,
@@ -1469,5 +1476,11 @@
 .cta-banner-card .accent-brush,
 .cta-on-dark .accent-brush {
   mix-blend-mode: normal;
-  opacity: 0.88;
+}
+.dark .accent-text {
+  color: #ffffff !important;
+}
+.dark :is(.on-dark-surface, .cta-banner-card, .cta-on-dark) .accent-text,
+:is(.on-dark-surface, .cta-banner-card, .cta-on-dark) .accent-text {
+  color: #e9bd36 !important;
 }

@@ -176,7 +176,7 @@ export default function Hero({ data, content: overrideContent, breadcrumb }: { d
               // overlapped. Using the text-size/leading slash syntax pairs the intended
               // line-height directly to each breakpoint's own font-size utility instead, so
               // there's no separate utility for a later one to silently outrank.
-              className="font-heading text-3xl/[1.3] sm:text-4xl/[1.3] md:text-5xl/[1.3] lg:text-[50px]/[1.3] font-semibold tracking-tight text-brand-dark dark:text-white select-none"
+              className="font-heading text-3xl/[1.2] sm:text-4xl/[1.2] md:text-5xl/[1.2] lg:text-[50px]/[1.2] font-semibold tracking-tight text-brand-dark dark:text-white select-none"
             >
               {titleLine1}
               {titleConnector && titleConnector.trim() ? ` ${titleConnector.trim()}` : ""}
