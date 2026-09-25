@@ -90,9 +90,12 @@ export default function BlogPosts() {
       value = bulkAction.replace('status-', '');
     }
 
-    if (action === 'delete') {
+    if (action === 'force-delete') {
+      if (!confirm(`Permanently delete ${selectedPosts.length} post(s)? This cannot be undone.`)) return;
+      action = 'delete';
+    } else if (action === 'delete') {
       if (statusFilter === 'trash') {
-        if (!confirm(`Permanently delete ${selectedPosts.length} posts?`)) return;
+        if (!confirm(`Permanently delete ${selectedPosts.length} post(s)?`)) return;
         // Proceed to bulk delete
       } else {
         action = 'trash';
@@ -123,22 +126,24 @@ export default function BlogPosts() {
   // redirect target - one more thing that can go wrong between a proxy and the API.
   const postUrl = (id: string) => `/api/admin/blogs/posts/${id}/`;
 
+  const permanentlyDeletePost = async (id: string) => {
+    if (!confirm("Are you sure you want to permanently delete this post? This cannot be undone.")) return;
+    try {
+      const res = await fetch(postUrl(id), { method: "DELETE" });
+      if (!res.ok && res.status !== 404) {
+        const error = await res.json().catch(() => ({}));
+        alert("Delete failed: " + (error.error || `HTTP ${res.status}`));
+      }
+    } catch (err) {
+      alert("Delete failed due to network error");
+    } finally {
+      fetchPosts();
+    }
+  };
+
   const deletePost = async (id: string) => {
     if (statusFilter === 'trash') {
-      if (!confirm("Are you sure you want to permanently delete this post?")) return;
-      try {
-        const res = await fetch(postUrl(id), { method: "DELETE" });
-        // 404 = it is already gone (deleted in another tab / by another admin): not an error.
-        if (!res.ok && res.status !== 404) {
-          const error = await res.json().catch(() => ({}));
-          alert("Delete failed: " + (error.error || `HTTP ${res.status}`));
-        }
-      } catch (err) {
-        alert("Delete failed due to network error");
-      } finally {
-        // Always resync with the server so the list can never show a post that no longer exists.
-        fetchPosts();
-      }
+      await permanentlyDeletePost(id);
     } else {
       try {
         const res = await fetch(postUrl(id), {
@@ -271,6 +276,7 @@ export default function BlogPosts() {
               <option value="status-published">Move to Published</option>
               <option value="status-draft">Move to Draft</option>
               <option value="delete">Move to Trash</option>
+              <option value="force-delete">Delete Permanently</option>
             </>
           )}
         </select>
@@ -342,7 +348,11 @@ export default function BlogPosts() {
                             <button onClick={() => deletePost(post._id)} className="text-[#d63638] hover:text-[#b32d2e]">Delete Permanently</button>
                           </>
                         ) : (
-                          <button onClick={() => deletePost(post._id)} className="text-[#d63638] hover:text-[#b32d2e]">Trash</button>
+                          <>
+                            <button onClick={() => deletePost(post._id)} className="text-[#d63638] hover:text-[#b32d2e]">Trash</button>
+                            <span className="text-[#c3c4c7]">|</span>
+                            <button onClick={() => permanentlyDeletePost(post._id)} className="text-[#d63638] hover:text-[#b32d2e]">Delete Permanently</button>
+                          </>
                         )}
                         {!post.isTrashed && (
                           <>
