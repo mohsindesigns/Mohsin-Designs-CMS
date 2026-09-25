@@ -65,12 +65,20 @@ export default function Footer() {
     }
   };
  
+  // Wordmark reveal: each letter slides up, then its fill sweeps in left -> right
+  // (background-size 0% -> 100% on a text-clipped gradient) so the giant backdrop text reads as a
+  // deliberate "filling up" effect instead of a barely-visible ghost.
   const letterVariants = {
-    hidden: { y: "100%", opacity: 0 },
+    hidden: { y: "100%", opacity: 0, backgroundSize: "0% 100%" },
     visible: {
       y: 0,
       opacity: 1,
-      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }
+      backgroundSize: "100% 100%",
+      transition: {
+        y: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
+        opacity: { duration: 0.5 },
+        backgroundSize: { duration: 0.9, delay: 0.35, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+      }
     }
   };
  
@@ -87,8 +95,12 @@ export default function Footer() {
     (l: any) => l?.label && String(l.label).trim()
   );
 
-  const allPublishedServices = (servicesData?.services || []).filter(
-    (s: any) => (s.status === 'published' || s.status === undefined) && s.title && String(s.title).trim()
+  // Trashed services keep status "published" in the catalogue, so `isTrashed` must be excluded
+  // explicitly (like the Navbar does) or the footer links to pages that 404. Read the full
+  // catalogue (`globalServices`) so a page-level "featured services" subset never shrinks it.
+  const catalogue: any[] = (content as any).globalServices?.length ? (content as any).globalServices : (servicesData?.services || []);
+  const allPublishedServices = catalogue.filter(
+    (s: any) => (s.status === 'published' || s.status === undefined) && !s.isTrashed && s.title && String(s.title).trim() && s.slug
   );
 
   //"Selected Footer Services" is managed at Admin > Settings > Footer as a
@@ -300,23 +312,31 @@ export default function Footer() {
       </div>
  
       {/* Full-Width Backdrop Wordmark */}
-      <div className="select-none text-center pointer-events-none mt-12 md:mt-20 mb-6 overflow-hidden w-full px-4 relative z-0">
-        <motion.span 
-          className="font-sans font-black text-[7.8vw] leading-none tracking-tighter uppercase flex flex-nowrap justify-center w-full whitespace-nowrap"
+      {/* The footer is a dark surface in BOTH themes, so the wordmark must be equally visible in both
+          (it used to be dimmer in dark mode: 6% white fill / 12% outline on near-black). Accent =
+          soft blue on the navy light-mode footer, brand yellow in dark mode. */}
+      <div className="select-none text-center pointer-events-none mt-12 md:mt-20 mb-6 overflow-hidden w-full px-4 pb-[0.08em] relative z-0 [--wm-accent:#A6B8FF] dark:[--wm-accent:#E9BD36]">
+        <motion.span
+          className="font-sans font-black text-[7.8vw] leading-[1.05] tracking-tighter uppercase flex flex-nowrap justify-center w-full whitespace-nowrap"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: false, amount: 0.01 }}
+          aria-label={wordmarkText}
         >
           {wordmarkLetters.map((letter, idx) => (
             <motion.span
               key={idx}
               variants={letterVariants}
-              className={`inline-block transition-all duration-300 cursor-default hover:scale-110 ${
-                idx >= 7
-                  ? "text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.28)] dark:[-webkit-text-stroke:1px_rgba(255,255,255,0.12)] hover:[-webkit-text-stroke:1px_var(--cta-accent)] pointer-events-auto"
-                  : "text-white/20 dark:text-white/[0.06] hover:text-[var(--cta-accent)] pointer-events-auto"
-              }`}
+              aria-hidden="true"
+              style={{
+                // Vertical fade: solid accent at the cap line, dissolving toward the baseline.
+                backgroundImage: "linear-gradient(to bottom, var(--wm-accent) 0%, color-mix(in srgb, var(--wm-accent) 8%, transparent) 100%)",
+                backgroundRepeat: "no-repeat",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+              }}
+              className="inline-block text-transparent [-webkit-text-stroke:1.5px_color-mix(in_srgb,var(--wm-accent)_55%,transparent)] transition-transform duration-300 cursor-default hover:scale-110 hover:[-webkit-text-stroke:1.5px_var(--wm-accent)] pointer-events-auto"
             >
               {letter === " " ? "\u00A0" : letter}
             </motion.span>

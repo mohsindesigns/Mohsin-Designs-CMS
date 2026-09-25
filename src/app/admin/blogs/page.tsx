@@ -301,10 +301,10 @@ export default function BlogPosts() {
                 />
               </th>
               <th className="px-3 py-2">Title</th>
-              <th className="px-3 py-2">Author</th>
-              <th className="px-3 py-2">Categories</th>
-              <th className="px-3 py-2">Tags</th>
-              <th className="px-3 py-2 w-32"><Calendar className="w-3.5 h-3.5 inline mr-1" /> Date</th>
+              <th className="px-3 py-2 w-36">Author</th>
+              <th className="px-3 py-2 w-44">Categories</th>
+              <th className="px-3 py-2 w-44">Tags</th>
+              <th className="px-3 py-2 w-36"><Calendar className="w-3.5 h-3.5 inline mr-1" /> Date</th>
             </tr>
           </thead>
           <tbody>
@@ -316,14 +316,14 @@ export default function BlogPosts() {
               <tr><td colSpan={6} className="p-10 text-center text-[#646970]">No posts found.</td></tr>
             ) : filteredPosts.map((post) => (
               <tr key={post._id} className={`border-b border-[#f0f0f1] hover:bg-[#f6f7f7] group text-[13px] text-[#2c3338] ${selectedPosts.includes(post._id) ? "bg-[#f0f6fb]" : ""}`}>
-                <td className="px-3 py-4 text-center">
+                <td className="px-3 py-4 text-center align-top">
                   <input 
                     type="checkbox" 
                     checked={selectedPosts.includes(post._id)}
                     onChange={() => toggleSelectPost(post._id)}
                   />
                 </td>
-                <td className="px-3 py-4">
+                <td className="px-3 py-4 align-top">
                   <div className="flex items-start gap-3">
                     {post.featuredImage && (
                       <div className="w-12 h-12 rounded border border-[#c3c4c7] overflow-hidden flex-shrink-0">
@@ -331,7 +331,7 @@ export default function BlogPosts() {
                       </div>
                     )}
                     <div className="flex-1">
-                      <Link href={`/admin/blogs/${post._id}`} className="text-[#2271b1] font-bold hover:text-[#135e96] block mb-1">
+                      <Link href={`/admin/blogs/${post._id}`} className="text-[#2271b1] font-bold hover:text-[#135e96] block mb-1 leading-snug">
                         {post.title} {post.status === 'draft' && <span className="text-[#646970] font-normal">— Draft</span>}
                         {post.status === 'scheduled' && <span className="text-[#646970] font-normal">— Scheduled</span>}
                       </Link>
@@ -368,14 +368,14 @@ export default function BlogPosts() {
                     </div>
                   </div>
                 </td>
-                <td className="px-3 py-4 text-[#2271b1]">{post.author?.username || (typeof post.author === 'string' && !/^[0-9a-f]{24}$/i.test(post.author) ? post.author : 'admin')}</td>
-                <td className="px-3 py-4 text-[#2271b1]">
+                <td className="px-3 py-4 align-top text-[#2271b1]">{post.author?.username || (typeof post.author === 'string' && !/^[0-9a-f]{24}$/i.test(post.author) ? post.author : 'admin')}</td>
+                <td className="px-3 py-4 align-top text-[#2271b1]">
                   {post.categories?.map((c: any) => c.name).join(', ') || '—'}
                 </td>
-                <td className="px-3 py-4 text-[#2271b1]">
+                <td className="px-3 py-4 align-top text-[#2271b1]">
                   {post.tags?.map((t: any) => t.name).join(', ') || '—'}
                 </td>
-                <td className="px-3 py-4">
+                <td className="px-3 py-4 align-top">
                   <div className="text-[12px]">
                     <span className="block text-[#646970]">
                       {post.status === 'published' ? 'Published' : post.status === 'scheduled' ? 'Scheduled for' : 'Last Modified'}

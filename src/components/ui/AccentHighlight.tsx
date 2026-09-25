@@ -74,19 +74,51 @@ export default function AccentHighlight({ children, className = "", delay = 0.3 
       setRects(next);
     }
 
-    measure();
-    window.addEventListener("resize", measure);
     let cancelled = false;
-    if (typeof document !== "undefined" && (document as any).fonts?.ready) {
-      (document as any).fonts.ready.then(() => {
-        if (!cancelled) measure();
-      });
+    const safeMeasure = () => {
+      if (!cancelled) measure();
+    };
+
+    measure();
+
+    // The accent text uses a webfont (Dancing Script) that is usually still loading on first
+    // paint, so the first measurement is of the FALLBACK font - noticeably wider and with a
+    // different line box - which left the stroke ~30% too long and sitting below the letters.
+    // `document.fonts.ready` is not enough (it resolves before a lazily-requested face has
+    // even started loading), so explicitly load the face this span computes to, then re-measure.
+    const fonts: any = typeof document !== "undefined" ? (document as any).fonts : null;
+    if (fonts?.load) {
+      try {
+        const cs = getComputedStyle(text);
+        const family = cs.fontFamily.split(",")[0].trim();
+        fonts.load(`${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${family}`).then(safeMeasure, safeMeasure);
+      } catch {}
+      fonts.ready?.then(safeMeasure);
     }
-    const t = setTimeout(measure, 350);
+    const onFontsDone = () => safeMeasure();
+    fonts?.addEventListener?.("loadingdone", onFontsDone);
+
+    // Any change to the wrapper's box (font swap, viewport resize, the heading re-wrapping onto
+    // more/fewer lines, container queries) re-measures - window "resize" alone missed most of them.
+    let ro: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(() => safeMeasure());
+      ro.observe(wrap);
+      if (wrap.parentElement) ro.observe(wrap.parentElement);
+    }
+    window.addEventListener("resize", safeMeasure);
+    window.addEventListener("orientationchange", safeMeasure);
+
+    // Belt and braces for late layout shifts (images above the heading loading, reveal animations).
+    const timers = [350, 1200, 2500].map((ms) => setTimeout(safeMeasure, ms));
+
     return () => {
       cancelled = true;
-      window.removeEventListener("resize", measure);
-      clearTimeout(t);
+      ro?.disconnect();
+      fonts?.removeEventListener?.("loadingdone", onFontsDone);
+      window.removeEventListener("resize", safeMeasure);
+      window.removeEventListener("orientationchange", safeMeasure);
+      timers.forEach(clearTimeout);
     };
   }, [children]);
 
