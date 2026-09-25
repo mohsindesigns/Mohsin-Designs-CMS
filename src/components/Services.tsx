@@ -10,6 +10,15 @@ import { useContent } from "@/hooks/useContent";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import AccentHighlight from "@/components/ui/AccentHighlight";
 
+const toPlainText = (value: unknown): string => {
+  if (typeof value !== "string" || !value) return "";
+  return value
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+};
+
 export default function Services({ data: propData, masterCatalog: masterCatalogProp }: { data?: any; masterCatalog?: any[] }) {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -184,7 +193,8 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
               );
 
               const title = service?.title || globalService?.title || (typeof service === 'string' ? service : "Service");
-              const desc = service?.desc || service?.description || service?.shortDescription || service?.tagline || globalService?.desc || globalService?.description || globalService?.shortDescription || globalService?.tagline || globalService?.hero?.description || "";
+              const rawDesc = service?.hero?.description || globalService?.hero?.description || service?.desc || service?.description || service?.shortDescription || service?.tagline || globalService?.desc || globalService?.description || "";
+              const desc = toPlainText(rawDesc);
               const imgSrc = service?.image || service?.overviewImage || service?.heroImage || service?.featuredImage || globalService?.image || globalService?.overviewImage || globalService?.heroImage || globalService?.featuredImage || globalService?.hero?.bgImage || globalService?.hero?.backgroundImage || "";
               const category = service?.category || service?.tag || globalService?.category || globalService?.tag || "";
               const slug = service?.slug || globalService?.slug || "";

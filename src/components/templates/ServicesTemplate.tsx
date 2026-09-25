@@ -385,8 +385,8 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
       // No invented "Premium Solution" label: blank tag = no pill.
       tag: cleanMojibake(String(s.tag || s.category || "")).trim(),
       title: cleanMojibake(String(s.title)).trim(),
-      // The short catalog summary reads best on a card; the hero copy is several paragraphs.
-      desc: toPlainText(s.description || s.shortDescription || s.hero?.description || s.tagline),
+      // Show the service detail page hero description truncated on the card
+      desc: toPlainText(s.hero?.description || s.description || s.tagline),
       // No invented bullet points either: only what the service really lists.
       features: toFeatureList(s.hero?.benefits, s.features, s.whatIncluded?.pillars),
       slug: String(s.slug).trim(),
