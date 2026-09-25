@@ -3,8 +3,8 @@
 
 const TURNSTILE_VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
-// Official Cloudflare Turnstile test secret key (always passes)
-const DEFAULT_TEST_SECRET_KEY = '1x0000000000000000000000000000000AA';
+// Cloudflare Turnstile production secret key for mohsindesigns.com
+const DEFAULT_PROD_SECRET_KEY = '0x4AAAAAAEJg7ZqMfKx2vSUv3G4ew9BiNhA';
 
 export async function verifyTurnstileToken(
   token?: string,
@@ -15,7 +15,8 @@ export async function verifyTurnstileToken(
     return { success: false, error: 'Captcha verification is required. Please complete the security check.' };
   }
 
-  const secret = process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY || DEFAULT_TEST_SECRET_KEY;
+  const envSecret = process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY;
+  const secret = (envSecret && !envSecret.startsWith('1x0000')) ? envSecret : DEFAULT_PROD_SECRET_KEY;
 
   try {
     const formData = new URLSearchParams();

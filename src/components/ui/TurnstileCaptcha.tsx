@@ -2,8 +2,8 @@
 
 import React, { useEffect, useRef, useState } from "react";
 
-// Official Cloudflare Turnstile Test Site Key (Always Passes)
-const DEFAULT_TEST_SITE_KEY = "1x00000000000000000000AA";
+// Cloudflare Turnstile Production Site Key for mohsindesigns.com
+const DEFAULT_PROD_SITE_KEY = "0x4AAAAAAEJg7b1or2dWbrKr";
 
 interface TurnstileCaptchaProps {
   onVerify: (token: string) => void;
@@ -49,7 +49,8 @@ export default function TurnstileCaptcha({
   const widgetIdRef = useRef<string | null>(null);
   const [isScriptReady, setIsScriptReady] = useState(false);
 
-  const activeSiteKey = siteKey || process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY || DEFAULT_TEST_SITE_KEY;
+  const envKey = process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY;
+  const activeSiteKey = siteKey || (envKey && !envKey.startsWith("1x0000") ? envKey : DEFAULT_PROD_SITE_KEY);
 
   // 1. Ensure Cloudflare Turnstile script is loaded
   useEffect(() => {
