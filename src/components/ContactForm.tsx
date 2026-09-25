@@ -25,16 +25,31 @@ export default function ContactForm({ data }: { data?: any }) {
   // Service options for the "which service" dropdown, sourced from the real published
   // services catalog (same pattern QuickQuote.tsx uses) so it always matches whatever is
   // actually configured in Admin > Services instead of a hardcoded list.
+  //
+  // Read the FULL catalog (`globalServices`, injected by the / and [...slug] routes from
+  // site_contents.services.services) before `services.services`: on the homepage the Home
+  // page's own Services section stores its handful of FEATURED picks under
+  // `content.services.services`, and TemplateWrapper spreads page content over global, so
+  // that key only held the featured subset (8 of 12 published services were missing).
+  // The same fallback order fixes Country/State/City pages, whose isolated context has no
+  // `services` block at all.
   const serviceOptions = (() => {
     const anyContent = dynamicContent as any;
-    const servicesList = Array.isArray(anyContent?.services?.services)
-      ? anyContent.services.services
-      : Array.isArray(anyContent?.services)
-      ? anyContent.services
-      : [];
+    const candidates: any[][] = [
+      anyContent?.globalServices,
+      anyContent?.services?.services,
+      anyContent?.services,
+    ];
+    const servicesList = candidates.find((c) => Array.isArray(c) && c.length > 0) || [];
+    const seen = new Set<string>();
     return servicesList
       .filter((s: any) => (s?.status === "published" || s?.status === undefined) && !s?.isTrashed && s?.title)
-      .map((s: any) => ({ value: s.title as string, label: s.title as string }));
+      // Same "Order / Position" (`number`, free text) the Services listing sorts by; blanks last.
+      .map((s: any, i: number) => ({ s, i, n: parseFloat(String(s?.number ?? "").replace(/[^0-9.\-]/g, "")) }))
+      .sort((a: any, b: any) => ((Number.isFinite(a.n) ? a.n : Infinity) - (Number.isFinite(b.n) ? b.n : Infinity)) || a.i - b.i)
+      .map(({ s }: any) => s)
+      .map((s: any) => ({ value: String(s.title).trim(), label: String(s.title).trim() }))
+      .filter((o: { value: string }) => o.value && !seen.has(o.value.toLowerCase()) && seen.add(o.value.toLowerCase()));
   })();
 
   const [formData, setFormData] = useState({

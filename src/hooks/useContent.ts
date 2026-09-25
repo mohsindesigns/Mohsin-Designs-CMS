@@ -64,6 +64,17 @@ export const useContent = () => {
     const footerCertifications = getSafe(footer, 'certifications', []);
 
     return {
+        // The FULL live service catalogue (site_contents.services.services), injected by the
+        // page routes as `globalServices`. `services.services` below is NOT reliable for this:
+        // on the homepage it is the Home page's *featured* subset (TemplateWrapper spreads page
+        // content over global), and on isolated Country/State/City pages it is empty. Forms'
+        // service dropdowns and anything else that must list every published service read this.
+        globalServices: (() => {
+            const g = completeData.globalServices;
+            if (Array.isArray(g) && g.length > 0) return g;
+            const s = getSafe(completeData, 'services', {});
+            return Array.isArray(s) ? s : (Array.isArray(s.services) ? s.services : []);
+        })(),
         navbar: getSafe(completeData, 'navbar', { menu: [], logo: "", cta: { text: "Get Quote", href: "/contact-us" } }),
         hero: getSafe(completeData, 'hero', { headlines: [], description: "", buttons: [], stats: [], images: [] }),
         about: getSafe(completeData, 'about'),

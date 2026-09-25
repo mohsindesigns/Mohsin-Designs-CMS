@@ -86,7 +86,7 @@ const SMSConsentCheckbox = ({ checked, onChange }: { checked: boolean; onChange:
 };
 
 const QuickQuote = () => {
-    const { quickQuote, services } = useContent();
+    const { quickQuote, services, globalServices } = useContent();
     const [isOpen, setIsOpen] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [smsConsent, setSmsConsent] = useState(false);
@@ -102,15 +102,20 @@ const QuickQuote = () => {
     const [isSuccess, setIsSuccess] = useState(false);
     const [step, setStep] = useState(1);
 
-    // Get project types from actual services only
+    // Project types = every PUBLISHED service in the live catalogue. `globalServices` first:
+    // `services.services` is only the homepage's featured subset (see useContent), which is
+    // why this list used to miss services on the home page. Trashed entries are skipped.
     const projectTypes = (() => {
-        const servicesList = Array.isArray(services) ? services : (services as any)?.services || [];
-        const publishedServices = servicesList.filter((s: any) => s.status === 'published' || s.status === undefined);
-
-        return publishedServices.map((service: any) => ({
-            value: service.slug || service.title.toLowerCase().replace(/ /g, '-'),
-            label: service.title
-        }));
+        const fallback = Array.isArray(services) ? services : (services as any)?.services || [];
+        const servicesList: any[] = Array.isArray(globalServices) && globalServices.length > 0 ? globalServices : fallback;
+        const seen = new Set<string>();
+        return servicesList
+            .filter((s: any) => (s?.status === 'published' || s?.status === undefined) && !s?.isTrashed && s?.title)
+            .map((service: any) => ({
+                value: service.slug || String(service.title).toLowerCase().replace(/ /g, '-'),
+                label: String(service.title).trim()
+            }))
+            .filter((o: { value: string }) => !seen.has(o.value) && seen.add(o.value));
     })();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
