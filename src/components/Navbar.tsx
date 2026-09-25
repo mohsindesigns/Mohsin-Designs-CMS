@@ -60,6 +60,48 @@ export default function Navbar() {
 
   useEffect(() => {
     setIsDark(document.documentElement.classList.contains('dark'));
+
+    // Dynamic listener for device / system theme preference changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleSystemThemeChange = (e: MediaQueryListEvent) => {
+      const stored = localStorage.getItem('theme_preference');
+      // If user hasn't explicitly locked in a manual preference, react to device:
+      if (!stored || stored === 'system') {
+        const html = document.documentElement;
+        html.classList.add('theme-transition');
+        if (e.matches) {
+          html.classList.add('dark');
+          setIsDark(true);
+        } else {
+          html.classList.remove('dark');
+          setIsDark(false);
+        }
+        window.setTimeout(() => {
+          html.classList.remove('theme-transition');
+        }, 400);
+      }
+    };
+
+    // Also observe class mutations on html element in case other components or scripts toggle it
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleSystemThemeChange);
+    } else {
+      mediaQuery.addListener(handleSystemThemeChange);
+    }
+
+    return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', handleSystemThemeChange);
+      } else {
+        mediaQuery.removeListener(handleSystemThemeChange);
+      }
+      observer.disconnect();
+    };
   }, []);
 
   // Auto-select the first location the instant the Locations menu opens, so the featured
@@ -79,10 +121,12 @@ export default function Navbar() {
     html.classList.add('theme-transition');
     if (html.classList.contains('dark')) {
       html.classList.remove('dark');
+      localStorage.setItem('theme_preference', 'light');
       localStorage.setItem('theme', 'light');
       setIsDark(false);
     } else {
       html.classList.add('dark');
+      localStorage.setItem('theme_preference', 'dark');
       localStorage.setItem('theme', 'dark');
       setIsDark(true);
     }

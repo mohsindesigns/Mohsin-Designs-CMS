@@ -157,8 +157,18 @@ export default async function RootLayout({
                     document.documentElement.classList.remove('dark');
                     return;
                   }
-                  var theme = localStorage.getItem('theme');
-                  if (theme === 'dark') {
+                  var stored = localStorage.getItem('theme_preference');
+                  var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  var isDark = false;
+                  if (stored === 'dark') {
+                    isDark = true;
+                  } else if (stored === 'light') {
+                    isDark = false;
+                  } else {
+                    // Strictly honor device preference when no manual preference is saved
+                    isDark = !!prefersDark;
+                  }
+                  if (isDark) {
                     document.documentElement.classList.add('dark');
                   } else {
                     document.documentElement.classList.remove('dark');

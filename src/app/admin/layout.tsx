@@ -59,7 +59,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       observer.disconnect();
       html.style.colorScheme = "";
       try {
-        if (localStorage.getItem("theme") === "dark") html.classList.add("dark");
+        const stored = localStorage.getItem("theme_preference");
+        const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const isDark = stored === "dark" || (!stored && prefersDark);
+        if (isDark) html.classList.add("dark");
       } catch {}
     };
   }, []);
