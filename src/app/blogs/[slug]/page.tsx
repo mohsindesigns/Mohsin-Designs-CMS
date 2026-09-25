@@ -226,12 +226,46 @@ export default async function BlogPostPage({ params }: Props) {
     slug: `blogs/${post.slug}`
   });
 
-  // Only complete FAQ items are shown (an empty "Add New FAQ" row used to render the placeholder
-  // "Frequently Asked Question" with no answer, and a post with only schema markup rendered the
-  // generic default FAQs of the site).
-  const visibleFaqs = (Array.isArray(post.faq) ? post.faq : []).filter(
-    (f: any) => f && typeof f.question === "string" && f.question.trim() && typeof f.answer === "string" && f.answer.trim()
-  );
+  // Resolve FAQs (Post-specific first, falling back to Blog Page FAQs, then Global FAQs)
+  const isFilledFaq = (f: any) =>
+    f && typeof (f.question ?? f.q ?? f.title) === "string" && (f.question ?? f.q ?? f.title).trim() &&
+    typeof (f.answer ?? f.a ?? f.description) === "string" && (f.answer ?? f.a ?? f.description).trim();
+
+  const postFaqs = (Array.isArray(post.faq) ? post.faq : []).filter(isFilledFaq);
+  const blogPageFaqs = (
+    Array.isArray(blogPageData?.faqs)
+      ? blogPageData.faqs
+      : Array.isArray((blogPageDoc as any)?.content?.faqs)
+      ? (blogPageDoc as any).content.faqs
+      : Array.isArray(blogPageData?.faq)
+      ? blogPageData.faq
+      : []
+  ).filter(isFilledFaq);
+  const globalFaqs = (Array.isArray(globalContentData?.faq?.items) ? globalContentData.faq.items : []).filter(isFilledFaq);
+
+  const visibleFaqs = postFaqs.length > 0 ? postFaqs : (blogPageFaqs.length > 0 ? blogPageFaqs : globalFaqs);
+
+  // Strategy audit box resolution (Post -> Blog Editor / Page Doc -> Global)
+  const resolvedStrategyAudit = {
+    badge: (post as any)?.strategyAudit?.badge || blogPageData?.strategyAudit?.badge || (blogPageDoc as any)?.content?.strategyAudit?.badge || globalContentData?.faq?.strategyAudit?.badge || "FREE ARCHITECTURE AUDIT",
+    title: (post as any)?.strategyAudit?.title || blogPageData?.strategyAudit?.title || (blogPageDoc as any)?.content?.strategyAudit?.title || globalContentData?.faq?.strategyAudit?.title || "Have a complex custom build in mind?",
+    desc: (post as any)?.strategyAudit?.desc || blogPageData?.strategyAudit?.desc || (blogPageDoc as any)?.content?.strategyAudit?.desc || globalContentData?.faq?.strategyAudit?.desc || "Book a 30-minute high-level technical strategy session with our lead engineer.",
+    button: (post as any)?.strategyAudit?.button || blogPageData?.strategyAudit?.button || (blogPageDoc as any)?.content?.strategyAudit?.button || globalContentData?.faq?.strategyAudit?.button || "Book Architecture Call",
+    href: (post as any)?.strategyAudit?.href || blogPageData?.strategyAudit?.href || (blogPageDoc as any)?.content?.strategyAudit?.href || globalContentData?.faq?.strategyAudit?.href || "/contact-us",
+  };
+
+  const faqData = {
+    ...((blogPageDoc as any)?.content || {}),
+    ...(blogPageData || {}),
+    strategyAudit: resolvedStrategyAudit,
+  };
+
+  const hasPostFaqs = postFaqs.length > 0;
+  const faqBadge = hasPostFaqs ? (post.faqBadge || "ARTICLE FAQ") : (blogPageData?.faqBadge || (blogPageDoc as any)?.content?.faqBadge || "FREQUENTLY ASKED QUESTIONS");
+  const faqTitle = hasPostFaqs ? (post.faqTitle || "Frequently Asked Questions") : (blogPageData?.faqTitleHighlight || blogPageData?.faqTitle || (blogPageDoc as any)?.content?.faqTitleHighlight || (blogPageDoc as any)?.content?.faqTitle || "Frequently Asked Questions");
+  const faqTitleIntro = hasPostFaqs ? "" : (blogPageData?.faqTitleIntro !== undefined ? blogPageData.faqTitleIntro : (blogPageDoc as any)?.content?.faqTitleIntro);
+  const faqDescription = hasPostFaqs ? (post.faqDescription || "Key insights and technical queries answered.") : (blogPageData?.faqDescription || (blogPageDoc as any)?.content?.faqDescription || "Key insights and technical queries answered.");
+  const faqSchema = hasPostFaqs ? post.faqSchemaMarkup : (blogPageData?.faqSchemaMarkup || (blogPageDoc as any)?.content?.faqSchemaMarkup);
 
   return (
     <article className="min-h-screen bg-white dark:bg-[#080710] text-brand-dark dark:text-white transition-colors duration-300 pb-24 relative overflow-x-clip font-sans">
@@ -496,18 +530,17 @@ export default async function BlogPostPage({ params }: Props) {
         </div>
       </div>
 
-      {/* Inline FAQs attached to this post */}
+      {/* Inline FAQs attached to this post or blog page fallback */}
       {visibleFaqs.length > 0 && (
         <div className="mt-16 pt-8 border-t border-brand-zinc-200 dark:border-white/10">
-          {/* titleIntro="" + description keep the header 100% post-specific: PageInlineFaqs otherwise
-              falls back to the SITE-WIDE FAQ heading/description, and ignores a `subtitle` prop. */}
           <PageInlineFaqs
             faqs={visibleFaqs}
-            faqSchemaMarkup={post.faqSchemaMarkup}
-            badge={post.faqBadge || "ARTICLE FAQ"}
-            title={post.faqTitle || "Frequently Asked Questions"}
-            titleIntro=""
-            description={post.faqDescription || "Key insights and technical queries answered."}
+            faqSchemaMarkup={faqSchema}
+            badge={faqBadge}
+            title={faqTitle}
+            titleIntro={faqTitleIntro}
+            description={faqDescription}
+            data={faqData}
           />
         </div>
       )}

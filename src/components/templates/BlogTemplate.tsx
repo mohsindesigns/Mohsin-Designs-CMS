@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import AccentHighlight from "@/components/ui/AccentHighlight";
+import PageInlineFaqs from "@/components/PageInlineFaqs";
+import { useContent } from "@/hooks/useContent";
 
 /**
  * <img> that removes itself when the file 404s (a saved-but-missing upload used to leave a broken-image
@@ -223,9 +225,51 @@ export default function BlogTemplate({
     setCurrentPage(1);
   };
 
+  const content = useContent();
+
   const feedEnabled = rawData.feedEnabled !== false;
   const heroEnabled = rawData.hero?.enabled !== false;
   const ctaEnabled = rawData.ctaBanner?.enabled !== false;
+
+  // ── FAQs ─────────────────────────────────────────────────────────────────────
+  const isFilledFaq = (f: any) =>
+    f && String(f.question ?? f.q ?? f.title ?? "").trim() && String(f.answer ?? f.a ?? f.description ?? "").trim();
+
+  const pageFaqs = (
+    Array.isArray(rawData.faqs)
+      ? rawData.faqs
+      : Array.isArray(pageData?.content?.faqs)
+      ? pageData.content.faqs
+      : Array.isArray(rawData.faq)
+      ? rawData.faq
+      : []
+  ).filter(isFilledFaq);
+
+  const faqTargets = [pageData?.slug, "blogs", "blog"].filter(Boolean);
+  const globalFaqs = (Array.isArray(content?.faq?.items) ? content.faq.items : []).filter(
+    (item: any) =>
+      isFilledFaq(item) &&
+      (item.visibility === "global" ||
+        (item.visibility === "specific" && Array.isArray(item.targetPages) && item.targetPages.some((t: string) => faqTargets.includes(t))))
+  );
+
+  const faqItems = pageFaqs.length > 0 ? pageFaqs : (globalFaqs.length > 0 ? globalFaqs : (Array.isArray(content?.faq?.items) ? content.faq.items.filter(isFilledFaq) : []));
+
+  const faqEnabled = rawData.faqs?.enabled !== false && rawData.faqSection?.enabled !== false && pageData?.content?.faqSection?.enabled !== false;
+
+  const resolvedStrategyAudit = {
+    badge: rawData.strategyAudit?.badge || pageData?.content?.strategyAudit?.badge || content?.faq?.strategyAudit?.badge || "FREE ARCHITECTURE AUDIT",
+    title: rawData.strategyAudit?.title || pageData?.content?.strategyAudit?.title || content?.faq?.strategyAudit?.title || "Have a complex custom build in mind?",
+    desc: rawData.strategyAudit?.desc || pageData?.content?.strategyAudit?.desc || content?.faq?.strategyAudit?.desc || "Book a 30-minute high-level technical strategy session with our lead engineer.",
+    button: rawData.strategyAudit?.button || pageData?.content?.strategyAudit?.button || content?.faq?.strategyAudit?.button || "Book Architecture Call",
+    href: rawData.strategyAudit?.href || pageData?.content?.strategyAudit?.href || content?.faq?.strategyAudit?.href || "/contact-us",
+  };
+
+  const faqData = {
+    ...(pageData?.content || {}),
+    ...(rawData || {}),
+    strategyAudit: resolvedStrategyAudit,
+  };
 
   return (
     <div className="flex-1 w-full bg-white dark:bg-[#080710] text-brand-dark dark:text-white transition-colors duration-300 relative overflow-x-clip font-sans pb-6">
@@ -509,6 +553,21 @@ export default function BlogTemplate({
               </button>
             </div>
           </nav>
+        )}
+
+        {/* ── 4.5. FAQS & STICKY STRATEGY AUDIT CTA ──────────────────── */}
+        {faqEnabled && (
+          <div className="section-gap">
+            <PageInlineFaqs
+              faqs={faqItems.length > 0 ? faqItems : undefined}
+              faqSchemaMarkup={rawData.faqSchemaMarkup || pageData?.content?.faqSchemaMarkup}
+              badge={rawData.faqBadge || pageData?.content?.faqBadge}
+              title={rawData.faqTitleHighlight || rawData.faqTitle || pageData?.content?.faqTitleHighlight || pageData?.content?.faqTitle}
+              titleIntro={rawData.faqTitleIntro !== undefined ? rawData.faqTitleIntro : pageData?.content?.faqTitleIntro}
+              description={rawData.faqDescription || pageData?.content?.faqDescription}
+              data={faqData}
+            />
+          </div>
         )}
 
         {/* ── 5. HIGH-CONVERSION AGENCY CTA BANNER ────────────────────── */}

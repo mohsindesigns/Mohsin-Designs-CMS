@@ -21,4 +21,6 @@ export const TEMPLATES_WITH_OWN_FAQ_SECTION: ReadonlySet<string> = new Set([
   'city',
   'industry',
   'industries',
+  'blogs',
+  'blog',
 ]);
