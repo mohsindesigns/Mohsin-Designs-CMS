@@ -47,6 +47,10 @@ export default function AccentHighlight({ children, className = "", delay = 0.3 
   const wrapRef = useRef<HTMLSpanElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);
   const [rects, setRects] = useState<LineRect[]>([]);
+  // True when the phrase sits on a permanently-dark CTA surface (see globals.css): the paint is then
+  // the CTA button fill and the letters take the button text colour, so the stroke must cover the
+  // WHOLE word - dark/blue letters hanging above a half-height stroke would land on the navy card.
+  const [solid, setSolid] = useState(false);
   const uid = useId().replace(/[^a-zA-Z0-9_-]/g, "");
 
   useEffect(() => {
@@ -56,6 +60,7 @@ export default function AccentHighlight({ children, className = "", delay = 0.3 
 
     function measure() {
       if (!wrap || !text) return;
+      setSolid(!!wrap.closest(".cta-banner-card, .on-dark-surface, .cta-on-dark"));
       const clientRects = text.getClientRects();
       if (!clientRects.length) return;
       const wrapRect = wrap.getBoundingClientRect();
@@ -163,17 +168,19 @@ export default function AccentHighlight({ children, className = "", delay = 0.3 
       )}
 
       {rects.map((r, i) => {
-        const w = r.width + Math.max(6, r.height * 0.12);
-        const h = r.height * 0.6;
-        const skew = seededRand(i * 5.3 + 1) * 6;
+        // Half-height under-stroke by default; full word-height marker on dark CTA surfaces.
+        const padX = solid ? Math.max(8, r.height * 0.2) : Math.max(6, r.height * 0.12);
+        const w = r.width + padX;
+        const h = solid ? r.height * 0.9 : r.height * 0.6;
+        const skew = seededRand(i * 5.3 + 1) * (solid ? 8 : 6);
         return (
           <motion.svg
             key={i}
             aria-hidden="true"
             className="accent-brush pointer-events-none absolute -z-10 overflow-visible"
             style={{
-              left: r.left - Math.max(3, r.height * 0.06),
-              top: r.top + r.height * 0.4,
+              left: r.left - (solid ? padX / 2 : Math.max(3, r.height * 0.06)),
+              top: r.top + r.height * (solid ? 0.06 : 0.4),
               width: w,
               height: h,
               rotate: (seededRand(i * 3.1 + 2) - 0.5) * 1.2,
@@ -186,6 +193,11 @@ export default function AccentHighlight({ children, className = "", delay = 0.3 
             viewport={{ once: true }}
             transition={{ duration: 0.75, delay: delay + i * 0.12, ease: [0.22, 1, 0.36, 1] }}
           >
+            {/* Solid opaque core (dark CTA surfaces only): guarantees the letters always sit on full paint,
+                whatever the rough dry-brush filter below happens to carve out of the edges. */}
+            {solid && (
+              <rect x={w * 0.03} y={h * 0.12} width={w * 0.94} height={h * 0.76} rx={h * 0.14} fill="currentColor" />
+            )}
             <g filter={`url(#${uid}-brush-${i % 3})`} fill="currentColor">
               {/* main stroke */}
               <path d={`M ${skew} ${h * 0.12} L ${w} 0 L ${w - skew} ${h} L 0 ${h * 0.92} Z`} />

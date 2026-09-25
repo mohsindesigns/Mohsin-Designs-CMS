@@ -1461,11 +1461,24 @@
   --accent-brush: #e9bd36;
   --accent-brush-opacity: 0.3;
 }
+/* Always-dark CTA surfaces. The card never changes with the theme, and the phrase used to be
+   drawn in a soft accent (periwinkle / gold) over a blue stroke on a blue card - text and paint
+   in the same colour family, so the highlighted words nearly disappeared.
+   Now the phrase uses the CTA BUTTON's own colour pair, which is already tuned per theme for
+   full contrast on this card (see --cta-bg / --cta-fg above):
+     light mode: WHITE paint  + brand-BLUE letters   (#fff  / #0306AC)
+     dark  mode: YELLOW paint + near-black letters   (#E9BD36 / #080710)
+   The stroke is fully opaque and AccentHighlight draws it word-height on these surfaces. */
 .on-dark-surface,
 .cta-banner-card,
 .cta-on-dark {
-  --accent-brush: #3a45ee;
-  --accent-brush-opacity: 0.9;
+  --accent-brush: var(--cta-bg);
+  --accent-brush-opacity: 1;
+}
+:is(.on-dark-surface, .cta-banner-card, .cta-on-dark) .accent-text {
+  /* !important: the call sites colour the phrase with utility classes (text-[var(--cta-accent)],
+     text-brand-blue, dark:text-brand-yellow ...) that would otherwise win. */
+  color: var(--cta-fg) !important;
 }
 .accent-brush {
   color: var(--accent-brush);
