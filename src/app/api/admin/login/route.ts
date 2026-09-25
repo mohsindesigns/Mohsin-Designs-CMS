@@ -14,8 +14,10 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { username: rawUsername, password, captchaToken } = body;
 
-    // 1. Verify Turnstile token if provided
-    if (captchaToken) {
+    // 1. Turnstile. With a real secret configured the token is REQUIRED - "verify only if
+    //    provided" let anyone skip the captcha by simply omitting the field. Without a secret
+    //    (local dev) the always-pass test keys are in use and a missing token is tolerated.
+    if (captchaToken || process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY) {
       const captchaResult = await verifyTurnstileToken(captchaToken, ip);
       if (!captchaResult.success) {
         return NextResponse.json({ error: captchaResult.error || 'Captcha verification failed.' }, { status: 400 });

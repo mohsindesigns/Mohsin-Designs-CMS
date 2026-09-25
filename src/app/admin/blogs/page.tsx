@@ -32,7 +32,7 @@ export default function BlogPosts() {
 
   const fetchPosts = async () => {
     try {
-      const res = await fetch('/api/admin/blogs/posts?all=true');
+      const res = await fetch('/api/admin/blogs/posts/?all=true', { cache: 'no-store' });
       const data = await res.json();
       if (res.ok && Array.isArray(data)) {
         setPosts(data);
@@ -100,59 +100,67 @@ export default function BlogPosts() {
     }
 
     try {
-      const res = await fetch('/api/admin/blogs/posts/bulk', {
+      const res = await fetch('/api/admin/blogs/posts/bulk/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ids: selectedPosts, action, value })
       });
       if (res.ok) {
         setBulkAction("");
-        fetchPosts();
       } else {
         const error = await res.json().catch(() => ({}));
-        alert("Bulk action failed: " + (error.error || "Unknown error"));
+        alert("Bulk action failed: " + (error.error || `HTTP ${res.status}`));
       }
     } catch (err) {
       alert("Bulk action failed");
+    } finally {
+      fetchPosts();
     }
   };
+
+  // Trailing-slash URLs on purpose: the site runs with `trailingSlash: true`, so a slash-less
+  // URL is answered with a 308 and the browser has to replay the DELETE/PATCH against the
+  // redirect target - one more thing that can go wrong between a proxy and the API.
+  const postUrl = (id: string) => `/api/admin/blogs/posts/${id}/`;
 
   const deletePost = async (id: string) => {
     if (statusFilter === 'trash') {
       if (!confirm("Are you sure you want to permanently delete this post?")) return;
       try {
-        const res = await fetch(`/api/admin/blogs/posts/${id}`, { method: "DELETE" });
-        if (res.ok) {
-          fetchPosts();
-        } else {
-          const error = await res.json();
-          alert("Delete failed: " + (error.error || "Unknown error"));
+        const res = await fetch(postUrl(id), { method: "DELETE" });
+        // 404 = it is already gone (deleted in another tab / by another admin): not an error.
+        if (!res.ok && res.status !== 404) {
+          const error = await res.json().catch(() => ({}));
+          alert("Delete failed: " + (error.error || `HTTP ${res.status}`));
         }
       } catch (err) {
         alert("Delete failed due to network error");
+      } finally {
+        // Always resync with the server so the list can never show a post that no longer exists.
+        fetchPosts();
       }
     } else {
       try {
-        const res = await fetch(`/api/admin/blogs/posts/${id}`, {
+        const res = await fetch(postUrl(id), {
           method: "PATCH",
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ isTrashed: true })
         });
-        if (res.ok) {
-          fetchPosts();
-        } else {
+        if (!res.ok) {
           const error = await res.json().catch(() => ({}));
-          alert("Moving to trash failed: " + (error.error || "Unknown error"));
+          alert("Moving to trash failed: " + (error.error || `HTTP ${res.status}`));
         }
       } catch (err) {
         alert("Moving to trash failed");
+      } finally {
+        fetchPosts();
       }
     }
   };
 
   const restorePost = async (id: string) => {
     try {
-      const res = await fetch(`/api/admin/blogs/posts/${id}`, {
+      const res = await fetch(postUrl(id), {
         method: "PATCH",
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isTrashed: false })
@@ -161,7 +169,8 @@ export default function BlogPosts() {
         fetchPosts();
       } else {
         const error = await res.json().catch(() => ({}));
-        alert("Restore failed: " + (error.error || "Unknown error"));
+        alert("Restore failed: " + (error.error || `HTTP ${res.status}`));
+        fetchPosts();
       }
     } catch (err) {
       alert("Restore failed");
@@ -170,7 +179,7 @@ export default function BlogPosts() {
 
   const duplicatePost = async (id: string) => {
     try {
-      const res = await fetch(`/api/admin/blogs/posts/duplicate/${id}`, { method: "POST" });
+      const res = await fetch(`/api/admin/blogs/posts/duplicate/${id}/`, { method: "POST" });
       if (res.ok) {
         fetchPosts();
       } else {
@@ -187,7 +196,7 @@ export default function BlogPosts() {
   const handleQuickEditSave = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch(`/api/admin/blogs/posts/${editingPost._id}`, {
+      const res = await fetch(postUrl(editingPost._id), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         // `status` is only sent when it actually changed: re-sending an unchanged "scheduled" status
