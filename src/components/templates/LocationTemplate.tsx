@@ -19,6 +19,7 @@ import {
   Star
 } from "lucide-react";
 import Link from "@/components/ui/Link";
+import SafeImg from "@/components/ui/SafeImg";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
@@ -496,18 +497,10 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
 
         {/* Full-Bleed Background Images */}
         <div className="absolute inset-0 z-0 select-none pointer-events-none">
-          <img
-            src={hero.bgLight}
-            alt=""
-            aria-hidden="true"
-            className="w-full h-full object-cover object-right block dark:hidden"
-          />
-          <img
-            src={hero.bgDark}
-            alt=""
-            aria-hidden="true"
-            className="w-full h-full object-cover object-right hidden dark:block"
-          />
+          {/* The default artwork files are not shipped in /public and admin URLs can rot, so a
+              failed load hides the <img> instead of showing the browser's broken-image icon. */}
+          <SafeImg src={hero.bgLight} alt="" aria-hidden="true" className="w-full h-full object-cover object-right block dark:hidden" />
+          <SafeImg src={hero.bgDark} alt="" aria-hidden="true" className="w-full h-full object-cover object-right hidden dark:block" />
 
           {/* Readability Gradient Vignette */}
           <div className="absolute inset-y-0 left-0 w-full lg:w-[55%] bg-gradient-to-r from-white via-white/85 to-transparent dark:from-[#080710] dark:via-[#080710]/85 dark:to-transparent pointer-events-none" />
@@ -779,12 +772,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
 
                       {/* Left Column: Visual Artwork & Flag */}
                       <div className="w-full lg:w-[35%] h-[260px] sm:h-[280px] rounded-[22px] overflow-hidden relative border border-brand-zinc-200 dark:border-white/10 shrink-0 bg-[#0c0b18]">
-                        <img
-                          src={coverImg}
-                          alt={countryName}
-                          loading="lazy"
-                          className="w-full h-full object-cover group-hover/card:scale-[1.05] transition-transform duration-700 pointer-events-none filter contrast-[1.03]"
-                        />
+                        <SafeImg src={coverImg} alt={countryName} loading="lazy" className="w-full h-full object-cover group-hover/card:scale-[1.05] transition-transform duration-700 pointer-events-none filter contrast-[1.03]" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
                         {/* Country Tag Badge */}
@@ -796,12 +784,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
 
                         {/* Floating Flag Badge */}
                         <div className="absolute bottom-4 left-4 h-12 w-12 rounded-full overflow-hidden border-2 border-white dark:border-[#080710] shadow-2xl flex items-center justify-center bg-white dark:bg-[#0c0b18]">
-                          <img
-                            src={flagSrc}
-                            alt={`${countryName} flag`}
-                            loading="lazy"
-                            className="w-full h-full object-cover"
-                          />
+                          <SafeImg src={flagSrc} alt={`${countryName} flag`} loading="lazy" className="w-full h-full object-cover" />
                         </div>
                       </div>
 

@@ -151,6 +151,12 @@ export default async function RootLayout({
             __html: `
               (function() {
                 try {
+                  // The admin dashboard has its own fixed palette and must never inherit the
+                  // visitor's light/dark preference (AdminLayout also enforces this after mount).
+                  if (location.pathname.indexOf('/admin') === 0) {
+                    document.documentElement.classList.remove('dark');
+                    return;
+                  }
                   var theme = localStorage.getItem('theme');
                   if (theme === 'dark') {
                     document.documentElement.classList.add('dark');

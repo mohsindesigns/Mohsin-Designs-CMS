@@ -1,5 +1,5 @@
-import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
+import { isMailConfigured, sendMail } from '@/lib/mailer';
 import connectDB from '@/lib/mongodb';
 import Submission from '@/models/Submission';
 import Content from '@/models/Content';
@@ -295,33 +295,25 @@ export async function POST(request: Request) {
       attachmentNames: attachmentUrl ? undefined : attachments.map((a) => a.filename),
     });
 
+    // Sent through the shared SMTP transport (Brevo, see src/lib/mailer.ts). The lead is already
+    // in the DB (and visible in Admin > Submissions) by this point, so a mail failure is logged,
+    // not fatal.
     let emailSent = false;
-    if (!process.env.RESEND_API_KEY) {
-      console.warn('RESEND_API_KEY is not set - lead was stored but no notification e-mail was sent.');
+    if (!isMailConfigured()) {
+      console.warn('SMTP is not configured - lead was stored but no notification e-mail was sent.');
     } else {
       try {
-        const resend = new Resend(process.env.RESEND_API_KEY);
-        const { error: resendError } = await resend.emails.send({
-          from: process.env.RESEND_FROM_EMAIL || 'Mohsin Designs <onboarding@resend.dev>',
-          to: [receiverEmail],
+        await sendMail({
+          to: receiverEmail,
           replyTo: email,
           subject: cleanSubject(subject, `New ${type}: ${name || email}`),
           html,
           text,
-          attachments,
+          attachments: attachments.map((a) => ({ ...a, encoding: 'base64' as const })),
         });
-        if (resendError) {
-          console.error('RESEND API ERROR:', {
-            name: resendError.name,
-            message: resendError.message,
-            receiver: receiverEmail,
-            isDefaultSender: !process.env.RESEND_FROM_EMAIL && !process.env.RESEND_DOMAIN_VERIFIED,
-          });
-        } else {
-          emailSent = true;
-        }
+        emailSent = true;
       } catch (mailErr: any) {
-        console.error('RESEND SEND FAILED:', mailErr?.message);
+        console.error('SMTP SEND FAILED:', { message: mailErr?.message, receiver: receiverEmail });
       }
     }
 

@@ -42,14 +42,25 @@ export async function GET(req: NextRequest) {
       ];
     }
 
-    const posts = await Post.find(query)
+    const posts: any[] = await Post.find(query)
       // `author` and `isTrashed` were missing here, so the list always showed "admin" and could not tell trashed posts apart
       .select('title slug status featuredImage categories tags author publishedAt createdAt updatedAt isTrashed')
       .populate('categories', 'name')
       .populate('tags', 'name')
-      .populate({ path: 'author', model: 'User', select: 'username' })
       .sort({ createdAt: -1 })
       .lean();
+
+    // `author` is a Mixed field: older posts store a plain username string ("admin"), newer ones
+    // a User ObjectId. Mongoose populate() would try to cast the strings and throw (500 for the
+    // whole list), so resolve the ObjectId ones by hand and leave strings as they are.
+    const idLike = (v: any) => typeof v === 'string' ? /^[0-9a-fA-F]{24}$/.test(v) : !!v && typeof v === 'object' && !v.username && /^[0-9a-fA-F]{24}$/.test(String(v));
+    const authorIds = [...new Set(posts.map((p) => p.author).filter(idLike).map(String))];
+    if (authorIds.length) {
+      const User = (await import('@/models/User')).default;
+      const users: any[] = await User.find({ _id: { $in: authorIds } }).select('username').lean();
+      const byId = new Map(users.map((u) => [String(u._id), { _id: u._id, username: u.username }]));
+      for (const p of posts) if (idLike(p.author)) p.author = byId.get(String(p.author)) || p.author;
+    }
 
     return NextResponse.json(posts);
   } catch (error: any) {

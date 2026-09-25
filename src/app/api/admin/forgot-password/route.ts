@@ -1,20 +1,9 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
-import nodemailer from 'nodemailer';
 import crypto from 'crypto';
 import { BASE_URL } from '@/lib/constants';
-
-// Configure SMTP transport
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: parseInt(process.env.SMTP_PORT || '465'),
-  secure: true, // true for 465, false for other ports
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+import { isMailConfigured, sendMail } from '@/lib/mailer';
 
 export async function POST(req: Request) {
   try {
@@ -24,7 +13,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
-    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    if (!isMailConfigured()) {
       console.error('SMTP credentials missing in .env');
       return NextResponse.json({ error: 'Email service not configured' }, { status: 500 });
     }
@@ -50,8 +39,7 @@ export async function POST(req: Request) {
 
     // Send email
     try {
-      await transporter.sendMail({
-        from: `"Mohsin Designs" <${process.env.SMTP_USER}>`,
+      await sendMail({
         to: user.email,
         subject: 'Password Reset Request - Mohsin Designs',
         html: `

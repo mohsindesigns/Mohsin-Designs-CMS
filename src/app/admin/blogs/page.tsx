@@ -349,7 +349,7 @@ export default function BlogPosts() {
                     </div>
                   </div>
                 </td>
-                <td className="px-3 py-4 text-[#2271b1]">{post.author?.username || 'admin'}</td>
+                <td className="px-3 py-4 text-[#2271b1]">{post.author?.username || (typeof post.author === 'string' && !/^[0-9a-f]{24}$/i.test(post.author) ? post.author : 'admin')}</td>
                 <td className="px-3 py-4 text-[#2271b1]">
                   {post.categories?.map((c: any) => c.name).join(', ') || '—'}
                 </td>

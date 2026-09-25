@@ -41,6 +41,29 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const cleanPath = (pathname || "").replace(/\/+$/, "");
   const isPublicPath = cleanPath === "/admin/login" || cleanPath === "/admin/forgot-password" || cleanPath.startsWith("/admin/reset-password");
 
+  // The dashboard is theme-independent: the public site's `dark` class on <html> (set from the
+  // visitor's localStorage preference) flips ~60 `.dark ...` rules and every shadcn CSS variable,
+  // which used to leak the dark palette into admin inputs, tables and text. Keep <html> light for
+  // as long as any admin route is mounted (a MutationObserver undoes anything that re-adds it),
+  // then restore the visitor's preference when they navigate back to the site.
+  useEffect(() => {
+    const html = document.documentElement;
+    const strip = () => {
+      if (html.classList.contains("dark")) html.classList.remove("dark");
+    };
+    strip();
+    html.style.colorScheme = "light";
+    const observer = new MutationObserver(strip);
+    observer.observe(html, { attributes: true, attributeFilter: ["class"] });
+    return () => {
+      observer.disconnect();
+      html.style.colorScheme = "";
+      try {
+        if (localStorage.getItem("theme") === "dark") html.classList.add("dark");
+      } catch {}
+    };
+  }, []);
+
   useEffect(() => {
     document.title = "Mohsin Designs Admin Dashboard";
 

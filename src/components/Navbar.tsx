@@ -44,7 +44,16 @@ export default function Navbar() {
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const companyLinks = navbar?.companyLinks || [];
+  // A CMS nav row can be saved with an empty or "#" href (the live "Home" row is). "#" just
+  // scrolls to the top and reads as a dead anchor, so "Home" resolves to "/" and any other
+  // link with no real destination is dropped rather than rendered dead.
+  const companyLinks = (navbar?.companyLinks || [])
+    .map((link: any) => {
+      const href = String(link?.href || "").trim();
+      if (href && href !== "#") return link;
+      return /^home$/i.test(String(link?.label || "").trim()) ? { ...link, href: "/" } : null;
+    })
+    .filter(Boolean);
   const services = (servicesData.services || []).filter((s: any) =>
     (s.status === 'published' || s.status === undefined) && !s.isTrashed && s.title && String(s.title).trim()
   );
