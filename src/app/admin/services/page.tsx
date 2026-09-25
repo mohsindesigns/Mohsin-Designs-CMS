@@ -447,8 +447,32 @@ export default function ServicesAdminPage() {
     }
   }, [form.title]);
 
-  const saveToDb = async (newServices: any[], keepEditingIdx?: number, updatedForm?: any) => {
+  const saveToDb = async (newServicesIn: any[], keepEditingIdx?: number, updatedForm?: any) => {
+    let newServices = newServicesIn;
     setSaving(true);
+    // Stale-tab protection: the array this tab holds may be older than the DB (another tab or a seed
+    // script saved meanwhile) and the API replaces the whole array. Re-read the live list and 3-way
+    // merge per service: entries this tab did not change keep the live version; entries it changed win.
+    try {
+      const liveRes = await fetch(`/api/content?t=${Date.now()}`, { cache: "no-store" });
+      if (liveRes.ok) {
+        const liveJson = await liveRes.json();
+        const live: any[] = Array.isArray(liveJson?.services?.services) ? liveJson.services.services : [];
+        const keyOf = (x: any) => String(x?.id || x?.slug);
+        const j = (x: any) => JSON.stringify(x ?? null);
+        const base = new Map(services.map((x: any) => [keyOf(x), j(x)]));
+        const liveMap = new Map(live.map((x: any) => [keyOf(x), x]));
+        const mine = new Set(newServicesIn.map(keyOf));
+        const merged = newServicesIn.map((x: any) => {
+          const k = keyOf(x);
+          const unchangedHere = base.has(k) && base.get(k) === j(x);
+          return unchangedHere && liveMap.has(k) ? liveMap.get(k) : x;
+        });
+        // services added elsewhere since this tab loaded must survive
+        live.forEach((x: any) => { if (!mine.has(keyOf(x)) && !base.has(keyOf(x))) merged.push(x); });
+        newServices = merged;
+      }
+    } catch { /* offline/DB hiccup: fall back to saving what we have */ }
     const prevServicesObj = (typeof data?.services === 'object' && !Array.isArray(data?.services)) ? data.services : {};
     const updatedData = {
       ...data,
@@ -514,7 +538,8 @@ export default function ServicesAdminPage() {
         schemaData: schemaVal
       },
       id: form.id || Date.now().toString(),
-      number: form.number || (services.length + 1).toString().padStart(2, '0')
+      number: form.number || (services.length + 1).toString().padStart(2, '0'),
+      updatedAt: new Date().toISOString() // feeds article:modified_time on the public page
     };
 
     let targetIdx = isEditing;
@@ -3477,8 +3502,8 @@ export default function ServicesAdminPage() {
                                         <label className={UI.label}>Text</label>
                                         <input
                                           type="text"
-                                          value={form.finalCta?.primaryCta?.text || ""}
-                                          onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, primaryCta: { ...form.finalCta?.primaryCta, text: e.target.value } } })}
+                                          value={form.finalCta?.primaryCtaText ?? form.finalCta?.primaryCta?.text ?? ""}
+                                          onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, primaryCtaText: e.target.value, primaryCta: { ...form.finalCta?.primaryCta, text: e.target.value } } })}
                                           className={UI.input}
                                           placeholder="Schedule Strategy Call"
                                         />
@@ -3487,8 +3512,8 @@ export default function ServicesAdminPage() {
                                         <label className={UI.label}>Link</label>
                                         <input
                                           type="text"
-                                          value={form.finalCta?.primaryCta?.link || ""}
-                                          onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, primaryCta: { ...form.finalCta?.primaryCta, link: e.target.value } } })}
+                                          value={form.finalCta?.primaryCtaLink ?? form.finalCta?.primaryCta?.link ?? ""}
+                                          onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, primaryCtaLink: e.target.value, primaryCta: { ...form.finalCta?.primaryCta, link: e.target.value } } })}
                                           className={UI.input}
                                           placeholder="/contact"
                                         />
@@ -3501,8 +3526,8 @@ export default function ServicesAdminPage() {
                                         <label className={UI.label}>Text</label>
                                         <input
                                           type="text"
-                                          value={form.finalCta?.secondaryCta?.text || ""}
-                                          onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, secondaryCta: { ...form.finalCta?.secondaryCta, text: e.target.value } } })}
+                                          value={form.finalCta?.secondaryCtaText ?? form.finalCta?.secondaryCta?.text ?? ""}
+                                          onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, secondaryCtaText: e.target.value, secondaryCta: { ...form.finalCta?.secondaryCta, text: e.target.value } } })}
                                           className={UI.input}
                                           placeholder="View Portfolio"
                                         />
@@ -3511,8 +3536,8 @@ export default function ServicesAdminPage() {
                                         <label className={UI.label}>Link</label>
                                         <input
                                           type="text"
-                                          value={form.finalCta?.secondaryCta?.link || ""}
-                                          onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, secondaryCta: { ...form.finalCta?.secondaryCta, link: e.target.value } } })}
+                                          value={form.finalCta?.secondaryCtaLink ?? form.finalCta?.secondaryCta?.link ?? ""}
+                                          onChange={(e) => setForm({ ...form, finalCta: { ...form.finalCta, secondaryCtaLink: e.target.value, secondaryCta: { ...form.finalCta?.secondaryCta, link: e.target.value } } })}
                                           className={UI.input}
                                           placeholder="/portfolio"
                                         />
@@ -3524,9 +3549,9 @@ export default function ServicesAdminPage() {
                                 <div className="space-y-6">
                                   <h3 className={UI.sectionHeader}>3. Media</h3>
                                   <ImageField
-                                    label="CTA Background Graphic"
-                                    value={form.finalCta?.backgroundImage || ""}
-                                    onChange={(url) => setForm({ ...form, finalCta: { ...form.finalCta, backgroundImage: url } })}
+                                    label="CTA Banner Portrait / Side Image (shown on the right of the banner)"
+                                    value={form.finalCta?.founderImage || form.finalCta?.backgroundImage || ""}
+                                    onChange={(url) => setForm({ ...form, finalCta: { ...form.finalCta, founderImage: url, backgroundImage: url } })}
                                   />
                                 </div>
                               </div>
@@ -3658,8 +3683,8 @@ export default function ServicesAdminPage() {
                                   type="text"
                                   value={faq.question || ""}
                                   onChange={e => {
-                                    const nf = [...form.faqs];
-                                    nf[idx].question = e.target.value;
+                                    const nf = form.faqs.map((f: any, i: number) => i === idx ? { ...f, question: e.target.value } : f);
+                                    
                                     setForm({ ...form, faqs: nf, faqSchemaAutoSync: false });
                                   }}
                                   placeholder="What is your typical turnaround time?"
@@ -3672,8 +3697,8 @@ export default function ServicesAdminPage() {
                                   type="text"
                                   value={faq.category || ""}
                                   onChange={e => {
-                                    const nf = [...form.faqs];
-                                    nf[idx].category = e.target.value;
+                                    const nf = form.faqs.map((f: any, i: number) => i === idx ? { ...f, category: e.target.value } : f);
+                                    
                                     setForm({ ...form, faqs: nf, faqSchemaAutoSync: false });
                                   }}
                                   placeholder="TIMELINE"
@@ -3686,8 +3711,8 @@ export default function ServicesAdminPage() {
                               <RichTextEditor
                                 content={faq.answer || ""}
                                 onChange={(val: string) => {
-                                  const nf = [...form.faqs];
-                                  nf[idx].answer = val;
+                                  const nf = form.faqs.map((f: any, i: number) => i === idx ? { ...f, answer: val } : f);
+                                  
                                   setForm({ ...form, faqs: nf, faqSchemaAutoSync: false });
                                 }}
                               />

@@ -121,7 +121,7 @@ export default async function RootLayout({
         m.default
           .find({ status: 'published', isTrashed: { $ne: true } })
           .select('_id title slug excerpt featuredImage publishedAt date categories')
-          .sort({ date: -1 })
+          .sort({ publishedAt: -1 })
           .limit(10)
           .lean()
       )

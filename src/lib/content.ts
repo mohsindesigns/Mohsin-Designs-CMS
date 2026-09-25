@@ -6,15 +6,36 @@ import Page from '@/models/Page';
 /**
  * Deduplicated React Server Component fetcher for complete_data.
  * Deduplicates multiple calls within a single request (e.g., layout metadata, layout component, page metadata, page component).
+ *
+ * NOTE on caching: this is only a per-request memo (React `cache`), not a cross-request cache.
+ * Cross-request freshness comes from each route's `revalidate = 60` (ISR) plus the admin API's
+ * revalidatePath() calls, so a page is re-rendered (and this is re-read) at most every 60 s or right
+ * after an admin save.
+ *
+ * A database failure is RE-THROWN instead of being turned into `null`: returning null made the page
+ * render with empty global content (no navbar/footer/settings) and ISR then cached that broken
+ * render for up to a minute. Throwing makes ISR keep serving the last good version.
+ * `null` still means "no complete_data document exists".
  */
 export const getCachedSiteContent = cache(async () => {
   try {
     await connectToDatabase();
     const doc = await SiteContent.findOne({ key: 'complete_data' }).lean();
-    return (doc as any)?.data || null;
+    const data = (doc as any)?.data || null;
+
+    // The services catalog is stored TWICE in complete_data (`services.services` and the
+    // `globalServices` mirror, ~540 KB each; /api/content always writes them from the same list).
+    // Every page ships this object to the browser (layout ContentProvider + TemplateWrapper), and the
+    // two copies are separate objects, so the RSC payload carried the catalog twice. Aliasing the
+    // mirror to the same array lets React's flight serializer send it once - about half of every
+    // page's HTML. `services.services` is already the authoritative list everywhere it is read.
+    if (data && Array.isArray(data.services?.services) && Array.isArray(data.globalServices)) {
+      data.globalServices = data.services.services;
+    }
+    return data;
   } catch (error) {
     console.error('Error in getCachedSiteContent:', error);
-    return null;
+    throw error;
   }
 });
 
@@ -34,6 +55,8 @@ export const getCachedSiteScripts = cache(async () => {
 
 /**
  * Deduplicated React Server Component fetcher for published pages.
+ * `null` = no such published page. A database failure is re-thrown (not reported as "not found"),
+ * otherwise a DB blip would be cached by ISR as a 404 for a live page.
  */
 export const getCachedPage = cache(async (slug: string) => {
   try {
@@ -46,7 +69,7 @@ export const getCachedPage = cache(async (slug: string) => {
     return page;
   } catch (error) {
     console.error(`Error in getCachedPage for ${slug}:`, error);
-    return null;
+    throw error;
   }
 });
 

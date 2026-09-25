@@ -4,8 +4,8 @@ import './Category';
 import './Tag';
 
 const PostSchema = new Schema({
-  title: { type: String, required: true },
-  slug: { type: String, required: true, unique: true },
+  title: { type: String, required: true, trim: true },
+  slug: { type: String, required: true, unique: true, trim: true },
   content: { type: String, required: true }, // HTML from Tiptap
   excerpt: { type: String },
   featuredImage: { type: String },
@@ -31,7 +31,16 @@ const PostSchema = new Schema({
     ogImage: String,
     twitterCard: { type: String, default: 'summary_large_image' },
     featuredImage: String,
-    featuredImageAlt: String
+    featuredImageAlt: String,
+    // These are all written by the shared SeoEditor's fields / Schema tab but were
+    // missing from this sub-schema, so Mongoose (strict mode) silently dropped them
+    // on every save: the post "Schema" tab and Twitter/breadcrumb fields never persisted.
+    secondaryKeywords: String,
+    breadcrumbTitle: String,
+    twitterTitle: String,
+    twitterDescription: String,
+    twitterImage: String,
+    schemaData: String
   },
   faq: [{
     question: String,

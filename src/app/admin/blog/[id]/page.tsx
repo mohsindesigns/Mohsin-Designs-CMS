@@ -1,11 +1,2 @@
-"use client";
-
-import { useParams } from "next/navigation";
-import BlogPostEditor from "@/components/admin/BlogPostEditor";
-
-export default function EditBlogPost({ params }: { params?: any }) {
-  const routeParams = useParams();
-  const id = (typeof routeParams?.id === "string" ? routeParams.id : params?.id) || "";
-  if (!id) return null;
-  return <BlogPostEditor id={id} />;
-}
+// Alias of /admin/blogs/... (the sidebar links to /admin/blogs). Re-exported so the two admin trees can never drift.
+export { default } from '../../blogs/[id]/page';

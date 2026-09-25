@@ -1,40 +1,47 @@
 import CtaButton from "@/components/ui/CtaButton";
-import { withTrailingSlash } from "@/lib/url";
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "@/components/ui/Link";
 import {
   Calendar,
-  User,
-  Tag as TagIcon,
   Clock,
   BookOpen,
-  ArrowLeft,
-  ArrowRight,
-  Share2,
-  CheckCircle2,
-  ChevronLeft,
+  MapPin,
+  Tag as TagIcon,
   Star
 } from "lucide-react";
 
 import connectToDatabase from "@/lib/mongodb";
-import Post from "@/models/Post";
 import Page from "@/models/Page";
-import SiteContent from "@/models/Content";
 import ReadingProgress from "@/components/blogs/ReadingProgress";
 import ShareButton from "@/components/blogs/ShareButton";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 import { BASE_URL } from "@/lib/constants";
 import { makeLinksDoFollow } from "@/lib/utils";
 import { resolveRobotsMetadata } from "@/lib/seo";
-import CustomSchemaMarkup, { extractSchemaBlocks } from "@/components/CustomSchemaMarkup";
+import CustomSchemaMarkup from "@/components/CustomSchemaMarkup";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import AccentHighlight from "@/components/ui/AccentHighlight";
+import { getResolvedSchemaBlocks } from "@/lib/dynamicSchema";
+import { getCachedSiteContent } from "@/lib/content";
+import {
+  absoluteUrl,
+  addHeadingAnchors,
+  formatPostDate,
+  getRelatedCards,
+  normalizeCanonicalUrl,
+  postDateIso,
+  readMinutes,
+  resolvePost,
+  safeDate,
+  sanitizePostHtml,
+  stripHtml,
+  truncate,
+  wordCount
+} from "@/lib/blog-public";
 
-import { getCachedPost, getCachedSiteContent } from "@/lib/content";
-
+// The ONE article route (/blog/:slug is redirected here by next.config; src/app/blog/[slug] re-exports this file).
 export const revalidate = 60; // Revalidate every 60s
 
 interface Props {
@@ -43,21 +50,26 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const [post, contentData] = await Promise.all([
-    getCachedPost(slug),
+  const [{ post, preview }, contentData] = await Promise.all([
+    resolvePost(slug),
     getCachedSiteContent()
   ]);
 
-  if (!post) return { title: "Article Not Found | Mohsin Designs" };
+  if (!post) return { title: "Article Not Found | Mohsin Designs", robots: { index: false, follow: false } };
 
   const isGlobalNoIndex = !!contentData?.settings?.globalNoIndex;
   const pageTitle = post.seo?.metaTitle || `${post.title} | Mohsin Designs`;
-  const pageDesc = post.seo?.metaDescription || post.excerpt || `${post.title} - Strategic insights and architectural blueprints from Mohsin Designs.`;
-  const pageImage = post.seo?.ogImage || post.featuredImage || undefined;
-  const canonicalUrl = post.seo?.canonicalUrl || `${BASE_URL}/blogs/${post.slug}/`;
+  const pageDesc =
+    post.seo?.metaDescription ||
+    post.excerpt ||
+    truncate(stripHtml(post.content), 160) ||
+    `${post.title} - Strategic insights and architectural blueprints from Mohsin Designs.`;
+  const pageImage = absoluteUrl(post.seo?.ogImage || post.seo?.featuredImage || post.featuredImage);
+  const twitterImage = absoluteUrl(post.seo?.twitterImage) || pageImage;
+  const canonicalUrl = normalizeCanonicalUrl(post.seo?.canonicalUrl, `${BASE_URL}/blogs/${post.slug}/`, post.slug);
 
-  const publishedIso = post.publishedAt ? new Date(post.publishedAt).toISOString() : (post.createdAt ? new Date(post.createdAt).toISOString() : new Date().toISOString());
-  const modifiedIso = post.updatedAt ? new Date(post.updatedAt).toISOString() : publishedIso;
+  const publishedIso = postDateIso(post);
+  const modifiedIso = safeDate(post.updatedAt)?.toISOString() || publishedIso;
 
   return {
     title: {
@@ -67,55 +79,58 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: {
       canonical: canonicalUrl
     },
-    robots: resolveRobotsMetadata(post.seo, isGlobalNoIndex),
+    // A draft/scheduled post opened by a signed-in admin is never indexable.
+    robots: preview ? { index: false, follow: false } : resolveRobotsMetadata(post.seo, isGlobalNoIndex),
     openGraph: {
       title: post.seo?.ogTitle || pageTitle,
       description: post.seo?.ogDescription || pageDesc,
       url: canonicalUrl,
+      siteName: "Mohsin Designs",
       type: "article",
-      publishedTime: publishedIso,
-      modifiedTime: modifiedIso,
+      ...(publishedIso ? { publishedTime: publishedIso } : {}),
+      ...(modifiedIso ? { modifiedTime: modifiedIso } : {}),
       images: pageImage
         ? [
             {
               url: pageImage,
               width: 1200,
               height: 630,
-              alt: post.title
+              alt: post.seo?.featuredImageAlt || post.title
             }
           ]
         : undefined
     },
     twitter: {
-      card: "summary_large_image",
-      title: post.seo?.ogTitle || pageTitle,
-      description: post.seo?.ogDescription || pageDesc,
-      images: pageImage ? [pageImage] : undefined
+      card: post.seo?.twitterCard || "summary_large_image",
+      title: post.seo?.twitterTitle || post.seo?.ogTitle || pageTitle,
+      description: post.seo?.twitterDescription || post.seo?.ogDescription || pageDesc,
+      images: twitterImage ? [twitterImage] : undefined
     },
     other: {
-"article:published_time": publishedIso,
-"article:modified_time": modifiedIso,
-"publish-date": publishedIso,
-"date": publishedIso,
+      ...(publishedIso ? { "article:published_time": publishedIso, "publish-date": publishedIso, "date": publishedIso } : {}),
+      ...(modifiedIso ? { "article:modified_time": modifiedIso } : {}),
     }
   };
 }
 
+const BLOG_PAGE_SLUGS = ["blogs", "/blogs", "blog", "/blog"];
+
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
-  // 1. Fetch Post (cached, safe query)
-  const [post, globalContentData, blogPageDoc] = await Promise.all([
-    getCachedPost(slug),
+  await connectToDatabase();
+
+  // 1. Fetch Post (published only; signed-in admins may also preview drafts/scheduled) + page settings
+  const [{ post, preview }, globalContentData, blogPageDoc] = await Promise.all([
+    resolvePost(slug),
     getCachedSiteContent(),
+    // The CMS Blog page holds the "Detail Page" settings. Ignore trashed pages / unrelated look-alikes.
     Page.findOne({
-      $or: [{ slug: "blog" }, { template: "blog" }, { slug: "blogs" }, { template: "blogs" }]
+      isTrashed: { $ne: true },
+      $or: [{ slug: { $in: BLOG_PAGE_SLUGS } }, { template: { $in: ["blog", "blogs"] } }]
     }).lean()
   ]);
 
   if (!post) notFound();
-
-  const siteSettings = globalContentData?.settings || {};
-  const siteBrandName = siteSettings.siteTitle || "Mohsin Designs";
 
   const blogPageData = (blogPageDoc as any)?.content?.blogPage || (blogPageDoc as any)?.content || {};
 
@@ -131,24 +146,27 @@ export default async function BlogPostPage({ params }: Props) {
     buttonHref: blogPageData.detailSidebarCta?.buttonHref || "/#contact"
   };
 
-  // Resolve Signature Detail CTA Banner (Syncs with Blog Page CTA)
-  const ctaSource = blogPageData.ctaBanner || blogPageData.detailCtaBanner || {};
+  // Resolve the bottom CTA banner. The editor has a dedicated "Detail Page Bottom Signature CTA
+  // Banner" (detailCtaBanner) - it used to be ignored in favour of the INDEX banner (ctaBanner), so
+  // editing it did nothing. Now: detail banner field -> index banner field -> default.
+  const dCta = blogPageData.detailCtaBanner || {};
+  const iCta = blogPageData.ctaBanner || {};
   const detailCtaBanner = {
-    eyebrow: ctaSource.eyebrow || "READY TO ACCELERATE? ",
-    titleIntro: ctaSource.titleIntro || "Let's Build Your Next",
-    titleHighlight: ctaSource.titleHighlight || "Competitive Edge",
-    titleLine2: ctaSource.titleLine2 || "Together.",
-    description: ctaSource.description || "Schedule a free 30-minute technical audit. We'll diagnose bottlenecks in your existing presence and map out a concrete blueprint for compounding growth.",
+    eyebrow: dCta.eyebrow || iCta.eyebrow || "READY TO ACCELERATE? ",
+    titleIntro: dCta.titleIntro || iCta.titleIntro || "Let's Build Your Next",
+    titleHighlight: dCta.titleHighlight || iCta.titleHighlight || "Competitive Edge",
+    titleLine2: dCta.titleLine2 || iCta.titleLine2 || "Together.",
+    description: dCta.description || iCta.description || "Schedule a free 30-minute technical audit. We'll diagnose bottlenecks in your existing presence and map out a concrete blueprint for compounding growth.",
     ctaPrimary: {
-      label: ctaSource.ctaPrimary?.label || "Book Strategy Session",
-      href: ctaSource.ctaPrimary?.href || "/contact-us"
+      label: dCta.ctaPrimary?.label || iCta.ctaPrimary?.label || "Book Strategy Session",
+      href: dCta.ctaPrimary?.href || iCta.ctaPrimary?.href || "/contact-us"
     },
     ctaSecondary: {
-      label: ctaSource.ctaSecondary?.label || "Watch Showreel",
-      href: ctaSource.ctaSecondary?.href || "/gallery"
+      label: dCta.ctaSecondary?.label || iCta.ctaSecondary?.label || "Watch Showreel",
+      href: dCta.ctaSecondary?.href || iCta.ctaSecondary?.href || "/gallery"
     },
-    portraitSrc: ctaSource.portraitSrc || "",
-    portraitAlt: ctaSource.portraitAlt || "Mohsin Designs Lead Architect"
+    portraitSrc: dCta.portraitSrc || iCta.portraitSrc || "",
+    portraitAlt: dCta.portraitAlt || iCta.portraitAlt || "Mohsin Designs Lead Architect"
   };
 
   // Resolve Related Section Header
@@ -157,169 +175,77 @@ export default async function BlogPostPage({ params }: Props) {
     title: blogPageData.relatedSection?.title || "Related Articles & Guides"
   };
 
-  // 3. Fetch 3 Related Articles (excluding current post)
-  const relatedPostsRaw = await Post.find({
-    _id: { $ne: post._id },
-    status: "published",
-    isTrashed: { $ne: true }
-  })
-    .populate("categories")
-    .sort({ publishedAt: -1, createdAt: -1 })
-    .limit(3)
-    .lean();
-
-  const relatedPosts = relatedPostsRaw.map((r: any, idx: number) => {
-    let catBadge = "Article";
-    if (Array.isArray(r.categories) && r.categories.length > 0) {
-      catBadge = r.categories[0]?.name || "Article";
-    }
-
-    let rDate = "Recent";
-    if (r.publishedAt || r.createdAt) {
-      try {
-        rDate = new Date(r.publishedAt || r.createdAt).toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric"
-        });
-      } catch {
-        rDate = "Recent";
-      }
-    }
-
-    let rReadTime = "5 min read";
-    if (r.content) {
-      const words = String(r.content).replace(/<[^>]*>/g, "").split(/\s+/).length;
-      rReadTime = `${Math.max(3, Math.ceil(words / 200))} min read`;
-    }
-
-    return {
-      id: String(r._id),
-      slug: r.slug || String(r._id),
-      title: r.title,
-      badge: catBadge,
-      image: r.featuredImage || "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop",
-      date: rDate,
-      readTime: rReadTime
-    };
-  });
-
-  // 4. Resolve Post Metadata & Author Information (Sanitized to pure string primitives)
-  let categoryBadge = "Article";
-  if (Array.isArray(post.categories) && post.categories.length > 0) {
-    categoryBadge = post.categories[0]?.name || "Article";
-  }
-
-  let formattedDate = "Recent";
-  if (post.publishedAt || post.createdAt) {
-    try {
-      formattedDate = new Date(post.publishedAt || post.createdAt).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric"
-      });
-    } catch {
-      formattedDate = "Recent";
-    }
-  }
-
-  const rawHtmlContent = post.content || `<p>${post.excerpt || post.title}</p>`;
-  const wordCount = rawHtmlContent.replace(/<[^>]*>/g, "").split(/\s+/).filter(Boolean).length;
-  const readTimeDisplay = `${Math.max(3, Math.ceil(wordCount / 200))} min read`;
-  const featuredImage = post.featuredImage || "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop";
-
-  // Sanitize Author details so no ObjectId or Buffer is passed
-  const rawAuthor = post.author as any;
-  let cleanName = "Mohsin";
-  if (rawAuthor) {
-    if (rawAuthor.name && typeof rawAuthor.name ==="string" && rawAuthor.name.trim()) {
-      cleanName = rawAuthor.name.trim();
-    } else if (rawAuthor.username && typeof rawAuthor.username ==="string" && rawAuthor.username.toLowerCase() !=="admin") {
-      cleanName = rawAuthor.username;
-    }
-  }
-
-  let cleanRole = "Founder & Creative Director";
-  if (rawAuthor?.role) {
-    if (typeof rawAuthor.role ==="object" && rawAuthor.role?.name) {
-      cleanRole = String(rawAuthor.role.name);
-    } else if (typeof rawAuthor.role ==="string" && !rawAuthor.role.match(/^[0-9a-fA-F]{24}$/)) {
-      cleanRole = rawAuthor.role;
-    }
-  }
-
-  let cleanAvatar = "";
-  if (rawAuthor) {
-    const candidate = rawAuthor.image || rawAuthor.avatar;
-    if (candidate && typeof candidate ==="string" && candidate.startsWith("http")) {
-      cleanAvatar = candidate;
-    } else if (candidate && typeof candidate ==="string" && candidate.startsWith("/")) {
-      cleanAvatar = candidate;
-    }
-  }
-
+  // Author box (Blog Editor > Detail Page tab). Deliberately NOT the CMS login username: the old code
+  // tried to read a name off an un-populated author id, so it always showed the hardcoded fallback.
+  const authorSource = blogPageData.authorBox || {};
+  const authorEnabled = authorSource.enabled !== false;
   const authorInfo = {
-    name: String(cleanName),
-    role: String(cleanRole),
-    avatar: String(cleanAvatar)
+    label: authorSource.label || "Article Strategist",
+    name: String(authorSource.name || "Mohsin"),
+    role: String(authorSource.role ?? "Founder & Creative Director"),
+    avatar: typeof authorSource.avatar === "string" ? authorSource.avatar.trim() : ""
   };
 
-  // 5. Automated Table of Contents Logic
-  let tableOfContents: { id: string; text: string; level: number }[] = [];
-  let processedContent = rawHtmlContent;
+  // 2. Related articles (same category/tag first, then newest)
+  const relatedPosts = await getRelatedCards(post, 3);
 
-  const headingRegex = /<(h[123])\b[^>]*>(.*?)<\/h[123]>/gi;
-  let match;
-  const slugify = (text: string) =>
-    text
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
+  // 3. Post metadata
+  const categories: { name: string }[] = (Array.isArray(post.categories) ? post.categories : []).filter((c: any) => c?.name);
+  const categoryBadge = categories[0]?.name || "Article";
+  const tags: { name: string }[] = (Array.isArray(post.tags) ? post.tags : []).filter((t: any) => t?.name);
 
-  while ((match = headingRegex.exec(rawHtmlContent)) !== null) {
-    const tag = match[1].toLowerCase();
-    const cleanText = match[2].replace(/<[^>]*>/g, "").trim();
-    if (!cleanText || cleanText.length < 2) continue;
+  const publishedIso = postDateIso(post);
+  const modifiedIso = safeDate(post.updatedAt)?.toISOString() || publishedIso;
+  const formattedDate = formatPostDate(post.publishedAt || post.createdAt);
 
-    const id = slugify(cleanText) || `section-${tableOfContents.length + 1}`;
-    const level = parseInt(tag[1]);
+  // 4. Sanitise FIRST (real DOMPurify), then derive the table of contents from the clean HTML.
+  const rawHtmlContent = post.content || `<p>${stripHtml(post.excerpt || post.title)}</p>`;
+  const cleanHtml = sanitizePostHtml(rawHtmlContent);
+  const words = wordCount(cleanHtml);
+  const readTimeDisplay = `${readMinutes(cleanHtml)} min read`;
+  const featuredImage: string = post.featuredImage || "";
+  const featuredAlt: string = post.seo?.featuredImageAlt || post.title;
 
-    tableOfContents.push({ id, text: cleanText, level });
+  const { html: anchoredHtml, toc: tableOfContents } = addHeadingAnchors(cleanHtml);
+  const processedContent = makeLinksDoFollow(anchoredHtml);
 
-    const originalTag = match[0];
-    const newTag = `<${tag} id="${id}" class="scroll-mt-32 font-heading ${
-      level <= 2 ? "text-2xl sm:text-3xl mt-12 mb-4" : "text-xl sm:text-2xl mt-8 mb-3"
-    } font-black text-brand-dark dark:text-white leading-snug">${match[2]}</${tag}>`;
-    processedContent = processedContent.replace(originalTag, newTag);
-  }
+  // 5. Custom schema. Auto-generated schema is intentionally not injected site-wide (see lib/dynamicSchema);
+  // only what the editor entered in the post's Schema tab (seo.schemaData) + the synced FAQ schema is
+  // rendered, with {{tokens}} resolved and the FAQ block de-duplicated.
+  const schemaBlocks = getResolvedSchemaBlocks({
+    page: {
+      title: post.title,
+      slug: `blogs/${post.slug}`,
+      template: "blog",
+      content: {},
+      seo: post.seo || {},
+      schemaMarkup: post.schemaMarkup,
+      faqSchemaMarkup: post.faqSchemaMarkup
+    },
+    globalData: globalContentData || {},
+    slug: `blogs/${post.slug}`
+  });
 
-  const publishedIso = post.publishedAt ? new Date(post.publishedAt).toISOString() : (post.createdAt ? new Date(post.createdAt).toISOString() : new Date().toISOString());
-  const modifiedIso = post.updatedAt ? new Date(post.updatedAt).toISOString() : publishedIso;
-
-  processedContent = makeLinksDoFollow(processedContent);
-
-  // De-dupe FAQPage schema: only render faqSchemaMarkup if it isn't already
-  // present verbatim in the primary schema field (avoids two FAQPage
-  // blocks). A coarser"both mention FAQPage" check would silently drop the
-  // live, correct FAQ schema any time the primary block happens to contain
-  // an unrelated FAQPage entry - that's a false suppression, not a duplicate.
-  const primarySchema = post.schemaMarkup || post.seo?.schemaData;
-  const primarySchemaBlocks = extractSchemaBlocks(primarySchema);
-  const faqSchemaBlocks = extractSchemaBlocks(post.faqSchemaMarkup).filter(
-    (faqBlock) => !primarySchemaBlocks.some((b) => b.includes(faqBlock))
+  // Only complete FAQ items are shown (an empty "Add New FAQ" row used to render the placeholder
+  // "Frequently Asked Question" with no answer, and a post with only schema markup rendered the
+  // generic default FAQs of the site).
+  const visibleFaqs = (Array.isArray(post.faq) ? post.faq : []).filter(
+    (f: any) => f && typeof f.question === "string" && f.question.trim() && typeof f.answer === "string" && f.answer.trim()
   );
 
   return (
     <article className="min-h-screen bg-white dark:bg-[#080710] text-brand-dark dark:text-white transition-colors duration-300 pb-24 relative overflow-x-clip font-sans">
-      <CustomSchemaMarkup schema={primarySchema} />
-      {faqSchemaBlocks.length > 0 && (
-        <CustomSchemaMarkup schema={faqSchemaBlocks} />
-      )}
-      <meta property="article:published_time" content={publishedIso} />
-      <meta property="article:modified_time" content={modifiedIso} />
-      <meta itemProp="datePublished" content={publishedIso} />
-      <meta itemProp="dateModified" content={modifiedIso} />
+      <CustomSchemaMarkup schema={schemaBlocks} />
       <ReadingProgress />
+
+      {preview && (
+        <div
+          role="status"
+          className="fixed bottom-4 left-4 z-[110] max-w-[calc(100vw-2rem)] rounded-full bg-amber-400 px-4 py-2 text-xs font-bold text-black shadow-lg"
+        >
+          Preview only - this post is a {post.status} and is not visible to the public yet.
+        </div>
+      )}
 
       {/* ── 1. HERO SECTION WITH FULL BLEED BACKGROUND ────────────────── */}
       <section className="-mt-[110px] sm:-mt-[125px] lg:-mt-[140px] pt-[180px] sm:pt-[210px] lg:pt-[280px] pb-12 sm:pb-16 relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10">
@@ -344,7 +270,7 @@ export default async function BlogPostPage({ params }: Props) {
             items={[
               { name: "Home", url: "/" },
               { name: "Blogs", url: "/blogs/" },
-              { name: post.title, url: "#" },
+              { name: post.seo?.breadcrumbTitle || post.title, url: `/blogs/${post.slug}/` },
             ]}
           />
 
@@ -360,29 +286,45 @@ export default async function BlogPostPage({ params }: Props) {
               {categoryBadge}
             </span>
 
-            <span className="inline-flex items-center gap-1.5 text-brand-zinc-500 dark:text-zinc-400 font-medium">
-              <Calendar className="w-3.5 h-3.5 text-brand-blue dark:text-brand-yellow" />
-              <time dateTime={publishedIso} itemProp="datePublished">{formattedDate}</time>
-            </span>
+            {formattedDate && (
+              <span className="inline-flex items-center gap-1.5 text-brand-zinc-500 dark:text-zinc-400 font-medium">
+                <Calendar className="w-3.5 h-3.5 text-brand-blue dark:text-brand-yellow" />
+                <time dateTime={publishedIso}>{formattedDate}</time>
+              </span>
+            )}
 
             <span className="inline-flex items-center gap-1.5 font-mono font-bold text-brand-blue dark:text-brand-yellow">
               <Clock className="w-3.5 h-3.5" />
               {readTimeDisplay}
             </span>
+
+            {post.location && String(post.location).trim() && (
+              <span className="inline-flex items-center gap-1.5 text-brand-zinc-500 dark:text-zinc-400 font-medium">
+                <MapPin className="w-3.5 h-3.5 text-brand-blue dark:text-brand-yellow" />
+                {String(post.location).trim()}
+              </span>
+            )}
           </div>
         </div>
       </section>
 
       {/* ── 2. FEATURED COVER IMAGE CONTAINER ────────────────────────── */}
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 mt-8 sm:mt-10 relative z-20">
-        <div className="bg-white dark:bg-[#12121e] rounded-[28px] overflow-hidden shadow-xl border border-brand-zinc-200/90 dark:border-white/10 aspect-[1200/627] relative group">
-          <img
-            src={featuredImage}
-            alt={post.title}
-            className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
-          />
+      {featuredImage && (
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 mt-8 sm:mt-10 relative z-20">
+          <div className="bg-white dark:bg-[#12121e] rounded-[28px] overflow-hidden shadow-xl border border-brand-zinc-200/90 dark:border-white/10 aspect-[1200/627] relative group">
+            <img
+              src={featuredImage}
+              alt={featuredAlt}
+              width={1200}
+              height={627}
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+              className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ── 3. MAIN CONTENT LAYOUT WITH STICKY SIDEBAR ────────────────── */}
       <div className="container mx-auto px-4 mt-16 max-w-6xl">
@@ -392,7 +334,7 @@ export default async function BlogPostPage({ params }: Props) {
           <div className="lg:w-[65%] min-w-0 w-full">
 
             {/* Author Attribution Card */}
-            {authorInfo && (
+            {authorEnabled && (
               <div className="flex flex-col min-[400px]:flex-row items-center gap-5 mb-12 p-6 min-[400px]:p-8 bg-brand-zinc-50 dark:bg-zinc-900/60 border border-brand-zinc-200 dark:border-white/10 rounded-2xl min-[400px]:rounded-3xl">
                 {authorInfo.avatar && (
                   <div className="relative">
@@ -406,22 +348,26 @@ export default async function BlogPostPage({ params }: Props) {
                   </div>
                 )}
                 <div>
-                  <span className="text-[10px] font-mono font-black uppercase tracking-[0.2em] text-brand-blue dark:text-brand-yellow mb-1 block">
-                    Article Strategist
-                  </span>
-                  <h4 className="text-xl font-bold text-brand-dark dark:text-white leading-tight">
+                  {authorInfo.label && (
+                    <span className="text-[10px] font-mono font-black uppercase tracking-[0.2em] text-brand-blue dark:text-brand-yellow mb-1 block">
+                      {authorInfo.label}
+                    </span>
+                  )}
+                  <p className="text-xl font-bold text-brand-dark dark:text-white leading-tight">
                     {authorInfo.name}
-                  </h4>
-                  <p className="text-brand-zinc-500 dark:text-zinc-400 text-xs sm:text-sm mt-0.5 font-medium">
-                    {authorInfo.role}
                   </p>
+                  {authorInfo.role && (
+                    <p className="text-brand-zinc-500 dark:text-zinc-400 text-xs sm:text-sm mt-0.5 font-medium">
+                      {authorInfo.role}
+                    </p>
+                  )}
                 </div>
               </div>
             )}
 
-            {/* Main Content Body */}
+            {/* Main Content Body (sanitised above with DOMPurify) */}
             <div
-              className="prose prose-slate dark:prose-invert max-w-none 
+              className="prose prose-slate dark:prose-invert max-w-none
               prose-headings:font-heading prose-headings:font-black prose-headings:text-brand-dark dark:prose-headings:text-white
               prose-p:text-brand-zinc-600 dark:prose-p:text-zinc-300 prose-p:leading-relaxed prose-p:text-base sm:prose-p:text-lg
               prose-a:text-brand-blue dark:prose-a:text-brand-yellow prose-a:font-bold prose-a:no-underline hover:prose-a:underline
@@ -429,6 +375,22 @@ export default async function BlogPostPage({ params }: Props) {
               prose-blockquote:border-l-4 prose-blockquote:border-brand-blue dark:prose-blockquote:border-brand-yellow prose-blockquote:bg-brand-zinc-50 dark:prose-blockquote:bg-zinc-900/60 prose-blockquote:p-6 md:prose-blockquote:p-8 prose-blockquote:rounded-2xl"
               dangerouslySetInnerHTML={{ __html: processedContent }}
             />
+
+            {/* Tags (saved in the post editor; there are no tag archive pages, so these are labels) */}
+            {tags.length > 0 && (
+              <div className="mt-12 pt-6 border-t border-brand-zinc-200 dark:border-white/10 flex flex-wrap items-center gap-2">
+                <TagIcon className="w-4 h-4 text-brand-blue dark:text-brand-yellow shrink-0" aria-hidden="true" />
+                <span className="sr-only">Tags:</span>
+                {tags.map((t, i) => (
+                  <span
+                    key={`${t.name}-${i}`}
+                    className="px-3 py-1 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider bg-brand-zinc-50 dark:bg-zinc-900/60 border border-brand-zinc-200 dark:border-white/10 text-brand-zinc-600 dark:text-zinc-300"
+                  >
+                    {t.name}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Right: Sticky Table of Contents (Sidebar) */}
@@ -443,9 +405,9 @@ export default async function BlogPostPage({ params }: Props) {
                     <BookOpen className="w-4 h-4 text-brand-blue dark:text-brand-yellow" />
                   </div>
                   <div>
-                    <h3 className="text-xs font-mono font-black uppercase tracking-widest text-brand-dark dark:text-white">
+                    <h2 className="text-xs font-mono font-black uppercase tracking-widest text-brand-dark dark:text-white">
                       Navigation
-                    </h3>
+                    </h2>
                     <p className="text-[9px] text-brand-zinc-400 font-bold uppercase tracking-widest mt-0.5">
                       Quick Select
                     </p>
@@ -454,11 +416,11 @@ export default async function BlogPostPage({ params }: Props) {
 
                 {/* Table of Contents Links */}
                 {tableOfContents.length > 0 ? (
-                  <nav className="space-y-1.5 max-h-[380px] overflow-y-auto pr-2 custom-scrollbar">
+                  <nav aria-label="Table of contents" className="space-y-1.5 max-h-[380px] overflow-y-auto pr-2 custom-scrollbar">
                     {tableOfContents.map((item, idx) => (
                       <a
-                        key={idx}
-                        href={withTrailingSlash(`#${item.id}`)}
+                        key={`${item.id}-${idx}`}
+                        href={`#${item.id}`}
                         className={`flex items-center gap-3.5 py-2 px-3 rounded-xl transition-all duration-300 group ${
                           item.level <= 2
                             ? "text-brand-dark dark:text-white font-bold hover:bg-brand-blue/10 dark:hover:bg-brand-yellow/10 hover:text-brand-blue dark:hover:text-brand-yellow bg-brand-zinc-50/50 dark:bg-zinc-900/40"
@@ -479,22 +441,20 @@ export default async function BlogPostPage({ params }: Props) {
                     ))}
                   </nav>
                 ) : (
-                  <div className="py-2 space-y-2">
- <p className="text-xs text-brand-zinc-400">
-                      Detailed structure available above.
-                    </p>
-                  </div>
+                  <p className="text-xs text-brand-zinc-400">
+                    This article has no sections to jump to.
+                  </p>
                 )}
 
                 {/* Article Impact / Quick Stats */}
                 <div className="mt-6 pt-6 border-t border-brand-zinc-200/80 dark:border-white/10">
-                  <h5 className="text-[10px] font-mono font-black uppercase tracking-widest text-brand-zinc-400 mb-3">
+                  <p className="text-[10px] font-mono font-black uppercase tracking-widest text-brand-zinc-400 mb-3">
                     Article Impact
-                  </h5>
+                  </p>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-brand-zinc-50 dark:bg-zinc-900/80 p-3.5 rounded-2xl border border-brand-zinc-200/80 dark:border-white/5 text-left">
                       <p className="text-[9px] font-mono font-bold text-brand-zinc-400 uppercase tracking-wider">Words</p>
-                      <p className="text-lg font-mono font-black text-brand-dark dark:text-white mt-0.5">{wordCount}</p>
+                      <p className="text-lg font-mono font-black text-brand-dark dark:text-white mt-0.5">{words.toLocaleString("en-US")}</p>
                     </div>
                     <div className="bg-brand-zinc-50 dark:bg-zinc-900/80 p-3.5 rounded-2xl border border-brand-zinc-200/80 dark:border-white/5 text-left">
                       <p className="text-[9px] font-mono font-bold text-brand-zinc-400 uppercase tracking-wider">Read Time</p>
@@ -508,7 +468,7 @@ export default async function BlogPostPage({ params }: Props) {
                   <p className="text-[10px] font-mono font-black uppercase tracking-widest text-brand-zinc-400 mb-3">
                     Engage
                   </p>
-                  <ShareButton title={post.title} url={post.slug} />
+                  <ShareButton title={post.title} />
                 </div>
               </div>
 
@@ -519,9 +479,9 @@ export default async function BlogPostPage({ params }: Props) {
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9.5px] font-mono font-black uppercase bg-white/10 dark:bg-brand-yellow/15 text-brand-yellow border border-white/20 dark:border-brand-yellow/30">
                   <Star className="w-3 h-3 fill-current" /> {sidebarCta.badge}
                 </span>
-                <h4 className="font-heading text-2xl font-black text-white leading-tight">
+                <h2 className="font-heading text-2xl font-black text-white leading-tight">
                   {sidebarCta.title}
-                </h4>
+                </h2>
                 <RichTextRenderer
                   content={sidebarCta.description}
                   className="text-white/80 dark:text-zinc-300 text-xs leading-relaxed font-sans font-normal"
@@ -537,14 +497,17 @@ export default async function BlogPostPage({ params }: Props) {
       </div>
 
       {/* Inline FAQs attached to this post */}
-      {((post.faq && post.faq.length > 0) || (post.faqSchemaMarkup && post.faqSchemaMarkup.trim())) && (
+      {visibleFaqs.length > 0 && (
         <div className="mt-16 pt-8 border-t border-brand-zinc-200 dark:border-white/10">
+          {/* titleIntro="" + description keep the header 100% post-specific: PageInlineFaqs otherwise
+              falls back to the SITE-WIDE FAQ heading/description, and ignores a `subtitle` prop. */}
           <PageInlineFaqs
-            faqs={post.faq}
+            faqs={visibleFaqs}
             faqSchemaMarkup={post.faqSchemaMarkup}
             badge={post.faqBadge || "ARTICLE FAQ"}
             title={post.faqTitle || "Frequently Asked Questions"}
-            subtitle={post.faqDescription || "Key insights and technical queries answered."}
+            titleIntro=""
+            description={post.faqDescription || "Key insights and technical queries answered."}
           />
         </div>
       )}
@@ -565,16 +528,24 @@ export default async function BlogPostPage({ params }: Props) {
             {relatedPosts.map((rPost) => (
               <Link
                 key={rPost.id}
-                href={`/blogs/${rPost.slug || rPost.id}`}
+                href={`/blogs/${rPost.slug}`}
                 className="bg-white dark:bg-[#12121e] border border-brand-zinc-200/90 dark:border-white/10 hover:border-brand-blue/60 dark:hover:border-brand-yellow/60 rounded-[28px] overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-400 flex flex-col justify-between group select-none relative block cursor-pointer"
               >
                 <div>
                   <div className="relative aspect-[1200/627] w-full overflow-hidden bg-brand-light dark:bg-zinc-950 border-b border-brand-zinc-200/80 dark:border-white/10">
-                    <img
-                      src={rPost.image}
-                      alt={rPost.title}
-                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700 ease-out"
-                    />
+                    {rPost.image ? (
+                      <img
+                        src={rPost.image}
+                        alt={rPost.imageAlt}
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700 ease-out"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-brand-blue/10 to-brand-blue/[0.03] dark:from-brand-yellow/10 dark:to-transparent">
+                        <BookOpen className="w-10 h-10 text-brand-blue/40 dark:text-brand-yellow/40" aria-hidden="true" />
+                      </div>
+                    )}
                     <span className="absolute top-4 left-4 inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[10px] font-mono font-black uppercase tracking-wider bg-brand-blue text-white shadow-md">
                       <Star className="w-3 h-3 fill-current" />
                       {rPost.badge}
@@ -588,7 +559,7 @@ export default async function BlogPostPage({ params }: Props) {
                 </div>
 
                 <div className="px-6 pb-6 flex items-center justify-between text-xs font-sans">
-                  <span className="text-brand-zinc-400 dark:text-zinc-400 font-medium">
+                  <span className="text-brand-zinc-500 dark:text-zinc-400 font-medium">
                     {rPost.date}
                   </span>
                   <span className="font-mono font-bold text-brand-blue dark:text-brand-yellow flex items-center gap-1">
@@ -649,6 +620,7 @@ export default async function BlogPostPage({ params }: Props) {
               <img
                 src={detailCtaBanner.portraitSrc}
                 alt={detailCtaBanner.portraitAlt}
+                loading="lazy"
                 className="w-full h-full object-cover object-top filter contrast-[1.05]"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#010356]/80 via-transparent to-transparent pointer-events-none" />

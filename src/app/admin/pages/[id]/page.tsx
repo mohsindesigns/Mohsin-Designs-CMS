@@ -17,34 +17,13 @@ import SectionToggle from "@/components/admin/SectionToggle";
 import MediaSelector from "@/components/admin/MediaSelector";
 import { BASE_URL } from "@/lib/constants";
 import { syncFaqSchema } from "@/lib/faqSchema";
+import { TEMPLATES_WITH_OWN_FAQ_SECTION } from "@/components/templates/templateFaqPolicy";
+import { PAGE_TEMPLATE_OPTIONS, canonicalTemplate, templateChangeWarning } from "../templateOptions";
 import dynamic from "next/dynamic";
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
   ssr: false,
   loading: () => <div className="h-20 bg-[#f6f7f7] animate-pulse border border-[#c3c4c7] rounded-sm flex items-center justify-center text-[#8c8f94] text-xs">Loading Rich Text Editor...</div>
 });
-
-const EDITOR_TEMPLATES = [
-  { id: 'home', label: 'Home Page', icon: LayoutTemplate },
-  { id: 'about', label: 'About Page', icon: Type },
-  { id: 'new-about', label: 'New About Page', icon: Type },
-  { id: 'services', label: 'Services Index', icon: Briefcase },
-  { id: 'service-detail', label: 'Service Detail', icon: Briefcase },
-  { id: 'gallery', label: 'Project Gallery', icon: ImageIcon },
-  { id: 'team', label: 'Team Directory', icon: Users },
-  { id: 'careers', label: 'Career Board', icon: Briefcase },
-  { id: 'reviews', label: 'Client Reviews', icon: Star },
-  { id: 'faq', label: 'Support FAQ', icon: CircleHelp },
-  { id: 'contact', label: 'Contact Center', icon: Phone },
-  { id: 'location', label: 'Locations Hub', icon: Globe },
-  { id: 'locations', label: 'Locations Hub', icon: Globe },
-  { id: 'service-area', label: 'Service Area', icon: Globe },
-  { id: 'blog', label: 'Blog Index', icon: BookOpen },
-  { id: 'country', label: 'Country Page', icon: Globe },
-  { id: 'state', label: 'State Page', icon: Globe },
-  { id: 'city', label: 'City Page', icon: Globe },
-  { id: 'industry', label: 'Industry Page', icon: Globe },
-  { id: 'industries', label: 'Industries Hub', icon: Globe },
-];
 
 export default function DynamicPageEditor({ params }: { params?: any }) {
   const routeParams = useParams();
@@ -79,6 +58,9 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
   const [message, setMessage] = useState("");
   const [showMediaSelector, setShowMediaSelector] = useState(false);
   const [allPages, setAllPages] = useState<any[]>([]);
+  // updatedAt of the version this editor last loaded/saved. Sent with every save so the API can
+  // refuse to overwrite a newer version (another tab, or a list action like Publish/Trash).
+  const [baseUpdatedAt, setBaseUpdatedAt] = useState<string>("");
 
   useEffect(() => {
     if (id) {
@@ -98,11 +80,11 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
       }
       if (res.ok) {
         const data = await res.json();
-        // Normalize template name
-        let tmpl = data.template || 'home';
-        if (tmpl === 'newabout') tmpl = 'new-about';
-        data.template = tmpl;
+        // Normalize legacy template keys (newabout / about -> new-about, locations -> location):
+        // they render with the same component and editor, and the picker only lists canonical keys.
+        data.template = canonicalTemplate(data.template || 'home');
         setPage(data);
+        setBaseUpdatedAt(data.updatedAt || "");
         const pageContent = data.content || {};
         if (!pageContent.faqs) pageContent.faqs = [];
         setContent(pageContent);
@@ -120,7 +102,7 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = async (force = false) => {
     // Validate bulk FAQ JSON-LD schema markup
     const bulkSchema = (content.faqSchemaMarkup || "").trim();
     if (bulkSchema) {
@@ -140,6 +122,10 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
       }
     }
 
+    if (!page.title || !String(page.title).trim()) {
+      setMessage("Error: Enter a page title before saving.");
+      return;
+    }
 
     setSaving(true);
     try {
@@ -151,6 +137,8 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
           slug: page.slug,
           template: page.template,
           status: page.status,
+          baseUpdatedAt,
+          force,
           seo: {
             ...(seo || {}),
             schemaData: seo?.schemaData ?? content?.schemaMarkup ?? ""
@@ -162,10 +150,24 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
         }),
       });
       if (res.ok) {
+        const saved = await res.json().catch(() => ({}));
+        // Keep this editor in step with what the server stored (normalised slug, auto canonical, new updatedAt).
+        if (saved?.updatedAt) setBaseUpdatedAt(saved.updatedAt);
+        if (saved?.slug) setPage((prev: any) => ({ ...prev, slug: saved.slug }));
+        if (saved?.seo?.canonicalUrl !== undefined) {
+          setSeo((prev: any) => ({ ...prev, canonicalUrl: saved.seo.canonicalUrl }));
+        }
         setMessage("Page updated.");
         setTimeout(() => setMessage(""), 3000);
       } else {
         const err = await res.json().catch(() => ({}));
+        if (res.status === 409 && err.code === "STALE") {
+          setSaving(false);
+          if (confirm(`${err.error}\n\nOK = overwrite the newer version with what you have here.\nCancel = keep editing (reload the page to see the newer version).`)) {
+            await handleSave(true);
+          }
+          return;
+        }
         setMessage(`Error: ${err.error || "Failed to save changes."}`);
       }
     } catch (err) {
@@ -184,6 +186,10 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
         body: JSON.stringify({ isTrashed: true }),
       });
       if (res.ok) router.push("/admin/pages");
+      else {
+        const err = await res.json().catch(() => ({}));
+        alert("Could not move the page to the Trash: " + (err.error || "Unknown error"));
+      }
     } catch (err) {
       alert("Delete failed.");
     }
@@ -309,7 +315,7 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <h1 className="text-[20px] font-normal text-[#1d2327] font-serif">Edit Page</h1>
-          <Link href="/admin/pages" className="bg-white border border-[#2271b1] text-[#2271b1] text-[12px] px-1.5 py-0.5 rounded-[3px] hover:bg-[#f0f6fb] transition-colors">Add New</Link>
+          <Link href="/admin/pages?new=1" className="bg-white border border-[#2271b1] text-[#2271b1] text-[12px] px-1.5 py-0.5 rounded-[3px] hover:bg-[#f0f6fb] transition-colors">Add New</Link>
           {page?.slug && (
             <Link
               href={page.slug === 'home' || page.slug === 'homepage' ? '/' : `/${page.slug.replace(/^\/+|\/+$/g, '')}/`}
@@ -344,7 +350,10 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
             </span>
             <button
               onClick={async () => {
-                const ns = prompt("Enter new slug:", page.slug);
+                const ns = prompt(
+                  "Enter the new slug (the old URL will automatically redirect to the new one):",
+                  page.slug
+                );
                 if (!ns || ns === page.slug) return;
 
                 // Save immediately so the new URL goes live right away — leaving this only in
@@ -359,8 +368,19 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
                   });
                   if (res.ok) {
                     const updated = await res.json();
-                    setPage({ ...page, slug: updated.slug });
-                    setMessage("Slug updated.");
+                    setPage((prev: any) => ({ ...prev, slug: updated.slug }));
+                    // The server rewrote the canonical to match and bumped updatedAt. Mirror both,
+                    // otherwise the next "Update" re-saves this editor's stale canonical (pointing at
+                    // the OLD slug) and the stale updatedAt trips the stale-save guard.
+                    if (updated.seo?.canonicalUrl !== undefined) {
+                      setSeo((prev: any) => ({ ...prev, canonicalUrl: updated.seo.canonicalUrl }));
+                    }
+                    if (updated.updatedAt) setBaseUpdatedAt(updated.updatedAt);
+                    setMessage(
+                      updated.cascadedChildren
+                        ? `Slug updated. ${updated.cascadedChildren} child page(s) moved with it.`
+                        : "Slug updated."
+                    );
                     setTimeout(() => setMessage(""), 3000);
                   } else {
                     const err = await res.json().catch(() => ({}));
@@ -651,7 +671,9 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
 
                     {(!content.faqs || content.faqs.length === 0) ? (
                       <div className="text-[13px] text-[#646970] italic bg-[#f6f7f7] p-6 text-center border border-dashed border-[#c3c4c7] rounded-[3px]">
-                        No custom FAQs added for this page yet. It will use the default global FAQ items. Click "+ Add FAQ Question" to create page-specific ones.
+                        {TEMPLATES_WITH_OWN_FAQ_SECTION.has(page.template)
+                          ? 'No custom FAQs added for this page yet. It will use the default global FAQ items. Click "+ Add FAQ Question" to create page-specific ones.'
+                          : 'No FAQs added for this page yet, so no FAQ section is shown. Click "+ Add FAQ Question" to add a FAQ section at the bottom of this page.'}
                       </div>
                     ) : (
                       <div className="space-y-4">
@@ -748,8 +770,8 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
                 </select>
               </div>
               <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-[#82878c]" /> Date:</span>
-                <strong>{new Date().toLocaleDateString()}</strong>
+                <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-[#82878c]" /> Updated:</span>
+                <strong>{baseUpdatedAt ? new Date(baseUpdatedAt).toLocaleString() : "-"}</strong>
               </div>
               {page?.slug && (
                 <div className="pt-2 border-t border-[#f0f0f1] mt-2">
@@ -766,11 +788,11 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
             <div className="bg-[#f6f7f7] border-t border-[#c3c4c7] px-3 py-2 flex items-center justify-between">
               <button onClick={handleDelete} className="text-[#d63638] underline text-[12px] hover:text-[#b32d2e]">Trash</button>
               <button
-                onClick={handleSave}
+                onClick={() => handleSave()}
                 disabled={saving}
                 className="bg-[#2271b1] text-white text-[12px] font-semibold px-3 py-1 rounded-[3px] border border-[#135e96] shadow-[0_1px_0_#135e96] hover:bg-[#135e96] disabled:opacity-50"
               >
-                {saving ? "..." : "Update"}
+                {saving ? "Saving..." : "Update"}
               </button>
             </div>
           </div>
@@ -784,11 +806,18 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
               <div className="space-y-1">
                 <label className="text-[11px] font-semibold text-[#1d2327]">Template</label>
                 <select
-                  value={page.template}
-                  onChange={(e) => setPage({ ...page, template: e.target.value })}
+                  value={canonicalTemplate(page.template)}
+                  onChange={(e) => {
+                    const next = e.target.value;
+                    const current = canonicalTemplate(page.template);
+                    if (next === current) return;
+                    // The old content is kept, but the new template only shows its own fields.
+                    if (!confirm(templateChangeWarning(current, next))) return;
+                    setPage({ ...page, template: next });
+                  }}
                   className="w-full border border-[#8c8f94] bg-white px-2 py-1 text-[12px] rounded-[3px] outline-none focus:border-[#2271b1]"
                 >
-                  {EDITOR_TEMPLATES.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
+                  {PAGE_TEMPLATE_OPTIONS.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
                 </select>
               </div>
 

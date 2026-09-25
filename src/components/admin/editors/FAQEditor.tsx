@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Save, Loader2, LayoutTemplate, Type, Image as ImageIcon, 
@@ -18,25 +18,17 @@ import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
 import SchemaEditor from "@/components/admin/SchemaEditor";
 
-export default function FAQEditor({ pageId, data, setData }: { pageId: string, data: any, setData: (d: any) => void }) {
+// Same slug rule the public FAQ page uses to match a question's category to a filter chip.
+const slugify = (s: string) =>
+  String(s ?? "").toLowerCase().replace(/&/g, " and ").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
+export default function FAQEditor({ pageId, data, setData, seo, setSeo }: { pageId: string, data: any, setData: (d: any) => void, seo?: any, setSeo?: (s: any) => void }) {
   const [activeTab, setActiveTab] = useState("header");
 
-  useEffect(() => {
-    if (data && !data.faq) {
-       setData({
-         faq: {
-           section: { headline: "Frequently Asked Questions", description: "Find answers to common questions about our services and process." },
-           categories: [
-             { id: "all", label: "All Questions" },
-             { id: "roofing", label: "Roofing" },
-             { id: "decks", label: "Decks" },
-             { id: "windows", label: "Windows" }
-           ],
-           items: []
-         }
-       });
-    }
-  }, [data, setData]);
+  // NOTE: this editor used to seed `faq` on mount with `setData({ faq: {...} })`. That REPLACED the whole page
+  // content object (wiping the page's own FAQs, strategy box, schema...) and pinned a hard-coded
+  // roofing/decks/windows taxonomy + an empty question list that hid the global library. Nothing is
+  // seeded any more: updateFAQ() below creates the `faq` object lazily on the first real edit.
 
   if (!data) return <div className="flex items-center justify-center h-64"><Loader2 className="w-5 h-5 text-[#2271b1] animate-spin" /></div>;
 
@@ -110,19 +102,27 @@ export default function FAQEditor({ pageId, data, setData }: { pageId: string, d
               <div className="max-w-3xl space-y-6">
                 <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
                   <div>
-                    <h2 className="text-base font-bold text-[#1d2327]">FAQ Header Visibility</h2>
-                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                    <h2 className="text-base font-bold text-[#1d2327]">FAQ Section Visibility</h2>
+                    <p className="text-xs text-[#646970]">Turn off to hide the whole FAQ block (heading, questions and call-out box) on the live page.</p>
                   </div>
                   <SectionToggle
                     enabled={data.faq?.section?.enabled !== false}
                     onChange={(v) => updateFAQ("section", "enabled", v)}
-                    label="FAQ Header"
+                    label="FAQ Section"
                   />
                 </div>
                  <div className={UI.card + " space-y-5"}>
+                    <p className="text-[12px] text-[#646970]">
+                      Leave a field empty to use the site-wide FAQ wording. Anything filled in on the page&apos;s <strong>Page FAQs</strong> tab
+                      (badge, headline, description) takes priority over these fields.
+                    </p>
+                    <div className="space-y-1.5">
+                       <label className={UI.label}>Badge / Tag</label>
+                       <input type="text" value={data.faq?.section?.badge || ""} onChange={(e) => updateFAQ("section", "badge", e.target.value)} className={UI.input} placeholder="e.g. Knowledge Base" />
+                    </div>
                     <div className="space-y-1.5">
                        <label className={UI.label}>Main Headline</label>
-                       <input type="text" value={data.faq?.section?.headline || ""} onChange={(e) => updateFAQ("section", "headline", e.target.value)} className={UI.inputLarge} />
+                       <input type="text" value={data.faq?.section?.headline || ""} onChange={(e) => updateFAQ("section", "headline", e.target.value)} className={UI.inputLarge} placeholder="Frequently Asked Questions" />
                     </div>
                     <RichTextEditor 
                         label="Knowledge Intro Narrative" 
@@ -147,6 +147,11 @@ export default function FAQEditor({ pageId, data, setData }: { pageId: string, d
                     label="Filter Taxonomy"
                   />
                 </div>
+                 <p className="text-[12px] text-[#646970]">
+                   The live page shows these as filter buttons above the questions (an &ldquo;All&rdquo; button is added automatically, and only
+                   categories that have at least one question are shown). A question belongs to a category when its category matches the label below.
+                   Leave the list empty to use the categories from the questions themselves.
+                 </p>
                  <label className={UI.label}>Filtering Taxonomy</label>
                   <div className="space-y-4">
                      {(data.faq?.categories || []).map((cat: any, i: number) => (
@@ -165,17 +170,17 @@ export default function FAQEditor({ pageId, data, setData }: { pageId: string, d
                           </div>
                           <div className="space-y-1.5">
                              <label className={UI.label}>Category Label</label>
-                             <input type="text" value={cat.label} onChange={(e) => {
+                             <input type="text" value={cat.label ?? ""} onChange={(e) => {
+                                  // Copy the item instead of mutating the saved state object in place.
                                   const newC = [...data.faq.categories];
-                                  newC[i].label = e.target.value;
-                                  newC[i].id = e.target.value.toLowerCase().replace(/\s+/g, '-');
+                                  newC[i] = { ...newC[i], label: e.target.value, id: slugify(e.target.value) };
                                   updateFAQ("categories", null, newC);
                                 }} className={UI.input + " font-bold"} placeholder="Category Label" />
                              <p className="text-[9px] text-slate-400 font-mono uppercase tracking-tighter">System ID: {cat.id}</p>
                           </div>
                        </div>
                      ))}
-                     <button onClick={() => updateFAQ("categories", null, [...(data.faq?.categories || []), { id: "new", label: "New Category" }])} className={UI.buttonAdd}>
+                     <button onClick={() => updateFAQ("categories", null, [...(data.faq?.categories || []), { id: "new-category", label: "New Category" }])} className={UI.buttonAdd}>
                         + Add Category
                      </button>
                   </div>
@@ -196,6 +201,11 @@ export default function FAQEditor({ pageId, data, setData }: { pageId: string, d
                     label="Q&A Database"
                   />
                 </div>
+                 <p className="text-[12px] text-[#646970]">
+                   Optional: pick the questions this page should show, and their order. Leave it empty to show the questions from the
+                   global FAQ library that apply to this page. A page&apos;s own <strong>Page FAQs</strong> list, when filled in, always wins.
+                   Picked questions are copied into this page &mdash; if you later edit one in the global library, pick it again to refresh the copy.
+                 </p>
                  <ContentSelector 
                     type="faq" 
                     label="Knowledge Inventory (Select from Global Library)" 
@@ -208,16 +218,13 @@ export default function FAQEditor({ pageId, data, setData }: { pageId: string, d
             {activeTab === "schema" && (
                <div className="space-y-4">
                  <SchemaEditor
-                   value={data.schemaMarkup || data.seo?.schemaData || ""}
+                   value={seo?.schemaData || data.schemaMarkup || ""}
                    onChange={(val) => {
-                     setData((prev: any) => ({
-                       ...(prev || {}),
-                       schemaMarkup: val,
-                       seo: {
-                         ...(prev?.seo || {}),
-                         schemaData: val
-                       }
-                     }));
+                     // The page's real SEO record (seo.schemaData) is what the public route renders first and what
+                     // "Update" saves - writing only into content.seo (a nested copy nobody reads) or content.schemaMarkup
+                     // was overridden by a stale seo.schemaData on save. Keep both in step, like the page-level Schema tab.
+                     if (typeof setSeo === "function") setSeo({ ...(seo || {}), schemaData: val });
+                     setData((prev: any) => ({ ...(prev || {}), schemaMarkup: val }));
                    }}
                    pageTitle="Frequently Asked Questions"
                  />

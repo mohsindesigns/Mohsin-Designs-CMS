@@ -3,7 +3,6 @@ export const revalidate = 60; // Cache for 1 minute, updated via revalidatePath 
 import HomeTemplate from "@/components/templates/HomeTemplate";
 import { Metadata } from "next";
 import connectToDatabase from "@/lib/mongodb";
-import SiteContent from "@/models/Content";
 import Page from "@/models/Page";
 import CustomSchemaMarkup from "@/components/CustomSchemaMarkup";
 import { TemplateWrapper } from "@/components/templates/TemplateRegistry";
@@ -11,11 +10,85 @@ import ServiceDetailTemplate from "@/components/templates/ServiceDetailTemplate"
 import { BASE_URL } from "@/lib/constants";
 import { resolveRobotsMetadata } from "@/lib/seo";
 import { getCachedSiteContent } from "@/lib/content";
+import { getResolvedSchemaBlocks } from "@/lib/dynamicSchema";
+// One definition of "publicly visible post", read time and excerpt for the whole site.
+import { PUBLIC_POST_QUERY, promoteDueScheduledPosts, readMinutes, stripHtml, truncate } from "@/lib/blog-public";
 
 function getAbsoluteUrl(path: string | undefined) {
   if (!path) return undefined;
   if (path.startsWith('http')) return path;
   return `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+}
+
+// Keys that are OWNED by global settings / other editors. The Home editor used to copy a whole
+// snapshot of `complete_data` into the page document, so older Home docs carry stale copies of
+// these. TemplateWrapper spreads `pageData.content` OVER the global data, so a stale copy would
+// silently shadow later edits made in Settings / the FAQ manager (e.g. a changed favicon or a new
+// global FAQ never showing on the homepage). The PATCH route already refuses to sync
+// settings/loader/hours back; drop the rest of the pure copies at render time as well.
+const HOME_STALE_GLOBAL_KEYS = ["settings", "loader", "hours", "images", "quickQuote", "aboutPage", "faq", "leadership"];
+
+function cleanHomeContent(content: any) {
+  const cleaned = { ...(content || {}) };
+  for (const key of HOME_STALE_GLOBAL_KEYS) delete cleaned[key];
+  return cleaned;
+}
+
+/**
+ * Posts for the homepage blog section: the latest published posts PLUS every post the admin
+ * picked in the Blog tab (a plain "latest 10" pool silently dropped picks older than the 10
+ * newest, so they vanished from the section). Trashed posts are excluded exactly like the /blogs
+ * pages do - they used to leak in here and then 404 when clicked.
+ * `content` is only used server-side to derive a real reading time and an excerpt (the client
+ * payload must stay small); it is not sent to the browser.
+ */
+async function getHomeBlogPool(selectedRefs: any[]) {
+  try {
+    await connectToDatabase();
+    await promoteDueScheduledPosts();
+    const Post = (await import("@/models/Post")).default;
+    const published = PUBLIC_POST_QUERY;
+    const fields = "_id title slug excerpt featuredImage publishedAt date content seo.metaDescription";
+
+    const ids: string[] = [];
+    const slugs: string[] = [];
+    for (const ref of Array.isArray(selectedRefs) ? selectedRefs : []) {
+      const value = typeof ref === "string" ? ref : String(ref?._id || ref?.id || ref?.slug || "");
+      if (!value) continue;
+      if (/^[0-9a-fA-F]{24}$/.test(value)) ids.push(value);
+      else slugs.push(value);
+    }
+
+    const [latest, picked] = await Promise.all([
+      Post.find(published).select(fields).sort({ publishedAt: -1 }).limit(10).lean(),
+      ids.length || slugs.length
+        ? Post.find({ ...published, $or: [{ _id: { $in: ids } }, { slug: { $in: slugs } }] }).select(fields).lean()
+        : Promise.resolve([]),
+    ]);
+
+    const seen = new Set<string>();
+    const merged: any[] = [];
+    for (const post of [...(latest as any[]), ...(picked as any[])]) {
+      const key = String(post._id);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      merged.push(post);
+    }
+    merged.sort((a, b) => new Date(b.publishedAt || 0).getTime() - new Date(a.publishedAt || 0).getTime());
+
+    return merged.map((post: any) => {
+      const { content, seo, ...lean } = post;
+      const excerpt =
+        (typeof post.excerpt === "string" && post.excerpt.trim()) ||
+        (typeof seo?.metaDescription === "string" && seo.metaDescription.trim()) ||
+        truncate(stripHtml(content), 160);
+      // _id must be a plain string: a raw ObjectId cannot be passed from a Server to a Client Component.
+      return { ...lean, _id: String(post._id), excerpt, readTime: `${readMinutes(content)} min read` };
+    });
+  } catch (error) {
+    console.error("Error loading homepage blog posts:", error);
+    return [];
+  }
 }
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -128,57 +201,51 @@ export default async function Index() {
   const content = { data: await getCachedSiteContent() };
   const settings = content?.data?.settings;
   const homepageId = settings?.homepageId;
+  // Fresh service catalog (site_contents.data.services.services) - see the masterCatalog notes in Services.tsx.
+  const globalServices = content?.data?.services?.services || [];
 
-  // Detect FAQs for Homepage (Global + specific to home)
-  const allFaqs = content?.data?.faq?.items || [];
-  const faqs = allFaqs.filter((item: any) => 
-    item.visibility === 'global' || 
-    (item.visibility === 'specific' && item.targetPages?.includes('home'))
-  );
+  // A page assigned as homepage in Settings is looked up by _id. homepageId can also be a service
+  // slug (handled below); querying Page.findOne({ _id: "some-slug" }) throws a CastError, which
+  // used to take the whole homepage down with a 500 whenever a service was chosen as the homepage.
+  const isObjectId = typeof homepageId === "string" && /^[0-9a-fA-F]{24}$/.test(homepageId);
 
-  // Find published blog posts to provide to ContentProvider (project lean fields)
-  const Post = (await import("@/models/Post")).default;
-  const postsDoc = await Post.find({ status: 'published' })
-    .select('_id title slug excerpt featuredImage publishedAt date categories')
-    .sort({ publishedAt: -1 })
-    .limit(10)
-    .lean();
-  const initialBlogs = postsDoc ? JSON.parse(JSON.stringify(postsDoc)) : [];
+  const assignedPageDoc = isObjectId
+    ? await Page.findOne({
+        _id: homepageId,
+        status: 'published',
+        isTrashed: { $ne: true }
+      }).lean()
+    : null;
+
+  if (assignedPageDoc) {
+    const page = JSON.parse(JSON.stringify(assignedPageDoc));
+    const pageContent = page.template === 'home' ? cleanHomeContent(page.content) : (page.content || {});
+    const initialBlogs = await getHomeBlogPool(pageContent?.blogSection?.selectedPosts || pageContent?.blog?.selectedPosts || []);
+    // Custom + synced FAQ schema, with {{tokens}} resolved - same helper every other page uses.
+    const schemaBlocks = getResolvedSchemaBlocks({ page, globalData: content?.data || {}, slug: '/' });
+    return (
+      <>
+        <CustomSchemaMarkup schema={schemaBlocks} />
+        <TemplateWrapper
+          templateName={page.template}
+          pageData={{
+            ...page,
+            content: {
+              ...pageContent,
+              globalServices
+            }
+          }}
+          globalData={content?.data || {}}
+          initialBlogs={initialBlogs}
+          params={Promise.resolve({ slug: ['/'] })}
+        />
+      </>
+    );
+  }
 
   if (homepageId) {
-    // Check if it's a page
-    // Check if it's a page and ensure it's published and not trashed
-    const pageDoc = await Page.findOne({ 
-      _id: homepageId, 
-      status: 'published', 
-      isTrashed: { $ne: true } 
-    }).lean();
-    if (pageDoc) {
-      const page = JSON.parse(JSON.stringify(pageDoc));
-      const customSchema = page?.seo?.schemaData || page?.content?.schemaMarkup || page?.content?.customSchema || page?.content?.faqSchemaMarkup;
-      return (
-        <>
-          <CustomSchemaMarkup schema={customSchema} />
-          <TemplateWrapper
-            templateName={page.template}
-            pageData={{
-              ...page,
-              content: {
-                ...(page.content || {}),
-                globalServices: content?.data?.services?.services || []
-              }
-            }}
-            globalData={content?.data || {}}
-            initialBlogs={initialBlogs}
-            params={Promise.resolve({ slug: ['/'] })} 
-          />
-        </>
-      );
-    }
-
-    // Check if it's a service
     // Check if it's a service and ensure it's not a draft
-    const serviceDoc = content?.data?.services?.services?.find((s: any) => 
+    const serviceDoc = content?.data?.services?.services?.find((s: any) =>
       (s._id === homepageId || s.slug === homepageId) && s.status !== 'draft'
     );
     if (serviceDoc) {
@@ -201,30 +268,38 @@ export default async function Index() {
   }).lean();
 
   const homePage = defaultHomePageDoc ? JSON.parse(JSON.stringify(defaultHomePageDoc)) : null;
-  const homeCustomSchema = homePage?.seo?.schemaData ||
-                           homePage?.content?.schemaMarkup || 
-                           homePage?.content?.customSchema || 
-                           content?.data?.home?.seo?.schemaData || 
-                           content?.data?.home?.schemaMarkup;
+  const homeContent = homePage ? cleanHomeContent(homePage.content) : (content?.data?.home || {});
+  const initialBlogs = await getHomeBlogPool(homeContent?.blogSection?.selectedPosts || homeContent?.blog?.selectedPosts || []);
+
+  // Custom schema from the CMS Schema tab + the synced FAQPage schema, {{tokens}} resolved.
+  // (The old inline lookup ignored `faqSchemaMarkup` completely, so "Sync FAQs to Schema" on the
+  // homepage never produced any structured data on the live page.)
+  const schemaBlocks = getResolvedSchemaBlocks({
+    page: homePage
+      ? { ...homePage, content: homeContent }
+      : { title: 'Home', slug: '', template: 'home', seo: content?.data?.home?.seo, content: homeContent },
+    globalData: content?.data || {},
+    slug: '/'
+  });
 
   return (
     <>
-      <CustomSchemaMarkup schema={homeCustomSchema} />
+      <CustomSchemaMarkup schema={schemaBlocks} />
       <TemplateWrapper
         templateName="home"
         pageData={homePage ? {
           ...homePage,
           content: {
-            ...(homePage.content || {}),
+            ...homeContent,
             // Always refresh from the live master catalog rather than trusting
             // whatever globalServices snapshot happened to be last saved on this
             // Page doc - that mirror can go stale (see Services.tsx enrichment).
-            globalServices: content?.data?.services?.services || []
+            globalServices
           }
         } : {
           content: {
-            ...(content?.data?.home || {}),
-            globalServices: content?.data?.services?.services || []
+            ...homeContent,
+            globalServices
           }
         }}
         globalData={content?.data || {}}

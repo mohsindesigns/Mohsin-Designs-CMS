@@ -18,25 +18,44 @@ export default function BlogPosts() {
   const [bulkAction, setBulkAction] = useState("");
   const [editingPost, setEditingPost] = useState<any>(null);
 
+  const [loadError, setLoadError] = useState("");
+
+  // Filtering is client-side, so the list is fetched once (it used to refetch every post on every filter click).
   useEffect(() => {
     fetchPosts();
+  }, []);
+
+  // Clear the selection when the visible list changes so "Apply" never acts on rows the user can no longer see.
+  useEffect(() => {
+    setSelectedPosts([]);
   }, [statusFilter]);
 
   const fetchPosts = async () => {
     try {
       const res = await fetch('/api/admin/blogs/posts?all=true');
       const data = await res.json();
-      setPosts(data);
+      if (res.ok && Array.isArray(data)) {
+        setPosts(data);
+        setLoadError("");
+      } else {
+        setLoadError(data?.error || "Failed to load posts.");
+      }
       setSelectedPosts([]);
     } catch (err) {
       console.error("Failed to fetch posts:", err);
+      setLoadError("Failed to load posts.");
     } finally {
       setLoading(false);
     }
   };
 
+  const fmtDate = (v: any) => {
+    const d = v ? new Date(v) : null;
+    return d && !Number.isNaN(d.getTime()) ? d.toLocaleDateString() : "—";
+  };
+
   const filteredPosts = posts.filter(post => {
-    const matchesSearch = post.title.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = (post.title || "").toLowerCase().includes(search.toLowerCase());
     const isTrashed = post.isTrashed === true;
 
     if (statusFilter === 'trash') return matchesSearch && isTrashed;
@@ -89,6 +108,9 @@ export default function BlogPosts() {
       if (res.ok) {
         setBulkAction("");
         fetchPosts();
+      } else {
+        const error = await res.json().catch(() => ({}));
+        alert("Bulk action failed: " + (error.error || "Unknown error"));
       }
     } catch (err) {
       alert("Bulk action failed");
@@ -118,6 +140,9 @@ export default function BlogPosts() {
         });
         if (res.ok) {
           fetchPosts();
+        } else {
+          const error = await res.json().catch(() => ({}));
+          alert("Moving to trash failed: " + (error.error || "Unknown error"));
         }
       } catch (err) {
         alert("Moving to trash failed");
@@ -134,6 +159,9 @@ export default function BlogPosts() {
       });
       if (res.ok) {
         fetchPosts();
+      } else {
+        const error = await res.json().catch(() => ({}));
+        alert("Restore failed: " + (error.error || "Unknown error"));
       }
     } catch (err) {
       alert("Restore failed");
@@ -154,16 +182,20 @@ export default function BlogPosts() {
     }
   };
 
+  const originalQuickEditStatus = posts.find(p => p._id === editingPost?._id)?.status;
+
   const handleQuickEditSave = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const res = await fetch(`/api/admin/blogs/posts/${editingPost._id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
+        // `status` is only sent when it actually changed: re-sending an unchanged "scheduled" status
+        // without a date would be treated as "publish now".
         body: JSON.stringify({
           title: editingPost.title,
           slug: editingPost.slug,
-          status: editingPost.status
+          ...(editingPost.status !== originalQuickEditStatus ? { status: editingPost.status } : {})
         })
       });
       if (res.ok) {
@@ -194,6 +226,8 @@ export default function BlogPosts() {
           <button onClick={() => setStatusFilter('published')} className={`${statusFilter === 'published' ? 'text-[#1d2327] font-bold' : ''}`}>Published ({posts.filter(p => p.status === 'published' && !p.isTrashed).length})</button>
           <span className="text-[#c3c4c7]">|</span>
           <button onClick={() => setStatusFilter('draft')} className={`${statusFilter === 'draft' ? 'text-[#1d2327] font-bold' : ''}`}>Drafts ({posts.filter(p => p.status === 'draft' && !p.isTrashed).length})</button>
+          <span className="text-[#c3c4c7]">|</span>
+          <button onClick={() => setStatusFilter('scheduled')} className={`${statusFilter === 'scheduled' ? 'text-[#1d2327] font-bold' : ''}`}>Scheduled ({posts.filter(p => p.status === 'scheduled' && !p.isTrashed).length})</button>
           <span className="text-[#c3c4c7]">|</span>
           <button onClick={() => setStatusFilter('trash')} className={`${statusFilter === 'trash' ? 'text-[#d63638] font-bold' : 'text-[#d63638]'}`}>Trash ({posts.filter(p => p.isTrashed).length || 0})</button>
         </div>
@@ -261,6 +295,8 @@ export default function BlogPosts() {
           <tbody>
             {loading ? (
               <tr><td colSpan={6} className="p-10 text-center text-[#646970]">Loading posts...</td></tr>
+            ) : loadError ? (
+              <tr><td colSpan={6} className="p-10 text-center text-[#d63638]">{loadError}</td></tr>
             ) : filteredPosts.length === 0 ? (
               <tr><td colSpan={6} className="p-10 text-center text-[#646970]">No posts found.</td></tr>
             ) : filteredPosts.map((post) => (
@@ -282,8 +318,10 @@ export default function BlogPosts() {
                     <div className="flex-1">
                       <Link href={`/admin/blogs/${post._id}`} className="text-[#2271b1] font-bold hover:text-[#135e96] block mb-1">
                         {post.title} {post.status === 'draft' && <span className="text-[#646970] font-normal">— Draft</span>}
+                        {post.status === 'scheduled' && <span className="text-[#646970] font-normal">— Scheduled</span>}
                       </Link>
-                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {/* Always visible on touch screens / when a link inside has keyboard focus (hover-only hid them) */}
+                      <div className="flex flex-wrap items-center gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 transition-opacity">
                         <Link href={`/admin/blogs/${post._id}`} className="text-[#2271b1] hover:text-[#135e96]">Edit</Link>
                         <span className="text-[#c3c4c7]">|</span>
                         <button onClick={() => setEditingPost(post)} className="text-[#2271b1] hover:text-[#135e96]">Quick Edit</button>
@@ -297,8 +335,14 @@ export default function BlogPosts() {
                         ) : (
                           <button onClick={() => deletePost(post._id)} className="text-[#d63638] hover:text-[#b32d2e]">Trash</button>
                         )}
-                        <span className="text-[#c3c4c7]">|</span>
-                        <Link href={`/blogs/${post.slug}`} target="_blank" className="text-[#2271b1] hover:text-[#135e96]">View</Link>
+                        {!post.isTrashed && (
+                          <>
+                            <span className="text-[#c3c4c7]">|</span>
+                            <Link href={`/blogs/${post.slug}`} target="_blank" className="text-[#2271b1] hover:text-[#135e96]">
+                              {post.status === 'published' ? 'View' : 'Preview'}
+                            </Link>
+                          </>
+                        )}
                         <span className="text-[#c3c4c7]">|</span>
                         <button onClick={() => duplicatePost(post._id)} className="text-[#2271b1] hover:text-[#135e96]">Duplicate</button>
                       </div>
@@ -314,8 +358,12 @@ export default function BlogPosts() {
                 </td>
                 <td className="px-3 py-4">
                   <div className="text-[12px]">
-                    <span className="block text-[#646970]">{post.status === 'published' ? 'Published' : 'Last Modified'}</span>
-                    <span className="block">{new Date(post.updatedAt).toLocaleDateString()}</span>
+                    <span className="block text-[#646970]">
+                      {post.status === 'published' ? 'Published' : post.status === 'scheduled' ? 'Scheduled for' : 'Last Modified'}
+                    </span>
+                    <span className="block">
+                      {fmtDate(post.status === 'published' || post.status === 'scheduled' ? (post.publishedAt || post.updatedAt) : post.updatedAt)}
+                    </span>
                   </div>
                 </td>
               </tr>
@@ -363,6 +411,8 @@ export default function BlogPosts() {
                   >
                     <option value="draft">Draft</option>
                     <option value="published">Published</option>
+                    {/* Scheduling needs a date: set it in the full editor. Shown only so an existing scheduled post keeps its value. */}
+                    {originalQuickEditStatus === 'scheduled' && <option value="scheduled">Scheduled (change date in full editor)</option>}
                   </select>
                 </div>
               </div>

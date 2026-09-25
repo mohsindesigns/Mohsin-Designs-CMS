@@ -4,7 +4,7 @@ import CtaButton from "@/components/ui/CtaButton";
 import { withTrailingSlash } from "@/lib/url";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, ArrowRight } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useId, useState, type ReactNode } from "react";
 import { useContent } from "@/hooks/useContent";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import { isSafeHref } from "@/lib/utils";
@@ -48,6 +48,7 @@ export default function PageInlineFaqs({
   breadcrumb
 }: PageInlineFaqsProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const uid = useId();
   const content = useContent();
 
   const rawFaq = propData || content.faq || {};
@@ -74,7 +75,8 @@ export default function PageInlineFaqs({
     titleHighlight = "Frequently Asked Questions";
   }
 
-  const rawDesc = description || rawFaq.faqDescription || rawFaq.description || rawFaq.section?.description || "";
+  // `subtitle` is what Gallery/Location/blog pages pass for the section description.
+  const rawDesc = description || subtitle || rawFaq.faqDescription || rawFaq.description || rawFaq.section?.description || "";
   // Filter out any legacy St. Louis boilerplate from old database records
   const desc = (typeof rawDesc === 'string' && rawDesc.includes("St. Louis")) ? "" : rawDesc;
 
@@ -223,67 +225,70 @@ export default function PageInlineFaqs({
             {faqs.map((f, index) => {
               const doubleDigit = String(index + 1).padStart(2, "0");
               const isOpen = openIndex === index;
+              const btnId = `${uid}-q-${index}`;
+              const panelId = `${uid}-a-${index}`;
 
               return (
                 <div
                   key={index}
-                  className={`group relative overflow-hidden rounded-2xl border transition-all duration-300 cursor-pointer select-none p-4 xs:p-5 sm:p-6 ${
+                  className={`group relative overflow-hidden rounded-2xl border transition-all duration-300 ${
                     isOpen
                       ? "bg-white dark:bg-[#12121e] border-primary/30 dark:border-yellow-400/30 shadow-md"
                       : "bg-white/60 dark:bg-[#12121e]/60 border-slate-200/80 dark:border-white/10 hover:bg-white dark:hover:bg-[#12121e] hover:border-primary/20 dark:hover:border-yellow-400/20"
                   }`}
-                  onClick={() => toggleFAQ(index)}
                 >
-                  {/* Header Area */}
-                  <div className="flex items-start justify-between gap-4 relative z-10">
-                    <div className="flex items-start gap-3.5">
-                      {/* Double Digit Number */}
-                      <span className="font-mono text-xs font-black text-primary dark:text-yellow-400 mt-0.5 select-none">
-                        {doubleDigit}
+                  {/* Header = a real button inside the heading (WAI-ARIA accordion pattern): keyboard + screen-reader friendly */}
+                  <h3 className="relative z-10 m-0">
+                    <button
+                      type="button"
+                      id={btnId}
+                      aria-expanded={isOpen}
+                      aria-controls={panelId}
+                      onClick={() => toggleFAQ(index)}
+                      className="flex w-full cursor-pointer select-none items-start justify-between gap-4 rounded-2xl p-4 xs:p-5 sm:p-6 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 dark:focus-visible:ring-yellow-400/60"
+                    >
+                      <span className="flex items-start gap-3.5">
+                        <span className="mt-0.5 font-mono text-xs font-black text-primary dark:text-yellow-400">{doubleDigit}</span>
+                        <span className={`font-heading font-extrabold text-base sm:text-lg leading-snug transition-colors duration-300 pr-2 ${
+                          isOpen ? "text-primary dark:text-yellow-400" : "text-slate-900 dark:text-white group-hover:text-primary dark:group-hover:text-yellow-400"
+                        }`}>
+                          {f.question}
+                        </span>
                       </span>
-                      
-                      <div className="space-y-1">
-                        {/* Question */}
-                        {f.question && f.question.trim() && (
-                          <h3 className={`font-heading font-extrabold text-base sm:text-lg leading-snug transition-colors duration-300 pr-2 ${
-                            isOpen ? "text-primary dark:text-yellow-400" : "text-slate-900 dark:text-white group-hover:text-primary dark:group-hover:text-yellow-400"
-                          }`}>
-                            {f.question}
-                          </h3>
-                        )}
-                      </div>
-                    </div>
+                      <span className="mt-0.5 shrink-0">
+                        <motion.span
+                          aria-hidden="true"
+                          animate={{ rotate: isOpen ? 135 : 0 }}
+                          transition={{ type: "spring", stiffness: 220, damping: 18 }}
+                          className={`flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-300 ${
+                            isOpen
+                              ? "bg-primary border-primary text-white dark:bg-yellow-400 dark:border-yellow-400 dark:text-[#080710] shadow-sm"
+                              : "bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-800 dark:text-white group-hover:border-primary dark:group-hover:border-yellow-400"
+                          }`}
+                        >
+                          <Plus className="h-4 w-4 stroke-[2]" />
+                        </motion.span>
+                      </span>
+                    </button>
+                  </h3>
 
-                    {/* Plus/Minus Indicator */}
-                    <div className="shrink-0 mt-0.5">
-                      <motion.div
-                        animate={{ rotate: isOpen ? 135 : 0 }}
-                        transition={{ type: "spring", stiffness: 220, damping: 18 }}
-                        className={`flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-300 ${
-                          isOpen
-                            ? "bg-primary border-primary text-white dark:bg-yellow-400 dark:border-yellow-400 dark:text-[#080710] shadow-sm"
-                            : "bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-800 dark:text-white group-hover:border-primary dark:group-hover:border-yellow-400"
-                        }`}
-                      >
-                        <Plus className="h-4 w-4 stroke-[2]" />
-                      </motion.div>
-                    </div>
-                  </div>
-
-                  {/* Answer Area */}
                   <AnimatePresence initial={false}>
                     {isOpen && (
                       <motion.div
+                        id={panelId}
+                        role="region"
+                        aria-labelledby={btnId}
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.25, ease: "easeInOut" }}
-                        className="overflow-hidden relative z-10"
-                        onClick={(e) => e.stopPropagation()}
+                        className="relative z-10 overflow-hidden"
                       >
-                        <div className="pl-7 pt-4 mt-4 border-t border-slate-100 dark:border-white/10">
-                          <div className="text-xs sm:text-sm text-slate-600 dark:text-zinc-300 font-medium leading-relaxed font-sans [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-5 [&_ol]:pl-5 [&_li]:mb-1">
-                            <RichTextRenderer content={f.answer} />
+                        <div className="px-4 xs:px-5 sm:px-6 pb-4 xs:pb-5 sm:pb-6">
+                          <div className="border-t border-slate-100 pl-7 pt-4 dark:border-white/10">
+                            <div className="text-xs sm:text-sm text-slate-600 dark:text-zinc-300 font-medium leading-relaxed font-sans [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-5 [&_ol]:pl-5 [&_li]:mb-1">
+                              <RichTextRenderer content={f.answer} />
+                            </div>
                           </div>
                         </div>
                       </motion.div>

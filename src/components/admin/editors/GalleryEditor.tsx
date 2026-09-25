@@ -15,9 +15,14 @@ import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
 import SchemaEditor from "@/components/admin/SchemaEditor";
 import VideoTestimonialsEditor from "./VideoTestimonialsEditor";
+import { resolveSelectedProjects, toProjectList } from "@/lib/galleryProjects";
 
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), { ssr: false });
 
+// What a blank Portfolio page shows publicly (GalleryTemplate has the same fallbacks):
+//  - hero / process / CTA banner: the texts below,
+//  - project grid: EVERY project from Admin > Projects ("existing" mode with nothing selected). The template no longer
+//    invents sample projects, so there are no demo cards here either - use "Custom Project Cards" for hand-made ones.
 const DEFAULT_GALLERY_DATA = {
   hero: {
     badge: "OUR PORTFOLIO",
@@ -28,70 +33,9 @@ const DEFAULT_GALLERY_DATA = {
     ctaSecondary: { label: "EXPLORE WORK", href: "#projects" },
     backgroundImage: "/portfolio_hero_bg.png"
   },
-  projectMode: "custom", // "existing" | "custom"
+  projectMode: "existing", // "existing" | "custom"
   selectedProjects: [],
-  projects: [
-    {
-      id: "1",
-      badge: "Web Design",
-      brand: "Moshin Designs – Creative Agency",
-      subtitle: "Modern, responsive and high-performing website built for a leading agency.",
-      image: "/portfolio_card_1.png",
-      tag: "+320% Traffic",
-      tech: ["Next.js 15", "TailwindCSS", "Framer Motion"],
-      link: "/contact"
-    },
-    {
-      id: "2",
-      badge: "UI/UX Design",
-      brand: "Fintech Dashboard UI",
-      subtitle: "Clean, modern and intuitive interface design for financial services.",
-      image: "/portfolio_card_2.png",
-      tag: "4.9x ROAS",
-      tech: ["Figma UI", "System Kit", "Dashboard"],
-      link: "/contact"
-    },
-    {
-      id: "3",
-      badge: "Web Design",
-      brand: "E-Commerce Store",
-      subtitle: "Visually stunning and conversion-focused online store for a fashion brand.",
-      image: "/portfolio_card_3.png",
-      tag: "+185% Leads",
-      tech: ["Shopify Pro", "React", "E-Commerce"],
-      link: "/contact"
-    },
-    {
-      id: "4",
-      badge: "Logo Design",
-      brand: "Brand Identity – Nexus Solutions",
-      subtitle: "A timeless and professional logo design for a global tech company.",
-      image: "/portfolio_card_4.png",
-      tag: "100% Custom",
-      tech: ["Branding", "Vector Art", "Brand Book"],
-      link: "/contact"
-    },
-    {
-      id: "5",
-      badge: "Social Media",
-      brand: "Digital Marketing Campaign",
-      subtitle: "Creative social media visuals that build engagement and trust.",
-      image: "/portfolio_card_5.png",
-      tag: "+450% Reach",
-      tech: ["Social Media", "Marketing", "3D Motion"],
-      link: "/contact"
-    },
-    {
-      id: "6",
-      badge: "Web Design",
-      brand: "Real Estate Website",
-      subtitle: "Elegant and modern website for a real estate company.",
-      image: "/portfolio_card_6.png",
-      tag: "Top #1 Rank",
-      tech: ["Next.js", "SEO Pro", "Real Estate"],
-      link: "/contact"
-    }
-  ],
+  projects: [],
   process: {
     badge: "OUR CREATIVE PROCESS",
     titlePrefix: "From Concept to ",
@@ -134,14 +78,72 @@ const DEFAULT_GALLERY_DATA = {
     titleHighlight: "Next Big Project",
     titleCursive: "Today?",
     description: "Let's turn your vision into a stunning digital reality. Get in touch for a custom strategy, competitive pricing, and fast execution.",
-    ctaPrimary: { label: "START YOUR PROJECT", href: "/contact" },
-    ctaSecondary: { label: "GET FREE ESTIMATE", href: "/contact" },
+    ctaPrimary: { label: "START YOUR PROJECT", href: "/contact-us" },
+    ctaSecondary: { label: "GET FREE ESTIMATE", href: "/contact-us" },
     portraitSrc: "/founder_portrait_nobg.png",
     portraitAlt: "Founder & Creative Director"
   }
 };
 
-export default function GalleryEditor({ pageId, data, setData }: { pageId: string; data: any; setData: (d: any) => void }) {
+/**
+ * "Select from Existing Projects" stores COPIES of catalog projects. If a project is later deleted (or renamed beyond
+ * recognition) in Admin > Projects, the public page silently drops it - this tells the admin which selected entries no
+ * longer exist and lets them clean the selection up (also refreshes the remaining copies from the live catalog).
+ */
+function StaleSelectionNotice({ selected, onCleanUp }: { selected: any[]; onCleanUp: (next: any[]) => void }) {
+  const [catalog, setCatalog] = useState<any[] | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    fetch("/api/content", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (alive) setCatalog(toProjectList(d?.portfolio?.projects));
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  if (!catalog || catalog.length === 0 || selected.length === 0) return null;
+  const { resolved, stale } = resolveSelectedProjects(selected, catalog);
+  if (stale.length === 0) return null;
+
+  return (
+    <div className="bg-amber-50 border border-amber-300 rounded-lg p-3 text-[12px] text-amber-900 space-y-2">
+      <p className="font-bold">
+        {stale.length} selected project{stale.length > 1 ? "s are" : " is"} no longer in Admin &rsaquo; Projects and will not be shown on the live page:
+      </p>
+      <ul className="list-disc pl-5">
+        {stale.map((p: any, i: number) => (
+          <li key={i}>{p.title || p.brand || p.name || "Untitled project"}</li>
+        ))}
+      </ul>
+      <button
+        type="button"
+        onClick={() => onCleanUp(resolved)}
+        className="px-3 py-1 bg-amber-600 text-white rounded text-[11px] font-bold hover:bg-amber-700 transition-colors"
+      >
+        Remove missing projects from selection
+      </button>
+    </div>
+  );
+}
+
+export default function GalleryEditor({
+  pageId,
+  data,
+  setData,
+  seo,
+  setSeo
+}: {
+  pageId: string;
+  data: any;
+  setData: (d: any) => void;
+  seo?: any;
+  setSeo?: (d: any) => void;
+}) {
   const [activeTab, setActiveTab] = useState("hero");
 
   // Ensure galleryPage is properly structured
@@ -154,6 +156,26 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
           ...(prev?.galleryPage || {})
         }
       }));
+      return;
+    }
+
+    // Repair documents saved by the old editor: its "Projects Showcase" visibility toggle spread the projects ARRAY into an
+    // object ({0:{...},1:{...},enabled:false}), which destroyed the list. Turn it back into an array and keep the
+    // visibility flag under `portfolioGrid.enabled` (where the toggle writes now).
+    const gp = data.galleryPage;
+    if (gp.projects && !Array.isArray(gp.projects) && typeof gp.projects === "object") {
+      setData((prev: any) => {
+        const cur = prev?.galleryPage || gp;
+        const hidden = cur.projects?.enabled === false;
+        return {
+          ...(prev || {}),
+          galleryPage: {
+            ...cur,
+            projects: toProjectList(cur.projects),
+            portfolioGrid: { ...(cur.portfolioGrid || {}), ...(hidden && cur.portfolioGrid?.enabled === undefined ? { enabled: false } : {}) }
+          }
+        };
+      });
     }
   }, [data, setData]);
 
@@ -193,52 +215,73 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
     });
   };
 
-  // Projects CRUD
-  const projects = gallery.projects || DEFAULT_GALLERY_DATA.projects;
-  const projectMode = gallery.projectMode || "custom";
+  // Projects CRUD. Every mutation is a functional update applied to the LATEST state (several rich-text fields can
+  // fire onChange in the same tick; working from this render's snapshot would let one overwrite the other).
+  const projects = toProjectList(gallery.projects);
+  // Same rule as the template: only an explicit "existing" switches to catalog mode.
+  const projectMode = gallery.projectMode === "existing" ? "existing" : "custom";
+  const gridVisible = gallery.portfolioGrid?.enabled !== false && gallery.projects?.enabled !== false;
+
+  const updateProjects = (mutate: (list: any[]) => any[]) => {
+    setData((prev: any) => {
+      const cur = prev?.galleryPage || gallery;
+      return {
+        ...(prev || {}),
+        galleryPage: { ...cur, projects: mutate(toProjectList(cur.projects)) }
+      };
+    });
+  };
 
   const handleAddProject = () => {
+    // Blank starter card: the public card only shows the pieces that are filled in (no fake metric / tech pills / image).
     const newProject = {
       id: Date.now().toString(),
-      badge: "Web Design",
-      brand: "New Project Showcase",
-      subtitle: "Strategic design and engineering built for measurable commercial impact.",
-      image: "/portfolio_card_1.png",
-      tag: "+200% ROI",
-      tech: ["Next.js", "TailwindCSS"],
-      link: "/contact"
+      badge: "",
+      brand: "New Project",
+      subtitle: "",
+      image: "",
+      tag: "",
+      tech: "",
+      link: ""
     };
-    updateGallery("projects", [...projects, newProject]);
+    updateProjects((list) => [...list, newProject]);
   };
 
   const handleUpdateProject = (index: number, field: string, value: any) => {
-    const updated = [...projects];
-    updated[index] = { ...updated[index], [field]: value };
-    updateGallery("projects", updated);
+    updateProjects((list) => list.map((p, i) => (i === index ? { ...p, [field]: value } : p)));
   };
 
   const handleDeleteProject = (index: number) => {
-    const updated = projects.filter((_: any, idx: number) => idx !== index);
-    updateGallery("projects", updated);
+    updateProjects((list) => list.filter((_: any, idx: number) => idx !== index));
   };
 
   const handleMoveProject = (index: number, direction: "up" | "down") => {
-    if ((direction === "up" && index === 0) || (direction === "down" && index === projects.length - 1)) return;
-    const targetIndex = direction === "up" ? index - 1 : index + 1;
-    const updated = [...projects];
-    const temp = updated[index];
-    updated[index] = updated[targetIndex];
-    updated[targetIndex] = temp;
-    updateGallery("projects", updated);
+    updateProjects((list) => {
+      const targetIndex = direction === "up" ? index - 1 : index + 1;
+      if (targetIndex < 0 || targetIndex >= list.length) return list;
+      const updated = [...list];
+      [updated[index], updated[targetIndex]] = [updated[targetIndex], updated[index]];
+      return updated;
+    });
   };
 
-  // Process Steps CRUD
-  const processSteps = gallery.process?.steps || DEFAULT_GALLERY_DATA.process.steps;
+  // Process Steps CRUD (same fallback as the template: no saved steps -> the 4 defaults)
+  const processSteps =
+    Array.isArray(gallery.process?.steps) && gallery.process.steps.length > 0
+      ? gallery.process.steps
+      : DEFAULT_GALLERY_DATA.process.steps;
 
   const handleUpdateStep = (index: number, field: string, value: any) => {
-    const updated = [...processSteps];
-    updated[index] = { ...updated[index], [field]: value };
-    updateNested("process", "steps", updated);
+    setData((prev: any) => {
+      const cur = prev?.galleryPage || gallery;
+      const base =
+        Array.isArray(cur.process?.steps) && cur.process.steps.length > 0 ? cur.process.steps : DEFAULT_GALLERY_DATA.process.steps;
+      const steps = base.map((st: any, i: number) => (i === index ? { ...st, [field]: value } : st));
+      return {
+        ...(prev || {}),
+        galleryPage: { ...cur, process: { ...(cur.process || {}), steps } }
+      };
+    });
   };
 
   const tabs = [
@@ -410,11 +453,16 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
                     </div>
                   </div>
                 </div>
+                <p className={UI.helpText}>
+                  Links can be a page (<code>/contact-us</code>), a full URL, or an in-page anchor: <code>#projects</code> scrolls to
+                  the project grid, <code>#contact</code> to the bottom banner. If that section is hidden, <code>#contact</code>{" "}
+                  automatically goes to <code>/contact-us</code> and a <code>#projects</code> button is left out.
+                </p>
 
                 <div className="space-y-1.5 pt-3 border-t border-[#f0f0f1]">
                   <ImageField
                     label="Hero Background Graphic Artwork"
-                    value={gallery.hero?.backgroundImage || "/portfolio_hero_bg.png"}
+                    value={gallery.hero?.backgroundImage ?? "/portfolio_hero_bg.png"}
                     onChange={(val) => updateNested("hero", "backgroundImage", val)}
                     description="Full-bleed graphic overlay behind the navbar and hero text."
                   />
@@ -445,8 +493,10 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
                   <p className={UI.helpText}>Enable or disable displaying projects grid on the live page.</p>
                 </div>
                 <SectionToggle
-                  enabled={gallery.projects?.enabled !== false}
-                  onChange={(v) => updateNested("projects", "enabled", v)}
+                  enabled={gridVisible}
+                  // Stored at portfolioGrid.enabled - NOT on the projects value (spreading the projects array into an
+                  // object here used to wipe the custom cards every time the toggle was clicked).
+                  onChange={(v) => updateNested("portfolioGrid", "enabled", v)}
                   label="Projects Showcase"
                 />
               </div>
@@ -471,7 +521,7 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
                       {projectMode === "existing" && <CheckCircle2 className="w-4 h-4 text-[#2271b1]" />}
                     </div>
                     <p className="text-[11px] text-[#50575e] mt-1">
-                      Pick and choose specific items from your centralized portfolio catalog.
+                      Pick projects from your Admin &rsaquo; Projects catalog. Nothing selected = show all of them.
                     </p>
                   </button>
 
@@ -489,7 +539,7 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
                       {projectMode === "custom" && <CheckCircle2 className="w-4 h-4 text-[#2271b1]" />}
                     </div>
                     <p className="text-[11px] text-[#50575e] mt-1">
-                      Create, edit, and order custom project cards dedicated specifically to this page.
+                      Create, edit, and order custom project cards dedicated specifically to this page. No cards = show the whole catalog.
                     </p>
                   </button>
                 </div>
@@ -498,6 +548,15 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
               {/* MODE A: Select from existing */}
               {projectMode === "existing" && (
                 <div className="space-y-4">
+                  <p className={UI.helpText}>
+                    The projects below come from <a href="/admin/projects/" className="text-[#2271b1] underline">Admin &rsaquo; Projects</a>. Edits made
+                    there show up here automatically; a project deleted there disappears from this page. The card shows the project&apos;s
+                    category, first case-study stat, description, image, and location/year.
+                  </p>
+                  <StaleSelectionNotice
+                    selected={toProjectList(gallery.selectedProjects)}
+                    onCleanUp={(next) => updateGallery("selectedProjects", next)}
+                  />
                   <ContentSelector
                     type="projects"
                     label="Select Projects to Showcase"
@@ -522,6 +581,13 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
                       <Plus className="w-3.5 h-3.5" /> Add New Project
                     </button>
                   </div>
+
+                  {projects.length === 0 && (
+                    <p className={UI.helpText}>
+                      No custom cards yet - the live page currently shows every project from Admin &rsaquo; Projects. Add a card to take over
+                      the grid with your own.
+                    </p>
+                  )}
 
                   <div className="space-y-5">
                     {projects.map((project: any, index: number) => (
@@ -592,7 +658,7 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-1.5">
-                            <label className={UI.label}>Growth Metric / Outcome Tag</label>
+                            <label className={UI.label}>Growth Metric / Outcome Tag (optional)</label>
                             <input
                               type="text"
                               value={project.tag || ""}
@@ -603,7 +669,7 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
                           </div>
 
                           <div className="space-y-1.5">
-                            <label className={UI.label}>Tech Stack Tags (Comma separated)</label>
+                            <label className={UI.label}>Tech Stack Tags (comma separated, optional)</label>
                             <input
                               type="text"
                               value={Array.isArray(project.tech) ? project.tech.join(", ") : project.tech || ""}
@@ -612,6 +678,18 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
                               placeholder="e.g. Next.js 15, TailwindCSS, Framer Motion"
                             />
                           </div>
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <label className={UI.label}>Card Link (optional)</label>
+                          <input
+                            type="text"
+                            value={project.link || ""}
+                            onChange={(e) => handleUpdateProject(index, "link", e.target.value)}
+                            className={UI.input}
+                            placeholder="e.g. /services/web-design or https://client-site.com"
+                          />
+                          <p className={UI.helpText}>Makes the whole card clickable. Leave empty for a plain card.</p>
                         </div>
 
                         <div className="space-y-1.5">
@@ -626,7 +704,7 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
                         <div className="space-y-1.5">
                           <ImageField
                             label="Project Card Cover Image"
-                            value={project.image || "/portfolio_card_1.png"}
+                            value={project.image || ""}
                             onChange={(val) => handleUpdateProject(index, "image", val)}
                             description="Recommended resolution 1200x800."
                           />
@@ -914,7 +992,7 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
                 <div className="space-y-1.5 pt-3 border-t border-[#f0f0f1]">
                   <ImageField
                     label="Portrait Image for Arch Graphic"
-                    value={gallery.ctaBanner?.portraitSrc || "/founder_portrait_nobg.png"}
+                    value={gallery.ctaBanner?.portraitSrc ?? "/founder_portrait_nobg.png"}
                     onChange={(val) => updateNested("ctaBanner", "portraitSrc", val)}
                     description="Portrait image with transparent background."
                   />
@@ -926,16 +1004,13 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
           {activeTab === "schema" && (
             <div className="space-y-4">
               <SchemaEditor
-                value={data.schemaMarkup || data.seo?.schemaData || ""}
+                value={seo?.schemaData || data.schemaMarkup || ""}
                 onChange={(val) => {
-                  setData((prev: any) => ({
-                    ...(prev || {}),
-                    schemaMarkup: val,
-                    seo: {
-                      ...(prev?.seo || {}),
-                      schemaData: val
-                    }
-                  }));
+                  // The page save (admin/pages/[id]) takes seo.schemaData FIRST and rewrites content.schemaMarkup from it,
+                  // and the public route reads page.seo.schemaData first - so the page-level seo state must be updated
+                  // too, or an edit made here is silently reverted on save. (No stray content.seo object any more.)
+                  setData((prev: any) => ({ ...(prev || {}), schemaMarkup: val }));
+                  setSeo?.((prev: any) => ({ ...(prev || {}), schemaData: val }));
                 }}
                 pageTitle="Portfolio Page"
               />

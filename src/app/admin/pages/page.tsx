@@ -5,6 +5,12 @@ import Link from "@/components/ui/Link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, X } from "lucide-react";
 import { BASE_URL } from "@/lib/constants";
+import {
+  PAGE_TEMPLATE_OPTIONS,
+  canonicalTemplate,
+  templateChangeWarning,
+  templateLabel
+} from "./templateOptions";
 
 export type DisplayRow = {
   page: any;
@@ -155,6 +161,12 @@ export default function PagesDashboard() {
   const [filter, setFilter] = useState("all");
   const [bulkAction, setBulkAction] = useState("");
   const [editingPage, setEditingPage] = useState<any>(null);
+  const [creating, setCreating] = useState(false);
+  const [savingQuickEdit, setSavingQuickEdit] = useState(false);
+  // Set once the user types in the Slug field, so later Title edits stop overwriting it.
+  const [slugTouched, setSlugTouched] = useState(false);
+  // Non-blocking status line (success / partial-success messages from bulk + row actions).
+  const [notice, setNotice] = useState<{ type: "ok" | "warn"; text: string } | null>(null);
 
   // By default, every parent is collapsed (empty set)
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
@@ -163,7 +175,8 @@ export default function PagesDashboard() {
   const [newPage, setNewPage] = useState({
     title: "",
     slug: "",
-    template: "home",
+    // No default: the old default ("home") made it easy to create a second Home page by accident.
+    template: "",
     status: "published",
     parentLocationId: "",
     parentLocationSlug: "",
@@ -173,7 +186,24 @@ export default function PagesDashboard() {
 
   useEffect(() => {
     fetchPages();
+    // "Add New" in the page editor links here with ?new=1 to open the create dialog directly.
+    try {
+      if (new URLSearchParams(window.location.search).get("new") === "1") {
+        setShowAddModal(true);
+      }
+    } catch {}
   }, []);
+
+  const flash = (type: "ok" | "warn", text: string) => {
+    setNotice({ type, text });
+    setTimeout(() => setNotice(null), 6000);
+  };
+
+  /** Reads the API's { error } message (falls back to a generic one). */
+  const apiError = async (res: Response, fallback: string) => {
+    const data = await res.json().catch(() => ({}));
+    return data?.error || fallback;
+  };
 
   const fetchPages = async () => {
     try {
@@ -229,10 +259,33 @@ export default function PagesDashboard() {
   };
 
   const handleCreatePage = async () => {
-    if (!newPage.title || !newPage.slug) {
-      return alert("Title and Slug are required.");
+    if (creating) return; // double-click guard
+    if (!newPage.title.trim()) {
+      return alert("Please enter a page title.");
+    }
+    if (!newPage.template) {
+      return alert("Please choose a template.");
+    }
+    if (!newPage.slug.trim()) {
+      return alert("Please enter a slug.");
+    }
+    if (
+      newPage.template === "home" &&
+      pages.some((p) => !p.isTrashed && canonicalTemplate(p.template) === "home") &&
+      !confirm(
+        "A Home Template page already exists. A second Home page can end up being shown on the homepage URL instead of the current one.\n\nCreate it anyway?"
+      )
+    ) {
+      return;
+    }
+    if (newPage.template === "state" && countryPages.length === 0) {
+      return alert("Create a Country page first - a State page has to live under a Country.");
+    }
+    if (newPage.template === "city" && !newPage.selectedStateSlug) {
+      return alert("Select the parent State for this city.");
     }
 
+    setCreating(true);
     try {
       let finalSlug = newPage.slug.trim().toLowerCase().replace(/^\/+|\/+$/g, "");
       const contentPayload: any = {};
@@ -275,7 +328,7 @@ export default function PagesDashboard() {
       const canonicalUrl = `${BASE_URL}/${finalSlug}/`;
 
       const payload = {
-        title: newPage.title,
+        title: newPage.title.trim(),
         slug: finalSlug,
         template: newPage.template,
         status: newPage.status,
@@ -294,13 +347,29 @@ export default function PagesDashboard() {
       if (res.ok) {
         const created = await res.json();
         window.location.href = `/admin/pages/${created._id}`;
+        return; // keep the button disabled while the browser navigates
       } else {
-        const error = await res.json().catch(() => ({}));
-        alert("Failed to create page: " + (error.error || "Unknown error"));
+        alert("Failed to create page: " + (await apiError(res, "Unknown error")));
       }
     } catch (err) {
       alert("Failed to create page.");
     }
+    setCreating(false);
+  };
+
+  /** Shared reporting for the bulk endpoints: surfaces API errors and "skipped" (e.g. homepage) results. */
+  const reportBulkResult = async (res: Response, doneText: string, failText: string) => {
+    if (!res.ok) {
+      alert(failText + ": " + (await apiError(res, "Unknown error")));
+      return false;
+    }
+    const data = await res.json().catch(() => ({}));
+    if (Array.isArray(data?.skipped) && data.skipped.length > 0) {
+      flash("warn", `${doneText} Skipped: ${data.skipped.map((s: any) => s.title).join(", ")} (this is the site homepage - pick another homepage in Settings first).`);
+    } else {
+      flash("ok", doneText);
+    }
+    return true;
   };
 
   const handleBulkAction = async (action: string) => {
@@ -315,7 +384,7 @@ export default function PagesDashboard() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ids: selectedIds })
         });
-        if (res.ok) {
+        if (await reportBulkResult(res, "Pages deleted permanently.", "Bulk delete failed")) {
           setSelectedIds([]);
           fetchPages();
         }
@@ -327,6 +396,7 @@ export default function PagesDashboard() {
     }
 
     if (action === "trash" || action === "restore") {
+      if (action === "trash" && !confirm(`Move ${selectedIds.length} page${selectedIds.length === 1 ? "" : "s"} to the Trash?`)) return;
       setActionLoading(true);
       try {
         const res = await fetch("/api/admin/pages", {
@@ -334,7 +404,7 @@ export default function PagesDashboard() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ action, ids: selectedIds })
         });
-        if (res.ok) {
+        if (await reportBulkResult(res, action === "trash" ? "Moved to Trash." : "Pages restored.", `Bulk ${action} failed`)) {
           setSelectedIds([]);
           fetchPages();
         }
@@ -354,7 +424,7 @@ export default function PagesDashboard() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ action: "status", ids: selectedIds, status })
         });
-        if (res.ok) {
+        if (await reportBulkResult(res, action === "publish" ? "Pages published." : "Pages set to Draft.", "Bulk status update failed")) {
           setSelectedIds([]);
           fetchPages();
         }
@@ -371,6 +441,7 @@ export default function PagesDashboard() {
     e.stopPropagation();
 
     if (action === "trash" || action === "restore") {
+      if (action === "trash" && !confirm("Move this page to the Trash?")) return;
       try {
         const res = await fetch(`/api/admin/pages/${id}`, {
           method: "PATCH",
@@ -379,8 +450,7 @@ export default function PagesDashboard() {
         });
         if (res.ok) fetchPages();
         else {
-          const errData = await res.json();
-          alert(`${action === "trash" ? "Trash" : "Restore"} failed: ${errData.error || "Unknown error"}`);
+          alert(`${action === "trash" ? "Trash" : "Restore"} failed: ${await apiError(res, "Unknown error")}`);
         }
       } catch (err) {
         alert(`${action === "trash" ? "Trash" : "Restore"} failed.`);
@@ -388,10 +458,11 @@ export default function PagesDashboard() {
     }
 
     if (action === "delete") {
-      if (!confirm("Permanently delete this page?")) return;
+      if (!confirm("Permanently delete this page? This cannot be undone.")) return;
       try {
         const res = await fetch(`/api/admin/pages/${id}`, { method: "DELETE" });
         if (res.ok) fetchPages();
+        else alert("Delete failed: " + (await apiError(res, "Unknown error")));
       } catch (err) {
         alert("Delete failed.");
       }
@@ -404,10 +475,13 @@ export default function PagesDashboard() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ action: "duplicate", ids: [id] })
         });
-        if (res.ok) fetchPages();
-        else {
-          const error = await res.json().catch(() => ({}));
-          alert("Duplication failed: " + (error.error || "Unknown error"));
+        if (res.ok) {
+          const created = await res.json().catch(() => []);
+          const copy = Array.isArray(created) ? created[0] : null;
+          flash("ok", copy ? `Duplicated as a Draft: "${copy.title}" (/${copy.slug}/). Open it to rename the title and slug.` : "Page duplicated as a Draft.");
+          fetchPages();
+        } else {
+          alert("Duplication failed: " + (await apiError(res, "Unknown error")));
         }
       } catch (err) {
         alert("Duplication failed.");
@@ -416,6 +490,7 @@ export default function PagesDashboard() {
 
     if (action === "status") {
       const page = pages.find((p) => p._id === id);
+      if (!page) return;
       const newStatus = page.status === "published" ? "draft" : "published";
       try {
         const res = await fetch(`/api/admin/pages/${id}`, {
@@ -424,6 +499,7 @@ export default function PagesDashboard() {
           body: JSON.stringify({ status: newStatus })
         });
         if (res.ok) fetchPages();
+        else alert("Status update failed: " + (await apiError(res, "Unknown error")));
       } catch (err) {
         alert("Status update failed.");
       }
@@ -432,6 +508,18 @@ export default function PagesDashboard() {
 
   const handleQuickEditSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (savingQuickEdit) return;
+    if (!editingPage.title?.trim()) return alert("The title cannot be empty.");
+    if (!editingPage.slug?.trim()) return alert("The slug cannot be empty.");
+
+    const original = pages.find((p) => p._id === editingPage._id);
+    const oldTemplate = canonicalTemplate(original?.template);
+    const newTemplate = canonicalTemplate(editingPage.template);
+    if (original && oldTemplate !== newTemplate && !confirm(templateChangeWarning(oldTemplate, newTemplate))) {
+      return;
+    }
+
+    setSavingQuickEdit(true);
     try {
       const res = await fetch(`/api/admin/pages/${editingPage._id}`, {
         method: "PATCH",
@@ -440,24 +528,33 @@ export default function PagesDashboard() {
           title: editingPage.title,
           slug: editingPage.slug,
           status: editingPage.status,
-          template: editingPage.template
+          template: newTemplate
         })
       });
       if (res.ok) {
+        const data = await res.json().catch(() => ({}));
+        if (data?.cascadedChildren) {
+          flash("ok", `Slug updated. ${data.cascadedChildren} child page${data.cascadedChildren === 1 ? "" : "s"} moved with it.`);
+        }
         setEditingPage(null);
         fetchPages();
       } else {
-        const error = await res.json();
-        alert("Update failed: " + (error.error || "Unknown error"));
+        alert("Update failed: " + (await apiError(res, "Unknown error")));
       }
     } catch (err) {
       alert("Update failed.");
+    } finally {
+      setSavingQuickEdit(false);
     }
   };
 
+  // "Select all" acts on the rows you can SEE. It used to select every filtered page, including the
+  // children hidden inside collapsed parents (e.g. all cities under a collapsed state), so a bulk
+  // "Move to Trash" could silently trash dozens of pages that were not on screen.
   const toggleSelectAll = () => {
-    if (selectedIds.length === filteredPages.length) setSelectedIds([]);
-    else setSelectedIds(filteredPages.map((p) => p._id));
+    const visibleIds = displayRows.map((r) => r.page._id);
+    const allSelected = visibleIds.length > 0 && visibleIds.every((id) => selectedIds.includes(id));
+    setSelectedIds(allSelected ? [] : visibleIds);
   };
 
   const toggleSelect = (id: string) => {
@@ -507,13 +604,14 @@ export default function PagesDashboard() {
             setNewPage({
               title: "",
               slug: "",
-              template: "home",
+              template: "",
               status: "published",
               parentLocationId: "",
               parentLocationSlug: "",
               selectedCountrySlug: "usa",
               selectedStateSlug: ""
             });
+            setSlugTouched(false);
             setShowAddModal(true);
           }}
           className="bg-white border border-[#2271b1] text-[#2271b1] hover:bg-[#f6f7f7] hover:text-[#135e96] hover:border-[#135e96] px-2 py-1 text-[13px] rounded-[3px] transition-colors"
@@ -521,6 +619,15 @@ export default function PagesDashboard() {
           Add New Page
         </button>
       </div>
+
+      {notice && (
+        <div
+          role="status"
+          className={`border-l-4 bg-white px-3 py-2 text-[13px] shadow-sm ${notice.type === "ok" ? "border-[#00a32a]" : "border-[#dba617]"}`}
+        >
+          {notice.text}
+        </div>
+      )}
 
       {/* WordPress Standard Filter Links + Collapse / Expand Controls */}
       <div className="flex flex-wrap items-center justify-between gap-2 text-[13px]">
@@ -611,14 +718,12 @@ export default function PagesDashboard() {
         <div className="flex items-center gap-2">
           <input
             type="text"
-            placeholder="Search Pages"
+            placeholder="Search pages by title, slug or template"
+            aria-label="Search pages"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="border border-[#8c8f94] bg-white px-3 py-1 text-[13px] rounded-[3px] outline-none focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1]"
           />
-          <button className="bg-white border border-[#8c8f94] text-[#2c3338] px-3 py-1 text-[13px] rounded-[3px] hover:bg-[#f6f7f7] transition-colors">
-            Search Pages
-          </button>
         </div>
       </div>
 
@@ -635,7 +740,8 @@ export default function PagesDashboard() {
               <th className="w-8 py-2 px-3">
                 <input
                   type="checkbox"
-                  checked={filteredPages.length > 0 && selectedIds.length === filteredPages.length}
+                  aria-label="Select all visible pages"
+                  checked={displayRows.length > 0 && displayRows.every((r) => selectedIds.includes(r.page._id))}
                   onChange={toggleSelectAll}
                   className="w-4 h-4 border-[#8c8f94] rounded-[3px] text-[#2271b1] focus:ring-[#2271b1]"
                 />
@@ -797,8 +903,8 @@ export default function PagesDashboard() {
                     </td>
 
                     {/* Template */}
-                    <td className="py-3 px-3 align-top capitalize text-[#50575e]">
-                      {page.template}
+                    <td className="py-3 px-3 align-top text-[#50575e]">
+                      {templateLabel(page.template)}
                     </td>
 
                     {/* Status */}
@@ -808,7 +914,7 @@ export default function PagesDashboard() {
                           page.status === "published" ? "text-[#00a32a]" : "text-[#d63638]"
                         }`}
                       >
-                        {page.status === "published" ? "Active" : "Draft"}
+                        {page.status === "published" ? "Published" : "Draft"}
                       </span>
                     </td>
 
@@ -879,7 +985,7 @@ export default function PagesDashboard() {
                         computedSlug = `${cSlug}/${rawSlug}`;
                       }
 
-                      setNewPage({ ...newPage, title, slug: computedSlug });
+                      setNewPage({ ...newPage, title, slug: slugTouched ? newPage.slug : computedSlug });
                     }}
                     placeholder="Enter page title here"
                     className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[14px] rounded-[3px] shadow-[inset_0_1px_2px_rgba(0,0,0,0.07)] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
@@ -930,26 +1036,20 @@ export default function PagesDashboard() {
                     }}
                     className="w-full border border-[#8c8f94] bg-white px-2 py-1.5 text-[14px] rounded-[3px] outline-none"
                   >
-                    <option value="home">Home Template</option>
-                    <option value="about">About Template</option>
-                    <option value="new-about">New About Template</option>
-                    <option value="industry">Industry Template</option>
-                    <option value="industries">Industries Hub Template</option>
-                    <option value="services">Services Template</option>
-                    <option value="service-detail">Service Detail Template</option>
-                    <option value="team">Team Template</option>
-                    <option value="careers">Careers Template</option>
-                    <option value="gallery">Portfolio Template</option>
-                    <option value="reviews">Reviews Template</option>
-                    <option value="faq">FAQ Template</option>
-                    <option value="contact">Contact Template</option>
-                    <option value="location">Locations Hub Template</option>
-                    <option value="service-area">Service Area Template</option>
-                    <option value="blog">Blog Template</option>
-                    <option value="country">Country Template</option>
-                    <option value="state">State Template</option>
-                    <option value="city">City Template</option>
+                    <option value="" disabled>
+                      Select a template...
+                    </option>
+                    {PAGE_TEMPLATE_OPTIONS.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.label}
+                      </option>
+                    ))}
                   </select>
+                  {PAGE_TEMPLATE_OPTIONS.find((t) => t.id === newPage.template)?.hint && (
+                    <p className="text-[11px] text-[#646970] mt-1">
+                      {PAGE_TEMPLATE_OPTIONS.find((t) => t.id === newPage.template)?.hint}
+                    </p>
+                  )}
                 </div>
 
                 {/* Cascading selectors for location templates */}
@@ -1049,7 +1149,10 @@ export default function PagesDashboard() {
                   <input
                     type="text"
                     value={newPage.slug}
-                    onChange={(e) => setNewPage({ ...newPage, slug: e.target.value })}
+                    onChange={(e) => {
+                      setSlugTouched(true);
+                      setNewPage({ ...newPage, slug: e.target.value });
+                    }}
                     className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[14px] font-mono rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
                   />
                   <p className="text-[11px] text-[#646970] mt-1">
@@ -1073,9 +1176,10 @@ export default function PagesDashboard() {
               <div className="flex items-center justify-end px-4 py-3 bg-[#f6f7f7] border-t border-[#c3c4c7]">
                 <button
                   onClick={handleCreatePage}
-                  className="bg-[#2271b1] text-white text-[13px] px-4 py-1.5 rounded-[3px] border border-[#2271b1] hover:bg-[#135e96] hover:border-[#135e96] transition-colors"
+                  disabled={creating}
+                  className="bg-[#2271b1] text-white text-[13px] px-4 py-1.5 rounded-[3px] border border-[#2271b1] hover:bg-[#135e96] hover:border-[#135e96] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  Publish
+                  {creating ? "Creating..." : newPage.status === "draft" ? "Save Draft" : "Publish"}
                 </button>
               </div>
             </motion.div>
@@ -1135,29 +1239,15 @@ export default function PagesDashboard() {
                     <div>
                       <label className="block text-[#1d2327] text-[12px] font-bold mb-1">Template</label>
                       <select
-                        value={editingPage.template}
+                        value={canonicalTemplate(editingPage.template)}
                         onChange={(e) => setEditingPage({ ...editingPage, template: e.target.value })}
                         className="w-full border border-[#8c8f94] bg-white px-2 py-1 text-[13px] rounded-[3px] outline-none"
                       >
-                        <option value="home">Home Template</option>
-                        <option value="about">About Template</option>
-                        <option value="new-about">New About Template</option>
-                        <option value="industry">Industry Template</option>
-                        <option value="industries">Industries Hub Template</option>
-                        <option value="services">Services Template</option>
-                        <option value="service-detail">Service Detail Template</option>
-                        <option value="team">Team Template</option>
-                        <option value="careers">Careers Template</option>
-                        <option value="gallery">Portfolio Template</option>
-                        <option value="reviews">Reviews Template</option>
-                        <option value="faq">FAQ Template</option>
-                        <option value="contact">Contact Template</option>
-                        <option value="location">Locations Hub Template</option>
-                        <option value="service-area">Service Area Template</option>
-                        <option value="blog">Blog Template</option>
-                        <option value="country">Country Template</option>
-                        <option value="state">State Template</option>
-                        <option value="city">City Template</option>
+                        {PAGE_TEMPLATE_OPTIONS.map((t) => (
+                          <option key={t.id} value={t.id}>
+                            {t.label}
+                          </option>
+                        ))}
                       </select>
                     </div>
                     <div>
@@ -1183,9 +1273,10 @@ export default function PagesDashboard() {
                   </button>
                   <button
                     type="submit"
-                    className="bg-[#2271b1] text-white text-[13px] font-bold px-4 py-1.5 rounded-[3px] border border-[#135e96] hover:bg-[#135e96]"
+                    disabled={savingQuickEdit}
+                    className="bg-[#2271b1] text-white text-[13px] font-bold px-4 py-1.5 rounded-[3px] border border-[#135e96] hover:bg-[#135e96] disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    Update
+                    {savingQuickEdit ? "Updating..." : "Update"}
                   </button>
                 </div>
               </form>

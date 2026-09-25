@@ -3,6 +3,9 @@ import connectToDatabase from '@/lib/mongodb';
 import Post from '@/models/Post';
 import { hasPermission, getSessionUser } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
+import { dbErrorResponse, revalidateBlog } from '@/lib/blog-admin';
+
+// The ONE duplicate route (src/app/api/admin/blog/posts/duplicate/[id] re-exports it).
 
 export async function POST(
   req: NextRequest,
@@ -16,19 +19,28 @@ export async function POST(
   try {
     const { id } = await params;
     await connectToDatabase();
-    
+
     const sourcePost = await Post.findById(id);
     if (!sourcePost) return NextResponse.json({ error: 'Post not found' }, { status: 404 });
 
     // Create a copy without the _id and with a 'Copy' suffix
     const postObj = sourcePost.toObject();
     delete postObj._id;
+    delete postObj.__v;
     delete postObj.createdAt;
     delete postObj.updatedAt;
-    
+
     postObj.title = `${postObj.title} (Copy)`;
     postObj.slug = `${postObj.slug}-copy-${Date.now()}`;
     postObj.author = (session as any).userId;
+
+    // A copy must NEVER go live by itself: it used to inherit "published", putting a near-duplicate
+    // article (same body, same canonical) on the public site the moment the button was clicked.
+    postObj.status = 'draft';
+    postObj.isTrashed = false;
+    postObj.trashedAt = null;
+    postObj.publishedAt = new Date();
+    if (postObj.seo) postObj.seo = { ...postObj.seo, canonicalUrl: '' }; // its own canonical is filled from its own URL
 
     const duplicatedPost = await Post.create(postObj);
 
@@ -42,8 +54,10 @@ export async function POST(
       ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
     });
 
+    await revalidateBlog([]);
+
     return NextResponse.json(duplicatedPost);
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return dbErrorResponse(error, 'post');
   }
 }

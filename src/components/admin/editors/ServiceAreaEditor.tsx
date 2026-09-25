@@ -1,19 +1,30 @@
 "use client";
 
-// Redesigned ServiceAreaEditor with fully-featured administration tabs, visual Icon Picker, MediaSelector modal, and dynamic Process / Regions sections
-import React, { useState, useEffect } from "react";
+// Editor for the "Service Area" page template (page.content -> ServiceAreaTemplate).
+//
+// Every field below is read by src/components/templates/ServiceAreaTemplate.tsx - keep the two in
+// sync. Built-in copy lives in src/lib/serviceAreaDefaults.ts (shared with the template), so
+// what this editor pre-fills is exactly what the public page shows for a blank page.
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Loader2, Type, Globe, CheckCircle, Search, HelpCircle,
-  Plus, Trash2, ShieldCheck, Mail, Map, MapPin, BarChart3, Settings, ClipboardList,
-  Layers, Star, ShieldAlert, Wrench, Home, Building2, Building, Droplets, Award, Clock, BadgeCheck, TrendingUp, Users, Layout, TreePine,
-  Flame, PencilRuler, Shield
+  Loader2, Type, Plus, Trash2, ShieldCheck, Map, MapPin, BarChart3, Settings, ClipboardList,
+  Layers, Star, ShieldAlert, Wrench, Home, Building2, Building, Droplets, Award, Clock, BadgeCheck,
+  TrendingUp, Users, Layout, TreePine, Flame, PencilRuler, ChevronUp, ChevronDown, HelpCircle, Video,
+  ClipboardCheck, Hammer, Sparkles
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { UI } from "./styles";
 import MediaSelector from "@/components/admin/MediaSelector";
 import SectionToggle from "@/components/admin/SectionToggle";
 import SchemaEditor from "@/components/admin/SchemaEditor";
+import VideoTestimonialsEditor from "./VideoTestimonialsEditor";
+import { parseMapEmbed } from "@/lib/mapEmbed";
+import {
+  SERVICE_AREA_DEFAULTS as D,
+  SERVICE_AREA_DEFAULT_ICONS as DEFAULT_ICONS,
+  SERVICE_AREA_HYDRATE_KEYS,
+} from "@/lib/serviceAreaDefaults";
 
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
   ssr: false,
@@ -22,12 +33,13 @@ const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor")
 
 interface Region {
   name: string;
-  cities: string[];
-  zipcodes: string[];
+  cities?: string[];
+  zipcodes?: string[];
   description?: string;
 }
 
-// Icon library items with live icon rendering
+// Icon library. Every name here MUST exist in ServiceAreaTemplate's `iconMap`
+// (otherwise the page silently shows a different icon than the one picked).
 const AVAILABLE_ICONS = [
   { name: "Home", label: "Residential Roofing", icon: Home },
   { name: "Building2", label: "Commercial Roofing", icon: Building2 },
@@ -44,152 +56,290 @@ const AVAILABLE_ICONS = [
   { name: "TreePine", label: "Cedar Siding", icon: TreePine },
   { name: "Wrench", label: "Expert Repairs", icon: Wrench },
   { name: "ClipboardList", label: "Free Inspection", icon: ClipboardList },
+  { name: "ClipboardCheck", label: "Inspection Checklist", icon: ClipboardCheck },
   { name: "ShieldAlert", label: "Storm Damage", icon: ShieldAlert },
   { name: "Flame", label: "Heat / Fire Resilient", icon: Flame },
-  { name: "PencilRuler", label: "Custom Architecture", icon: PencilRuler }
+  { name: "PencilRuler", label: "Custom Architecture", icon: PencilRuler },
+  { name: "Hammer", label: "Installation", icon: Hammer },
+  { name: "Sparkles", label: "Final Clean-up", icon: Sparkles },
 ];
 
-export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: string, data: any, setData: (d: any) => void }) {
+// ---- immutable path helpers (all updates go through setData(prev => ...), so a stale
+// closure or a sibling edit can never clobber another field) ---------------------------
+type Path = string[];
+const getAt = (obj: any, path: Path): any => path.reduce((o, k) => (o == null ? undefined : o[k]), obj);
+const setAt = (obj: any, path: Path, value: any): any => {
+  if (path.length === 0) return value;
+  const [head, ...rest] = path;
+  const base = obj && typeof obj === "object" && !Array.isArray(obj) ? obj : {};
+  return { ...base, [head]: setAt(base[head], rest, value) };
+};
+const clone = <T,>(v: T): T => JSON.parse(JSON.stringify(v));
+const toArr = (v: any): string[] =>
+  Array.isArray(v) ? v.map((x) => String(x ?? "")) : typeof v === "string" ? v.split(/[,\n]/).map((x) => x.trim()).filter(Boolean) : [];
+
+// ---- small presentational pieces (module level on purpose: defining components inside the
+// editor body would remount them - and drop input focus - on every keystroke) -------------
+
+/** Icon grid. `fallback` is the icon the page shows when none is picked, so it is highlighted. */
+function IconPicker({ value, fallback, onChange, wide = false, label }: {
+  value?: string; fallback: string; onChange: (name: string) => void; wide?: boolean; label: string;
+}) {
+  const current = value || fallback;
+  return (
+    <div className="space-y-3 border border-[#f0f0f1] p-3 bg-white rounded-lg">
+      <div className="flex items-center justify-between gap-2">
+        <label className="text-[11px] font-bold text-slate-700 block">{label}</label>
+        <div className="flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded text-[10px] font-bold text-slate-700 border">
+          <span>Active:</span>
+          <span className="text-primary font-black uppercase">{current}{value ? "" : " (auto)"}</span>
+        </div>
+      </div>
+      <div className={`grid grid-cols-4 sm:grid-cols-7 ${wide ? "gap-2" : "gap-1"}`}>
+        {AVAILABLE_ICONS.map((iConfig) => {
+          const LiveIcon = iConfig.icon;
+          const isSelected = current.toLowerCase() === iConfig.name.toLowerCase();
+          return (
+            <button
+              key={iConfig.name}
+              type="button"
+              onClick={() => onChange(iConfig.name)}
+              title={iConfig.label}
+              aria-pressed={isSelected}
+              className={`p-1.5 rounded border flex flex-col items-center justify-center gap-0.5 transition-colors ${isSelected ? "border-primary bg-primary/5 text-primary" : "border-slate-100 hover:border-slate-200 text-slate-500 bg-slate-50/40"}`}
+            >
+              <LiveIcon className="w-4 h-4" />
+              <span className="text-[8px] truncate max-w-full font-bold">{iConfig.name}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/** Card header: title + move up / move down / remove. */
+function ItemBar({ label, index, count, onMove, onRemove, removable = true }: {
+  label: string; index: number; count: number; onMove: (dir: -1 | 1) => void; onRemove: () => void; removable?: boolean;
+}) {
+  const btn = "p-1 rounded text-slate-400 hover:text-[#2271b1] hover:bg-[#f0f6fb] disabled:opacity-30 disabled:hover:text-slate-400 disabled:hover:bg-transparent transition-colors";
+  return (
+    <div className="flex items-center justify-between border-b border-[#f0f0f1] pb-2 mb-2 gap-2">
+      <div className="flex items-center gap-2 min-w-0">
+        <span className="w-6 h-6 shrink-0 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">{index + 1}</span>
+        <span className="text-[11px] font-bold text-[#646970] uppercase tracking-wider truncate">{label}</span>
+      </div>
+      <div className="flex items-center gap-0.5 shrink-0">
+        <button type="button" className={btn} onClick={() => onMove(-1)} disabled={index === 0} title="Move up" aria-label={`Move ${label} up`}>
+          <ChevronUp className="w-4 h-4" />
+        </button>
+        <button type="button" className={btn} onClick={() => onMove(1)} disabled={index === count - 1} title="Move down" aria-label={`Move ${label} down`}>
+          <ChevronDown className="w-4 h-4" />
+        </button>
+        {removable && (
+          <button type="button" onClick={onRemove} className="ml-1 text-[#d63638] hover:text-[#b32b2d] flex items-center gap-1 text-[11px] font-semibold" title="Remove" aria-label={`Remove ${label}`}>
+            <Trash2 className="w-3.5 h-3.5" /> Remove
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Textarea for "a, b, c" style lists. It keeps its own raw text while typing (parsing on every
+ * keystroke would swallow the comma you just typed) and only re-syncs when the list changes
+ * from outside (e.g. the card above was removed).
+ */
+function ListTextarea({ value, onChange, placeholder, rows = 2 }: {
+  value: any; onChange: (next: string[]) => void; placeholder?: string; rows?: number;
+}) {
+  const arr = toArr(value);
+  const signature = arr.join("\u0001");
+  const [text, setText] = useState(arr.join(", "));
+  const lastEmitted = useRef(signature);
+  useEffect(() => {
+    if (signature !== lastEmitted.current) {
+      lastEmitted.current = signature;
+      setText(arr.join(", "));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signature]);
+  return (
+    <textarea
+      value={text}
+      rows={rows}
+      placeholder={placeholder}
+      className={UI.textarea}
+      onChange={(e) => {
+        const t = e.target.value;
+        setText(t);
+        const next = t.split(/[,\n]/).map((x) => x.trim()).filter(Boolean);
+        lastEmitted.current = next.join("\u0001");
+        onChange(next);
+      }}
+    />
+  );
+}
+
+/** Map embed input with a live "will this show?" check (same rules the page applies). */
+function MapEmbedField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const parsed = parseMapEmbed(value);
+  return (
+    <div className="space-y-1.5">
+      <textarea
+        value={value || ""}
+        onChange={(e) => onChange(e.target.value)}
+        rows={3}
+        placeholder={'Paste a Google Maps "Embed a map" <iframe> code, its embed link, or just a place name like "St. Louis, MO"'}
+        className={`${UI.textarea} font-mono text-[12px]`}
+      />
+      {value?.trim() ? (
+        parsed ? (
+          <p className="text-[11px] text-[#00a32a]">
+            &#10003; Map ready{/^https:\/\/www\.google\.com\/maps\?q=/.test(parsed) ? " (Google Maps search for that place)" : ""}.
+          </p>
+        ) : (
+          <p className="text-[11px] text-[#d63638]">
+            &#10007; Not a supported map link, so no map will show on the page. Use a Google Maps, OpenStreetMap, Bing, Mapbox, ArcGIS or MapQuest embed (https only).
+          </p>
+        )
+      ) : (
+        <p className="text-[11px] text-slate-400">Leave empty to hide the map and show the details full width.</p>
+      )}
+    </div>
+  );
+}
+
+export default function ServiceAreaEditor({ pageId, data, setData, seo, setSeo }: {
+  pageId: string; data: any; setData: (d: any) => void; seo?: any; setSeo?: (s: any) => void;
+}) {
   const [activeTab, setActiveTab] = useState("intro");
   const [activeMediaTarget, setActiveMediaTarget] = useState<{ section: string; field: string } | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // Keep state hydrated with complete content parameters for all sections
+  // First open of a page that lacks sections: pre-fill them with the built-in content the
+  // public page already shows, so the admin edits exactly what visitors see.
   useEffect(() => {
     if (data && !isHydrated) {
-      const needsHydration = !data.regions || !data.stats || !data.process || !data.map || !data.materials || !data.whyChoose || !data.overview || !data.servicesSection || !data.processSection || !data.regionsSection || !data.hero;
-      if (needsHydration) {
-        setData({
-          ...data,
-          hero: data.hero || {
-            headline: data.hero?.headline || "Our Service Areas",
-            description: data.hero?.description || "Proudly serving St. Louis, St. Charles, and surrounding Missouri communities with elite, veteran-owned roofing and home improvements.",
-            image: data.hero?.image || "/images/service-area-hero.jpg"
-          },
-          stats: data.stats || [
-            { value: "15+", label: "Years of Local Expertise" },
-            { value: "500+", label: "Premium Roofs Installed" },
-            { value: "100%", label: "Veteran-Owned & Operated" }
-          ],
-          process: data.process || data.processSteps || [
-            { title: "Free Inspection", description: "We perform a highly detailed visual inspection of your entire roof, shingle layers, gutters, and attic structure." },
-            { title: "Custom Quote", description: "Receive an itemized, fully transparent project quote detailing premium materials, scopes, and warranty parameters." },
-            { title: "Elite Install", description: "Our certified expert crews complete your roofing or siding replacement with ultimate military precision and focus." },
-            { title: "Final Sign-Off", description: "We execute a deep ground clean-up and a final walkthrough with you to verify that our work exceeds your expectations." }
-          ],
-          processSection: data.processSection || {
-            headline: "Our Core Blueprint",
-            title: "Our Elite 4-Step Process"
-          },
-          regions: data.regions || [
-            {
-              name: "St. Louis County",
-              cities: ["Chesterfield", "Wildwood", "Ballwin", "Kirkwood", "Webster Groves", "Florissant", "Hazelwood", "Maryland Heights", "Eureka", "Fenton", "Ladue", "Clayton"],
-              zipcodes: ["63017", "63005", "63011", "63021", "63122", "63119", "63031", "63042", "63043", "63025", "63026", "63124", "63105"]
-            },
-            {
-              name: "St. Charles County",
-              cities: ["St. Charles", "St. Peters", "O'Fallon", "Wentzville", "Lake St. Louis", "Cottleville", "Weldon Spring", "Defiance"],
-              zipcodes: ["63301", "63303", "63304", "63376", "63366", "63368", "63385", "63367"]
-            }
-          ],
-          regionsSection: data.regionsSection || {
-            title: "Communities We Serve in This Region",
-            description: "Toggle regional counties to view specific community coverage lists."
-          },
-          map: data.map || {
-            headline: "Our Coverage Area",
-            title: "Our Operational Coverage Map",
-            description: "Centrally dispatched to provide lightning-fast storm response, professional inspections, and veteran-grade roof installations across all primary Missouri counties.",
-            iframeUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d199426.6823901614!2d-90.3835467!3d38.6531004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x54eab584e432360b%3A0x1c3bb99243deb742!2sSt.+Louis%2C+MO!5e0!3m2!1sen!2sus!4v1700000000000",
-            bullet1Title: "Primary Coverage Area",
-            bullet1Text: "St. Louis, St. Charles, Jefferson & surrounding communities.",
-            bullet2Title: "Operation Hours",
-            bullet2Text: "Mon - Sat: 7:00 AM - 6:00 PM (Emergency storm response 24/7)",
-            bullet3Title: "Direct Office Hotline",
-            bullet3Text: "(636) 293-9977"
-          },
-          materials: data.materials || {
-            headline: "Certified Excellence",
-            title: "Premium Materials We Install",
-            items: [
-              { title: "Asphalt Shingles", description: "Architectural shingles engineered for ultimate storm protection, wind resilience, and custom color coordination to match your house aesthetics.", icon: "Building" },
-              { title: "Standing Seam Metal", description: "High-end modern architectural profile that offers complete storm immunity, maximum energy efficiency, and a lifetime of zero maintenance.", icon: "Flame" },
-              { title: "High-End Siding", description: "Fiber cement siding configured to stand strong against moisture rot, pests, and high wind impacts, instantly boosting your curb appeal.", icon: "PencilRuler" },
-              { title: "Seamless Gutters", description: "High-capacity aluminum water drainage channels manufactured custom on-site to perfectly fit your roof perimeter and protect your soil foundations.", icon: "Droplets" }
-            ]
-          },
-          servicesSection: data.servicesSection || {
-            headline: "What We Provide",
-            title: "Services We Provide in This Area",
-            items: [
-              { title: "Residential Roofing", description: "Pristine asphalt shingle and standing seam metal roof replacements designed for ultimate local storm immunity.", buttonText: "Explore Service", buttonHref: "/services/residential-roofing", icon: "Home" },
-              { title: "Commercial Roofing", description: "Heavy-duty TPO, EPDM, and flat roof coatings configured for Missouri commercial properties and corporate facilities.", buttonText: "Explore Service", buttonHref: "/services/commercial-roofing", icon: "Building" },
-              { title: "Seamless Gutters", description: "Custom on-site rolled high-capacity aluminum gutter installations to secure proper rain drainage controls.", buttonText: "Explore Service", buttonHref: "/services/seamless-gutters", icon: "Droplets" }
-            ]
-          },
-          whyChoose: data.whyChoose || {
-            headline: "Why Choose Us",
-            title: "Elite Missouri Roofing Quality",
-            items: [
-              { title: "Licensed & Fully Insured", description: "Complete compliance for your peace of mind. We hold full general liability, workers' comp, and active licensing across all service counties.", icon: "Shield" },
-              { title: "Rapid Storm Dispatch", description: "Expedited emergency tarping and inspections. St. Louis storm damage requires immediate action, and our teams respond directly inside our operational radius.", icon: "Clock" },
-              { title: "Veteran Owned Standards", description: "Applying military precision, honor, and elite craftsmanship to every shingle repair, gutter build, and residential siding replacement.", icon: "Award" }
-            ]
-          },
-          overview: data.overview || {
-            headline: "Local Overview",
-            title: "Elite Roofing & Restoration in This Community",
-            description: "<p>Proudly providing premium residential roofing, standing seam metal builds, siding updates, and gutter cleanups to Missouri homeowners. We combine veteran precision with durable local materials.</p>",
-            buttonText: "Schedule Free Inspection",
-            buttonHref: "#contact",
-            image: "/images/service-area-overview.jpg"
-          },
-          cta: data.cta || {
-            headline: "Ready to Start Your Project?",
-            description: "Whether you need a minor repair or a complete roof replacement, our expert team is ready to protect your home. Contact us today for an elite-grade service experience.",
-            buttonText: "Schedule Free Inspection",
-            buttonHref: "#contact"
+      setIsHydrated(true);
+      const missing = SERVICE_AREA_HYDRATE_KEYS.filter((k) => data[k] === undefined || data[k] === null);
+      if (missing.length > 0) {
+        setData((prev: any) => {
+          const cur = prev || {};
+          const next = { ...cur };
+          for (const k of SERVICE_AREA_HYDRATE_KEYS) {
+            if (cur[k] !== undefined && cur[k] !== null) continue;
+            // legacy pages stored the steps under `processSteps`
+            next[k] = k === "process" && Array.isArray(cur.processSteps) ? cur.processSteps : clone((D as any)[k]);
           }
+          return next;
         });
       }
-      setIsHydrated(true);
     }
   }, [data, isHydrated, setData]);
 
   if (!data) return <div className="flex items-center justify-center h-64"><Loader2 className="w-5 h-5 text-[#2271b1] animate-spin" /></div>;
 
-  const updateField = (section: string, field: string | null, value: any) => {
+  // ---- updaters -----------------------------------------------------------------------
+  const updateField = (section: string, field: string | null, value: any) =>
+    setData((prev: any) => setAt(prev || {}, field === null ? [section] : [section, field], value));
+
+  const updateList = (path: Path, fn: (list: any[]) => any[]) =>
     setData((prev: any) => {
-      const current = prev || {};
-      if (field === null) {
-        return { ...current, [section]: value };
-      }
-      return {
-        ...current,
-        [section]: {
-          ...(current[section] || {}),
-          [field]: value
-        }
-      };
+      const cur = prev || {};
+      const list = getAt(cur, path);
+      return setAt(cur, path, fn(Array.isArray(list) ? list : []));
     });
+  const patchItem = (path: Path, i: number, patch: any) =>
+    updateList(path, (l) => l.map((it, idx) => (idx === i ? { ...it, ...patch } : it)));
+  const addItem = (path: Path, item: any) => updateList(path, (l) => [...l, item]);
+  const removeItem = (path: Path, i: number) => updateList(path, (l) => l.filter((_, idx) => idx !== i));
+  const moveItem = (path: Path, i: number, dir: -1 | 1) =>
+    updateList(path, (l) => {
+      const j = i + dir;
+      if (j < 0 || j >= l.length) return l;
+      const next = [...l];
+      [next[i], next[j]] = [next[j], next[i]];
+      return next;
+    });
+
+  const list = (path: Path): any[] => {
+    const v = getAt(data, path);
+    return Array.isArray(v) ? v : [];
   };
 
   const tabs = [
     { id: "intro", label: "Intro & Hero", icon: Type, title: "Hero Banner Configurator" },
     { id: "stats", label: "Statistics Row", icon: BarChart3, title: "Stats Highlights Counter" },
     { id: "map", label: "Map & Dispatch", icon: Map, title: "Coverage Map & Coordinates" },
-    { id: "process", label: "Operational Process", icon: ClipboardList, title: "4-Step Blueprint Roadmap" },
+    { id: "process", label: "Operational Process", icon: ClipboardList, title: "Process Roadmap Steps" },
     { id: "materials", label: "Premium Materials", icon: Layers, title: "Installed Materials Options" },
     { id: "services", label: "Services Showcase", icon: Wrench, title: "Services Showcase Configuration" },
     { id: "regions", label: "Regions & Cities", icon: MapPin, title: "County Coverage Directories" },
     { id: "whyChoose", label: "Why Choose Us", icon: Star, title: "Core Strengths Showcase" },
     { id: "overview", label: "Overview Section", icon: ShieldAlert, title: "Overview Content Configurator" },
+    { id: "videoTestimonials", label: "Video Testimonials", icon: Video, title: "Video Testimonials" },
+    { id: "faq", label: "FAQ Section", icon: HelpCircle, title: "FAQ Section Visibility" },
     { id: "cta", label: "Lead Call To Action", icon: ShieldCheck, title: "Final CTA Configurator" },
     { id: "schema", label: "Schema Markup", icon: Settings, title: "Schema Markup Configurator" },
   ];
 
   const activeTabTitle = tabs.find(t => t.id === activeTab)?.title;
+
+  const stats = list(["stats"]);
+  const processSteps = list(["process"]);
+  const materialItems = list(["materials", "items"]);
+  const serviceItems = list(["servicesSection", "items"]);
+  const regions: Region[] = list(["regions"]);
+  const whyItems = list(["whyChoose", "items"]);
+
+  const imageField = (section: string, label: string, placeholder: string, help: string) => (
+    <div className="space-y-2">
+      <label className={UI.label}>{label}</label>
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={data[section]?.image || ""}
+          onChange={(e) => updateField(section, "image", e.target.value)}
+          className={UI.input}
+          placeholder={placeholder}
+        />
+        <button
+          type="button"
+          onClick={() => setActiveMediaTarget({ section, field: "image" })}
+          className="bg-[#f6f7f7] border border-[#2271b1] text-[#2271b1] px-4 py-1 text-[12px] font-semibold rounded-sm hover:bg-[#f0f6fb] transition-colors shrink-0"
+        >
+          Select Image
+        </button>
+        {data[section]?.image && (
+          <button
+            type="button"
+            onClick={() => updateField(section, "image", "")}
+            className="text-[#d63638] text-[12px] font-semibold hover:underline shrink-0 px-1"
+          >
+            Remove
+          </button>
+        )}
+      </div>
+      <p className="text-[10px] text-slate-400">{help}</p>
+      {data[section]?.image && (
+        <div className="mt-2 w-32 aspect-video relative rounded-lg overflow-hidden border border-slate-200">
+          <img src={data[section].image} alt={`${label} preview`} className="w-full h-full object-cover" />
+        </div>
+      )}
+    </div>
+  );
+
+  const visibilityHeader = (title: string, help: string, enabled: boolean, onChange: (v: boolean) => void, label: string) => (
+    <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1] gap-4">
+      <div>
+        <h2 className="text-base font-bold text-[#1d2327]">{title}</h2>
+        <p className="text-xs text-[#646970]">{help}</p>
+      </div>
+      <SectionToggle enabled={enabled} onChange={onChange} label={label} />
+    </div>
+  );
 
   return (
     <div className="bg-white">
@@ -198,7 +348,9 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
         {tabs.map((tab, idx) => (
           <React.Fragment key={tab.id}>
             <button
+              type="button"
               onClick={() => setActiveTab(tab.id)}
+              aria-current={activeTab === tab.id ? "page" : undefined}
               className={`px-1 py-1 transition-colors ${activeTab === tab.id ? 'text-[#1d2327] font-bold' : 'text-[#2271b1] hover:text-[#135e96]'}`}
             >
               {tab.label}
@@ -225,25 +377,22 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
             {/* INTRO HERO TAB */}
             {activeTab === "intro" && (
               <div className="max-w-3xl space-y-6">
-                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
-                  <div>
-                    <h2 className="text-base font-bold text-[#1d2327]">Hero Banner Visibility</h2>
-                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
-                  </div>
-                  <SectionToggle
-                    enabled={data.hero?.enabled !== false}
-                    onChange={(v) => updateField("hero", "enabled", v)}
-                    label="Hero Banner"
-                  />
-                </div>
+                {visibilityHeader(
+                  "Hero Banner Visibility",
+                  "Enable or disable displaying this section on the live page.",
+                  data.hero?.enabled !== false,
+                  (v) => updateField("hero", "enabled", v),
+                  "Hero Banner"
+                )}
                 <div className={UI.card + " space-y-5"}>
                   <div className="space-y-1.5">
-                    <label className={UI.label}>Hero Headline</label>
+                    <label className={UI.label}>Hero Headline (page H1)</label>
                     <input
                       type="text"
-                      value={data.hero?.headline || ""}
+                      value={data.hero?.headline ?? ""}
                       onChange={(e) => updateField("hero", "headline", e.target.value)}
                       className={UI.inputLarge}
+                      placeholder="Leave empty to use the page title"
                     />
                   </div>
                   <RichTextEditor
@@ -251,30 +400,7 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                     content={data.hero?.description || ""}
                     onChange={(html) => updateField("hero", "description", html)}
                   />
-                  <div className="space-y-2">
-                    <label className={UI.label}>Hero Background Banner Image</label>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={data.hero?.image || ""}
-                        onChange={(e) => updateField("hero", "image", e.target.value)}
-                        className={UI.input}
-                        placeholder="e.g. /images/service-area-hero.jpg"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setActiveMediaTarget({ section: "hero", field: "image" })}
-                        className="bg-[#f6f7f7] border border-[#2271b1] text-[#2271b1] px-4 py-1 text-[12px] font-semibold rounded-sm hover:bg-[#f0f6fb] transition-colors shrink-0"
-                      >
-                        Select Image
-                      </button>
-                    </div>
-                    {data.hero?.image && (
-                      <div className="mt-2 w-32 aspect-video relative rounded-lg overflow-hidden border border-slate-200">
-                        <img src={data.hero.image} alt="Hero preview" className="w-full h-full object-cover" />
-                      </div>
-                    )}
-                  </div>
+                  {imageField("hero", "Hero Background Banner Image", "e.g. /uploads/service-area-hero.jpg", "Optional. Leave empty for a plain dark banner.")}
                 </div>
               </div>
             )}
@@ -282,56 +408,63 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
             {/* STATISTICS TAB */}
             {activeTab === "stats" && (
               <div className="max-w-3xl space-y-6">
-                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
-                  <div>
-                    <h2 className="text-base font-bold text-[#1d2327]">Statistics Counter Visibility</h2>
-                    <p className="text-xs text-[#646970]">Enable or disable displaying statistics on the live page.</p>
-                  </div>
-                  <SectionToggle
-                    enabled={data.statsEnabled !== false}
-                    onChange={(v) => updateField("statsEnabled", null, v)}
-                    label="Statistics Counter"
-                  />
-                </div>
+                {visibilityHeader(
+                  "Statistics Counter Visibility",
+                  "Enable or disable displaying statistics on the live page.",
+                  data.statsEnabled !== false,
+                  (v) => updateField("statsEnabled", null, v),
+                  "Statistics Counter"
+                )}
                 <div className={UI.card + " space-y-6"}>
-                  <label className={UI.label + " block border-b border-[#f0f0f1] pb-2"}>Statistics Values & Labels</label>
+                  <label className={UI.label + " block border-b border-[#f0f0f1] pb-2"}>Statistics Values &amp; Labels</label>
 
-                  {(!data.stats || data.stats.length === 0) ? (
-                    <p className="text-slate-400 text-xs italic">No stats configured.</p>
+                  {stats.length === 0 ? (
+                    <p className="text-slate-400 text-xs italic">No stats configured - the statistics row is hidden on the live page.</p>
                   ) : (
-                    data.stats.map((stat: any, sIdx: number) => (
-                      <div key={sIdx} className="grid grid-cols-1 md:grid-cols-2 gap-4 border border-[#e0e0e0] p-4 rounded-xl relative">
-                        <div className="space-y-1">
-                          <label className="text-[10px] font-bold text-[#646970] uppercase">Stat Counter Value</label>
-                          <input
-                            type="text"
-                            value={stat.value}
-                            onChange={(e) => {
-                              const newStats = [...data.stats];
-                              newStats[sIdx].value = e.target.value;
-                              updateField("stats", null, newStats);
-                            }}
-                            className={UI.input}
-                            placeholder="e.g. 15+ or 100%"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[10px] font-bold text-[#646970] uppercase">Stat Subtitle Label</label>
-                          <input
-                            type="text"
-                            value={stat.label}
-                            onChange={(e) => {
-                              const newStats = [...data.stats];
-                              newStats[sIdx].label = e.target.value;
-                              updateField("stats", null, newStats);
-                            }}
-                            className={UI.input}
-                            placeholder="e.g. Years of Local Expertise"
-                          />
+                    stats.map((stat: any, sIdx: number) => (
+                      <div key={sIdx} className="border border-[#e0e0e0] p-4 rounded-xl relative space-y-3">
+                        <ItemBar
+                          label={`Stat #${sIdx + 1}`}
+                          index={sIdx}
+                          count={stats.length}
+                          onMove={(dir) => moveItem(["stats"], sIdx, dir)}
+                          onRemove={() => removeItem(["stats"], sIdx)}
+                        />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-[#646970] uppercase">Stat Counter Value</label>
+                            <input
+                              type="text"
+                              value={stat?.value ?? ""}
+                              onChange={(e) => patchItem(["stats"], sIdx, { value: e.target.value })}
+                              className={UI.input}
+                              placeholder="e.g. 15+ or 100%"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-[#646970] uppercase">Stat Subtitle Label</label>
+                            <input
+                              type="text"
+                              value={stat?.label ?? ""}
+                              onChange={(e) => patchItem(["stats"], sIdx, { label: e.target.value })}
+                              className={UI.input}
+                              placeholder="e.g. Years of Local Expertise"
+                            />
+                          </div>
                         </div>
                       </div>
                     ))
                   )}
+                  {stats.length < 4 && (
+                    <button
+                      type="button"
+                      onClick={() => addItem(["stats"], { value: "", label: "" })}
+                      className="inline-flex items-center gap-2 bg-[#f0f0f1] hover:bg-white text-[#2c3338] border border-[#c3c4c7] px-4 py-2 text-xs font-bold rounded transition-colors"
+                    >
+                      <Plus className="w-4 h-4" /> Add Stat
+                    </button>
+                  )}
+                  <p className="text-[10px] text-slate-400">Up to 4 stats. Three fit best. A stat with no value and no label is not shown.</p>
                 </div>
               </div>
             )}
@@ -339,24 +472,20 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
             {/* MAP & DISPATCH TAB */}
             {activeTab === "map" && (
               <div className="max-w-3xl space-y-6">
-                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
-                  <div>
-                    <h2 className="text-base font-bold text-[#1d2327]">Map &amp; Dispatch Visibility</h2>
-                    <p className="text-xs text-[#646970]">Enable or disable displaying map section on the live page.</p>
-                  </div>
-                  <SectionToggle
-                    enabled={data.map?.enabled !== false}
-                    onChange={(v) => updateField("map", "enabled", v)}
-                    label="Map & Dispatch"
-                  />
-                </div>
+                {visibilityHeader(
+                  "Map & Dispatch Visibility",
+                  "Enable or disable displaying map section on the live page.",
+                  data.map?.enabled !== false,
+                  (v) => updateField("map", "enabled", v),
+                  "Map & Dispatch"
+                )}
                 <div className={UI.card + " space-y-5"}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <label className={UI.label}>Section Tagline</label>
                       <input
                         type="text"
-                        value={data.map?.headline || ""}
+                        value={data.map?.headline ?? ""}
                         onChange={(e) => updateField("map", "headline", e.target.value)}
                         className={UI.input}
                       />
@@ -365,7 +494,7 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                       <label className={UI.label}>Section Title Headline</label>
                       <input
                         type="text"
-                        value={data.map?.title || ""}
+                        value={data.map?.title ?? ""}
                         onChange={(e) => updateField("map", "title", e.target.value)}
                         className={UI.input}
                       />
@@ -382,82 +511,41 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className={UI.label}>Google Map Embed Source URL</label>
-                    <input
-                      type="text"
-                      value={data.map?.iframeUrl || ""}
-                      onChange={(e) => updateField("map", "iframeUrl", e.target.value)}
-                      className={UI.input}
-                      placeholder="https://www.google.com/maps/embed..."
-                    />
-                    <p className="text-[10px] text-slate-400 mt-1">Paste the source URL (the value of the iframe src attribute) of your Google Map.</p>
+                    <label className={UI.label}>Google Map Embed</label>
+                    <MapEmbedField value={data.map?.iframeUrl || ""} onChange={(v) => updateField("map", "iframeUrl", v)} />
                   </div>
 
                   <div className="border-t border-[#f0f0f1] pt-4 space-y-4">
                     <label className={UI.label + " block font-bold text-slate-700"}>Dispatch Coordinates Info Blocks</label>
+                    <p className="text-[10px] text-slate-400 -mt-2">A block with an empty title and text is not shown. Block 3 becomes a tap-to-call link when its text is a phone number.</p>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border border-[#e0e0e0] p-4 rounded-xl">
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-[#646970] uppercase">Coordinate 1: Title</label>
-                        <input
-                          type="text"
-                          value={data.map?.bullet1Title || ""}
-                          onChange={(e) => updateField("map", "bullet1Title", e.target.value)}
-                          className={UI.input}
-                        />
+                    {[
+                      { n: 1, hint: "Pin icon" },
+                      { n: 2, hint: "Calendar icon" },
+                      { n: 3, hint: "Phone icon" },
+                    ].map(({ n, hint }) => (
+                      <div key={n} className="grid grid-cols-1 md:grid-cols-2 gap-4 border border-[#e0e0e0] p-4 rounded-xl">
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-bold text-[#646970] uppercase">Coordinate {n}: Title <span className="font-normal normal-case text-slate-400">({hint})</span></label>
+                          <input
+                            type="text"
+                            value={data.map?.[`bullet${n}Title`] ?? ""}
+                            onChange={(e) => updateField("map", `bullet${n}Title`, e.target.value)}
+                            className={UI.input}
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-bold text-[#646970] uppercase">Coordinate {n}: Text</label>
+                          <input
+                            type="text"
+                            value={data.map?.[`bullet${n}Text`] ?? ""}
+                            onChange={(e) => updateField("map", `bullet${n}Text`, e.target.value)}
+                            className={UI.input}
+                            placeholder={n === 3 ? "e.g. (636) 293-9977" : ""}
+                          />
+                        </div>
                       </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-[#646970] uppercase">Coordinate 1: Text</label>
-                        <input
-                          type="text"
-                          value={data.map?.bullet1Text || ""}
-                          onChange={(e) => updateField("map", "bullet1Text", e.target.value)}
-                          className={UI.input}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border border-[#e0e0e0] p-4 rounded-xl">
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-[#646970] uppercase">Coordinate 2: Title</label>
-                        <input
-                          type="text"
-                          value={data.map?.bullet2Title || ""}
-                          onChange={(e) => updateField("map", "bullet2Title", e.target.value)}
-                          className={UI.input}
-                        />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-[#646970] uppercase">Coordinate 2: Text</label>
-                        <input
-                          type="text"
-                          value={data.map?.bullet2Text || ""}
-                          onChange={(e) => updateField("map", "bullet2Text", e.target.value)}
-                          className={UI.input}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border border-[#e0e0e0] p-4 rounded-xl">
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-[#646970] uppercase">Coordinate 3: Title</label>
-                        <input
-                          type="text"
-                          value={data.map?.bullet3Title || ""}
-                          onChange={(e) => updateField("map", "bullet3Title", e.target.value)}
-                          className={UI.input}
-                        />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-[#646970] uppercase">Coordinate 3: Text</label>
-                        <input
-                          type="text"
-                          value={data.map?.bullet3Text || ""}
-                          onChange={(e) => updateField("map", "bullet3Text", e.target.value)}
-                          className={UI.input}
-                        />
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -466,17 +554,13 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
             {/* PROCESS ROADMAP TAB */}
             {activeTab === "process" && (
               <div className="max-w-3xl space-y-6">
-                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
-                  <div>
-                    <h2 className="text-base font-bold text-[#1d2327]">Operational Process Visibility</h2>
-                    <p className="text-xs text-[#646970]">Enable or disable displaying process steps on the live page.</p>
-                  </div>
-                  <SectionToggle
-                    enabled={data.processSection?.enabled !== false}
-                    onChange={(v) => updateField("processSection", "enabled", v)}
-                    label="Process Roadmap"
-                  />
-                </div>
+                {visibilityHeader(
+                  "Operational Process Visibility",
+                  "Enable or disable displaying process steps on the live page.",
+                  data.processSection?.enabled !== false,
+                  (v) => updateField("processSection", "enabled", v),
+                  "Process Roadmap"
+                )}
                 {/* Visual Section Headline/Title Configurator */}
                 <div className={UI.card + " space-y-5"}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -484,7 +568,7 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                       <label className={UI.label}>Process Section Tagline</label>
                       <input
                         type="text"
-                        value={data.processSection?.headline || ""}
+                        value={data.processSection?.headline ?? ""}
                         onChange={(e) => updateField("processSection", "headline", e.target.value)}
                         className={UI.input}
                       />
@@ -493,7 +577,7 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                       <label className={UI.label}>Process Section Main Title</label>
                       <input
                         type="text"
-                        value={data.processSection?.title || ""}
+                        value={data.processSection?.title ?? ""}
                         onChange={(e) => updateField("processSection", "title", e.target.value)}
                         className={UI.input}
                       />
@@ -502,89 +586,43 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                 </div>
 
                 <div className="space-y-6">
-                  {(!data.process || data.process.length === 0) ? (
-                    <p className="text-slate-400 text-xs italic">No process roadmap steps configured.</p>
+                  {processSteps.length === 0 ? (
+                    <p className="text-slate-400 text-xs italic">No process steps configured - the whole process section is hidden on the live page.</p>
                   ) : (
-                    data.process.map((step: any, pIdx: number) => (
+                    processSteps.map((step: any, pIdx: number) => (
                       <div key={pIdx} className={UI.card + " space-y-4 relative"}>
-                        <div className="flex items-center justify-between border-b border-[#f0f0f1] pb-2 mb-2">
-                          <div className="flex items-center gap-2">
-                            <span className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
-                              {pIdx + 1}
-                            </span>
-                            <span className="text-[11px] font-bold text-[#646970] uppercase tracking-wider">Step blueprint #{pIdx + 1}</span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const newSteps = data.process.filter((_: any, i: number) => i !== pIdx);
-                              updateField("process", null, newSteps);
-                            }}
-                            className="text-[#d63638] hover:text-[#b32b2d] flex items-center gap-1 text-[11px] font-semibold"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" /> Remove
-                          </button>
-                        </div>
+                        <ItemBar
+                          label={`Step blueprint #${pIdx + 1}`}
+                          index={pIdx}
+                          count={processSteps.length}
+                          onMove={(dir) => moveItem(["process"], pIdx, dir)}
+                          onRemove={() => removeItem(["process"], pIdx)}
+                        />
 
                         <div className="grid grid-cols-1 gap-4">
                           <div className="space-y-1.5">
                             <label className={UI.label}>Step Title</label>
                             <input
                               type="text"
-                              value={step.title}
-                              onChange={(e) => {
-                                const newSteps = [...data.process];
-                                newSteps[pIdx].title = e.target.value;
-                                updateField("process", null, newSteps);
-                              }}
+                              value={step?.title ?? ""}
+                              onChange={(e) => patchItem(["process"], pIdx, { title: e.target.value })}
                               className={UI.input}
                               placeholder="e.g. Free Inspection"
                             />
                           </div>
 
-                          {/* VISUAL ICON PICKER FOR PROCESS STEP */}
-                          <div className="space-y-3 border border-[#f0f0f1] p-3 bg-white rounded-lg">
-                            <div className="flex items-center justify-between">
-                              <label className="text-[11px] font-bold text-slate-700 block">Select Step Icon</label>
-                              <div className="flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded text-[10px] font-bold text-slate-700 border">
-                                <span>Active:</span>
-                                <span className="text-primary font-black uppercase">{step.icon || "ClipboardList"}</span>
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-4 sm:grid-cols-6 gap-1">
-                              {AVAILABLE_ICONS.slice(0, 18).map((iConfig) => {
-                                const LiveIcon = iConfig.icon;
-                                const defaultIcons = ["ClipboardList", "TrendingUp", "Wrench", "Star"];
-                                const isSelected = (step.icon || defaultIcons[pIdx % defaultIcons.length]).toLowerCase() === iConfig.name.toLowerCase();
-                                return (
-                                  <button
-                                    key={iConfig.name}
-                                    type="button"
-                                    onClick={() => {
-                                      const newSteps = [...data.process];
-                                      newSteps[pIdx].icon = iConfig.name;
-                                      updateField("process", null, newSteps);
-                                    }}
-                                    className={`p-1.5 rounded border flex flex-col items-center justify-center gap-0.5 transition-colors ${isSelected ? "border-primary bg-primary/5 text-primary" : "border-slate-100 hover:border-slate-200 text-slate-500 bg-slate-50/40"
-                                      }`}
-                                  >
-                                    <LiveIcon className="w-4 h-4" />
-                                    <span className="text-[8px] truncate max-w-full font-bold">{iConfig.name}</span>
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </div>
+                          <IconPicker
+                            label="Select Step Icon"
+                            value={step?.icon}
+                            fallback={DEFAULT_ICONS.process[pIdx % DEFAULT_ICONS.process.length]}
+                            onChange={(name) => patchItem(["process"], pIdx, { icon: name })}
+                          />
 
                           <div className="space-y-1.5">
                             <label className={UI.label}>Step Description Narrative</label>
                             <RichTextEditor
-                              content={step.description || ""}
-                              onChange={(val: string) => {
-                                const newSteps = [...data.process];
-                                newSteps[pIdx].description = val;
-                                updateField("process", null, newSteps);
-                              }}
+                              content={step?.description || ""}
+                              onChange={(val: string) => patchItem(["process"], pIdx, { description: val })}
                               placeholder="Describe the step visual parameters..."
                             />
                           </div>
@@ -596,11 +634,7 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                   <div className="flex justify-end pt-2">
                     <button
                       type="button"
-                      onClick={() => {
-                        const newSteps = [...(data.process || [])];
-                        newSteps.push({ title: "New Step", description: "", icon: "ClipboardList" });
-                        updateField("process", null, newSteps);
-                      }}
+                      onClick={() => addItem(["process"], { title: "New Step", description: "" })}
                       className="inline-flex items-center gap-2 bg-[#f0f0f1] hover:bg-white text-[#2c3338] border border-[#c3c4c7] px-4 py-2 text-xs font-bold rounded transition-colors"
                     >
                       <Plus className="w-4 h-4" /> Add Process Step
@@ -613,24 +647,20 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
             {/* PREMIUM MATERIALS TAB */}
             {activeTab === "materials" && (
               <div className="max-w-3xl space-y-6">
-                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
-                  <div>
-                    <h2 className="text-base font-bold text-[#1d2327]">Premium Materials Visibility</h2>
-                    <p className="text-xs text-[#646970]">Enable or disable displaying materials section on the live page.</p>
-                  </div>
-                  <SectionToggle
-                    enabled={data.materials?.enabled !== false}
-                    onChange={(v) => updateField("materials", "enabled", v)}
-                    label="Premium Materials"
-                  />
-                </div>
+                {visibilityHeader(
+                  "Premium Materials Visibility",
+                  "Enable or disable displaying materials section on the live page.",
+                  data.materials?.enabled !== false,
+                  (v) => updateField("materials", "enabled", v),
+                  "Premium Materials"
+                )}
                 <div className={UI.card + " space-y-5"}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <label className={UI.label}>Materials Section Tagline</label>
                       <input
                         type="text"
-                        value={data.materials?.headline || "Certified Excellence"}
+                        value={data.materials?.headline ?? ""}
                         onChange={(e) => updateField("materials", "headline", e.target.value)}
                         className={UI.input}
                       />
@@ -639,7 +669,7 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                       <label className={UI.label}>Materials Section Title</label>
                       <input
                         type="text"
-                        value={data.materials?.title || "Premium Materials We Install"}
+                        value={data.materials?.title ?? ""}
                         onChange={(e) => updateField("materials", "title", e.target.value)}
                         className={UI.input}
                       />
@@ -647,73 +677,53 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                   </div>
 
                   <div className="border-t border-[#f0f0f1] pt-4 space-y-6">
-                    <label className={UI.label + " block font-bold text-slate-700"}>Materials Categories Cards</label>
+                    <div className="flex items-center justify-between">
+                      <label className={UI.label + " block font-bold text-slate-700 !mb-0"}>Materials Categories Cards</label>
+                      <button
+                        type="button"
+                        onClick={() => addItem(["materials", "items"], { title: "New Material", description: "" })}
+                        className="bg-[#f0f0f1] border border-[#c3c4c7] px-3 py-1 text-[11px] font-semibold rounded-sm hover:bg-white text-[#2c3338] transition-colors"
+                      >
+                        + Add Material Card
+                      </button>
+                    </div>
 
-                    {(data.materials?.items || []).map((item: any, mIdx: number) => (
+                    {materialItems.length === 0 && (
+                      <p className="text-slate-400 text-xs italic">No material cards - the whole materials section is hidden on the live page.</p>
+                    )}
+
+                    {materialItems.map((item: any, mIdx: number) => (
                       <div key={mIdx} className="border border-[#e0e0e0] p-4 rounded-xl space-y-3 bg-slate-50/40">
-                        <div className="flex items-center gap-2 border-b border-[#f0f0f1] pb-1">
-                          <span className="w-5 h-5 rounded bg-primary/10 text-primary flex items-center justify-center font-bold text-[10px]">
-                            {mIdx + 1}
-                          </span>
-                          <span className="text-[10px] font-bold text-[#646970] uppercase">Material Card #{mIdx + 1}</span>
-                        </div>
+                        <ItemBar
+                          label={`Material Card #${mIdx + 1}`}
+                          index={mIdx}
+                          count={materialItems.length}
+                          onMove={(dir) => moveItem(["materials", "items"], mIdx, dir)}
+                          onRemove={() => removeItem(["materials", "items"], mIdx)}
+                        />
 
                         <div className="space-y-1.5">
                           <label className="text-[11px] font-bold text-slate-600">Material Category Title</label>
                           <input
                             type="text"
-                            value={item.title}
-                            onChange={(e) => {
-                              const newItems = [...data.materials.items];
-                              newItems[mIdx].title = e.target.value;
-                              updateField("materials", "items", newItems);
-                            }}
+                            value={item?.title ?? ""}
+                            onChange={(e) => patchItem(["materials", "items"], mIdx, { title: e.target.value })}
                             className={UI.input}
                           />
                         </div>
 
-                        {/* VISUAL ICON PICKER FOR PREMIUM MATERIALS */}
-                        <div className="space-y-3 border-y border-[#f0f0f1] py-3 bg-white px-3 rounded-lg">
-                          <div className="flex items-center justify-between">
-                            <label className="text-[11px] font-bold text-slate-700 block">Select Material Card Icon</label>
-                            <div className="flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded text-[10px] font-bold text-slate-700 border">
-                              <span>Active:</span>
-                              <span className="text-primary font-black uppercase">{item.icon || "Building"}</span>
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-4 sm:grid-cols-6 gap-1">
-                            {AVAILABLE_ICONS.slice(0, 18).map((iConfig) => {
-                              const LiveIcon = iConfig.icon;
-                              const isSelected = (item.icon || "Building").toLowerCase() === iConfig.name.toLowerCase();
-                              return (
-                                <button
-                                  key={iConfig.name}
-                                  type="button"
-                                  onClick={() => {
-                                    const newItems = [...data.materials.items];
-                                    newItems[mIdx].icon = iConfig.name;
-                                    updateField("materials", "items", newItems);
-                                  }}
-                                  className={`p-1.5 rounded border flex flex-col items-center justify-center gap-0.5 transition-colors ${isSelected ? "border-primary bg-primary/5 text-primary" : "border-slate-100 hover:border-slate-200 text-slate-500 bg-slate-50/40"
-                                    }`}
-                                >
-                                  <LiveIcon className="w-4 h-4" />
-                                  <span className="text-[8px] truncate max-w-full font-bold">{iConfig.name}</span>
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
+                        <IconPicker
+                          label="Select Material Card Icon"
+                          value={item?.icon}
+                          fallback={DEFAULT_ICONS.materials[mIdx % DEFAULT_ICONS.materials.length]}
+                          onChange={(name) => patchItem(["materials", "items"], mIdx, { icon: name })}
+                        />
 
                         <div className="space-y-1.5">
                           <label className="text-[11px] font-bold text-slate-600">Material Description</label>
                           <RichTextEditor
-                            content={item.description || ""}
-                            onChange={(val: string) => {
-                              const newItems = [...data.materials.items];
-                              newItems[mIdx].description = val;
-                              updateField("materials", "items", newItems);
-                            }}
+                            content={item?.description || ""}
+                            onChange={(val: string) => patchItem(["materials", "items"], mIdx, { description: val })}
                             placeholder="Describe this material or product..."
                           />
                         </div>
@@ -725,12 +735,8 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                             <input
                               type="text"
                               placeholder="e.g. Learn More"
-                              value={item.buttonLabel || ""}
-                              onChange={(e) => {
-                                const newItems = [...data.materials.items];
-                                newItems[mIdx].buttonLabel = e.target.value;
-                                updateField("materials", "items", newItems);
-                              }}
+                              value={item?.buttonLabel ?? ""}
+                              onChange={(e) => patchItem(["materials", "items"], mIdx, { buttonLabel: e.target.value })}
                               className={UI.input}
                             />
                           </div>
@@ -738,20 +744,15 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                             <label className="text-[11px] font-bold text-slate-600">Button Link <span className="text-slate-400 font-normal">(optional)</span></label>
                             <input
                               type="text"
-                              placeholder="e.g. /services/residential-roofing"
-                              value={item.buttonHref || ""}
-                              onChange={(e) => {
-                                const newItems = [...data.materials.items];
-                                newItems[mIdx].buttonHref = e.target.value;
-                                updateField("materials", "items", newItems);
-                              }}
+                              placeholder="e.g. /services/residential-roofing or #contact"
+                              value={item?.buttonHref ?? ""}
+                              onChange={(e) => patchItem(["materials", "items"], mIdx, { buttonHref: e.target.value })}
                               className={UI.input}
                             />
                           </div>
-                          <p className="col-span-2 text-[10px] text-slate-400 italic">Button only appears on the page if both Label and Link are filled in.</p>
+                          <p className="sm:col-span-2 text-[10px] text-slate-400 italic">Button only appears on the page if both Label and Link are filled in. "#contact" opens the Quick Quote form.</p>
                         </div>
                       </div>
-
                     ))}
                   </div>
                 </div>
@@ -761,24 +762,20 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
             {/* SERVICES SHOWCASE CONFIGURATOR TAB */}
             {activeTab === "services" && (
               <div className="max-w-3xl space-y-6">
-                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
-                  <div>
-                    <h2 className="text-base font-bold text-[#1d2327]">Services Showcase Visibility</h2>
-                    <p className="text-xs text-[#646970]">Enable or disable displaying services showcase on the live page.</p>
-                  </div>
-                  <SectionToggle
-                    enabled={data.servicesSection?.enabled !== false}
-                    onChange={(v) => updateField("servicesSection", "enabled", v)}
-                    label="Services Showcase"
-                  />
-                </div>
+                {visibilityHeader(
+                  "Services Showcase Visibility",
+                  "Enable or disable displaying services showcase on the live page.",
+                  data.servicesSection?.enabled !== false,
+                  (v) => updateField("servicesSection", "enabled", v),
+                  "Services Showcase"
+                )}
                 <div className={UI.card + " space-y-5"}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <label className={UI.label}>Services Section Tagline</label>
                       <input
                         type="text"
-                        value={data.servicesSection?.headline || "What We Provide"}
+                        value={data.servicesSection?.headline ?? ""}
                         onChange={(e) => updateField("servicesSection", "headline", e.target.value)}
                         className={UI.input}
                       />
@@ -787,7 +784,7 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                       <label className={UI.label}>Services Section Main Title</label>
                       <input
                         type="text"
-                        value={data.servicesSection?.title || "Services We Provide in This Area"}
+                        value={data.servicesSection?.title ?? ""}
                         onChange={(e) => updateField("servicesSection", "title", e.target.value)}
                         className={UI.input}
                       />
@@ -796,101 +793,63 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
 
                   <div className="border-t border-[#f0f0f1] pt-6 space-y-6">
                     <div className="flex items-center justify-between">
-                      <label className={UI.label + " font-bold text-slate-700"}>Showcased Services Cards List</label>
+                      <label className={UI.label + " font-bold text-slate-700 !mb-0"}>Showcased Services Cards List</label>
                       <button
-                        onClick={() => {
-                          const newItems = [...(data.servicesSection?.items || [])];
-                          newItems.push({ title: "New Service", description: "Service description here...", buttonText: "Explore Service", buttonHref: "/services/new-service", icon: "Shield" });
-                          updateField("servicesSection", "items", newItems);
-                        }}
+                        type="button"
+                        onClick={() => addItem(["servicesSection", "items"], { title: "New Service", description: "", buttonText: "Explore Service", buttonHref: "", icon: "Shield" })}
                         className="bg-[#f0f0f1] border border-[#c3c4c7] px-3 py-1 text-[11px] font-semibold rounded-sm hover:bg-white text-[#2c3338] transition-colors"
                       >
                         + Add Service Card
                       </button>
                     </div>
 
-                    {(!data.servicesSection?.items || data.servicesSection.items.length === 0) ? (
-                      <p className="text-slate-400 text-xs italic">No showcased services configured. Click Add Service Card to start.</p>
+                    {serviceItems.length === 0 ? (
+                      <p className="text-slate-400 text-xs italic">No showcased services configured - the whole section is hidden on the live page. Click Add Service Card to start.</p>
                     ) : (
-                      data.servicesSection.items.map((item: any, sIdx: number) => (
+                      serviceItems.map((item: any, sIdx: number) => (
                         <div key={sIdx} className="border border-[#e0e0e0] p-6 rounded-xl space-y-5 relative bg-slate-50/50">
-
-                          <div className="flex justify-between items-center border-b border-[#f0f0f1] pb-2">
-                            <span className="text-[11px] font-bold text-[#646970] uppercase">Service Card #{sIdx + 1}</span>
-                            <button
-                              onClick={() => {
-                                const newItems = data.servicesSection.items.filter((_: any, idx: number) => idx !== sIdx);
-                                updateField("servicesSection", "items", newItems);
-                              }}
-                              className="text-slate-400 hover:text-[#d63638] transition-colors"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
+                          <ItemBar
+                            label={`Service Card #${sIdx + 1}`}
+                            index={sIdx}
+                            count={serviceItems.length}
+                            onMove={(dir) => moveItem(["servicesSection", "items"], sIdx, dir)}
+                            onRemove={() => removeItem(["servicesSection", "items"], sIdx)}
+                          />
 
                           <div className="space-y-2">
                             <label className="text-[12px] font-bold text-slate-700 block">Service Name</label>
                             <input
                               type="text"
-                              value={item.title}
-                              onChange={(e) => {
-                                const newItems = [...data.servicesSection.items];
-                                newItems[sIdx].title = e.target.value;
-                                updateField("servicesSection", "items", newItems);
-                              }}
+                              value={item?.title ?? ""}
+                              onChange={(e) => patchItem(["servicesSection", "items"], sIdx, { title: e.target.value })}
                               className={UI.input}
                             />
                           </div>
 
-                          {/* VISUAL ICON PICKER LIBRARY FOR SERVICES */}
-                          <div className="space-y-3 border-y border-[#f0f0f1] py-4">
-                            <div className="flex items-center justify-between">
-                              <label className="text-[12px] font-bold text-slate-700 block">Select Card Icon from Library</label>
-                              <div className="flex items-center gap-1.5 px-3 py-1 bg-white border border-slate-200 rounded text-xs font-bold text-slate-800">
-                                <span>Active Icon:</span>
-                                <span className="text-primary font-black uppercase text-[10px]">{item.icon || "Shield"}</span>
-                              </div>
-                            </div>
-
-                            {/* Icon Grid Picker */}
-                            <div className="grid grid-cols-4 sm:grid-cols-8 gap-2 bg-white p-3 rounded-lg border border-slate-200">
-                              {AVAILABLE_ICONS.map((iConfig) => {
-                                const LiveIcon = iConfig.icon;
-                                const isSelected = (item.icon || "Shield").toLowerCase() === iConfig.name.toLowerCase();
-
-                                return (
-                                  <button
-                                    key={iConfig.name}
-                                    type="button"
-                                    onClick={() => {
-                                      const newItems = [...data.servicesSection.items];
-                                      newItems[sIdx].icon = iConfig.name;
-                                      updateField("servicesSection", "items", newItems);
-                                    }}
-                                    className={`p-2.5 rounded-lg border-2 flex flex-col items-center justify-center gap-1 transition-all group ${isSelected
-                                        ? "border-primary bg-primary/5 text-primary shadow-sm"
-                                        : "border-slate-100 hover:border-slate-300 hover:bg-slate-50 text-slate-655"
-                                      }`}
-                                    title={iConfig.label}
-                                  >
-                                    <LiveIcon className={`w-5 h-5 transition-transform ${isSelected ? 'scale-110' : 'group-hover:scale-105'}`} />
-                                    <span className="text-[8px] font-semibold truncate max-w-full">{iConfig.name}</span>
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </div>
+                          <IconPicker
+                            wide
+                            label="Select Card Icon from Library"
+                            value={item?.icon}
+                            fallback="Shield"
+                            onChange={(name) => patchItem(["servicesSection", "items"], sIdx, { icon: name })}
+                          />
 
                           <div className="space-y-2">
                             <label className="text-[12px] font-bold text-slate-700 block">Service Description Summary</label>
                             <RichTextEditor
-                              content={item.description || ""}
-                              onChange={(val: string) => {
-                                const newItems = [...data.servicesSection.items];
-                                newItems[sIdx].description = val;
-                                updateField("servicesSection", "items", newItems);
-                              }}
+                              content={item?.description || ""}
+                              onChange={(val: string) => patchItem(["servicesSection", "items"], sIdx, { description: val })}
                               placeholder="Describe this service offering..."
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="text-[12px] font-bold text-slate-700 block">Badges <span className="text-slate-400 font-normal">(optional, comma separated - the first 3 show as small pills)</span></label>
+                            <ListTextarea
+                              rows={1}
+                              value={item?.features}
+                              onChange={(next) => patchItem(["servicesSection", "items"], sIdx, { features: next })}
+                              placeholder="e.g. Free estimates, Storm damage, 24/7"
                             />
                           </div>
 
@@ -899,13 +858,10 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                               <label className="text-[11px] font-bold text-slate-655">Button Label Text</label>
                               <input
                                 type="text"
-                                value={item.buttonText || "Explore Service"}
-                                onChange={(e) => {
-                                  const newItems = [...data.servicesSection.items];
-                                  newItems[sIdx].buttonText = e.target.value;
-                                  updateField("servicesSection", "items", newItems);
-                                }}
+                                value={item?.buttonText ?? ""}
+                                onChange={(e) => patchItem(["servicesSection", "items"], sIdx, { buttonText: e.target.value })}
                                 className={UI.input}
+                                placeholder="Explore Service"
                               />
                             </div>
 
@@ -913,15 +869,12 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                               <label className="text-[11px] font-bold text-slate-655">Button Destination Link / Slug URL</label>
                               <input
                                 type="text"
-                                value={item.buttonHref || ""}
-                                onChange={(e) => {
-                                  const newItems = [...data.servicesSection.items];
-                                  newItems[sIdx].buttonHref = e.target.value;
-                                  updateField("servicesSection", "items", newItems);
-                                }}
+                                value={item?.buttonHref ?? ""}
+                                onChange={(e) => patchItem(["servicesSection", "items"], sIdx, { buttonHref: e.target.value })}
                                 className={UI.input}
                                 placeholder="e.g. /services/residential-roofing"
                               />
+                              <p className="text-[10px] text-slate-400">Blank = links to /services/&lt;service name&gt;. The whole card is clickable.</p>
                             </div>
                           </div>
 
@@ -936,17 +889,13 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
             {/* REGIONS AND CITIES DIRECTORIES */}
             {activeTab === "regions" && (
               <div className="space-y-6">
-                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
-                  <div>
-                    <h2 className="text-base font-bold text-[#1d2327]">Regions &amp; Cities Visibility</h2>
-                    <p className="text-xs text-[#646970]">Enable or disable displaying regional county coverage on the live page.</p>
-                  </div>
-                  <SectionToggle
-                    enabled={data.regionsSection?.enabled !== false}
-                    onChange={(v) => updateField("regionsSection", "enabled", v)}
-                    label="Regions & Cities"
-                  />
-                </div>
+                {visibilityHeader(
+                  "Regions & Cities Visibility",
+                  "Enable or disable displaying regional county coverage on the live page.",
+                  data.regionsSection?.enabled !== false,
+                  (v) => updateField("regionsSection", "enabled", v),
+                  "Regions & Cities"
+                )}
                 {/* Visual Section Headline/Title Configurator */}
                 <div className={UI.card + " space-y-5"}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -954,7 +903,7 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                       <label className={UI.label}>Regions Section Main Title</label>
                       <input
                         type="text"
-                        value={data.regionsSection?.title || ""}
+                        value={data.regionsSection?.title ?? ""}
                         onChange={(e) => updateField("regionsSection", "title", e.target.value)}
                         className={UI.input}
                       />
@@ -963,7 +912,7 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                       <label className={UI.label}>Regions Section Subtitle / Help Text</label>
                       <input
                         type="text"
-                        value={data.regionsSection?.description || ""}
+                        value={data.regionsSection?.description ?? ""}
                         onChange={(e) => updateField("regionsSection", "description", e.target.value)}
                         className={UI.input}
                       />
@@ -972,56 +921,40 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className={UI.label}>Active Regions & Cities Directories</span>
+                  <span className={UI.label + " !mb-0"}>Active Regions &amp; Cities Directories</span>
                   <button
-                    onClick={() => {
-                      const newRegions = [...(data.regions || [])];
-                      newRegions.push({ name: "New County Region", cities: [], zipcodes: [] });
-                      updateField("regions", null, newRegions);
-                    }}
+                    type="button"
+                    onClick={() => addItem(["regions"], { name: "New County Region", description: "", cities: [], zipcodes: [] })}
                     className="bg-[#f0f0f1] border border-[#c3c4c7] px-3 py-1 text-[12px] font-semibold rounded-sm hover:bg-white text-[#2c3338] transition-colors"
                   >
                     + Add New Region
                   </button>
                 </div>
+                <p className="text-[11px] text-slate-500 -mt-3">Each region is a tile on the page. Visitors click a tile to see its description, communities and zip codes; a region with none of those is just a label.</p>
 
                 <div className="space-y-6">
-                  {(!data.regions || data.regions.length === 0) ? (
+                  {regions.length === 0 ? (
                     <div className="text-[13px] text-[#646970] italic p-6 border border-dashed border-[#c3c4c7] text-center bg-slate-50">
-                      No regions configured. Click Add New Region to start building coverage list.
+                      No regions configured - the whole section is hidden on the live page. Click Add New Region to start building the coverage list.
                     </div>
                   ) : (
-                    data.regions.map((region: Region, rIdx: number) => (
+                    regions.map((region: Region, rIdx: number) => (
                       <div key={rIdx} className={UI.card + " space-y-4 relative"}>
-                        <div className="flex justify-between items-center border-b border-[#f0f0f1] pb-2">
-                          <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 bg-[#f0f6fb] text-[#2271b1] rounded-[3px] flex items-center justify-center border border-[#dcdcde]">
-                              <Map className="w-3.5 h-3.5" />
-                            </div>
-                            <span className="text-[11px] font-bold text-[#646970]">Region County #{rIdx + 1}</span>
-                          </div>
-                          <button
-                            onClick={() => {
-                              const newRegions = data.regions.filter((_: any, idx: number) => idx !== rIdx);
-                              updateField("regions", null, newRegions);
-                            }}
-                            className="text-slate-400 hover:text-[#d63638] transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
+                        <ItemBar
+                          label={`Region County #${rIdx + 1}`}
+                          index={rIdx}
+                          count={regions.length}
+                          onMove={(dir) => moveItem(["regions"], rIdx, dir)}
+                          onRemove={() => removeItem(["regions"], rIdx)}
+                        />
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div className="space-y-1.5 md:col-span-3">
                             <label className={UI.label}>County / Region Name</label>
                             <input
                               type="text"
-                              value={region.name}
-                              onChange={(e) => {
-                                const newRegions = [...data.regions];
-                                newRegions[rIdx].name = e.target.value;
-                                updateField("regions", null, newRegions);
-                              }}
+                              value={region?.name ?? ""}
+                              onChange={(e) => patchItem(["regions"], rIdx, { name: e.target.value })}
                               className={UI.input + " font-bold"}
                               placeholder="e.g. St. Louis County"
                             />
@@ -1029,30 +962,30 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
 
                           <div className="md:col-span-3">
                             <RichTextEditor
-                              label="Region Description / Content Narrative"
-                              content={region.description || ""}
-                              onChange={(html) => {
-                                const newRegions = [...data.regions];
-                                newRegions[rIdx].description = html;
-                                updateField("regions", null, newRegions);
-                              }}
+                              label="Region Description / Content Narrative (optional)"
+                              content={region?.description || ""}
+                              onChange={(html) => patchItem(["regions"], rIdx, { description: html })}
                             />
                           </div>
 
                           <div className="space-y-1.5 md:col-span-3">
-                            <label className={UI.label}>Zip Codes (Comma separated)</label>
-                            <textarea
-                              value={region.zipcodes ? region.zipcodes.join(", ") : ""}
-                              onChange={(e) => {
-                                const newRegions = [...data.regions];
-                                newRegions[rIdx].zipcodes = e.target.value.split(",").map(z => z.trim()).filter(Boolean);
-                                updateField("regions", null, newRegions);
-                              }}
-                              className={UI.textarea}
-                              rows={2}
+                            <label className={UI.label}>Communities / Cities (comma separated)</label>
+                            <ListTextarea
+                              value={region?.cities}
+                              onChange={(next) => patchItem(["regions"], rIdx, { cities: next })}
+                              placeholder="Chesterfield, Wildwood, Ballwin, Kirkwood"
+                            />
+                            <p className="text-[10px] text-slate-400 mt-1">Shown as pills under "Communities We Serve".</p>
+                          </div>
+
+                          <div className="space-y-1.5 md:col-span-3">
+                            <label className={UI.label}>Zip Codes (comma separated)</label>
+                            <ListTextarea
+                              value={region?.zipcodes}
+                              onChange={(next) => patchItem(["regions"], rIdx, { zipcodes: next })}
                               placeholder="63017, 63005, 63011, 63021"
                             />
-                            <p className="text-[10px] text-slate-400 mt-1">Separate zip codes with commas. Used for coverage verification lookup.</p>
+                            <p className="text-[10px] text-slate-400 mt-1">Shown as pills under "Zip Codes" when the visitor opens this region.</p>
                           </div>
                         </div>
                       </div>
@@ -1065,24 +998,20 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
             {/* WHY CHOOSE US TAB */}
             {activeTab === "whyChoose" && (
               <div className="max-w-3xl space-y-6">
-                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
-                  <div>
-                    <h2 className="text-base font-bold text-[#1d2327]">Why Choose Us Visibility</h2>
-                    <p className="text-xs text-[#646970]">Enable or disable displaying strengths on the live page.</p>
-                  </div>
-                  <SectionToggle
-                    enabled={data.whyChoose?.enabled !== false}
-                    onChange={(v) => updateField("whyChoose", "enabled", v)}
-                    label="Why Choose Us"
-                  />
-                </div>
+                {visibilityHeader(
+                  "Why Choose Us Visibility",
+                  "Enable or disable displaying strengths on the live page.",
+                  data.whyChoose?.enabled !== false,
+                  (v) => updateField("whyChoose", "enabled", v),
+                  "Why Choose Us"
+                )}
                 <div className={UI.card + " space-y-5"}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <label className={UI.label}>Section Tagline</label>
                       <input
                         type="text"
-                        value={data.whyChoose?.headline || "Why Choose Us"}
+                        value={data.whyChoose?.headline ?? ""}
                         onChange={(e) => updateField("whyChoose", "headline", e.target.value)}
                         className={UI.input}
                       />
@@ -1091,86 +1020,74 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                       <label className={UI.label}>Section Main Title</label>
                       <input
                         type="text"
-                        value={data.whyChoose?.title || "Elite Missouri Roofing Quality"}
+                        value={data.whyChoose?.title ?? ""}
                         onChange={(e) => updateField("whyChoose", "title", e.target.value)}
                         className={UI.input}
                       />
                     </div>
                   </div>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Featured Card Badge</label>
+                    <input
+                      type="text"
+                      value={data.whyChoose?.featuredBadge ?? ""}
+                      onChange={(e) => updateField("whyChoose", "featuredBadge", e.target.value)}
+                      className={UI.input}
+                      placeholder="e.g. Highly Requested (leave empty for no badge)"
+                    />
+                    <p className="text-[10px] text-slate-400">The little tag on the highlighted center card (column #2).</p>
+                  </div>
 
                   <div className="border-t border-[#f0f0f1] pt-4 space-y-6">
-                    <label className={UI.label + " block font-bold text-slate-700"}>Core Strengths Showcased (3 Columns)</label>
+                    <div className="flex items-center justify-between">
+                      <label className={UI.label + " block font-bold text-slate-700 !mb-0"}>Core Strengths Showcased (3 Columns)</label>
+                      <button
+                        type="button"
+                        onClick={() => addItem(["whyChoose", "items"], { title: "New Strength", description: "" })}
+                        className="bg-[#f0f0f1] border border-[#c3c4c7] px-3 py-1 text-[11px] font-semibold rounded-sm hover:bg-white text-[#2c3338] transition-colors"
+                      >
+                        + Add Column
+                      </button>
+                    </div>
+                    {whyItems.length === 0 && (
+                      <p className="text-slate-400 text-xs italic">No columns - the whole section is hidden on the live page.</p>
+                    )}
 
-                    {(data.whyChoose?.items || []).map((item: any, wIdx: number) => (
+                    {whyItems.map((item: any, wIdx: number) => (
                       <div key={wIdx} className="border border-[#e0e0e0] p-4 rounded-xl space-y-3 bg-slate-50/40">
-                        <div className="flex items-center gap-2 border-b border-[#f0f0f1] pb-1">
-                          <span className="w-5 h-5 rounded bg-primary/10 text-primary flex items-center justify-center font-bold text-[10px]">
-                            {wIdx + 1}
-                          </span>
-                          <span className="text-[10px] font-bold text-[#646970] uppercase">
-                            {wIdx === 1 ? "Featured Center Column" : `Column #${wIdx + 1}`}
-                          </span>
-                          {wIdx === 1 && (
-                            <span className="text-[9px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded">Highlighted Dark Mode Card</span>
-                          )}
-                        </div>
+                        <ItemBar
+                          label={wIdx === 1 ? "Featured Center Column" : `Column #${wIdx + 1}`}
+                          index={wIdx}
+                          count={whyItems.length}
+                          onMove={(dir) => moveItem(["whyChoose", "items"], wIdx, dir)}
+                          onRemove={() => removeItem(["whyChoose", "items"], wIdx)}
+                        />
+                        {wIdx === 1 && (
+                          <span className="inline-block text-[9px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded">Highlighted Dark Card</span>
+                        )}
 
                         <div className="space-y-1.5">
                           <label className="text-[11px] font-bold text-slate-600">Column Headline</label>
                           <input
                             type="text"
-                            value={item.title}
-                            onChange={(e) => {
-                              const newItems = [...data.whyChoose.items];
-                              newItems[wIdx].title = e.target.value;
-                              updateField("whyChoose", "items", newItems);
-                            }}
+                            value={item?.title ?? ""}
+                            onChange={(e) => patchItem(["whyChoose", "items"], wIdx, { title: e.target.value })}
                             className={UI.input}
                           />
                         </div>
 
-                        {/* VISUAL ICON PICKER FOR WHY CHOOSE US */}
-                        <div className="space-y-3 border-y border-[#f0f0f1] py-3 bg-white px-3 rounded-lg">
-                          <div className="flex items-center justify-between">
-                            <label className="text-[11px] font-bold text-slate-700 block">Select Column Icon</label>
-                            <div className="flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded text-[10px] font-bold text-slate-700 border">
-                              <span>Active:</span>
-                              <span className="text-primary font-black uppercase">{item.icon || "Shield"}</span>
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-4 sm:grid-cols-6 gap-1">
-                            {AVAILABLE_ICONS.slice(0, 18).map((iConfig) => {
-                              const LiveIcon = iConfig.icon;
-                              const isSelected = (item.icon || "Shield").toLowerCase() === iConfig.name.toLowerCase();
-                              return (
-                                <button
-                                  key={iConfig.name}
-                                  type="button"
-                                  onClick={() => {
-                                    const newItems = [...data.whyChoose.items];
-                                    newItems[wIdx].icon = iConfig.name;
-                                    updateField("whyChoose", "items", newItems);
-                                  }}
-                                  className={`p-1.5 rounded border flex flex-col items-center justify-center gap-0.5 transition-colors ${isSelected ? "border-primary bg-primary/5 text-primary" : "border-slate-100 hover:border-slate-200 text-slate-500 bg-slate-50/40"
-                                    }`}
-                                >
-                                  <LiveIcon className="w-4 h-4" />
-                                  <span className="text-[8px] truncate max-w-full font-bold">{iConfig.name}</span>
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
+                        <IconPicker
+                          label="Select Column Icon"
+                          value={item?.icon}
+                          fallback={DEFAULT_ICONS.whyChoose[wIdx % DEFAULT_ICONS.whyChoose.length]}
+                          onChange={(name) => patchItem(["whyChoose", "items"], wIdx, { icon: name })}
+                        />
 
                         <div className="space-y-1.5">
                           <label className="text-[11px] font-bold text-slate-600">Column Narrative Description</label>
                           <RichTextEditor
-                            content={item.description || ""}
-                            onChange={(val: string) => {
-                              const newItems = [...data.whyChoose.items];
-                              newItems[wIdx].description = val;
-                              updateField("whyChoose", "items", newItems);
-                            }}
+                            content={item?.description || ""}
+                            onChange={(val: string) => patchItem(["whyChoose", "items"], wIdx, { description: val })}
                             placeholder="Describe why customers should choose this..."
                           />
                         </div>
@@ -1184,24 +1101,20 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
             {/* DYNAMIC OVERVIEW SECTION TAB */}
             {activeTab === "overview" && (
               <div className="max-w-3xl space-y-6">
-                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
-                  <div>
-                    <h2 className="text-base font-bold text-[#1d2327]">Overview Section Visibility</h2>
-                    <p className="text-xs text-[#646970]">Enable or disable displaying community overview on the live page.</p>
-                  </div>
-                  <SectionToggle
-                    enabled={data.overview?.enabled !== false}
-                    onChange={(v) => updateField("overview", "enabled", v)}
-                    label="Overview Section"
-                  />
-                </div>
+                {visibilityHeader(
+                  "Overview Section Visibility",
+                  "Enable or disable displaying community overview on the live page.",
+                  data.overview?.enabled !== false,
+                  (v) => updateField("overview", "enabled", v),
+                  "Overview Section"
+                )}
                 <div className={UI.card + " space-y-5"}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <label className={UI.label}>Overview Section Tagline</label>
                       <input
                         type="text"
-                        value={data.overview?.headline || ""}
+                        value={data.overview?.headline ?? ""}
                         onChange={(e) => updateField("overview", "headline", e.target.value)}
                         className={UI.input}
                       />
@@ -1210,7 +1123,7 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                       <label className={UI.label}>Overview Section Main Title</label>
                       <input
                         type="text"
-                        value={data.overview?.title || ""}
+                        value={data.overview?.title ?? ""}
                         onChange={(e) => updateField("overview", "title", e.target.value)}
                         className={UI.input}
                       />
@@ -1228,47 +1141,57 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                       <label className={UI.label}>Button Text</label>
                       <input
                         type="text"
-                        value={data.overview?.buttonText || ""}
+                        value={data.overview?.buttonText ?? ""}
                         onChange={(e) => updateField("overview", "buttonText", e.target.value)}
                         className={UI.input}
+                        placeholder="Leave empty for no button"
                       />
                     </div>
                     <div className="space-y-1.5">
                       <label className={UI.label}>Button Link Destination URL</label>
                       <input
                         type="text"
-                        value={data.overview?.buttonHref || ""}
+                        value={data.overview?.buttonHref ?? ""}
                         onChange={(e) => updateField("overview", "buttonHref", e.target.value)}
                         className={UI.input}
-                        placeholder="e.g. #contact"
+                        placeholder="e.g. #contact (opens the Quick Quote form)"
                       />
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className={UI.label}>Overview Right-Side Image</label>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={data.overview?.image || ""}
-                        onChange={(e) => updateField("overview", "image", e.target.value)}
-                        className={UI.input}
-                        placeholder="e.g. /images/roofing-about.jpg"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setActiveMediaTarget({ section: "overview", field: "image" })}
-                        className="bg-[#f6f7f7] border border-[#2271b1] text-[#2271b1] px-4 py-1 text-[12px] font-semibold rounded-sm hover:bg-[#f0f6fb] transition-colors shrink-0"
-                      >
-                        Select Image
-                      </button>
-                    </div>
-                    {data.overview?.image && (
-                      <div className="mt-2 w-32 aspect-video relative rounded-lg overflow-hidden border border-slate-200">
-                        <img src={data.overview.image} alt="Overview preview" className="w-full h-full object-cover" />
-                      </div>
-                    )}
-                  </div>
+                  {imageField("overview", "Overview Right-Side Image", "e.g. /uploads/roofing-about.jpg", "Optional. Leave empty and the text uses the full width.")}
+                </div>
+              </div>
+            )}
+
+            {/* VIDEO TESTIMONIALS TAB (content.videoTestimonials) */}
+            {activeTab === "videoTestimonials" && (
+              <div className="max-w-3xl">
+                <VideoTestimonialsEditor
+                  value={data.videoTestimonials}
+                  onChange={(next) => setData((prev: any) => ({ ...(prev || {}), videoTestimonials: next }))}
+                />
+              </div>
+            )}
+
+            {/* FAQ SECTION (visibility only - the questions live in the page-level "Page FAQs" tab) */}
+            {activeTab === "faq" && (
+              <div className="max-w-3xl space-y-6">
+                {visibilityHeader(
+                  "FAQ Section Visibility",
+                  "Show or hide the FAQ block on the live page.",
+                  data.faqSection?.enabled !== false,
+                  (v) => updateField("faqSection", "enabled", v),
+                  "FAQ Section"
+                )}
+                <div className={UI.card + " space-y-2"}>
+                  <p className="text-[13px] text-[#1d2327]">
+                    The questions, section heading, description, the "strategy session" box and the FAQ schema are edited in the
+                    <strong> Page FAQs </strong>tab at the top of this page.
+                  </p>
+                  <p className="text-[12px] text-[#646970]">
+                    If this page has no FAQs of its own, the site-wide FAQ list is shown instead.
+                  </p>
                 </div>
               </div>
             )}
@@ -1276,23 +1199,19 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
             {/* CALL TO ACTION TAB */}
             {activeTab === "cta" && (
               <div className="max-w-3xl space-y-6">
-                <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
-                  <div>
-                    <h2 className="text-base font-bold text-[#1d2327]">Lead Call To Action Visibility</h2>
-                    <p className="text-xs text-[#646970]">Enable or disable displaying CTA banner on the live page.</p>
-                  </div>
-                  <SectionToggle
-                    enabled={data.cta?.enabled !== false}
-                    onChange={(v) => updateField("cta", "enabled", v)}
-                    label="Call To Action"
-                  />
-                </div>
+                {visibilityHeader(
+                  "Lead Call To Action Visibility",
+                  "Enable or disable displaying CTA banner on the live page.",
+                  data.cta?.enabled !== false,
+                  (v) => updateField("cta", "enabled", v),
+                  "Call To Action"
+                )}
                 <div className={UI.card + " space-y-5"}>
                   <div className="space-y-1.5">
                     <label className={UI.label}>CTA Headline</label>
                     <input
                       type="text"
-                      value={data.cta?.headline || ""}
+                      value={data.cta?.headline ?? ""}
                       onChange={(e) => updateField("cta", "headline", e.target.value)}
                       className={UI.input}
                     />
@@ -1309,19 +1228,22 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                     <label className={UI.label}>Button Label</label>
                     <input
                       type="text"
-                      value={data.cta?.buttonText || ""}
+                      value={data.cta?.buttonText ?? ""}
                       onChange={(e) => updateField("cta", "buttonText", e.target.value)}
                       className={UI.input}
+                      placeholder="Leave empty for no button"
                     />
                   </div>
                   <div className="space-y-1.5">
                     <label className={UI.label}>Button Link / Anchor</label>
                     <input
                       type="text"
-                      value={data.cta?.buttonHref || ""}
+                      value={data.cta?.buttonHref ?? ""}
                       onChange={(e) => updateField("cta", "buttonHref", e.target.value)}
                       className={UI.input}
+                      placeholder="e.g. #contact (opens the Quick Quote form) or /contact-us"
                     />
+                    <p className="text-[10px] text-slate-400">This section is the page's <code>#contact</code> anchor. A blank link behaves like <code>#contact</code>.</p>
                   </div>
                 </div>
               </div>
@@ -1329,17 +1251,14 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
 
             {activeTab === "schema" && (
               <div className="space-y-4">
+                {/* Same source of truth as the page-level "Schema Markup" tab (page seo.schemaData,
+                    mirrored into content.schemaMarkup). Writing only content.* here used to be
+                    overwritten on save by the page's own seo.schemaData. */}
                 <SchemaEditor
-                  value={data.schemaMarkup || data.seo?.schemaData || ""}
+                  value={seo?.schemaData || data.schemaMarkup || ""}
                   onChange={(val) => {
-                    setData((prev: any) => ({
-                      ...(prev || {}),
-                      schemaMarkup: val,
-                      seo: {
-                        ...(prev?.seo || {}),
-                        schemaData: val
-                      }
-                    }));
+                    if (setSeo) setSeo({ ...(seo || {}), schemaData: val });
+                    setData((prev: any) => ({ ...(prev || {}), schemaMarkup: val }));
                   }}
                   pageTitle={data.title || "Service Area"}
                 />

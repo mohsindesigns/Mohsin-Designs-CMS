@@ -1,7 +1,11 @@
+import { cache } from "react";
 import connectToDatabase from "@/lib/mongodb";
 import Page from "@/models/Page";
-import { BASE_URL } from "@/lib/constants";
 import { buildPageBreadcrumbs } from "./breadcrumbs";
+import { resolveLocationPaths, type LocationIndex, type ResolvedLocation } from "./locationPath";
+
+export { resolveLocationPaths, locationHref, DEFAULT_COUNTRY_SLUG } from "./locationPath";
+export type { LocationIndex, ResolvedLocation } from "./locationPath";
 
 /**
  * Normalizes a string into a clean, URL-safe slug.
@@ -13,25 +17,18 @@ export function slugify(text: string): string {
     .toLowerCase()
     .trim()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // remove accents
+    .replace(/[̀-ͯ]/g, "") // remove accents
     .replace(/[^\w\s-]/g, "") // remove non-word chars
     .replace(/[\s_-]+/g, "-") // replace spaces and underscores with hyphen
     .replace(/^-+|-+$/g, ""); // trim hyphens
 }
 
-/**
- * Validates the Country -> State -> City hierarchy for incoming dynamic route slugs.
- * 
- * Rules:
- * - 3 segments: [country, state, city] -> Must match a published City page under that exact Country and State.
- * - 2 segments: [country, state] -> Must match a published State page under that exact Country.
- * - 1 segment: [country] -> Must match a published Country page.
- * 
- * Returns { valid: true, page, hierarchy: { country, state, city } } or { valid: false }.
- */
-export async function validateLocationHierarchy(slugSegments: string[]): Promise<{
+export interface LocationCheck {
   valid: boolean;
+  /** Full page document for the matched location (use this instead of a second slug lookup). */
   page?: any;
+  /** Canonical hierarchical path of the page ("usa/nevada/henderson"), no leading/trailing slash. */
+  canonicalPath?: string;
   hierarchy?: {
     countrySlug: string;
     countryName?: string;
@@ -40,142 +37,110 @@ export async function validateLocationHierarchy(slugSegments: string[]): Promise
     citySlug?: string;
     cityName?: string;
   };
-}> {
-  if (!slugSegments || slugSegments.length === 0) return { valid: false };
+}
+
+/**
+ * One lightweight query per request (React `cache` de-duplicates generateMetadata + the page):
+ * every published Country/State/City page, reduced to just the fields needed to work out its
+ * place in the hierarchy (never the multi-hundred-KB `content`). Roughly a few hundred bytes per
+ * page, so it stays cheap even with hundreds of cities, and it is only paid on ISR revalidation.
+ */
+export const getLocationIndex = cache(async (): Promise<LocationIndex> => {
+  await connectToDatabase();
+  const docs = await Page.find({
+    template: { $in: ["country", "state", "city"] },
+    status: "published",
+    isTrashed: { $ne: true },
+  })
+    .select(
+      "_id slug title template seo.canonicalUrl " +
+        "content.countrySlug content.stateSlug content.citySlug content.parentLocationId content.parentLocationSlug " +
+        "content.serviceArea.hubs.link content.serviceArea.hubs.href content.serviceArea.hubs.url"
+    )
+    .lean();
+  return resolveLocationPaths(docs as any[]);
+});
+
+/**
+ * Validates the Country -> State -> City hierarchy for an incoming dynamic-route slug and
+ * returns the page that URL resolves to.
+ *
+ * URL scheme (the ONLY canonical form; see lib/locationPath.ts for how legacy flat pages are
+ * placed into it):
+ *   1 segment  [country]                 -> a published Country page
+ *   2 segments [country, state]          -> a published State page whose country is `country`
+ *   3 segments [country, state, city]    -> a published City page under exactly that state+country
+ *
+ * Returns { valid: true, page, canonicalPath, hierarchy } or { valid: false }.
+ * NOTE: callers must render `page` from this result. Looking the page up again by
+ * `slugSegments.join("/")` fails for pages whose stored slug is not the full path.
+ */
+export async function validateLocationHierarchy(slugSegments: string[]): Promise<LocationCheck> {
+  if (!slugSegments || slugSegments.length === 0 || slugSegments.length > 3) return { valid: false };
+  if (slugSegments.some((s) => typeof s !== "string" || !s)) return { valid: false };
+
+  const index = await getLocationIndex();
+  const entry = index.byPath.get(slugSegments.join("/"));
+  if (!entry) return { valid: false };
 
   await connectToDatabase();
+  const page = await Page.findOne({ _id: entry.id, status: "published", isTrashed: { $ne: true } }).lean();
+  if (!page) return { valid: false };
 
-  const [countrySlug, stateSlug, citySlug] = slugSegments;
+  const country = index.byPath.get(entry.countrySlug);
+  const state = entry.stateSlug ? index.byPath.get(`${entry.countrySlug}/${entry.stateSlug}`) : undefined;
 
-  // 1. Three-segment location: /[country]/[state]/[city]/
-  if (slugSegments.length === 3) {
-    // Exact slug lookup: e.g. "usa/texas/fort-worth"
-    const fullSlug = `${countrySlug}/${stateSlug}/${citySlug}`;
-    const cityDoc = await Page.findOne({
-      slug: fullSlug,
-      template: "city",
-      status: "published",
-      isTrashed: { $ne: true }
-    }).lean();
+  return {
+    valid: true,
+    page,
+    canonicalPath: entry.path,
+    hierarchy: {
+      countrySlug: entry.countrySlug,
+      countryName: country?.title || "United States",
+      ...(entry.stateSlug ? { stateSlug: entry.stateSlug, stateName: state?.title || entry.stateSlug } : {}),
+      ...(entry.citySlug ? { citySlug: entry.citySlug, cityName: entry.title || entry.citySlug } : {}),
+    },
+  };
+}
 
-    if (!cityDoc) {
-      return { valid: false };
+/**
+ * Canonical hierarchical path ("usa/nevada/henderson") for a country/state/city page document,
+ * or null when it has none (parent chain cannot be determined / parent unpublished). Use this to
+ * redirect legacy flat URLs (/nevada/, /henderson/) to the canonical URL instead of 404ing.
+ */
+export async function getCanonicalLocationPath(page: { _id?: any; slug?: string } | null | undefined): Promise<string | null> {
+  if (!page) return null;
+  const index = await getLocationIndex();
+  const hit: ResolvedLocation | undefined = index.byId.get(String(page._id ?? page.slug));
+  return hit ? hit.path : null;
+}
+
+/**
+ * Makes a plain (JSON-cloned) location page object self-consistent with the URL it is served at,
+ * so everything downstream (breadcrumbs, schema, canonical, templates) agrees:
+ *  - slug becomes the canonical hierarchical path (legacy pages store just "nevada"/"henderson")
+ *  - content.country/state/city and *Slug fields are filled in when the document never stored them
+ * Existing content values always win. Returns the same object.
+ */
+export function applyLocationHierarchy<T extends { slug?: string; content?: any }>(page: T, check: LocationCheck): T {
+  if (!page || !check?.valid || !check.canonicalPath) return page;
+  const h = check.hierarchy;
+  const c = { ...(page.content || {}) };
+  if (h) {
+    c.countrySlug = c.countrySlug || h.countrySlug;
+    c.country = c.country || h.countryName;
+    if (h.stateSlug) {
+      c.stateSlug = c.stateSlug || h.stateSlug;
+      c.state = c.state || h.stateName;
     }
-
-    // Validate that the parent State exists and belongs to Country
-    const stateDoc = await Page.findOne({
-      $or: [
-        { slug: `${countrySlug}/${stateSlug}` },
-        { slug: stateSlug }
-      ],
-      template: "state",
-      status: "published",
-      isTrashed: { $ne: true }
-    }).lean();
-
-    if (!stateDoc) {
-      return { valid: false };
-    }
-
-    // Validate that the parent Country exists
-    const countryDoc = await Page.findOne({
-      slug: countrySlug,
-      template: "country",
-      status: "published",
-      isTrashed: { $ne: true }
-    }).lean();
-
-    if (!countryDoc) {
-      return { valid: false };
-    }
-
-    // Ensure that stateDoc actually belongs to this countryDoc
-    const stateBelongsToCountry =
-      stateDoc.slug === `${countrySlug}/${stateSlug}` ||
-      (stateDoc as any).content?.countrySlug === countrySlug ||
-      String((stateDoc as any).content?.parentLocationId) === String(countryDoc._id);
-
-    if (!stateBelongsToCountry) {
-      return { valid: false };
-    }
-
-    return {
-      valid: true,
-      page: cityDoc,
-      hierarchy: {
-        countrySlug,
-        countryName: countryDoc.title || "United States",
-        stateSlug,
-        stateName: stateDoc.title || stateSlug,
-        citySlug,
-        cityName: (cityDoc as any).title || citySlug
-      }
-    };
-  }
-
-  // 2. Two-segment location: /[country]/[state]/
-  if (slugSegments.length === 2) {
-    const fullSlug = `${countrySlug}/${stateSlug}`;
-    const stateDoc = await Page.findOne({
-      $or: [
-        { slug: fullSlug },
-        { slug: stateSlug }
-      ],
-      template: "state",
-      status: "published",
-      isTrashed: { $ne: true }
-    }).lean();
-
-    if (!stateDoc) {
-      return { valid: false };
-    }
-
-    // Validate that parent Country exists
-    const countryDoc = await Page.findOne({
-      slug: countrySlug,
-      template: "country",
-      status: "published",
-      isTrashed: { $ne: true }
-    }).lean();
-
-    if (!countryDoc) {
-      return { valid: false };
-    }
-
-    return {
-      valid: true,
-      page: stateDoc,
-      hierarchy: {
-        countrySlug,
-        countryName: countryDoc.title || "United States",
-        stateSlug,
-        stateName: (stateDoc as any).title || stateSlug
-      }
-    };
-  }
-
-  // 3. One-segment location: /[country]/
-  if (slugSegments.length === 1) {
-    const countryDoc = await Page.findOne({
-      slug: countrySlug,
-      template: "country",
-      status: "published",
-      isTrashed: { $ne: true }
-    }).lean();
-
-    if (countryDoc) {
-      return {
-        valid: true,
-        page: countryDoc,
-        hierarchy: {
-          countrySlug,
-          countryName: (countryDoc as any).title || "United States"
-        }
-      };
+    if (h.citySlug) {
+      c.citySlug = c.citySlug || h.citySlug;
+      c.city = c.city || h.cityName;
     }
   }
-
-  return { valid: false };
+  page.slug = check.canonicalPath;
+  page.content = c;
+  return page;
 }
 
 /**

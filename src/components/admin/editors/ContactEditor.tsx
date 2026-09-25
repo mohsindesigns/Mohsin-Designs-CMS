@@ -14,6 +14,7 @@ import IconSelector from "@/components/admin/IconSelector";
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
 import SchemaEditor from "@/components/admin/SchemaEditor";
+import { parseMapEmbed } from "@/lib/mapEmbed";
 import dynamic from "next/dynamic";
 
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), { ssr: false });
@@ -89,14 +90,26 @@ const DEFAULT_CONTACT_DATA = {
     titleLine2: "Next Big",
     titleHighlight: "Advantage.",
     description: "Whether you need a full platform build, conversion optimization, or technical advisory, we're here to accelerate your vision.",
-    backgroundImage: "/portfolio_hero_bg.png",
-    bgImage: "/portfolio_hero_bg.png",
+    // No default image: /portfolio_hero_bg.png does not exist in /public (it 404'd). Pick one with the image field.
+    backgroundImage: "",
+    bgImage: "",
     form: {
       title: "Send Us a Message",
       submitButton: "Send Message & Request Proposal",
       guaranteeText: "⚡ Guaranteed response within 24 hours. Strict NDA & privacy assured.",
+      namePlaceholder: "Full Name *",
+      emailPlaceholder: "Email Address *",
+      phonePlaceholder: "Phone Number",
+      companyPlaceholder: "Company (Optional)",
+      servicePlaceholder: "Select a service",
+      messagePlaceholder: "Tell us about your project *",
+      privacyText: "I agree to the",
+      privacyLinkText: "Privacy Policy",
+      privacyHref: "/privacy",
+      successTitle: "Message Sent Successfully!",
+      successMessage: "Thank you for reaching out. Our team will review your inquiry and get back to you within 24 hours.",
+      // Real, selectable options only - the "Select a service" placeholder is its own field above.
       services: [
-        "Select a service",
         "Custom Next.js & React Platform",
         "Conversion Rate Optimization (CRO)",
         "Full-Funnel Growth Marketing",
@@ -164,13 +177,28 @@ const DEFAULT_CONTACT_DATA = {
     description: "Schedule a free 30-minute technical audit. We'll diagnose bottlenecks in your existing presence and map out a concrete blueprint for compounding growth.",
     ctaPrimary: { label: "Book Strategy Session", href: "#contact-form" },
     ctaSecondary: { label: "Direct Office Line", href: "tel:+15550192834" },
-    portraitSrc: "/founder.png",
+    // No default image: /founder.png does not exist in /public (it 404'd). Pick one with the image field.
+    portraitSrc: "",
     portraitAlt: "Mohsin Designs Lead Architect"
   },
-  receiverEmail: "hello@mohsindesigns.com"
+  // Blank = use the site-wide address from Settings > Contact (see /api/send). It must NOT default to a
+  // real address here: a persisted default would silently override the Settings value on every save.
+  receiverEmail: ""
 };
 
-export default function ContactEditor({ pageId, data, setData }: { pageId: string, data: any, setData: (d: any) => void }) {
+// Saved contactPage + defaults for every key the editor shows. Applied to the LATEST state inside the
+// setData updater (not to the render-time snapshot) so rapid edits / async rich-text onChange never
+// overwrite each other.
+const withDefaults = (cp: any) => ({
+  ...DEFAULT_CONTACT_DATA,
+  ...(cp || {}),
+  hero: { ...DEFAULT_CONTACT_DATA.hero, ...(cp?.hero || {}), form: { ...DEFAULT_CONTACT_DATA.hero.form, ...(cp?.hero?.form || {}) } },
+  contactMethods: { ...DEFAULT_CONTACT_DATA.contactMethods, ...(cp?.contactMethods || {}) },
+  office: { ...DEFAULT_CONTACT_DATA.office, ...(cp?.office || {}) },
+  ctaBanner: { ...DEFAULT_CONTACT_DATA.ctaBanner, ...(cp?.ctaBanner || {}) }
+});
+
+export default function ContactEditor({ pageId, data, setData, seo, setSeo }: { pageId: string, data: any, setData: (d: any) => void, seo?: any, setSeo?: (s: any) => void }) {
   const [activeTab, setActiveTab] = useState("hero");
 
   // Ensure contactPage has complete structure
@@ -188,22 +216,37 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
 
   if (!data) return <div className="flex items-center justify-center h-64"><Loader2 className="w-5 h-5 text-[#2271b1] animate-spin" /></div>;
 
-  const contact = {
-    ...DEFAULT_CONTACT_DATA,
-    ...(data.contactPage || {}),
-    hero: { ...DEFAULT_CONTACT_DATA.hero, ...(data.contactPage?.hero || {}), form: { ...DEFAULT_CONTACT_DATA.hero.form, ...(data.contactPage?.hero?.form || {}) } },
-    contactMethods: { ...DEFAULT_CONTACT_DATA.contactMethods, ...(data.contactPage?.contactMethods || {}) },
-    office: { ...DEFAULT_CONTACT_DATA.office, ...(data.contactPage?.office || {}) },
-    ctaBanner: { ...DEFAULT_CONTACT_DATA.ctaBanner, ...(data.contactPage?.ctaBanner || {}) }
-  };
+  const contact = withDefaults(data.contactPage);
 
   const updateContact = (updater: (prev: typeof contact) => typeof contact) => {
-    const updated = updater(contact);
     setData((prev: any) => ({
-      ...prev,
-      contactPage: updated
+      ...(prev || {}),
+      contactPage: updater(withDefaults(prev?.contactPage))
     }));
   };
+
+  // Method-card edits always start from the latest saved list (never a stale render-time copy)
+  const updateMethods = (fn: (methods: any[]) => any[]) =>
+    updateContact(prev => ({
+      ...prev,
+      contactMethods: { ...prev.contactMethods, methods: fn(Array.isArray(prev.contactMethods.methods) ? prev.contactMethods.methods : []) }
+    }));
+  const patchMethod = (idx: number, patch: Record<string, any>) =>
+    updateMethods(list => list.map((m, i) => (i === idx ? { ...m, ...patch } : m)));
+  const moveMethod = (idx: number, dir: -1 | 1) =>
+    updateMethods(list => {
+      const j = idx + dir;
+      if (j < 0 || j >= list.length) return list;
+      const next = [...list];
+      [next[idx], next[j]] = [next[j], next[idx]];
+      return next;
+    });
+
+  // Shared text-field patcher for the new "form labels" inputs
+  const patchForm = (patch: Record<string, any>) =>
+    updateContact(prev => ({ ...prev, hero: { ...prev.hero, form: { ...prev.hero.form, ...patch } } }));
+
+  const mapPreview = parseMapEmbed(contact.office.mapEmbedUrl);
 
   const tabs = [
     { id: "hero", label: "01. Hero & Form Header", icon: Type },
@@ -370,16 +413,103 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
               </div>
 
               {/* Service Dropdown Options List */}
-              <div className="pt-2">
+              <div className="pt-2 space-y-2">
                 <BulletListEditor
                   label="Dropdown Service Options"
                   items={contact.hero.form.services || []}
-                  onChange={(srv) => updateContact(prev => ({
-                    ...prev,
-                    hero: { ...prev.hero, form: { ...prev.hero.form, services: srv } }
-                  }))}
+                  onChange={(srv) => patchForm({ services: srv })}
                   placeholder="e.g. Custom Next.js Platform"
                 />
+                <p className="text-[11px] text-[#646970]">
+                  Every entry is a selectable choice. The visitor's pick is stored with the lead and included in the notification email.
+                  Leave the list empty to hide the dropdown. (Older pages may still list "Select a service" first - it is treated as the placeholder text.)
+                </p>
+              </div>
+            </div>
+
+            {/* Form labels, placeholders & messages (all of these used to be hard-coded in the page) */}
+            <div className="bg-[#f8f9fa] border border-[#dcdcde] p-4 rounded-[4px] space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#1d2327]">Form Field Text & Confirmation Message</h3>
+              <p className="text-[11px] text-[#646970]">
+                Placeholder text shown inside each field (add a trailing * to mark required fields). Clearing a field falls back to a sensible label.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {([
+                  ["namePlaceholder", "Full Name field", "Full Name *"],
+                  ["emailPlaceholder", "Email field", "Email Address *"],
+                  ["phonePlaceholder", "Phone field", "Phone Number"],
+                  ["companyPlaceholder", "Company field", "Company (Optional)"],
+                  ["servicePlaceholder", "Service dropdown (before a choice is made)", "Select a service"],
+                  ["messagePlaceholder", "Message box", "Tell us about your project *"],
+                ] as const).map(([key, label, ph]) => (
+                  <div key={key} className="space-y-1">
+                    <label className="text-[11px] font-bold text-[#50575e]">{label}</label>
+                    <input
+                      type="text"
+                      value={contact.hero.form[key] ?? ""}
+                      onChange={(e) => patchForm({ [key]: e.target.value })}
+                      className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
+                      placeholder={ph}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-[#dcdcde]">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-[#50575e]">Privacy checkbox text</label>
+                  <input
+                    type="text"
+                    value={contact.hero.form.privacyText ?? ""}
+                    onChange={(e) => patchForm({ privacyText: e.target.value })}
+                    className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
+                    placeholder="I agree to the"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-[#50575e]">Privacy link text</label>
+                  <input
+                    type="text"
+                    value={contact.hero.form.privacyLinkText ?? ""}
+                    onChange={(e) => patchForm({ privacyLinkText: e.target.value })}
+                    className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
+                    placeholder="Privacy Policy"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-[#50575e]">Privacy link URL</label>
+                  <input
+                    type="text"
+                    value={contact.hero.form.privacyHref ?? ""}
+                    onChange={(e) => patchForm({ privacyHref: e.target.value })}
+                    className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white font-mono text-[11px]"
+                    placeholder="/privacy"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-3 pt-2 border-t border-[#dcdcde]">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-[#50575e]">Success title (shown after the message is sent)</label>
+                  <input
+                    type="text"
+                    value={contact.hero.form.successTitle ?? ""}
+                    onChange={(e) => patchForm({ successTitle: e.target.value })}
+                    className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
+                    placeholder="Message Sent Successfully!"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-[#50575e]">Success message</label>
+                  <textarea
+                    rows={2}
+                    value={contact.hero.form.successMessage ?? ""}
+                    onChange={(e) => patchForm({ successMessage: e.target.value })}
+                    className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
+                    placeholder="Thank you for reaching out. Our team will review your inquiry and get back to you within 24 hours."
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -438,46 +568,64 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
                 <h3 className="text-xs font-bold uppercase tracking-wider text-[#1d2327]">Contact Method Cards</h3>
                 <button
                   type="button"
-                  onClick={() => {
-                    const next = [...(contact.contactMethods.methods || [])];
-                    next.push({
+                  onClick={() => updateMethods(list => [
+                    ...list,
+                    {
                       id: `method_${Date.now()}`,
                       icon: "Phone",
                       title: "New Channel",
                       info: "+1 (555) 000-0000",
                       sub: "Available 24/7",
                       actionHref: "tel:+15550000000"
-                    });
-                    updateContact(prev => ({
-                      ...prev,
-                      contactMethods: { ...prev.contactMethods, methods: next }
-                    }));
-                  }}
+                    }
+                  ])}
                   className="text-xs font-bold text-[#2271b1] hover:underline"
                 >
                   + Add Channel Card
                 </button>
               </div>
 
+              {(contact.contactMethods.methods || []).length === 0 && (
+                <div className="border border-dashed border-[#c3c4c7] bg-white rounded-[4px] p-4 text-xs text-[#646970]">
+                  No cards - this section is hidden on the live page. Click <strong>+ Add Channel Card</strong> to show it again.
+                </div>
+              )}
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {(contact.contactMethods.methods || []).map((method: any, idx: number) => (
-                  <div key={method.id || idx} className="bg-white border border-[#c3c4c7] p-4 rounded-[4px] shadow-sm space-y-3 relative">
+                {(contact.contactMethods.methods || []).map((method: any, idx: number, all: any[]) => (
+                  <div key={`${method.id || "method"}-${idx}`} className="bg-white border border-[#c3c4c7] p-4 rounded-[4px] shadow-sm space-y-3 relative">
                     <div className="flex items-center justify-between border-b border-[#f0f0f1] pb-2">
                       <span className="text-xs font-bold text-[#1d2327]">Card #{idx + 1}</span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const next = contact.contactMethods.methods.filter((_: any, i: number) => i !== idx);
-                          updateContact(prev => ({
-                            ...prev,
-                            contactMethods: { ...prev.contactMethods, methods: next }
-                          }));
-                        }}
-                        className="text-[#d63638] hover:text-red-700 text-xs font-bold"
-                        title="Delete Card"
-                      >
-                        ✕ Remove
-                      </button>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => moveMethod(idx, -1)}
+                          disabled={idx === 0}
+                          className="text-[#2271b1] hover:text-[#135e96] text-xs font-bold disabled:opacity-30 disabled:cursor-not-allowed"
+                          title="Move card earlier"
+                          aria-label={`Move card ${idx + 1} earlier`}
+                        >
+                          ↑
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => moveMethod(idx, 1)}
+                          disabled={idx === all.length - 1}
+                          className="text-[#2271b1] hover:text-[#135e96] text-xs font-bold disabled:opacity-30 disabled:cursor-not-allowed"
+                          title="Move card later"
+                          aria-label={`Move card ${idx + 1} later`}
+                        >
+                          ↓
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => updateMethods(list => list.filter((_, i) => i !== idx))}
+                          className="text-[#d63638] hover:text-red-700 text-xs font-bold"
+                          title="Delete Card"
+                        >
+                          ✕ Remove
+                        </button>
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
@@ -486,14 +634,7 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
                         <div>
                           <IconSelector
                             value={method.icon || "Phone"}
-                            onChange={(icon) => {
-                              const next = [...contact.contactMethods.methods];
-                              next[idx] = { ...next[idx], icon };
-                              updateContact(prev => ({
-                                ...prev,
-                                contactMethods: { ...prev.contactMethods, methods: next }
-                              }));
-                            }}
+                            onChange={(icon) => patchMethod(idx, { icon })}
                           />
                         </div>
                       </div>
@@ -502,15 +643,8 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
                         <label className="text-[10px] font-bold text-[#50575e]">Card Title</label>
                         <input
                           type="text"
-                          value={method.title}
-                          onChange={(e) => {
-                            const next = [...contact.contactMethods.methods];
-                            next[idx] = { ...next[idx], title: e.target.value };
-                            updateContact(prev => ({
-                              ...prev,
-                              contactMethods: { ...prev.contactMethods, methods: next }
-                            }));
-                          }}
+                          value={method.title ?? ""}
+                          onChange={(e) => patchMethod(idx, { title: e.target.value })}
                           className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
                           placeholder="Direct Phone"
                         />
@@ -522,15 +656,8 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
                         <label className="text-[10px] font-bold text-[#50575e]">Main Info Text</label>
                         <input
                           type="text"
-                          value={method.info}
-                          onChange={(e) => {
-                            const next = [...contact.contactMethods.methods];
-                            next[idx] = { ...next[idx], info: e.target.value };
-                            updateContact(prev => ({
-                              ...prev,
-                              contactMethods: { ...prev.contactMethods, methods: next }
-                            }));
-                          }}
+                          value={method.info ?? ""}
+                          onChange={(e) => patchMethod(idx, { info: e.target.value })}
                           className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
                           placeholder="+1 (555) 019-2834"
                         />
@@ -540,15 +667,8 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
                         <label className="text-[10px] font-bold text-[#50575e]">Subtext (Availability)</label>
                         <input
                           type="text"
-                          value={method.sub}
-                          onChange={(e) => {
-                            const next = [...contact.contactMethods.methods];
-                            next[idx] = { ...next[idx], sub: e.target.value };
-                            updateContact(prev => ({
-                              ...prev,
-                              contactMethods: { ...prev.contactMethods, methods: next }
-                            }));
-                          }}
+                          value={method.sub ?? ""}
+                          onChange={(e) => patchMethod(idx, { sub: e.target.value })}
                           className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
                           placeholder="Mon-Fri: 9am-6pm EST"
                         />
@@ -559,18 +679,14 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
                       <label className="text-[10px] font-bold text-[#50575e]">Action Link / Href</label>
                       <input
                         type="text"
-                        value={method.actionHref}
-                        onChange={(e) => {
-                          const next = [...contact.contactMethods.methods];
-                          next[idx] = { ...next[idx], actionHref: e.target.value };
-                          updateContact(prev => ({
-                            ...prev,
-                            contactMethods: { ...prev.contactMethods, methods: next }
-                          }));
-                        }}
+                        value={method.actionHref ?? ""}
+                        onChange={(e) => patchMethod(idx, { actionHref: e.target.value })}
                         className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-mono text-[11px]"
                         placeholder="tel:+15550192834 or mailto:hello@... or https://wa.me/..."
                       />
+                      <p className="text-[10px] text-[#646970]">
+                        Use <code>#contact-form</code> to scroll to the form. Leave blank for a card that is not clickable.
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -597,7 +713,7 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
               <h3 className="text-xs font-bold uppercase tracking-wider text-[#1d2327]">Google Map Embed Settings</h3>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-bold text-[#50575e]">Google Map Embed URL (iframe src)</label>
+                <label className="text-[11px] font-bold text-[#50575e]">Map Embed (URL, iframe code, or just an address)</label>
                 <input
                   type="text"
                   value={contact.office.mapEmbedUrl}
@@ -606,15 +722,23 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
                     office: { ...prev.office, mapEmbedUrl: e.target.value }
                   }))}
                   className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white font-mono text-[11px]"
-                  placeholder="https://www.google.com/maps/embed?..."
+                  placeholder="https://www.google.com/maps/embed?... or 1540 Broadway, New York"
                 />
                 <p className="text-[11px] text-[#646970]">
-                  Tip: On Google Maps, click <strong>Share</strong> &gt; <strong>Embed a map</strong> &gt; copy the <code>src="..."</code> URL.
+                  Tip: On Google Maps, click <strong>Share</strong> &gt; <strong>Embed a map</strong> &gt; copy the <code>src="..."</code> URL (pasting the whole iframe code also works).
+                  Only Google, OpenStreetMap, Bing, Mapbox, ArcGIS and MapQuest embeds are shown. Leave blank to hide the map.
                 </p>
+                {String(contact.office.mapEmbedUrl || "").trim() !== "" && (
+                  mapPreview ? (
+                    <p className="text-[11px] font-bold text-[#00a32a]">Map will be shown on the page.</p>
+                  ) : (
+                    <p className="text-[11px] font-bold text-[#d63638]">This is not an allowed map embed - the map will NOT be shown. Paste the embed URL from your map provider, or an address.</p>
+                  )
+                )}
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-bold text-[#50575e]">Floating Map Pin Badge Text</label>
+                <label className="text-[11px] font-bold text-[#50575e]">Floating Map Pin Badge Text (top-left of the map; blank = no badge)</label>
                 <input
                   type="text"
                   value={contact.office.mapBadge}
@@ -705,7 +829,7 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-bold text-[#50575e]">Direct Inquiries Email</label>
+                  <label className="text-[11px] font-bold text-[#50575e]">Public Contact Email (shown on the page)</label>
                   <input
                     type="text"
                     value={contact.office.email}
@@ -843,6 +967,7 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-[#dcdcde]">
                 <div className="bg-white border border-[#c3c4c7] p-3 rounded-[3px] space-y-2">
                   <h4 className="font-bold text-xs text-[#1d2327]">Primary Button (Yellow)</h4>
+                  <p className="text-[10px] text-[#646970]">A button shows only when it has both a label and a working link.</p>
                   <div className="space-y-1">
                     <label className="text-[10px] font-bold text-[#50575e]">Label</label>
                     <input
@@ -879,6 +1004,7 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
 
                 <div className="bg-white border border-[#c3c4c7] p-3 rounded-[3px] space-y-2">
                   <h4 className="font-bold text-xs text-[#1d2327]">Secondary Button (White Outline)</h4>
+                  <p className="text-[10px] text-[#646970]">Leave the label or link blank to hide this button.</p>
                   <div className="space-y-1">
                     <label className="text-[10px] font-bold text-[#50575e]">Label</label>
                     <input
@@ -948,18 +1074,25 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
             <div className="bg-[#f8f9fa] border border-[#dcdcde] p-4 rounded-[4px] space-y-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-[#1d2327]">Form Submission Notifications</h3>
               <p className="text-[12px] text-[#646970]">
-                Enter the email address where all inquiries and proposals submitted through the contact page will be routed.
+                Enter the email address that receives enquiries sent through the contact forms (this page and the homepage contact section).
+                Every enquiry is also saved under <strong>Leads &amp; Inquiries</strong> in the admin.
               </p>
 
               <div className="space-y-1 max-w-md">
                 <label className="text-[11px] font-bold text-[#50575e]">Notification Receiver Email</label>
                 <input
                   type="email"
-                  value={contact.receiverEmail || contact.office.email || ""}
+                  value={contact.receiverEmail || ""}
                   onChange={(e) => updateContact(prev => ({ ...prev, receiverEmail: e.target.value }))}
                   className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
-                  placeholder="hello@mohsindesigns.com"
+                  placeholder="Leave blank to use the address from Settings > Contact"
                 />
+                {String(contact.receiverEmail || "").trim() !== "" && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(contact.receiverEmail).trim()) && (
+                  <p className="text-[11px] font-bold text-[#d63638]">This does not look like a valid email address - notifications would fall back to the Settings address.</p>
+                )}
+                <p className="text-[11px] text-[#646970]">
+                  Quote requests, job applications, consultation forms and the newsletter box always use the address in <strong>Settings &gt; Contact &gt; Notification Receiver Email</strong>.
+                </p>
               </div>
             </div>
           </div>
@@ -968,16 +1101,15 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
         {/* ── TAB 6: SCHEMA MARKUP ── */}
         {activeTab === "schema" && (
           <div className="space-y-4">
+            {/* Same wiring as the page's own Schema tab: page-level seo.schemaData wins on the live page
+                (lib/dynamicSchema), so it MUST be updated too or an edit here would be silently shadowed. */}
             <SchemaEditor
-              value={data.schemaMarkup || data.seo?.schemaData || ""}
+              value={seo?.schemaData || data.schemaMarkup || data.seo?.schemaData || ""}
               onChange={(val) => {
+                if (setSeo) setSeo({ ...(seo || {}), schemaData: val });
                 setData((prev: any) => ({
                   ...(prev || {}),
-                  schemaMarkup: val,
-                  seo: {
-                    ...(prev?.seo || {}),
-                    schemaData: val
-                  }
+                  schemaMarkup: val
                 }));
               }}
               pageTitle="Contact Us"

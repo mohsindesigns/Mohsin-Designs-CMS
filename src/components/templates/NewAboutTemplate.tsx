@@ -1,43 +1,26 @@
 "use client";
 
 import CtaButton from "@/components/ui/CtaButton";
-import { withTrailingSlash } from "@/lib/url";
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
 import { motion } from "framer-motion";
-import { useRef, useEffect, useState } from "react";
-import Image from "next/image";
+import { useMemo, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "@/components/ui/Link";
 import { getValidHref } from "@/lib/utils";
+// Every icon the admin's IconSelector can pick is a lucide icon, so resolve names
+// dynamically (same approach as the other templates) instead of a hand-maintained
+// 27-icon map that silently fell back to a default for everything else.
+import * as LucideIcons from "lucide-react";
 import {
   ArrowRight,
   Play,
-  Compass,
   Palette,
   Code,
-  Rocket,
   ShoppingCart,
-  Building2,
-  Heart,
-  GraduationCap,
-  Database,
-  Utensils,
-  Scale,
   Star,
-  Users,
-  ShieldCheck,
   Search,
-  Megaphone,
   Globe,
-  Trophy,
-  Target,
-  Lightbulb,
-  MessageSquare,
-  Clock,
-  Headphones,
-  Handshake,
-  TrendingUp,
-  Zap
+  Target
 } from "lucide-react";
 import { useContent } from "@/hooks/useContent";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
@@ -45,18 +28,23 @@ import AccentHighlight from "@/components/ui/AccentHighlight";
 
 const VideoTestimonials = dynamic(() => import("@/components/sections/VideoTestimonials"), { ssr: false });
 
-// ── Drawing Animation for Hand-Drawn SVG Underlines ────────────────
-const drawVariants = {
-  hidden: { pathLength: 0 },
-  visible: (custom: { delay: number; duration: number }) => ({
-    pathLength: 1,
-    transition: {
-      duration: custom?.duration ?? 0.4,
-      delay: custom?.delay ?? 0.1,
-      ease: "easeOut" as any
-    }
-  })
+// Resolves a lucide icon by the name stored in the CMS ("Monitor", "MousePointerClick", ...),
+// tolerating a lower-case first letter; anything unknown falls back to `fallback`.
+const getIcon = (name?: string, fallback: any = Globe): any => {
+  if (!name || typeof name !== "string") return fallback;
+  const icons = LucideIcons as any;
+  const Comp = icons[name] || icons[name.charAt(0).toUpperCase() + name.slice(1)];
+  return Comp && (typeof Comp === "function" || (typeof Comp === "object" && Comp.$$typeof)) ? Comp : fallback;
 };
+
+// NOTE on headings: an "Intro" + accent-phrase heading is stored as two fields. The stored intro
+// rarely carries a trailing space (an admin can't see one in the input), which used to glue the
+// words together ("...WithZero Fluff"). Every such heading below therefore renders an explicit
+// {" "} between the two parts; HTML collapses a doubled space, so old data with a trailing space
+// is unaffected.
+
+// The site's canonical contact page; the navbar's own CTA link wins when the admin set one.
+const DEFAULT_CONTACT_HREF = "/contact-us";
 
 const TickerDigit = ({ digit }: { digit: number }) => {
   const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -99,9 +87,12 @@ const TickerDigit = ({ digit }: { digit: number }) => {
 };
 
 const DigitTicker = ({ value }: { value: number }) => {
-  const digits = String(value || 0).split("");
+  const shown = value || 0;
+  const digits = String(shown).split("");
   return (
-    <span className="inline-flex items-baseline">
+    <>
+    <span className="sr-only">{shown}</span>
+    <span className="inline-flex items-baseline" aria-hidden="true">
       {digits.map((digit, idx) => {
         if (isNaN(Number(digit))) {
           return (
@@ -117,6 +108,7 @@ const DigitTicker = ({ value }: { value: number }) => {
         return <TickerDigit key={idx} digit={Number(digit)} />;
       })}
     </span>
+    </>
   );
 };
 
@@ -125,13 +117,15 @@ const DigitTicker = ({ value }: { value: number }) => {
 // Parent must be `relative` + `overflow-hidden` with a fixed height/aspect.
 const FullImage = ({ src, alt, className = "" }: { src: string; alt?: string; className?: string }) => (
   <>
-    <img src={src} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-70 blur-2xl pointer-events-none" />
-    <img src={src} alt={alt || ""} className={`relative h-full w-full object-contain ${className}`} />
+    <img src={src} alt="" aria-hidden="true" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-70 blur-2xl pointer-events-none" />
+    <img src={src} alt={alt || ""} loading="lazy" decoding="async" className={`relative h-full w-full object-contain ${className}`} />
   </>
 );
 
 export default function NewAboutTemplate({ pageData }: { pageData?: any; params?: any }) {
   const content = useContent();
+  // The page document's own content is the source. `content.newAboutPage` is a legacy SiteContent
+  // fallback that nothing writes any more (kept so an old install still renders).
   const rawAbout = pageData?.content || content?.newAboutPage || {};
 
   // Safely extract all 11 sections
@@ -140,6 +134,12 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
   const whoWeAre = rawAbout.whoWeAre || {};
   const philosophy = rawAbout.philosophy || {};
   const servicesDirectory = rawAbout.servicesDirectory || {};
+  const methodology = rawAbout.methodology || {};
+  const domainExpertise = rawAbout.domainExpertise || {};
+  const whyChooseUs = rawAbout.whyChooseUs || {};
+  const executiveLeadership = rawAbout.executiveLeadership || {};
+  const reviews = rawAbout.reviews || {};
+  const ctaBanner = rawAbout.ctaBanner || {};
 
   const allMasterServices = Array.isArray(content?.services?.services)
     ? content.services.services
@@ -153,117 +153,144 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
     ? servicesDirectory.stages
     : (Array.isArray(servicesDirectory.selectedServices) ? servicesDirectory.selectedServices : []);
 
-  const stagesList = rawStages.map((item: any, idx: number) => {
-    const matchedMaster = allMasterServices.find((s: any) =>
-      (item.serviceId && (s.id === item.serviceId || s._id === item.serviceId)) ||
-      (item.slug && s.slug === item.slug) ||
-      (item.title && s.title?.toLowerCase() === item.title?.toLowerCase()) ||
-      (item.name && (s.title?.toLowerCase() === item.name?.toLowerCase() || s.name?.toLowerCase() === item.name?.toLowerCase()))
-    ) || {};
-
-    const full = { ...matchedMaster, ...item };
-
-    const title = full.title || full.name || "";
-    const category = (full.category && full.category !=="DIGITAL ENGINEERING")
-      ? full.category
-      : (full.tag || (full.badge && full.badge !=="CORE CAPABILITY" ? full.badge : "") || "");
-    const badge = (full.badge && full.badge !=="CORE CAPABILITY" && full.badge !== category)
-      ? full.badge
-      : (full.tag && full.tag !== category ? full.tag : "");
-    // Prefer the LIVE master service's image over the frozen per-page snapshot (`item`) so that
-    // updating a service's image in the Services admin is reflected here without re-selecting it.
-    // Fall back to the stored snapshot only when there's no live master match (manually-added stage).
-    const image = matchedMaster.image || matchedMaster.hero?.bgImage || matchedMaster.hero?.backgroundImage || matchedMaster.deepDive?.image || matchedMaster.overviewImage || matchedMaster.caseStudy?.image
-      || full.image || full.hero?.bgImage || full.hero?.backgroundImage || full.deepDive?.image || full.overviewImage || full.caseStudy?.image || "";
-    const desc = full.desc || full.description || full.hero?.description || full.tagline || full.shortDescription || full.deepDive?.desc || "";
-    const deliverables = Array.isArray(full.deliverables) && full.deliverables.length > 0
-      ? full.deliverables
-      : (Array.isArray(full.hero?.benefits) && full.hero.benefits.length > 0
-        ? full.hero.benefits
-        : (Array.isArray(full.features) && full.features.length > 0
-          ? full.features
-          : (Array.isArray(full.whatIncluded?.pillars)
-            ? full.whatIncluded.pillars.map((p: any) => p.title || p.desc).filter(Boolean)
-            : [])));
-    const navTitle = full.navTitle || title;
-    const navTag = full.navTag || (category ? category.toUpperCase() : `STAGE 0${idx + 1}`);
-    const iconName = full.iconName || full.icon || "Code";
-    const slug = full.slug || "";
-
-    return {
-      id: full.id || `0${idx + 1}`,
-      title,
-      category,
-      badge,
-      image,
-      desc,
-      deliverables,
-      navTitle,
-      navTag,
-      iconName,
-      slug
+  // Stages are the services picked in the editor. The editor stores a per-page SNAPSHOT of each
+  // service, but the admin can't edit that snapshot anywhere, so the LIVE catalog entry wins
+  // (rename/re-image/re-describe a service in the Services admin and this page follows) and the
+  // snapshot is only the fallback for a service that has since left the catalog. Drafts and
+  // trashed services are skipped: their /services/<slug>/ page 404s.
+  const stagesList = useMemo(() => {
+    const firstText = (...vals: any[]): string => {
+      for (const v of vals) if (typeof v === "string" && v.trim()) return v;
+      return "";
     };
-  });
-  const methodology = rawAbout.methodology || {};
-  const domainExpertise = rawAbout.domainExpertise || {};
-  const whyChooseUs = rawAbout.whyChooseUs || {};
-  const executiveLeadership = rawAbout.executiveLeadership || {};
-  const reviews = rawAbout.reviews || {};
-  const ctaBanner = rawAbout.ctaBanner || {};
+    const pickImage = (o: any) => firstText(o?.image, o?.hero?.bgImage, o?.hero?.backgroundImage, o?.deepDive?.image, o?.overviewImage, o?.caseStudy?.image);
+    const pickDesc = (o: any) => firstText(o?.desc, o?.description, o?.hero?.description, o?.tagline, o?.shortDescription, o?.deepDive?.desc);
+    const pickList = (o: any): any[] => {
+      if (Array.isArray(o?.deliverables) && o.deliverables.length > 0) return o.deliverables;
+      if (Array.isArray(o?.hero?.benefits) && o.hero.benefits.length > 0) return o.hero.benefits;
+      if (Array.isArray(o?.features) && o.features.length > 0) return o.features;
+      if (Array.isArray(o?.whatIncluded?.pillars)) return o.whatIncluded.pillars.map((p: any) => p?.title || p?.desc).filter(Boolean);
+      return [];
+    };
+
+    const out: any[] = [];
+    rawStages.forEach((item: any) => {
+      if (!item || typeof item !== "object") return;
+      const matchedMaster = allMasterServices.find((s: any) =>
+        (item.serviceId && (s.id === item.serviceId || s._id === item.serviceId)) ||
+        (item.slug && s.slug === item.slug) ||
+        (item.title && s.title?.toLowerCase() === item.title?.toLowerCase()) ||
+        (item.name && (s.title?.toLowerCase() === item.name?.toLowerCase() || s.name?.toLowerCase() === item.name?.toLowerCase()))
+      );
+      if (matchedMaster && (matchedMaster.status === "draft" || matchedMaster.isTrashed)) return;
+
+      const live: any = matchedMaster || {};
+      const full: any = { ...item, ...live };
+
+      const title = firstText(live.title, live.name, item.title, item.name);
+      if (!title) return; // nothing meaningful to show for this stage
+      const category = (full.category && full.category !== "DIGITAL ENGINEERING")
+        ? full.category
+        : (full.tag || (full.badge && full.badge !== "CORE CAPABILITY" ? full.badge : "") || "");
+      const badge = (full.badge && full.badge !== "CORE CAPABILITY" && full.badge !== category)
+        ? full.badge
+        : (full.tag && full.tag !== category ? full.tag : "");
+      const liveList = pickList(live);
+      const deliverables = (liveList.length > 0 ? liveList : pickList(item))
+        .map((d: any) => (typeof d === "string" ? d : d?.title || d?.name || d?.label || ""))
+        .filter((d: any) => typeof d === "string" && d.trim());
+      const pos = String(out.length + 1).padStart(2, "0");
+
+      out.push({
+        // Display number + anchor id come from the position, not from the stored snapshot id.
+        id: pos,
+        title,
+        category,
+        badge,
+        image: pickImage(live) || pickImage(item),
+        desc: (pickDesc(live) || pickDesc(item)).replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim(),
+        deliverables,
+        navTitle: firstText(live.navTitle, live.title, live.name, item.navTitle, title),
+        navTag: firstText(live.navTag, /^STAGE \d+$/i.test(item.navTag || "") ? "" : item.navTag) || (category ? String(category).toUpperCase() : `STAGE ${pos}`),
+        iconName: firstText(live.iconName, live.icon, item.iconName, item.icon) || "Code",
+        slug: firstText(live.slug, item.slug)
+      });
+    });
+    return out;
+  }, [rawStages, allMasterServices]);
 
   const [activeService, setActiveService] = useState(0);
-  const sectionRef = useRef<HTMLDivElement>(null);
 
-  const iconMap: Record<string, any> = {
-    Globe,
-    Rocket,
-    Heart,
-    Trophy,
-    Palette,
-    Code,
-    Search,
-    Megaphone,
-    Users,
-    Video: Code,
-    Compass,
-    ShieldCheck,
-    ShoppingCart,
-    Building2,
-    GraduationCap,
-    Coins: Trophy,
-    Database,
-    Utensils,
-    Scale,
-    Target,
-    Lightbulb,
-    MessageSquare,
-    Clock,
-    Headphones,
-    Handshake,
-    TrendingUp,
-    Zap
+  // ── Links ────────────────────────────────────────────────────────────────────
+  // This page has no on-page contact form and the Services Directory only exists when services
+  // are selected, so "#contact" / "#services-directory" / "#" would be dead anchors. Resolve them.
+  const navCta = (content as any)?.navbar?.ctaLink;
+  const contactHref = typeof navCta === "string" && /^(\/|https?:\/\/)/i.test(navCta.trim()) ? navCta.trim() : DEFAULT_CONTACT_HREF;
+  const servicesVisible = servicesDirectory.enabled !== false && stagesList.length > 0;
+  // A button link with a fallback (empty / "#" / dead anchor -> fallback).
+  const resolveHref = (raw: any, fallback: string): string => {
+    const v = typeof raw === "string" ? raw.trim() : "";
+    if (!v || v === "#") return fallback;
+    if (v === "#contact") return contactHref;
+    if (v === "#services-directory" && !servicesVisible) return fallback;
+    return v;
   };
+  // Secondary buttons have no sensible default destination: no link -> the button is not shown.
+  const explicitHref = (raw: any): string => resolveHref(raw, "");
 
-  const getIcon = (name?: string, fallback = Globe) => {
-    if (!name) return fallback;
-    return iconMap[name] || fallback;
+  // ── Section visibility ───────────────────────────────────────────────────────
+  // `enabled !== false` is the admin toggle. On top of that, a section with nothing but its
+  // default heading (a brand-new page has `content: {}`) is skipped instead of rendering a hollow
+  // block. Rich-text fields count as empty when they hold only blank tags.
+  const hasText = (v: any) => typeof v === "string" && v.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim().length > 0;
+  const listOf = (v: any): any[] => (Array.isArray(v) ? v : []);
+  const founderBio: string =
+    executiveLeadership.bioContent ||
+    executiveLeadership.bio ||
+    [executiveLeadership.bioParagraph1, executiveLeadership.bioParagraph2].filter(Boolean).map((p: string) => `<p>${p}</p>`).join("");
+  const whoRows = listOf(whoWeAre.rows).filter((r: any) => r && (hasText(r.title) || hasText(r.desc)));
+  const statMetrics = listOf(stats.metrics).filter((m: any) => m && hasText(m.label));
+  const statDisciplines = listOf(stats.expertiseList).filter((e: any) => e && hasText(e.label));
+  const showPillars = {
+    mission: !!philosophy.mission && philosophy.mission.enabled !== false,
+    vision: !!philosophy.vision && philosophy.vision.enabled !== false,
+    values: !!philosophy.values && philosophy.values.enabled !== false
   };
+  // A pillar's image/badge panel is only drawn when it has an image or a badge; otherwise the text
+  // uses the full row instead of sitting next to an empty dark box.
+  const pillarHasMedia = {
+    mission: !!(philosophy.mission?.imgSrc || philosophy.mission?.badgeLatency || philosophy.mission?.badgePerformance),
+    vision: !!(philosophy.vision?.imgSrc || philosophy.vision?.badgeAccessibility || philosophy.vision?.badgeLighthouse),
+    values: !!(philosophy.values?.imgSrc || philosophy.values?.badgeSync || philosophy.values?.badgeSprint)
+  };
+  const showStats = stats.enabled !== false && (hasText(stats.description) || statMetrics.length > 0 || statDisciplines.length > 0);
+  const showWhoCollage = !!(whoWeAre.imgAbstract || whoWeAre.imgWorkspace || whoWeAre.imgUiDetail || hasText(whoWeAre.parallaxBadge));
+  const showWhoWeAre = whoWeAre.enabled !== false && (hasText(whoWeAre.description) || whoRows.length > 0 || !!(whoWeAre.imgAbstract || whoWeAre.imgWorkspace || whoWeAre.imgUiDetail) || hasText(whoWeAre.parallaxBadge));
+  const showPhilosophy = philosophy.enabled !== false && (showPillars.mission || showPillars.vision || showPillars.values);
+  const showMethodology = methodology.enabled !== false && (hasText(methodology.description) || listOf(methodology.steps).length > 0);
+  const showDomains = domainExpertise.enabled !== false && (hasText(domainExpertise.description) || listOf(domainExpertise.domains).length > 0);
+  const showWhy = whyChooseUs.enabled !== false && (hasText(whyChooseUs.description) || listOf(whyChooseUs.features).length > 0 || !!whyChooseUs.blueCardImage);
+  const showFounder = executiveLeadership.enabled !== false && (hasText(founderBio) || !!executiveLeadership.portraitSrc || listOf(executiveLeadership.metrics).length > 0 || hasText(executiveLeadership.founderName));
+  const showReviews = reviews.enabled !== false && listOf(reviews.list).length > 0;
+  const ctaPrimaryHref = resolveHref(ctaBanner.ctaPrimaryHref, contactHref);
+  const ctaSecondaryHref = explicitHref(ctaBanner.ctaSecondaryHref);
+  const showCta = ctaBanner.enabled !== false && (hasText(ctaBanner.description) || hasText(ctaBanner.eyebrow) || hasText(ctaBanner.ctaPrimaryText) || (hasText(ctaBanner.ctaSecondaryText) && !!ctaSecondaryHref) || !!ctaBanner.portraitSrc);
+  const heroSecondaryHref = explicitHref(hero.ctaSecondaryHref);
 
+  // Highlights the stage card nearest the top while scrolling. The stage index travels in a
+  // data attribute (not parsed out of the id) so any stage number/anchor scheme works.
+  const stagesCount = stagesList.length;
   useEffect(() => {
-    if (stagesList.length === 0) return;
+    if (!servicesVisible || stagesCount === 0) return;
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries.filter((e) => e.isIntersecting);
         if (visible.length > 0) {
           visible.sort((a, b) => Math.abs(a.boundingClientRect.top) - Math.abs(b.boundingClientRect.top));
-          const topEntry = visible[0];
-          const id = topEntry.target.getAttribute("id");
-          if (id) {
-            const numStr = id.replace("service-stage-", "");
-            const idx = parseInt(numStr, 10) - 1;
-            if (!isNaN(idx) && idx >= 0) {
-              setActiveService(idx);
-            }
+          const raw = visible[0].target.getAttribute("data-stage-index");
+          const idx = raw === null ? NaN : parseInt(raw, 10);
+          if (!isNaN(idx) && idx >= 0) {
+            setActiveService(idx);
           }
         }
       },
@@ -273,15 +300,15 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
       }
     );
 
-    const stages = document.querySelectorAll("[id^='service-stage-']");
-    stages.forEach((s) => observer.observe(s));
+    document.querySelectorAll("[data-stage-index]").forEach((s) => observer.observe(s));
 
     return () => observer.disconnect();
-  }, [stagesList]);
+  }, [servicesVisible, stagesCount]);
 
   return (
     <>
-      <main className="flex-1 w-full bg-white dark:bg-[#080710] text-brand-dark dark:text-white transition-colors duration-300 relative overflow-x-clip">
+      {/* A <div>, not <main>: SiteLayout and the [...slug] route already provide the page's <main> landmark. */}
+      <div className="flex-1 w-full bg-white dark:bg-[#080710] text-brand-dark dark:text-white transition-colors duration-300 relative overflow-x-clip">
 
         {/* Floating Blurred Mesh Blobs */}
         <div className="absolute top-[3%] left-[-15%] w-[50vw] h-[50vw] rounded-full bg-brand-blue/[0.03] dark:bg-brand-blue/[0.06] blur-[120px] pointer-events-none select-none -z-10 animate-float-blob" />
@@ -303,7 +330,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                 initial={{ opacity: 0, y: 25 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="lg:col-span-6 min-w-0 space-y-6 text-left"
+                className={`${hero.heroImage ? "lg:col-span-6" : "lg:col-span-12"} min-w-0 space-y-6 text-left`}
               >
                 <PageBreadcrumbs page={pageData} />
                 {hero.badgeText && (
@@ -316,7 +343,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                 )}
 
                 <h1 className="font-heading text-3xl sm:text-4xl lg:text-[42px] font-black tracking-tight leading-[1.18] text-brand-dark dark:text-white max-w-xl">
-                  {hero.titleIntro || "Architecting Digital Products With"}
+                  {hero.titleIntro || "Architecting Digital Products With"}{" "}
                   <AccentHighlight className="text-brand-blue dark:text-brand-yellow pb-1">
                     {hero.titleHighlight || "Zero Fluff & Pure Precision."}
                   </AccentHighlight>
@@ -331,15 +358,16 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                 <div className="flex flex-wrap items-center gap-4 pt-2">
                   {hero.ctaPrimaryText && (
-                    <CtaButton href={hero.ctaPrimaryHref || "#"}>{hero.ctaPrimaryText}</CtaButton>
+                    <CtaButton href={resolveHref(hero.ctaPrimaryHref, servicesVisible ? "#services-directory" : contactHref)}>{hero.ctaPrimaryText}</CtaButton>
                   )}
 
-                  {hero.ctaSecondaryText && (
-                    <CtaButton href={hero.ctaSecondaryHref || "#"} variant="secondary" icon={<Play className="fill-current ml-0.5" />}>{hero.ctaSecondaryText}</CtaButton>
+                  {hero.ctaSecondaryText && heroSecondaryHref && (
+                    <CtaButton href={heroSecondaryHref} variant="secondary" icon={<Play className="fill-current ml-0.5" />}>{hero.ctaSecondaryText}</CtaButton>
                   )}
                 </div>
               </motion.div>
 
+              {hero.heroImage && (
               <div className="lg:col-span-6 min-w-0 relative w-full h-[320px] sm:h-[420px] md:h-[480px] lg:h-[520px] flex items-center justify-center pt-8 lg:pt-0">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.98, y: 15 }}
@@ -347,15 +375,15 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.25 }}
                   className="relative w-full h-full flex items-center justify-center"
                 >
-                  {hero.heroImage ? (
-                    <img
-                      src={hero.heroImage}
-                      alt={hero.heroImageAlt || "About Hero"}
-                      className="w-full h-full object-contain filter drop-shadow-2xl"
-                    />
-                  ) : null}
+                  <img
+                    src={hero.heroImage}
+                    alt={hero.heroImageAlt || "About Hero"}
+                    decoding="async"
+                    className="w-full h-full object-contain filter drop-shadow-2xl"
+                  />
                 </motion.div>
               </div>
+              )}
             </div>
           </div>
         </section>
@@ -368,7 +396,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
         )}
 
         {/* ── 2. STATS BAR SECTION ── */}
-        {stats?.enabled !== false && (
+        {showStats && (
         <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/10 dark:bg-white/[0.005] section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-stretch">
@@ -399,13 +427,13 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   )}
                 </div>
 
-                {Array.isArray(stats.expertiseList) && stats.expertiseList.length > 0 && (
+                {statDisciplines.length > 0 && (
                   <div className="pt-6 mt-8 border-t border-brand-zinc-100 dark:border-white/5 w-full select-none">
                     <span className="text-[7.5px] font-mono tracking-widest text-brand-blue dark:text-brand-yellow uppercase font-black block mb-3">
                       {stats.expertiseHeader || "CORE DISCIPLINES"}
                     </span>
                     <div className="grid grid-cols-2 gap-y-3.5 gap-x-6">
-                      {stats.expertiseList.map((item: any, idx: number) => (
+                      {statDisciplines.map((item: any, idx: number) => (
                         <div key={idx} className="flex items-center gap-2 text-brand-dark dark:text-white text-[9.5px] font-bold uppercase tracking-wider">
                           <span className="text-[8px] font-mono text-brand-zinc-400 dark:text-zinc-500 font-normal">{item.num || `0${idx + 1}`}</span>
                           {item.label}
@@ -417,7 +445,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
               </div>
 
               <div className="lg:col-span-8 min-w-0 grid grid-cols-2 gap-x-12 gap-y-12 sm:gap-x-16 border-t lg:border-t-0 lg:border-l border-brand-zinc-200/60 dark:border-white/5 pt-10 lg:pt-0 lg:pl-16">
-                {(Array.isArray(stats.metrics) ? stats.metrics : []).map((metric: any, idx: number) => {
+                {statMetrics.map((metric: any, idx: number) => {
                   const MetricIcon = getIcon(metric.iconName, Globe);
                   return (
                     <div key={idx} className="flex flex-col items-start relative w-full group hover:-translate-y-1 transition-transform duration-350 ease-out">
@@ -451,7 +479,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
         )}
 
         {/* ── 3. WHO WE ARE SECTION ── */}
-        {whoWeAre?.enabled !== false && (
+        {showWhoWeAre && (
         <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] section-y">
           {whoWeAre.watermark && (
             <div className="absolute right-[5%] top-[10%] text-[15vw] sm:text-[12vw] font-heading font-black tracking-tighter text-[#0306AC]/[0.015] dark:text-white/[0.01] pointer-events-none select-none z-0 leading-none">
@@ -461,7 +489,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
-              <div className="lg:col-span-6 min-w-0 space-y-10 text-left">
+              <div className={`${showWhoCollage ? "lg:col-span-6" : "lg:col-span-12"} min-w-0 space-y-10 text-left`}>
                 <div className="space-y-4">
                   {whoWeAre.eyebrow && (
                     <div className="eyebrow-pill">
@@ -474,8 +502,8 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   )}
 
                   <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
-                    {whoWeAre.titleIntro || "Built by Engineers, "}
- <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+                    {whoWeAre.titleIntro || "Built by Engineers,"}{" "}
+                    <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
                       {whoWeAre.titleHighlight || "Guided by Craft."}
                     </AccentHighlight>
                   </h2>
@@ -488,21 +516,25 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   )}
                 </div>
 
-                {Array.isArray(whoWeAre.rows) && whoWeAre.rows.length > 0 && (
+                {whoRows.length > 0 && (
                   <div className="border-t border-brand-zinc-200 dark:border-white/10 divide-y divide-brand-zinc-200 dark:divide-white/10 w-full">
-                    {whoWeAre.rows.map((row: any, idx: number) => (
-                      <div key={idx} className="group relative py-6 flex items-start justify-between gap-6 cursor-pointer overflow-hidden transition-all duration-300">
+                    {whoRows.map((row: any, idx: number) => (
+                      <div key={idx} className="group relative py-6 flex items-start justify-between gap-6 overflow-hidden transition-all duration-300">
                         <div className="absolute inset-y-0 left-0 w-0 bg-zinc-50 dark:bg-white/[0.02] group-hover:w-full transition-all duration-500 ease-out -z-10" />
 
                         <div className="flex items-start gap-4 sm:gap-6">
                           <span className="text-[10px] font-mono font-bold text-[#0306AC] dark:text-[#E9BD36] mt-1 select-none">{row.num || `0${idx + 1}`}</span>
                           <div className="space-y-1">
+                            {hasText(row.title) && (
                             <h3 className="text-xs sm:text-sm font-black uppercase tracking-wider text-brand-dark dark:text-white group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors duration-300">
                               {row.title}
                             </h3>
+                            )}
+                            {hasText(row.desc) && (
                             <div className="text-[10px] sm:text-[11px] text-brand-zinc-550 dark:text-zinc-300 font-medium leading-normal max-w-md transition-colors duration-300 group-hover:text-brand-dark dark:group-hover:text-white">
                               <RichTextRenderer content={row.desc} />
                             </div>
+                            )}
                           </div>
                         </div>
                         <div className="h-7 w-7 rounded-full border border-brand-zinc-300 dark:border-white/10 flex items-center justify-center text-brand-zinc-400 dark:text-zinc-500 group-hover:border-[#0306AC] dark:group-hover:border-[#E9BD36] group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] group-hover:rotate-45 transition-all duration-300 shrink-0">
@@ -514,6 +546,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                 )}
               </div>
 
+              {showWhoCollage && (
               <div className="lg:col-span-6 min-w-0 relative h-[380px] sm:h-[480px] w-full flex items-center justify-center select-none">
                 <div className="relative w-full h-full max-w-[480px]">
                   {whoWeAre.imgAbstract && (
@@ -553,15 +586,15 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   )}
                 </div>
               </div>
+              )}
             </div>
           </div>
         </section>
         )}
 
         {/* ── 4. MISSION & VISION SECTION ── */}
-        {philosophy?.enabled !== false && (
+        {showPhilosophy && (
         <section
-          ref={sectionRef}
           className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] transition-colors duration-300 section-y"
         >
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808007_1px,transparent_1px),linear-gradient(to_bottom,#80808007_1px,transparent_1px)] bg-[size:48px_48px] pointer-events-none -z-10" />
@@ -579,8 +612,8 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
               )}
 
               <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
-                {philosophy.titleIntro || "The Three Principles That"}
- <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+                {philosophy.titleIntro || "The Three Principles That"}{" "}
+                <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
                   {philosophy.titleHighlight || "Drive Our Work"}
                 </AccentHighlight>
               </h2>
@@ -588,9 +621,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
             <div className="space-y-32 sm:space-y-44">
               {/* Mission */}
-              {philosophy.mission && (
+              {showPillars.mission && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center group">
-                  <div className="lg:col-span-5 min-w-0 flex flex-col justify-center space-y-6 text-left order-2 lg:order-1">
+                  <div className={`${pillarHasMedia.mission ? "lg:col-span-5" : "lg:col-span-12 max-w-3xl"} min-w-0 flex flex-col justify-center space-y-6 text-left order-2 lg:order-1`}>
                     <div className="flex items-center gap-4">
  <span className="font-cursive text-5xl sm:text-6xl font-black text-brand-zinc-200 dark:text-white/10 group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors duration-500 leading-none select-none">
                         {philosophy.mission.num || "01"}
@@ -633,6 +666,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                     )}
                   </div>
 
+                  {pillarHasMedia.mission && (
                   <div className="lg:col-span-7 min-w-0 order-1 lg:order-2">
                     <div className="aspect-[1.45] w-full rounded-[32px] overflow-hidden border border-brand-zinc-200/80 dark:border-white/10 shadow-sm relative bg-[#090812]">
                       {philosophy.mission.imgSrc && (
@@ -650,12 +684,14 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                       )}
                     </div>
                   </div>
+                  )}
                 </div>
               )}
 
               {/* Vision */}
-              {philosophy.vision && (
+              {showPillars.vision && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center group">
+                  {pillarHasMedia.vision && (
                   <div className="lg:col-span-7 min-w-0">
                     <div className="aspect-[1.45] w-full rounded-[32px] overflow-hidden border border-brand-zinc-200/80 dark:border-white/10 shadow-sm relative bg-[#090812]">
                       {philosophy.vision.imgSrc && (
@@ -673,8 +709,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                       )}
                     </div>
                   </div>
+                  )}
 
-                  <div className="lg:col-span-5 min-w-0 flex flex-col justify-center space-y-6 text-left">
+                  <div className={`${pillarHasMedia.vision ? "lg:col-span-5" : "lg:col-span-12 max-w-3xl"} min-w-0 flex flex-col justify-center space-y-6 text-left`}>
                     <div className="flex items-center gap-4">
  <span className="font-cursive text-5xl sm:text-6xl font-black text-brand-zinc-200 dark:text-white/10 group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors duration-500 leading-none select-none">
                         {philosophy.vision.num || "02"}
@@ -720,9 +757,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
               )}
 
               {/* Values */}
-              {philosophy.values && (
+              {showPillars.values && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center group">
-                  <div className="lg:col-span-5 min-w-0 flex flex-col justify-center space-y-6 text-left order-2 lg:order-1">
+                  <div className={`${pillarHasMedia.values ? "lg:col-span-5" : "lg:col-span-12 max-w-3xl"} min-w-0 flex flex-col justify-center space-y-6 text-left order-2 lg:order-1`}>
                     <div className="flex items-center gap-4">
  <span className="font-cursive text-5xl sm:text-6xl font-black text-brand-zinc-200 dark:text-white/10 group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors duration-500 leading-none select-none">
                         {philosophy.values.num || "03"}
@@ -765,6 +802,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                     )}
                   </div>
 
+                  {pillarHasMedia.values && (
                   <div className="lg:col-span-7 min-w-0 order-1 lg:order-2">
                     <div className="aspect-[1.45] w-full rounded-[32px] overflow-hidden border border-brand-zinc-200/80 dark:border-white/10 shadow-sm relative bg-[#090812]">
                       {philosophy.values.imgSrc && (
@@ -782,6 +820,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                       )}
                     </div>
                   </div>
+                  )}
                 </div>
               )}
             </div>
@@ -790,8 +829,27 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
         )}
 
         {/* ── 5. OUR SERVICES SECTION ──────── */}
-        {(servicesDirectory.enabled !== false && stagesList.length > 0) && (
+        {servicesVisible && (
           <section id="services-directory" className="relative overflow-x-clip border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] section-y">
+            {/* Mobile / tablet heading: the desktop heading lives inside the sticky card, which is hidden below lg */}
+            <div className="lg:hidden mx-auto max-w-7xl px-4 sm:px-6 md:px-12 mb-6 space-y-3 text-left">
+              {servicesDirectory.eyebrow && (
+                <div className="eyebrow-pill">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0306AC] dark:bg-[#E9BD36] opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#0306AC] dark:bg-[#E9BD36]" />
+                  </span>
+                  {servicesDirectory.eyebrow}
+                </div>
+              )}
+              <h2 className="font-heading text-2xl sm:text-3xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
+                {servicesDirectory.titleIntro || "Full-Spectrum Digital"}{" "}
+                <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+                  {servicesDirectory.titleHighlight || "Engineering Services"}
+                </AccentHighlight>
+              </h2>
+            </div>
+
             {/* Mobile Pills */}
             <div className="sticky top-14 sm:top-16 z-30 flex lg:hidden overflow-x-auto no-scrollbar py-3 px-4 gap-2 bg-white/95 dark:bg-[#080710]/95 backdrop-blur-xl border-b border-brand-zinc-200 dark:border-white/10 shadow-sm mb-8 select-none">
               {stagesList.map((item: any, idx: number) => {
@@ -799,9 +857,10 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                 return (
                   <button
                     key={item.id || idx}
+                    type="button"
                     onClick={() => {
                       setActiveService(idx);
-                      const el = document.getElementById(`service-stage-${item.id || idx + 1}`);
+                      const el = document.getElementById(`service-stage-${item.id}`);
                       if (el) {
                         const y = el.getBoundingClientRect().top + window.pageYOffset - 110;
                         window.scrollTo({ top: y, behavior: "smooth" });
@@ -812,8 +871,8 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                       : "bg-zinc-100 text-brand-zinc-600 dark:bg-white/5 dark:text-zinc-400"
                       }`}
                   >
-                    <span>{item.id || `0${idx + 1}`}</span>
-                    <span>{item.navTitle || item.title || item.name}</span>
+                    <span>{item.id}</span>
+                    <span>{item.navTitle || item.title}</span>
                   </button>
                 );
               })}
@@ -836,8 +895,8 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                       )}
 
                       <h2 className="font-heading text-2xl sm:text-3xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
-                        {servicesDirectory.titleIntro || "Full-Spectrum Digital"}
- <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+                        {servicesDirectory.titleIntro || "Full-Spectrum Digital"}{" "}
+                        <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
                           {servicesDirectory.titleHighlight || "Engineering Services"}
                         </AccentHighlight>
                       </h2>
@@ -849,7 +908,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                         return (
                           <a
                             key={item.id || idx}
-                            href={withTrailingSlash(`#service-stage-${item.id || idx + 1}`)}
+                            href={`#service-stage-${item.id}`}
                             className={`py-2.5 px-3.5 rounded-2xl flex items-center justify-between transition-all duration-300 group relative ${isActive
                               ? "bg-[#0306AC] text-white dark:bg-[#E9BD36] dark:text-[#080710] shadow-xl scale-[1.02] font-bold"
                               : "hover:bg-zinc-200/60 dark:hover:bg-white/5 text-brand-zinc-600 dark:text-zinc-400"
@@ -857,12 +916,12 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                             onClick={(e) => {
                               e.preventDefault();
                               setActiveService(idx);
-                              const el = document.getElementById(`service-stage-${item.id || idx + 1}`);
+                              const el = document.getElementById(`service-stage-${item.id}`);
                               if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
                             }}
                           >
                             <div className="flex items-center gap-3">
- <span className={`font-heading text-xs font-black transition-colors ${isActive ? "text-[#E9BD36] dark:text-[#080710]" : "text-brand-zinc-400 dark:text-zinc-400"}`}>{item.id || `0${idx + 1}`}</span>
+ <span className={`font-heading text-xs font-black transition-colors ${isActive ? "text-[#E9BD36] dark:text-[#080710]" : "text-brand-zinc-400 dark:text-zinc-400"}`}>{item.id}</span>
                               <span className="font-heading text-xs tracking-tight">{item.navTitle || item.title}</span>
                             </div>
                             <div className="flex items-center gap-2">
@@ -878,7 +937,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                     {servicesDirectory.consultationBtnText && (
                       <div className="pt-2 border-t border-brand-zinc-200/80 dark:border-white/10">
-                        <CtaButton href={servicesDirectory.consultationBtnHref || "#contact"} fullWidth>{servicesDirectory.consultationBtnText}</CtaButton>
+                        <CtaButton href={resolveHref(servicesDirectory.consultationBtnHref, contactHref)} fullWidth>{servicesDirectory.consultationBtnText}</CtaButton>
                       </div>
                     )}
                   </div>
@@ -890,13 +949,14 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                     const StageIcon = getIcon(stage.iconName, Palette);
                     return (
                       <div
-                        id={`service-stage-${stage.id || idx + 1}`}
+                        id={`service-stage-${stage.id}`}
+                        data-stage-index={idx}
                         key={stage.id || idx}
                         className="rounded-[28px] sm:rounded-[36px] bg-zinc-50/80 dark:bg-[#0c0b18] border border-brand-zinc-200/80 dark:border-white/10 p-5 sm:p-8 lg:p-10 space-y-6 sm:space-y-8 group hover:border-[#0306AC]/60 dark:hover:border-[#E9BD36]/60 transition-all duration-300 shadow-sm hover:shadow-2xl relative overflow-hidden"
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
- <span className="font-cursive text-2xl font-black text-[#0306AC] dark:text-[#E9BD36]">{stage.id || `0${idx + 1}`}</span>
+ <span className="font-cursive text-2xl font-black text-[#0306AC] dark:text-[#E9BD36]">{stage.id}</span>
                             {stage.category ? (
                               <>
                                 <div className="h-[1px] w-6 bg-brand-zinc-300 dark:bg-white/20" />
@@ -926,7 +986,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                         <div className="space-y-3">
                           <h3 className="font-heading text-2xl sm:text-3xl font-black text-brand-dark dark:text-white tracking-tight leading-tight group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors">{stage.title}</h3>
                           {stage.desc && (
-                            <p className="text-xs sm:text-sm text-brand-zinc-600 dark:text-zinc-300 font-sans leading-relaxed">{stage.desc}</p>
+                            <p className="text-xs sm:text-sm text-brand-zinc-600 dark:text-zinc-300 font-sans leading-relaxed line-clamp-5">{stage.desc}</p>
                           )}
                         </div>
 
@@ -942,14 +1002,25 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                             </div>
                           )}
 
-                          <a href={withTrailingSlash(servicesDirectory.getStartedHref || (stage.slug ? `/services/${stage.slug}` : "#contact"))} className="inline-flex items-center gap-2 text-xs font-mono font-black text-brand-dark dark:text-white group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors">
+                          {/* A service links to its own page; a stage without a slug uses the optional fallback link, then the contact page. */}
+                          <Link
+                            href={stage.slug ? `/services/${stage.slug}` : resolveHref(servicesDirectory.getStartedHref, contactHref)}
+                            aria-label={`${servicesDirectory.getStartedText || "Explore Service"}: ${stage.title}`}
+                            className="inline-flex items-center gap-2 text-xs font-mono font-black text-brand-dark dark:text-white group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors"
+                          >
                             <span>{servicesDirectory.getStartedText || "Explore Service"}</span>
                             <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                          </a>
+                          </Link>
                         </div>
                       </div>
                     );
                   })}
+
+                  {servicesDirectory.consultationBtnText && (
+                    <div className="lg:hidden pt-2">
+                      <CtaButton href={resolveHref(servicesDirectory.consultationBtnHref, contactHref)} fullWidth>{servicesDirectory.consultationBtnText}</CtaButton>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -957,7 +1028,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
         )}
 
         {/* ── 6. PROCESS SECTION ──────── */}
-        {methodology?.enabled !== false && (
+        {showMethodology && (
         <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 space-y-16">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 text-left border-b border-brand-zinc-200/80 dark:border-white/10 pb-12">
@@ -972,8 +1043,8 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   </div>
                 )}
                 <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
-                  {methodology.titleIntro || "Engineering Precision From"}
- <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+                  {methodology.titleIntro || "Engineering Precision From"}{" "}
+                  <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
                     {methodology.titleHighlight || "Concept to Production"}
                   </AccentHighlight>
                 </h2>
@@ -994,7 +1065,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   const StepIcon = getIcon(process.iconName, Search);
                   return (
                     <motion.div
-                      key={process.step || idx}
+                      key={idx}
                       initial={{ opacity: 0, y: 30 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true, margin: "-50px" }}
@@ -1005,8 +1076,12 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
  <span className="font-cursive text-4xl font-black text-[#0306AC] dark:text-[#E9BD36]">{process.step || `0${idx + 1}`}</span>
-                            <div className="h-[1px] w-6 bg-brand-zinc-300 dark:bg-white/20" />
-                            <span className="text-[9px] font-mono font-bold text-brand-zinc-400 dark:text-zinc-500 uppercase tracking-widest">{process.badge}</span>
+                            {process.badge && (
+                              <>
+                                <div className="h-[1px] w-6 bg-brand-zinc-300 dark:bg-white/20" />
+                                <span className="text-[9px] font-mono font-bold text-brand-zinc-400 dark:text-zinc-500 uppercase tracking-widest">{process.badge}</span>
+                              </>
+                            )}
                           </div>
                           <div className="h-12 w-12 rounded-2xl bg-[#0306AC]/10 dark:bg-white/10 border border-[#0306AC]/15 dark:border-white/15 flex items-center justify-center text-[#0306AC] dark:text-[#E9BD36] group-hover:scale-110 group-hover:bg-[#0306AC] group-hover:text-white dark:group-hover:bg-[#E9BD36] dark:group-hover:text-brand-dark transition-all duration-300 shadow-md">
                             <StepIcon className="h-5 w-5" />
@@ -1015,10 +1090,12 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                         <div className="space-y-3">
                           <h3 className="font-heading text-xl font-black text-brand-dark dark:text-white tracking-tight group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors">{process.title}</h3>
-                          <RichTextRenderer
-                            content={process.desc}
-                            className="text-xs sm:text-sm text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed"
-                          />
+                          {hasText(process.desc) && (
+                            <RichTextRenderer
+                              content={process.desc}
+                              className="text-xs sm:text-sm text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed"
+                            />
+                          )}
                         </div>
                       </div>
 
@@ -1048,7 +1125,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
         )}
 
         {/* ── 7. DOMAIN EXPERTISE SECTION ──────── */}
-        {domainExpertise?.enabled !== false && (
+        {showDomains && (
         <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 space-y-16">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 text-left border-b border-brand-zinc-200/80 dark:border-white/10 pb-12">
@@ -1063,8 +1140,8 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   </div>
                 )}
                 <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
-                  {domainExpertise.titleIntro || "Deep Experience Across"}
- <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+                  {domainExpertise.titleIntro || "Deep Experience Across"}{" "}
+                  <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
                     {domainExpertise.titleHighlight || "Diverse Industries"}
                   </AccentHighlight>
                 </h2>
@@ -1089,7 +1166,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                   return (
                     <motion.div
-                      key={domain.id || idx}
+                      key={idx}
                       initial={{ opacity: 0, y: 30 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true, margin: "-50px" }}
@@ -1119,10 +1196,12 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                               domain.title
                             )}
                           </h3>
-                          <RichTextRenderer
-                            content={domain.desc}
-                            className="text-xs text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed relative z-20 pointer-events-none [&_a]:pointer-events-auto"
-                          />
+                          {hasText(domain.desc) && (
+                            <RichTextRenderer
+                              content={domain.desc}
+                              className="text-xs text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed relative z-20 pointer-events-none [&_a]:pointer-events-auto"
+                            />
+                          )}
                         </div>
                       </div>
 
@@ -1146,7 +1225,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
         )}
 
         {/* ── 8. WHY BUSINESSES CHOOSE US SECTION ──────── */}
-        {whyChooseUs?.enabled !== false && (
+        {showWhy && (
         <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 space-y-16">
             <div className="text-center flex flex-col items-center max-w-3xl mx-auto space-y-4">
@@ -1161,8 +1240,8 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
               )}
 
               <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
-                {whyChooseUs.titleIntro || "Why Visionary Leaders"}
- <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+                {whyChooseUs.titleIntro || "Why Visionary Leaders"}{" "}
+                <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
                   {whyChooseUs.titleHighlight || "Choose Mohsin Designs"}
                 </AccentHighlight>
               </h2>
@@ -1203,10 +1282,12 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                       <div>
                         <div className="h-[2.5px] w-6 bg-[#0306AC] dark:bg-[#E9BD36] mb-3" />
                         <h3 className="font-heading font-extrabold text-base text-brand-dark dark:text-white tracking-tight mb-2">{feat.title}</h3>
-                        <RichTextRenderer
-                          content={feat.desc}
-                          className="text-xs text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed"
-                        />
+                        {hasText(feat.desc) && (
+                          <RichTextRenderer
+                            content={feat.desc}
+                            className="text-xs text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed"
+                          />
+                        )}
                       </div>
                     </div>
                   );
@@ -1218,19 +1299,19 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
         )}
 
         {/* ── 9. ABOUT FOUNDER SECTION ──────── */}
-        {executiveLeadership?.enabled !== false && (
+        {showFounder && (
         <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
+              {executiveLeadership.portraitSrc && (
               <div className="lg:col-span-5 min-w-0 flex justify-center">
-                {executiveLeadership.portraitSrc && (
                   <div className="relative aspect-[4/5] w-full max-w-[440px] rounded-[32px] overflow-hidden shadow-2xl border border-brand-zinc-200/60 dark:border-white/10 group">
-                    <FullImage src={executiveLeadership.portraitSrc} alt={executiveLeadership.portraitAlt || "Founder"} className="group-hover:scale-[1.03] transition-transform duration-700 pointer-events-none" />
+                    <FullImage src={executiveLeadership.portraitSrc} alt={executiveLeadership.portraitAlt || executiveLeadership.founderName || "Founder"} className="group-hover:scale-[1.03] transition-transform duration-700 pointer-events-none" />
                   </div>
-                )}
               </div>
+              )}
 
-              <div className="lg:col-span-7 min-w-0 space-y-8 text-left">
+              <div className={`${executiveLeadership.portraitSrc ? "lg:col-span-7" : "lg:col-span-12 max-w-4xl"} min-w-0 space-y-8 text-left`}>
                 <div className="space-y-4">
                   {executiveLeadership.eyebrow && (
                     <div className="eyebrow-pill">
@@ -1243,26 +1324,33 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   )}
 
                   <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
-                    {executiveLeadership.titleIntro || "Driven by Vision, "}
- <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+                    {executiveLeadership.titleIntro || "Driven by Vision,"}{" "}
+                    <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
                       {executiveLeadership.titleHighlight || "Grounded in Craft"}
                     </AccentHighlight>
                   </h2>
+
+                  {(hasText(executiveLeadership.founderName) || hasText(executiveLeadership.founderTitle)) && (
+                    <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 pt-1">
+                      {hasText(executiveLeadership.founderName) && (
+                        <span className="font-heading text-lg sm:text-xl font-black text-brand-dark dark:text-white">{executiveLeadership.founderName}</span>
+                      )}
+                      {hasText(executiveLeadership.founderTitle) && (
+                        <span className="text-[10px] sm:text-[11px] font-mono font-bold uppercase tracking-widest text-[#0306AC] dark:text-[#E9BD36]">{executiveLeadership.founderTitle}</span>
+                      )}
+                    </p>
+                  )}
                 </div>
 
-                <div className="space-y-4 text-base sm:text-lg font-sans leading-relaxed text-brand-zinc-600 dark:text-zinc-300">
-                  <RichTextRenderer
-                    content={
-                      executiveLeadership.bioContent ||
-                      executiveLeadership.bio ||
-                      [executiveLeadership.bioParagraph1, executiveLeadership.bioParagraph2].filter(Boolean).map((p: string) => `<p>${p}</p>`).join("")
-                    }
-                  />
-                </div>
+                {hasText(founderBio) && (
+                  <div className="space-y-4 text-base sm:text-lg font-sans leading-relaxed text-brand-zinc-600 dark:text-zinc-300">
+                    <RichTextRenderer content={founderBio} />
+                  </div>
+                )}
 
-                {Array.isArray(executiveLeadership.metrics) && executiveLeadership.metrics.length > 0 && (
-                  <div className="grid grid-cols-3 gap-8 border-t border-brand-zinc-200/80 dark:border-white/10 pt-8">
-                    {executiveLeadership.metrics.map((m: any, idx: number) => (
+                {listOf(executiveLeadership.metrics).length > 0 && (
+                  <div className="grid grid-cols-3 gap-4 sm:gap-8 border-t border-brand-zinc-200/80 dark:border-white/10 pt-8">
+                    {listOf(executiveLeadership.metrics).map((m: any, idx: number) => (
                       <div key={idx} className="space-y-1 text-left">
  <div className="font-cursive text-4xl sm:text-5xl font-black text-[#0306AC] dark:text-[#E9BD36]">{m.value}</div>
                         <span className="text-[10px] font-mono font-bold text-brand-dark dark:text-white uppercase tracking-wider block">{m.label}</span>
@@ -1277,21 +1365,12 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
         )}
 
         {/* ── 10. REVIEWS CAROUSEL ──────── */}
-        {reviews?.enabled !== false && (
+        {showReviews && (
           <ReviewsCarousel reviewsData={reviews} />
         )}
 
-        {/* Cursive Font Injector */}
-        <style dangerouslySetInnerHTML={{
-          __html: `
-          @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
-          .font-cursive {
-            font-family: 'Dancing Script', cursive;
-          }
-        `}} />
-
         {/* ── 11. CTA BANNER SECTION ──────── */}
-        {ctaBanner?.enabled !== false && (
+        {showCta && (
         <section className="relative overflow-hidden bg-white dark:bg-[#080710] section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
             <div className="cta-banner-card">
@@ -1307,9 +1386,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                 )}
 
                 <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.18] tracking-tight text-white">
-                  {ctaBanner.titleIntro || "Let's Engineer Something"}
+                  {ctaBanner.titleIntro || "Let's Engineer Something"}{" "}
                   <span className="inline-block">
-                    {ctaBanner.titleWord1 || "Truly"}
+                    {ctaBanner.titleWord1 || "Truly"}{" "}
                     <AccentHighlight className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
                       {ctaBanner.titleWord2 || "Remarkable."}
                     </AccentHighlight>
@@ -1325,11 +1404,11 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
                 <div className="flex items-center gap-4 flex-wrap pt-2">
                   {ctaBanner.ctaPrimaryText && (
-                    <CtaButton href={ctaBanner.ctaPrimaryHref || "#contact"}>{ctaBanner.ctaPrimaryText}</CtaButton>
+                    <CtaButton href={ctaPrimaryHref}>{ctaBanner.ctaPrimaryText}</CtaButton>
                   )}
 
-                  {ctaBanner.ctaSecondaryText && (
-                    <CtaButton href={ctaBanner.ctaSecondaryHref || "#"} variant="secondary" icon={<Play className="fill-current ml-0.5" />}>{ctaBanner.ctaSecondaryText}</CtaButton>
+                  {ctaBanner.ctaSecondaryText && ctaSecondaryHref && (
+                    <CtaButton href={ctaSecondaryHref} variant="secondary" icon={<Play className="fill-current ml-0.5" />}>{ctaBanner.ctaSecondaryText}</CtaButton>
                   )}
                 </div>
               </div>
@@ -1338,7 +1417,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                 <div className="absolute bottom-0 w-[320px] h-[320px] bg-gradient-to-t from-[#020485] to-[#0408d9] rounded-full opacity-90 border border-white/20 shadow-2xl" />
                 {ctaBanner.portraitSrc && (
                   <div className="relative z-10 w-[280px] h-[370px] self-end drop-shadow-2xl overflow-hidden rounded-t-[32px] border-t border-l border-r border-white/25 shadow-2xl">
-                    <Image src={ctaBanner.portraitSrc} alt={ctaBanner.portraitAlt || "Portrait"} width={320} height={420} className="w-full h-full object-cover object-top filter contrast-[1.05]" />
+                    <img src={ctaBanner.portraitSrc} alt={ctaBanner.portraitAlt || ""} loading="lazy" decoding="async" className="w-full h-full object-cover object-top filter contrast-[1.05]" />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#010356]/80 via-transparent to-transparent pointer-events-none" />
                   </div>
                 )}
@@ -1349,18 +1428,82 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
         </section>
         )}
 
-      </main>
+      </div>
     </>
   );
 }
 
 /* ── Inline Reviews Showcase Component ── */
+
+// One review card. Both marquee rows render this same card (they used to be two hand-copied
+// blocks that had drifted: the second row coloured the impact badge differently).
+function ReviewCard({ r }: { r: any }) {
+  const initial = (r?.name ? String(r.name).trim().charAt(0).toUpperCase() : "") || (typeof r?.initial === "string" ? r.initial.trim() : "");
+  return (
+    <div className="w-[360px] sm:w-[420px] shrink-0 p-7 sm:p-8 rounded-[32px] bg-white dark:bg-[#0c0b18] border border-brand-zinc-200/90 dark:border-white/10 shadow-sm relative overflow-hidden flex flex-col justify-between group select-none">
+      <div className="space-y-4 relative z-10 text-left">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex gap-1 text-amber-400" aria-hidden="true">
+            {[...Array(5)].map((_, si) => (
+              <Star key={si} className="h-3.5 w-3.5 fill-current" />
+            ))}
+          </div>
+          {r?.tag && (
+            <span className="text-[9px] font-mono font-bold text-[#0306AC] dark:text-[#E9BD36] bg-[#0306AC]/10 dark:bg-white/10 border border-[#0306AC]/20 dark:border-white/15 px-3 py-1 rounded-full uppercase tracking-wider">
+              ⚡ {r.tag}
+            </span>
+          )}
+        </div>
+
+        {r?.quote && (
+          <RichTextRenderer
+            content={r.quote}
+            className="text-xs sm:text-sm font-sans font-medium text-brand-zinc-700 dark:text-zinc-200 leading-relaxed pt-1"
+          />
+        )}
+
+        {r?.impact && (
+          <div className="inline-flex items-center gap-2 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1.5 text-[9.5px] font-mono font-bold text-emerald-600 dark:text-emerald-400">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span>{r.impact}</span>
+          </div>
+        )}
+      </div>
+
+      {(r?.name || r?.role || r?.company) && (
+        <div className="pt-5 border-t border-brand-zinc-200/80 dark:border-white/10 mt-6 relative z-10">
+          <div className="flex items-center gap-3.5 text-left">
+            {initial && (
+              <div className="h-10 w-10 rounded-full flex items-center justify-center font-heading font-black text-xs shadow-md shrink-0 border border-white/20" style={{ backgroundColor: r.accent === "#E9BD36" ? "#E9BD36" : "#0306AC", color: r.accent === "#E9BD36" ? "#080710" : "#ffffff" }}>
+                {initial}
+              </div>
+            )}
+            <div>
+              {r?.name && <span className="block text-xs font-heading font-black text-brand-dark dark:text-white uppercase tracking-wider leading-none">{r.name}</span>}
+              {r?.role && <span className="block text-[9.5px] font-mono font-bold text-[#0306AC] dark:text-[#E9BD36] mt-1 leading-none">{r.role}</span>}
+              {r?.company && <span className="block text-[8.5px] font-sans text-brand-zinc-400 dark:text-zinc-400 mt-0.5 leading-none">{r.company}</span>}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ReviewsCarousel({ reviewsData }: { reviewsData: any }) {
-  const reviewsList = Array.isArray(reviewsData?.list) ? reviewsData.list : [];
+  const reviewsList: any[] = Array.isArray(reviewsData?.list) ? reviewsData.list : [];
   if (reviewsList.length === 0) return null;
 
-  const marqueeTrack1 = [...reviewsList, ...reviewsList, ...reviewsList, ...reviewsList];
-  const marqueeTrack2 = [...reviewsList.slice().reverse(), ...reviewsList.slice().reverse(), ...reviewsList.slice().reverse(), ...reviewsList.slice().reverse()];
+  // The marquee scrolls the track by exactly half its width, so the track is two identical halves
+  // and each half must be wider than the viewport or a gap shows at the seam (a couple of
+  // reviews on a wide screen used to leave a blank stretch). Repeat the list until a half holds
+  // at least 8 cards, and keep the speed constant per card (~4s) whatever the count.
+  const reps = Math.max(1, Math.ceil(8 / reviewsList.length));
+  const half = Array.from({ length: reps }, () => reviewsList).flat();
+  const reversedHalf = half.slice().reverse();
+  const track1 = [...half, ...half];
+  const track2 = [...reversedHalf, ...reversedHalf];
+  const duration = `${Math.max(24, half.length * 4)}s`;
 
   return (
     <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] section-y">
@@ -1376,18 +1519,21 @@ function ReviewsCarousel({ reviewsData }: { reviewsData: any }) {
         .marquee-track-left {
           display: flex;
           width: max-content;
-          animation: marqueeLeft 48s linear infinite;
+          animation: marqueeLeft var(--marquee-duration, 48s) linear infinite;
           will-change: transform;
         }
         .marquee-track-right {
           display: flex;
           width: max-content;
-          animation: marqueeRight 48s linear infinite;
+          animation: marqueeRight var(--marquee-duration, 48s) linear infinite;
           will-change: transform;
         }
         .marquee-wrapper:hover .marquee-track-left,
         .marquee-wrapper:hover .marquee-track-right {
           animation-play-state: paused !important;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .marquee-track-left, .marquee-track-right { animation: none !important; }
         }
       `}</style>
 
@@ -1404,8 +1550,8 @@ function ReviewsCarousel({ reviewsData }: { reviewsData: any }) {
           )}
 
           <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15] max-w-2xl">
-            {reviewsData.titleIntro || "Trusted by Founders, "}
- <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+            {reviewsData.titleIntro || "Trusted by Founders,"}{" "}
+            <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
               {reviewsData.titleHighlight || "Loved by Engineering Teams"}
             </AccentHighlight>
           </h2>
@@ -1417,114 +1563,45 @@ function ReviewsCarousel({ reviewsData }: { reviewsData: any }) {
             />
           )}
 
-          <div className="pt-1 inline-flex items-center gap-3 sm:gap-4 rounded-full bg-zinc-100/80 dark:bg-white/5 border border-brand-zinc-200 dark:border-white/10 px-5 py-2 text-xs font-mono shadow-xs">
-            <div className="flex gap-1 text-amber-400">
+          <div className="pt-1 inline-flex flex-wrap justify-center items-center gap-3 sm:gap-4 rounded-full bg-zinc-100/80 dark:bg-white/5 border border-brand-zinc-200 dark:border-white/10 px-5 py-2 text-xs font-mono shadow-xs">
+            <div className="flex gap-1 text-amber-400" aria-hidden="true">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className="h-3.5 w-3.5 fill-current" />
               ))}
             </div>
             <span className="font-bold text-brand-dark dark:text-white">{reviewsData.ratingValue || "5.0 / 5.0"}</span>
-            <span className="text-zinc-300 dark:text-white/20">|</span>
+            <span className="text-zinc-300 dark:text-white/20" aria-hidden="true">|</span>
             <span className="text-brand-zinc-600 dark:text-zinc-300 font-medium">{reviewsData.ratingSub || "Verified Reviews"}</span>
           </div>
         </div>
 
-        <div className="marquee-wrapper space-y-8 overflow-hidden py-8">
-          <div className="flex py-4 overflow-visible">
+        {/* The repeated cards only exist to make the marquee loop seamlessly: hide the copies from assistive tech. */}
+        <div className="marquee-wrapper space-y-8 overflow-hidden py-8" style={{ ["--marquee-duration" as any]: duration }}>
+          <div className="flex py-4 overflow-visible" aria-hidden="true">
             <div className="marquee-track-left gap-6 items-stretch py-2">
-              {marqueeTrack1.map((r: any, i: number) => (
-                <div key={`t1-${i}`} className="w-[360px] sm:w-[420px] shrink-0 p-7 sm:p-8 rounded-[32px] bg-white dark:bg-[#0c0b18] border border-brand-zinc-200/90 dark:border-white/10 shadow-sm relative overflow-hidden flex flex-col justify-between group select-none cursor-pointer">
-                  <div className="space-y-4 relative z-10 text-left">
-                    <div className="flex items-center justify-between flex-wrap gap-2">
-                      <div className="flex gap-1 text-amber-400">
-                        {[...Array(5)].map((_, si) => (
-                          <Star key={si} className="h-3.5 w-3.5 fill-current" />
-                        ))}
-                      </div>
-                      {r.tag && (
-                        <span className="text-[9px] font-mono font-bold text-[#0306AC] dark:text-[#E9BD36] bg-[#0306AC]/10 dark:bg-white/10 border border-[#0306AC]/20 dark:border-white/15 px-3 py-1 rounded-full uppercase tracking-wider">
-                          ⚡ {r.tag}
-                        </span>
-                      )}
-                    </div>
-
-                    <RichTextRenderer
-                      content={r.quote}
- className="text-xs sm:text-sm font-sans font-medium text-brand-zinc-700 dark:text-zinc-200 leading-relaxed pt-1"
-                    />
-
-                    {r.impact && (
-                      <div className="inline-flex items-center gap-2 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1.5 text-[9.5px] font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span>{r.impact}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="pt-5 border-t border-brand-zinc-200/80 dark:border-white/10 mt-6 relative z-10">
-                    <div className="flex items-center gap-3.5 text-left">
-                      <div className="h-10 w-10 rounded-full flex items-center justify-center font-heading font-black text-xs shadow-md shrink-0 border border-white/20" style={{ backgroundColor: r.accent ==="#E9BD36" ? "#E9BD36" : "#0306AC", color: r.accent ==="#E9BD36" ? "#080710" : "#ffffff" }}>
-                        {r.initial || (r.name ? r.name.charAt(0) : "M")}
-                      </div>
-                      <div>
-                        <span className="block text-xs font-heading font-black text-brand-dark dark:text-white uppercase tracking-wider leading-none">{r.name}</span>
-                        <span className="block text-[9.5px] font-mono font-bold text-[#0306AC] dark:text-[#E9BD36] mt-1 leading-none">{r.role}</span>
-                        <span className="block text-[8.5px] font-sans text-brand-zinc-400 dark:text-zinc-400 mt-0.5 leading-none">{r.company}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              {track1.map((r: any, i: number) => (
+                <ReviewCard key={`t1-${i}`} r={r} />
               ))}
             </div>
           </div>
 
-          <div className="flex py-4 overflow-visible">
+          <div className="flex py-4 overflow-visible" aria-hidden="true">
             <div className="marquee-track-right gap-6 items-stretch py-2">
-              {marqueeTrack2.map((r: any, i: number) => (
-                <div key={`t2-${i}`} className="w-[360px] sm:w-[420px] shrink-0 p-7 sm:p-8 rounded-[32px] bg-white dark:bg-[#0c0b18] border border-brand-zinc-200/90 dark:border-white/10 shadow-sm relative overflow-hidden flex flex-col justify-between group select-none cursor-pointer">
-                  <div className="space-y-4 relative z-10 text-left">
-                    <div className="flex items-center justify-between flex-wrap gap-2">
-                      <div className="flex gap-1 text-amber-400">
-                        {[...Array(5)].map((_, si) => (
-                          <Star key={si} className="h-3.5 w-3.5 fill-current" />
-                        ))}
-                      </div>
-                      {r.tag && (
-                        <span className="text-[9px] font-mono font-bold text-[#0306AC] dark:text-[#E9BD36] bg-[#0306AC]/10 dark:bg-white/10 border border-[#0306AC]/20 dark:border-white/15 px-3 py-1 rounded-full uppercase tracking-wider">
-                          ⚡ {r.tag}
-                        </span>
-                      )}
-                    </div>
-
-                    <RichTextRenderer
-                      content={r.quote}
- className="text-xs sm:text-sm font-sans font-medium text-brand-zinc-700 dark:text-zinc-200 leading-relaxed pt-1"
-                    />
-
-                    {r.impact && (
-                      <div className="inline-flex items-center gap-2 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1.5 text-[9.5px] font-mono font-bold text-[#0306AC] dark:text-[#E9BD36]">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span>{r.impact}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="pt-5 border-t border-brand-zinc-200/80 dark:border-white/10 mt-6 relative z-10">
-                    <div className="flex items-center gap-3.5 text-left">
-                      <div className="h-10 w-10 rounded-full flex items-center justify-center font-heading font-black text-xs shadow-md shrink-0 border border-white/20" style={{ backgroundColor: r.accent ==="#E9BD36" ? "#E9BD36" : "#0306AC", color: r.accent ==="#E9BD36" ? "#080710" : "#ffffff" }}>
-                        {r.initial || (r.name ? r.name.charAt(0) : "M")}
-                      </div>
-                      <div>
-                        <span className="block text-xs font-heading font-black text-brand-dark dark:text-white uppercase tracking-wider leading-none">{r.name}</span>
-                        <span className="block text-[9.5px] font-mono font-bold text-[#0306AC] dark:text-[#E9BD36] mt-1 leading-none">{r.role}</span>
-                        <span className="block text-[8.5px] font-sans text-brand-zinc-400 dark:text-zinc-400 mt-0.5 leading-none">{r.company}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              {track2.map((r: any, i: number) => (
+                <ReviewCard key={`t2-${i}`} r={r} />
               ))}
             </div>
           </div>
+
+          {/* One real, screen-reader-only copy of the reviews. */}
+          <ul className="sr-only">
+            {reviewsList.map((r: any, i: number) => (
+              <li key={i}>
+                {[r?.name, r?.role, r?.company].filter(Boolean).join(", ")}
+                {r?.quote ? `: ${String(r.quote).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()}` : ""}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>

@@ -46,8 +46,60 @@ import BlogSection from "../sections/BlogSection";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import AccentHighlight from "@/components/ui/AccentHighlight";
+import { cleanMojibake, isSafeHref } from "@/lib/utils";
 
 const VideoTestimonials = dynamic(() => import("@/components/sections/VideoTestimonials"), { ssr: false });
+
+// ── Small helpers ─────────────────────────────────────────────────────────────
+
+// Admin-entered CTA links: keep them only when they are safe (no javascript: etc.),
+// otherwise fall back to the template default so a button never goes nowhere.
+const safeHref = (href: unknown, fallback: string): string =>
+  typeof href === "string" && href.trim() && isSafeHref(href) ? href.trim() : fallback;
+
+// Service cards are wrapped in a <Link>, so their summary must be plain text: rendering
+// rich text (or [text](url) markdown) inside would nest an <a> in an <a> (invalid DOM +
+// hydration warning). Strip markup, decode the common entities, collapse whitespace.
+const toPlainText = (value: unknown): string => {
+  if (typeof value !== "string" || !value) return "";
+  return cleanMojibake(value)
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#0?39;/g, "'")
+    .replace(/&amp;/g, "&")
+    .replace(/\s+/g, " ")
+    .trim();
+};
+
+// The service's "Order / Position" field is free text ("05", "5", ""). Non-numeric /
+// missing values sort last; ties keep the catalog's own order.
+const parseOrder = (value: unknown): number => {
+  const n = parseFloat(String(value ?? "").replace(/[^0-9.\-]/g, ""));
+  return Number.isFinite(n) ? n : Infinity;
+};
+
+// Card feature bullets: first non-empty list among the candidates. Items can be plain
+// strings or objects ({ title } pillars), so normalise to trimmed, non-empty strings.
+const toFeatureList = (...sources: any[]): string[] => {
+  for (const src of sources) {
+    if (!Array.isArray(src)) continue;
+    const list = src
+      .map((f: any) => (typeof f === "string" ? f : f?.title || f?.text || f?.label || f?.name || ""))
+      .map((f: any) => cleanMojibake(String(f)).trim())
+      .filter(Boolean);
+    if (list.length > 0) return list;
+  }
+  return [];
+};
+
+// next/image throws for absolute URLs on hosts missing from next.config remotePatterns,
+// which would take the whole page down when an admin pastes an arbitrary image URL.
+const isConfiguredImageHost = (src: string) =>
+  !/^https?:\/\//i.test(src) || /^https:\/\/(res\.cloudinary\.com|images\.unsplash\.com|mohsindesigns\.com)\//i.test(src);
 
 // ── Icon resolver ─────────────────────────────────────────────────────────────
 const iconMap: Record<string, React.ElementType> = {
@@ -114,6 +166,7 @@ function ServiceCard({
   ctaText?: string;
 }) {
   const Icon = iconMap[card.iconName] || Search;
+  const hasFeatures = Array.isArray(card.features) && card.features.length > 0;
   const [coords, setCoords] = useState({ x: "50%", y: "50%" });
 
   // Calculate cursor position for interactive card spotlight
@@ -192,13 +245,15 @@ function ServiceCard({
           <h3 className="font-heading text-[18px] font-extrabold leading-snug text-gray-900 dark:text-white transition-colors duration-300 group-hover:text-[#0306ac] dark:group-hover:text-[#e9bd36]">
             {card.title}
           </h3>
-          <RichTextRenderer
-            content={card.desc}
-            className="text-[13px] text-gray-600 dark:text-zinc-400 leading-relaxed font-normal line-clamp-4"
-          />
+          {/* Plain text on purpose: the whole card is a link (see toPlainText). */}
+          {card.desc && (
+            <p className="text-[13px] text-gray-600 dark:text-zinc-400 leading-relaxed font-normal line-clamp-4">
+              {card.desc}
+            </p>
+          )}
 
           {/* Feature Checkpoints */}
-          {Array.isArray(card.features) && card.features.length > 0 && (
+          {hasFeatures && (
             <ul className="flex flex-col gap-2.5 pt-4 mt-auto border-t border-gray-100 dark:border-white/[0.05] group-hover:border-[#0306ac]/20 dark:group-hover:border-[#e9bd36]/20 transition-colors duration-500">
               {card.features.slice(0, 4).map((feature, idx) => (
                 <li
@@ -235,26 +290,41 @@ function ServiceCard({
 }
 
 export default function ServicesTemplate({ pageData }: { pageData?: any; params?: any }) {
-  const { allBlogs, blogSection, faq } = useContent();
+  const { allBlogs, faq } = useContent();
 
   // Strictly use this specific page's own content
   const content = pageData?.content || {};
+
+  // Section visibility. Only an explicit `enabled: false` hides a section (undefined = visible).
+  // NB: these must read the saved CONTENT flags - the normalised `hero`/`grid`/`ctaBanner`
+  // objects below never carry `enabled`, so testing them (as this used to) made the editor's
+  // hide/show switches do nothing.
+  const showHero = content.hero?.enabled !== false;
+  const showGrid = content.grid?.enabled !== false;
+  const showCta = content.ctaBanner?.enabled !== false;
 
   const hero = {
     badgeText: content.hero?.badgeText || "ENGINEERED FOR COMPOUNDING ROI",
     titleIntro: content.hero?.titleIntro || "High-Performance Growth &",
     titleHighlight: content.hero?.titleHighlight || "Digital Architecture",
     description: content.hero?.description || "From custom Next.js platforms to full-funnel acquisition engines, we design, engineer, and scale market-leading digital products that dominate competitive categories.",
-    bgImage: content.hero?.bgImage || content.hero?.backgroundImage || "/portfolio_hero_bg.png",
+    // The editor writes `backgroundImage` (and reads it first), so it must win over the legacy
+    // `bgImage`. No hardcoded default file: /portfolio_hero_bg.png is not in /public (404), so a
+    // blank field simply renders the hero without a photo instead of a broken image.
+    bgImage: content.hero?.backgroundImage || content.hero?.bgImage || "",
     ctaPrimary: {
       label: content.hero?.ctaPrimary?.label || "Schedule Strategy Call",
-      href: content.hero?.ctaPrimary?.href || "/contact-us",
+      href: safeHref(content.hero?.ctaPrimary?.href, "/contact-us"),
     },
     ctaSecondary: {
       label: content.hero?.ctaSecondary?.label || "Explore Inclusions",
-      href: content.hero?.ctaSecondary?.href || "#services-grid",
+      href: safeHref(content.hero?.ctaSecondary?.href, "#services-grid"),
     },
   };
+
+  // The default secondary button scrolls to the grid; with the grid hidden that anchor would
+  // be dead, so drop the button rather than ship a link that goes nowhere.
+  const showHeroSecondary = !(hero.ctaSecondary.href === "#services-grid" && !showGrid);
 
   const grid = {
     eyebrow: content.grid?.eyebrow || "OUR CORE CAPABILITIES",
@@ -272,14 +342,15 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
     description: content.ctaBanner?.description || "Schedule a free 30-minute technical audit. We'll diagnose bottlenecks in your existing presence and map out a concrete blueprint for compounding growth.",
     ctaPrimary: {
       label: content.ctaBanner?.ctaPrimary?.label || "Book Strategy Session",
-      href: content.ctaBanner?.ctaPrimary?.href || "/contact-us",
+      href: safeHref(content.ctaBanner?.ctaPrimary?.href, "/contact-us"),
     },
     ctaSecondary: {
       label: content.ctaBanner?.ctaSecondary?.label || "Direct Office Line",
-      href: content.ctaBanner?.ctaSecondary?.href || "/contact-us",
+      href: safeHref(content.ctaBanner?.ctaSecondary?.href, "/contact-us"),
     },
-    portraitSrc: content.ctaBanner?.portraitSrc || "/founder.png",
-    portraitAlt: content.ctaBanner?.portraitAlt || "Mohsin Designs Lead Architect",
+    // No hardcoded /founder.png default (not in /public -> 404). Blank = no portrait column.
+    portraitSrc: content.ctaBanner?.portraitSrc || "",
+    portraitAlt: content.ctaBanner?.portraitAlt || "",
   };
 
   // Get service inventory list from database
@@ -287,21 +358,100 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
     ? content.globalServices
     : (Array.isArray(content?.services) && content.services.length > 0 ? content.services : []);
 
-  const activeServices = rawServices.filter((s: any) => s.status !=="draft" && !s.isTrashed);
+  // Same visibility rule as the /services/[slug]/ route (status !== 'draft' && !isTrashed), plus
+  // it needs a real slug and title: a card without a slug would link to a 404 and one without a
+  // title has nothing to show. Then order by the service's "Order / Position" (number) field.
+  // (Duplicate slugs keep the first entry in catalog order - the one /services/[slug]/ resolves.)
+  const seenSlugs = new Set<string>();
+  const cards = rawServices
+    .filter((s: any) => {
+      if (
+        !s ||
+        s.status === "draft" ||
+        s.isTrashed ||
+        typeof s.slug !== "string" || !s.slug.trim() ||
+        typeof s.title !== "string" || !s.title.trim()
+      ) return false;
+      const key = s.slug.trim();
+      if (seenSlugs.has(key)) return false;
+      seenSlugs.add(key);
+      return true;
+    })
+    .map((s: any, i: number) => ({ s, i, order: parseOrder(s.number) }))
+    .sort((a: any, b: any) => (a.order === b.order ? a.i - b.i : a.order < b.order ? -1 : 1))
+    .map(({ s }: any, idx: number) => ({
+      id: (idx + 1).toString().padStart(2, "0"),
+      iconName: s.icon || "Search",
+      // No invented "Premium Solution" label: blank tag = no pill.
+      tag: cleanMojibake(String(s.tag || s.category || "")).trim(),
+      title: cleanMojibake(String(s.title)).trim(),
+      // The short catalog summary reads best on a card; the hero copy is several paragraphs.
+      desc: toPlainText(s.description || s.shortDescription || s.hero?.description || s.tagline),
+      // No invented bullet points either: only what the service really lists.
+      features: toFeatureList(s.hero?.benefits, s.features, s.whatIncluded?.pillars),
+      slug: String(s.slug).trim(),
+    }));
 
-  // Map each service to cards format
-  const cards = activeServices.map((s: any, idx: number) => ({
-    id: (idx + 1).toString().padStart(2, "0"),
-    iconName: s.icon || "Search",
-    tag: s.tag || "Premium Solution",
-    title: s.title || "Service Offering",
-    desc: s.hero?.description || s.description || "High-performance digital engineering and growth architecture tailored to maximize brand equity.",
-    features: s.hero?.benefits || s.features || (s.whatIncluded?.pillars ? s.whatIncluded.pillars.map((p: any) => p.title) : ["Custom Scope Blueprint", "Conversion Rate Optimization", "Dedicated SLA Support"]),
-    slug: s.slug || s.title?.toLowerCase().replace(/[^a-z0-9 ]/g, "").replace(/\s+/g, "-"),
-  }));
+  // ── Featured blog posts ──────────────────────────────────────────────────────
+  // Resolve the admin's picks (ids) against the post pool, keeping the picked order (the first
+  // one is the large featured card). Deleted / trashed / draft posts are dropped: /api/blogs
+  // also returns trashed posts, and their /blogs/<slug>/ pages 404. The section only renders
+  // when at least one pick resolves - BlogSection would otherwise fall back to its built-in
+  // demo articles (fake titles, dead links) while the post list is still loading.
+  const blogCfg = content.blogSection;
+  const blogPool: any[] = Array.isArray(allBlogs) ? allBlogs : [];
+  const blogPosts: any[] = [];
+  if (Array.isArray(blogCfg?.selectedPosts)) {
+    const seen = new Set<string>();
+    for (const pick of blogCfg.selectedPosts) {
+      const id = String(pick && typeof pick === "object" ? (pick._id || pick.id || "") : pick ?? "");
+      if (!id || seen.has(id)) continue;
+      const post = blogPool.find((p: any) => p && (String(p._id ?? p.id ?? "") === id || (p.slug && p.slug === id)));
+      if (!post || post.status === "draft" || post.isTrashed) continue;
+      seen.add(id);
+      blogPosts.push(post);
+    }
+  }
+  const showBlog = blogCfg?.enabled !== false && blogPosts.length > 0;
+
+  // ── FAQs ─────────────────────────────────────────────────────────────────────
+  // Page FAQs (admin "Page FAQs" tab) win. Otherwise fall back to the global FAQ manager's items
+  // using its visibility rule (global, or "specific" pages that include this one) - the raw
+  // list used to be shown unfiltered, leaking items meant for other pages. No items at all = no
+  // FAQ section (PageInlineFaqs would otherwise invent its own starter questions).
+  const isFilledFaq = (f: any) => f && String(f.question ?? f.q ?? "").trim() && String(f.answer ?? f.a ?? "").trim();
+  const pageFaqs = (Array.isArray(content.faqs) ? content.faqs : []).filter(isFilledFaq);
+  const faqTargets = [pageData?.slug, "services"].filter(Boolean);
+  const globalFaqs = (Array.isArray(faq?.items) ? faq.items : []).filter(
+    (item: any) =>
+      isFilledFaq(item) &&
+      (item.visibility === "global" ||
+        (item.visibility === "specific" && Array.isArray(item.targetPages) && item.targetPages.some((t: string) => faqTargets.includes(t))))
+  );
+  const faqItems = pageFaqs.length > 0 ? pageFaqs : globalFaqs;
+  const showFaqs = content.faqs?.enabled !== false && content.faqSection?.enabled !== false && faqItems.length > 0;
+  // PageInlineFaqs' strategy-session button defaults to "#contact", an anchor this page does not have.
+  const faqData = {
+    ...content,
+    strategyAudit: {
+      ...(content.strategyAudit || {}),
+      href: safeHref(content.strategyAudit?.href, "/contact-us"),
+    },
+  };
+
+  // Video testimonials: only mount (and download the chunk) when there is something to play.
+  const videoItems = content.videoTestimonials?.items;
+  const showVideos =
+    content.videoTestimonials?.enabled !== false && Array.isArray(videoItems) && videoItems.length > 0;
+
+  // With the hero hidden the grid header becomes the first thing on the page: it must carry the
+  // page's single <h1> and clear the fixed navbar (the hero normally provides that top offset).
+  const GridHeading = showHero ? "h2" : "h1";
 
   return (
-    <main className="flex-1 w-full bg-white dark:bg-[#080710] text-gray-900 dark:text-white transition-colors duration-300 relative overflow-x-clip font-sans">
+    // <div>, not <main>: [...slug]/page.tsx and SiteLayout already provide the page's <main> landmark.
+    // With the hero hidden, pad the top so the first section clears the fixed navbar.
+    <div className={`flex-1 w-full bg-white dark:bg-[#080710] text-gray-900 dark:text-white transition-colors duration-300 relative overflow-x-clip font-sans ${showHero ? "" : "pt-24 md:pt-32"}`}>
 
       {/* ── Floating blobs ─────────────────────────────────────────────────── */}
       <div className="absolute top-[3%] left-[-15%] w-[50vw] h-[50vw] rounded-full bg-[#0306ac]/[0.03] dark:bg-[#0306ac]/[0.06] blur-[120px] pointer-events-none select-none -z-10 animate-float-blob" />
@@ -309,16 +459,21 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
       <div className="absolute bottom-[20%] left-[-12%] w-[48vw] h-[48vw] rounded-full bg-[#0306ac]/[0.02] dark:bg-[#0306ac]/[0.04] blur-[140px] pointer-events-none select-none -z-10 animate-float-blob" />
 
       {/* ── 1. HERO ────────────────────────────────────────────────────────── */}
-      {(hero as any)?.enabled !== false && (
+      {showHero && (
         <section className="pt-28 md:pt-36 lg:pt-40 pb-16 lg:pb-24 relative overflow-hidden border-b border-gray-200 dark:border-white/10">
 
-          {/* Full background bleed image */}
+          {/* Full background bleed image (decorative: empty alt, skipped when no image is set) */}
           <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
-            <img
-              src={hero.bgImage || "/portfolio_hero_bg.png"}
-              alt="Services Background"
-              className="w-full h-full object-cover object-right opacity-100 dark:opacity-60"
-            />
+            {hero.bgImage && (
+              <img
+                src={hero.bgImage}
+                alt=""
+                aria-hidden="true"
+                fetchPriority="high"
+                decoding="async"
+                className="w-full h-full object-cover object-right opacity-100 dark:opacity-60"
+              />
+            )}
             <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-transparent dark:from-[#080710] dark:via-[#080710]/85 dark:to-transparent pointer-events-none" />
           </div>
 
@@ -357,7 +512,9 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
 
                 <div className="flex flex-wrap items-center gap-4 pt-2">
                   <CtaButton href={hero.ctaPrimary.href}>{hero.ctaPrimary.label}</CtaButton>
-                  <CtaButton href={hero.ctaSecondary.href} variant="secondary">{hero.ctaSecondary.label}</CtaButton>
+                  {showHeroSecondary && (
+                    <CtaButton href={hero.ctaSecondary.href} variant="secondary">{hero.ctaSecondary.label}</CtaButton>
+                  )}
                 </div>
               </motion.div>
 
@@ -367,15 +524,15 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
       )}
 
       {/* ── VIDEO TESTIMONIALS ─────────────────────────────────────────────── */}
-      {content.videoTestimonials?.enabled !== false && (
+      {showVideos && (
         <section id="video-testimonials">
           <VideoTestimonials data={content.videoTestimonials} />
         </section>
       )}
 
       {/* ── 2. SERVICES GRID ────────────────────────────────────────────────── */}
-      {(grid as any)?.enabled !== false && (
-        <section id="services-grid" className="relative overflow-hidden border-b border-gray-200 dark:border-white/10 section-y">
+      {showGrid && (
+        <section id="services-grid" className="relative overflow-hidden border-b border-gray-200 dark:border-white/10 section-y scroll-mt-24">
 
           {/* Subtle grid background */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808007_1px,transparent_1px),linear-gradient(to_bottom,#80808007_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
@@ -395,31 +552,37 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                   {grid.eyebrow}
                 </span>
               </div>
-              <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.12] text-gray-900 dark:text-white">
+              <GridHeading className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.12] text-gray-900 dark:text-white">
                 {grid.titleIntro}{" "}
                 <AccentHighlight className="text-[#0306ac] dark:text-[#e9bd36] pb-1 ml-1">
                   {grid.titleHighlight}
                 </AccentHighlight>
-              </h2>
+              </GridHeading>
               <RichTextRenderer
                 content={grid.subtext}
                 className="text-sm sm:text-base text-gray-600 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed"
               />
             </motion.div>
 
-            {/* Cards — Responsive 1/2/3/4 col grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {cards.map((card: any, i: number) => (
-                <ServiceCard key={card.id || i} card={card} index={i} ctaText={grid.ctaText} />
-              ))}
-            </div>
+            {/* Cards — Responsive 1/2/3 col grid (or a friendly empty state) */}
+            {cards.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {cards.map((card: any, i: number) => (
+                  <ServiceCard key={card.slug} card={card} index={i} ctaText={grid.ctaText} />
+                ))}
+              </div>
+            ) : (
+              <p className="text-center text-sm sm:text-base text-gray-600 dark:text-zinc-400 py-10">
+                Our services are being updated. Please check back soon.
+              </p>
+            )}
 
           </div>
         </section>
       )}
 
       {/* ── 3. CTA BANNER ──────────────────────────────────────────────────── */}
-      {(ctaBanner as any)?.enabled !== false && (
+      {showCta && (
         <section className="relative overflow-hidden section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12">
             <motion.div
@@ -430,7 +593,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
               className="on-dark-surface relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#0306ac] via-[#020485] to-[#010252] dark:from-[#12121e] dark:via-[#0f0f1a] dark:to-[#080710] text-white p-8 sm:p-12 lg:p-14 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-8"
             >
               {/* Left text column */}
-              <div className="relative z-10 flex flex-col justify-center gap-5 lg:max-w-[62%]">
+              <div className={`relative z-10 flex flex-col justify-center gap-5 ${ctaBanner.portraitSrc ? "lg:max-w-[62%]" : "lg:max-w-3xl"}`}>
 
                 {/* Eyebrow */}
                 <div className="eyebrow-pill-yellow">
@@ -463,56 +626,55 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
                 </div>
               </div>
 
-              {/* Right portrait arch */}
-              <div className="hidden lg:flex flex-1 items-end justify-center relative pr-4">
-                <div className="absolute bottom-0 w-[300px] h-[300px] bg-gradient-to-t from-[#020485] to-[#0408d9] rounded-full opacity-90 border border-white/20 shadow-2xl" />
-                <div className="relative z-10 w-[260px] h-[340px] self-end drop-shadow-2xl overflow-hidden rounded-t-[32px] border-t border-l border-r border-white/25 shadow-2xl bg-[#010252]">
-                  <Image
-                    src={ctaBanner.portraitSrc || "/founder.png"}
-                    alt={ctaBanner.portraitAlt || "Lead Architect"}
-                    width={300}
-                    height={380}
-                    className="w-full h-full object-cover object-top filter contrast-[1.05]"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#010356]/80 via-transparent to-transparent pointer-events-none" />
+              {/* Right portrait arch - only when a portrait image is set (blank = text-only banner) */}
+              {ctaBanner.portraitSrc && (
+                <div className="hidden lg:flex flex-1 items-end justify-center relative pr-4">
+                  <div className="absolute bottom-0 w-[300px] h-[300px] bg-gradient-to-t from-[#020485] to-[#0408d9] rounded-full opacity-90 border border-white/20 shadow-2xl" />
+                  <div className="relative z-10 w-[260px] h-[340px] self-end drop-shadow-2xl overflow-hidden rounded-t-[32px] border-t border-l border-r border-white/25 shadow-2xl bg-[#010252]">
+                    <Image
+                      src={ctaBanner.portraitSrc}
+                      // Decorative unless the admin describes the photo (see the CTA tab's "Portrait alt text").
+                      alt={ctaBanner.portraitAlt}
+                      width={300}
+                      height={380}
+                      unoptimized={!isConfiguredImageHost(ctaBanner.portraitSrc)}
+                      className="w-full h-full object-cover object-top filter contrast-[1.05]"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#010356]/80 via-transparent to-transparent pointer-events-none" />
+                  </div>
+                  <div className="absolute top-12 right-24 h-3.5 w-3.5 rounded-full bg-[var(--cta-accent)] shadow-[0_0_15px_var(--cta-accent)] z-20" />
                 </div>
-                <div className="absolute top-12 right-24 h-3.5 w-3.5 rounded-full bg-[var(--cta-accent)] shadow-[0_0_15px_var(--cta-accent)] z-20" />
-              </div>
+              )}
             </motion.div>
           </div>
         </section>
       )}
 
       {/* ── 4. FAQS ────────────────────────────────────────────────────────── */}
-      {(pageData?.content?.faqs?.enabled !== false && pageData?.content?.faqSection?.enabled !== false) && (
-        <PageInlineFaqs 
-          faqs={(pageData?.content?.faqs && pageData.content.faqs.length > 0) ? pageData.content.faqs : faq?.items} 
-          faqSchemaMarkup={pageData?.content?.faqSchemaMarkup || pageData?.faqSchemaMarkup} 
-          badge={pageData?.content?.faqBadge}
-          title={pageData?.content?.faqTitleHighlight || pageData?.content?.faqTitle}
-          description={pageData?.content?.faqDescription}
-          data={pageData?.content}
+      {showFaqs && (
+        <PageInlineFaqs
+          faqs={faqItems}
+          faqSchemaMarkup={content.faqSchemaMarkup || pageData?.faqSchemaMarkup}
+          badge={content.faqBadge}
+          title={content.faqTitleHighlight || content.faqTitle}
+          description={content.faqDescription}
+          data={faqData}
         />
       )}
 
       {/* ── 5. BLOG SECTION ────────────────────────────────────────────────── */}
-      {pageData?.content?.blogSection?.enabled !== false && pageData?.content?.blogSection && Array.isArray(pageData.content.blogSection.selectedPosts) && pageData.content.blogSection.selectedPosts.length > 0 && (
+      {showBlog && (
         <BlogSection
-          title={pageData.content.blogSection.title}
-          subtitle={pageData.content.blogSection.subtitle}
-          description={pageData.content.blogSection.description}
-          data={pageData.content.blogSection}
-          posts={allBlogs ? allBlogs.filter((p: any) => pageData.content.blogSection.selectedPosts.includes(p._id)) : []}
+          title={blogCfg.title}
+          subtitle={blogCfg.subtitle}
+          description={blogCfg.description}
+          data={blogCfg}
+          posts={blogPosts}
         />
       )}
 
-      {/* Cursive Font Styles */}
-      <style dangerouslySetInnerHTML={{__html: `
-        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
-        .font-cursive {
-          font-family: 'Dancing Script', cursive;
-        }
-      `}} />
-    </main>
+      {/* .font-cursive + the Dancing Script font already come from globals.css; the inline
+          <style>/@import that used to sit here only re-requested the same font. */}
+    </div>
   );
 }

@@ -3,8 +3,8 @@
 import CtaButton from "@/components/ui/CtaButton";
 import { withTrailingSlash } from "@/lib/url";
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
-import React, { useEffect, useRef } from "react";
-import { motion, useMotionValue, useSpring, useInView } from "framer-motion";
+import React, { useEffect, useMemo, useRef } from "react";
+import { motion, useMotionValue, useSpring, useInView, useReducedMotion } from "framer-motion";
 import * as LucideIcons from "lucide-react";
 import {
   ArrowRight,
@@ -24,9 +24,21 @@ import { useRouter } from "next/navigation";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import AccentHighlight from "@/components/ui/AccentHighlight";
+import { isSafeHref } from "@/lib/utils";
 import dynamic from "next/dynamic";
 
 const VideoTestimonials = dynamic(() => import("@/components/sections/VideoTestimonials"), { ssr: false });
+
+// An admin-typed button link is only used when it is a real page/http(s)/mailto/tel URL;
+// anything else ("javascript:...", a typo'd scheme) falls back to the built-in default.
+const safeHref = (href: any, fallback: string): string =>
+  typeof href === "string" && isSafeHref(href) ? href.trim() : fallback;
+
+// Heading intros are stored with or without a trailing space ("Engineered for Growth Across"
+// vs "Scale Your Organic Revenue in Your "). The highlight that follows is a separate inline
+// element, so always put exactly one space between the two - otherwise the default hero
+// reads "...AcrossGlobal Markets." to screen readers, crawlers and copy/paste.
+const withGap = (s: string): string => (s && s.trim() ? `${s.trimEnd()} ` : "");
 
 function slugify(text: string): string {
   if (!text) return "";
@@ -50,11 +62,46 @@ const drawVariants = {
   })
 };
 
+// ── STAT VALUE PARSING ──
+// The admin types free text ("10+", "99.4%", "1,200+", "$2M", "24/7"). Split it into
+// prefix / number / suffix so ONLY the number is animated and every other character is
+// kept exactly as typed. (The old parser stripped every non-digit for the count and kept
+// every non-digit as the suffix, so "99.4%" rendered as "994.%" and "1,200+" as "1200,+".)
+interface ParsedStat { prefix: string; target: number; decimals: number; grouped: boolean; suffix: string }
+
+function parseStat(value: string): ParsedStat | null {
+  const m = String(value ?? "").trim().match(/^(\D*?)(\d[\d,]*(?:\.\d+)?)([\s\S]*)$/);
+  if (!m) return null; // no digits at all ("N/A", "Top rated") -> shown as plain text
+  const numStr = m[2];
+  const target = parseFloat(numStr.replace(/,/g, ""));
+  if (!Number.isFinite(target)) return null;
+  return {
+    prefix: m[1],
+    target,
+    decimals: numStr.includes(".") ? numStr.split(".")[1].length : 0,
+    grouped: numStr.includes(","),
+    suffix: m[3],
+  };
+}
+
+function formatStat(p: ParsedStat, n: number): string {
+  const num = p.grouped
+    ? n.toLocaleString("en-US", { minimumFractionDigits: p.decimals, maximumFractionDigits: p.decimals })
+    : n.toFixed(p.decimals);
+  return `${p.prefix}${num}${p.suffix}`;
+}
+
 // ── 3D SPRING COUNTER COMPONENT ──
+// Keyed on the text so the imperatively-written text node can never go stale when the
+// value changes (live edit / navigation between hub pages).
 function RollerCounter({ value }: { value: string }) {
+  return <RollerCounterInner key={value} value={value} />;
+}
+
+function RollerCounterInner({ value }: { value: string }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const numValue = parseInt(value?.replace(/[^0-9]/g, "") || "0") || 0;
-  const suffix = value?.replace(/[0-9]/g, "") || "";
+  const parsed = useMemo(() => parseStat(value), [value]);
+  const reduceMotion = useReducedMotion();
 
   const motionValue = useMotionValue(0);
   const springValue = useSpring(motionValue, {
@@ -64,22 +111,30 @@ function RollerCounter({ value }: { value: string }) {
   const isInView = useInView(ref, { once: true, margin: "-50px" });
 
   useEffect(() => {
-    if (isInView) {
-      motionValue.set(numValue);
+    if (!parsed) return;
+    // prefers-reduced-motion: no count-up, just show the real number.
+    if (reduceMotion) {
+      if (ref.current) ref.current.textContent = formatStat(parsed, parsed.target);
+      return;
     }
-  }, [motionValue, numValue, isInView]);
+    if (isInView) motionValue.set(parsed.target);
+  }, [motionValue, parsed, isInView, reduceMotion]);
 
   useEffect(() => {
+    if (!parsed) return;
     return springValue.on("change", (latest) => {
-      if (ref.current) {
-        ref.current.textContent = Math.floor(latest).toString() + suffix;
-      }
+      if (ref.current) ref.current.textContent = formatStat(parsed, latest);
     });
-  }, [springValue, suffix]);
+  }, [springValue, parsed]);
+
+  // Nothing numeric to animate: render exactly what was typed.
+  if (!parsed) return <span className="tabular-nums">{value}</span>;
 
   return (
-    <span ref={ref} className="tabular-nums">
-      0{suffix}
+    <span className="tabular-nums">
+      {/* The animated text starts at 0, so expose the real figure to screen readers / crawlers. */}
+      <span ref={ref} aria-hidden="true">{formatStat(parsed, 0)}</span>
+      <span className="sr-only">{value}</span>
     </span>
   );
 }
@@ -88,6 +143,21 @@ function RollerCounter({ value }: { value: string }) {
 function SpotlightCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // --x / --y must live on the element that CONTAINS the glow layers. They used to be set on
+  // a sibling wrapper, so the glow never followed the cursor (custom properties only inherit
+  // downwards), and the ref callback also added a new listener on every render.
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const offX = mouseX.on("change", (x) => el.style.setProperty("--x", `${x}px`));
+    const offY = mouseY.on("change", (y) => el.style.setProperty("--y", `${y}px`));
+    return () => {
+      offX();
+      offY();
+    };
+  }, [mouseX, mouseY]);
 
   function handleMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
     const { left, top } = currentTarget.getBoundingClientRect();
@@ -97,6 +167,7 @@ function SpotlightCard({ children, className = "" }: { children: React.ReactNode
 
   return (
     <motion.div
+      ref={cardRef}
       onMouseMove={handleMouseMove}
       className={`relative overflow-hidden group/spotlight ${className}`}
       initial={{ opacity: 0, y: 40 }}
@@ -104,9 +175,9 @@ function SpotlightCard({ children, className = "" }: { children: React.ReactNode
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
     >
-      {/* Spotlight Hover Glow Layer */}
+      {/* Spotlight Hover Glow Layer (light mode) */}
       <motion.div
-        className="pointer-events-none absolute -inset-px rounded-[28px] opacity-0 group-hover/spotlight:opacity-100 transition-opacity duration-500 z-10"
+        className="pointer-events-none absolute -inset-px rounded-[28px] opacity-0 group-hover/spotlight:opacity-100 dark:group-hover/spotlight:opacity-0 transition-opacity duration-500 z-10"
         style={{
           background: `radial-gradient(400px circle at var(--x, 0px) var(--y, 0px), rgba(3, 6, 172, 0.08), transparent 80%)`
         }}
@@ -119,15 +190,7 @@ function SpotlightCard({ children, className = "" }: { children: React.ReactNode
         }}
       />
 
-      <div
-        ref={(el) => {
-          if (el) {
-            mouseX.on("change", (x) => el.style.setProperty("--x", `${x}px`));
-            mouseY.on("change", (y) => el.style.setProperty("--y", `${y}px`));
-          }
-        }}
-        className="w-full h-full relative z-20"
-      >
+      <div className="w-full h-full relative z-20">
         {children}
       </div>
     </motion.div>
@@ -193,7 +256,15 @@ const renderStatIcon = (iconName?: string, defaultIconName: string = "Trophy") =
 export default function LocationTemplate({ pageData }: { pageData?: any; params?: any }) {
   const router = useRouter();
   const pageContent = pageData?.content || {};
-  const locationData = pageContent.locationPage || pageContent.serviceArea || {};
+  // The hub's data lives under content.locationPage. Older documents stored it under
+  // content.serviceArea; that key is only honoured when it really has the hub's shape,
+  // because the HOMEPAGE's global "serviceArea" section (sectionTag / hubs / mapSrc ...)
+  // uses the same key and must never leak into this page.
+  const legacyHub = pageContent.serviceArea;
+  const legacyLooksLikeHub =
+    !!legacyHub && typeof legacyHub === "object" &&
+    ["hero", "stats", "brandsStrip", "presence", "ctaBanner"].some((k) => !!legacyHub[k]);
+  const locationData = pageContent.locationPage || (legacyLooksLikeHub ? legacyHub : {});
 
   // ── 1. HERO SECTION DATA ──
   const hero = {
@@ -202,9 +273,9 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
     titleHighlight: locationData.hero?.titleHighlight || "Global Markets.",
     description: locationData.hero?.description || "Empowering high-growth businesses and enterprise brands with bespoke web architecture, technical SEO, and conversion science tailored for local dominance.",
     ctaPrimaryText: locationData.hero?.ctaPrimaryText || "EXPLORE OUR WORK",
-    ctaPrimaryHref: locationData.hero?.ctaPrimaryHref || "/gallery",
+    ctaPrimaryHref: safeHref(locationData.hero?.ctaPrimaryHref, "/gallery"),
     ctaSecondaryText: locationData.hero?.ctaSecondaryText || "GET FREE STRATEGY",
-    ctaSecondaryHref: locationData.hero?.ctaSecondaryHref || "/contact-us",
+    ctaSecondaryHref: safeHref(locationData.hero?.ctaSecondaryHref, "/contact-us"),
     bgLight: locationData.hero?.bgLight || "/locationhero.png",
     bgDark: locationData.hero?.bgDark || "/locationherodark.png"
   };
@@ -234,18 +305,31 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
   };
 
   // ── 3. BRANDS STRIP DATA ──
+  // A saved array is respected even when empty (the editor lets the admin delete every logo;
+  // previously the 7 built-in logos came straight back). Only a MISSING array uses defaults.
+  const defaultLogos = [
+    { name: "Google Ads" },
+    { name: "Meta Business" },
+    { name: "Amazon Ads" },
+    { name: "Microsoft Bing" },
+    { name: "Apple Search" },
+    { name: "eBay Partner" },
+    { name: "Reddit Ads" }
+  ];
+  const rawLogos = locationData.brandsStrip?.logos;
   const brandsStrip = {
     heading: locationData.brandsStrip?.heading || "TRUSTED AD PLATFORMS // CERTIFIED NETWORKS",
-    logos: locationData.brandsStrip?.logos && locationData.brandsStrip.logos.length > 0 ? locationData.brandsStrip.logos : [
-      { name: "Google Ads" },
-      { name: "Meta Business" },
-      { name: "Amazon Ads" },
-      { name: "Microsoft Bing" },
-      { name: "Apple Search" },
-      { name: "eBay Partner" },
-      { name: "Reddit Ads" }
-    ]
+    // Items are {name, image} objects (or plain strings in old documents). Drop rows that have
+    // neither a name nor an image so the strip never shows a lone placeholder sparkle.
+    logos: (Array.isArray(rawLogos) ? rawLogos : defaultLogos)
+      .map((l: any) => (typeof l === "string" ? { name: l } : l))
+      .filter((l: any) => l && ((typeof l.name === "string" && l.name.trim()) || l.image)) as Array<{ name?: string; image?: string }>
   };
+  // The marquee scrolls one "set" (1/3 of the track) then loops, so each set must be wide
+  // enough to cover the viewport - a strip with 1-3 brands used to show an empty gap.
+  const marqueeSet = brandsStrip.logos.length > 0
+    ? Array.from({ length: Math.max(1, Math.ceil(8 / brandsStrip.logos.length)) }).flatMap(() => brandsStrip.logos)
+    : [];
 
   // ── 4. COUNTRIES WE SERVE DATA ──
   const defaultCountries = [
@@ -315,7 +399,40 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
     description: locationData.presence?.description || "Browse our localized service hubs and discover how we engineer high-converting digital assets tailored specifically for regional compliance, language nuances, and target search volume.",
     cursiveText: locationData.presence?.cursiveText || "Explore Locations",
     locationsLabel: locationData.presence?.locationsLabel || "ACTIVE REGIONAL LOCATIONS & STATE HUBS",
-    countries: locationData.presence?.countries && locationData.presence.countries.length > 0 ? locationData.presence.countries : defaultCountries
+    // Same rule as the logos: a saved array (even an empty one) wins, only a missing one uses
+    // the built-in example countries.
+    countries: (Array.isArray(locationData.presence?.countries) ? locationData.presence.countries : defaultCountries) as any[]
+  };
+
+  // ── Link resolution for the directory ──
+  // The site's location URLs are strictly hierarchical: /country/, /country/state/,
+  // /country/state/city/. Page slugs may be stored bare ("texas"), as "usa/texas" or as a
+  // full "usa/texas/dallas" path, so:
+  //   country -> "/<pageSlug>/"
+  //   state   -> "<country url><last segment of its slug>/"   (never a bare "/texas/", which 404s)
+  //   3+ part slug (a city picked in the editor) -> "/<full path>/"
+  // A country card with an explicitly empty link (a freshly added, not-yet-linked card) gets
+  // NO link instead of a guessed one that would 404.
+  const toPath = (v: string) =>
+    /^https?:\/\//i.test(v) ? v : (v.startsWith("/") ? v : `/${v}`).replace(/\/+$/, "") + "/";
+  const resolveCountryUrl = (country: any): string | null => {
+    const explicit = String(country?.pageSlug || country?.url || country?.slug || "").trim();
+    if (explicit) return toPath(explicit);
+    const hasLinkFields = country?.pageSlug !== undefined || country?.url !== undefined || country?.slug !== undefined;
+    if (hasLinkFields) return null;
+    // Legacy documents without any link field: derive from the id/name like before.
+    if (country?.id === "USA") return "/usa/";
+    const derived = slugify(country?.name || "");
+    return derived ? `/${derived}/` : null;
+  };
+  const resolveStateUrl = (countryUrl: string | null, st: any): string | null => {
+    const name = typeof st === "string" ? st : st?.name || "";
+    const segs = String(typeof st === "string" ? "" : st?.pageSlug || "").split("/").map((p) => p.trim()).filter(Boolean);
+    if (segs.length >= 3) return `/${segs.join("/")}/`;
+    const last = segs.length ? segs[segs.length - 1] : slugify(name);
+    if (!last) return null;
+    if (countryUrl) return `${countryUrl}${last}/`;
+    return segs.length === 2 ? `/${segs.join("/")}/` : null;
   };
 
   // ── 5. CTA BANNER DATA ──
@@ -326,24 +443,40 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
     titleWord2: locationData.ctaBanner?.titleWord2 || "Today? ",
     description: locationData.ctaBanner?.description || "Schedule a free technical audit with our lead architect. We'll analyze your existing regional footprint and map out a concrete growth strategy.",
     ctaPrimaryText: locationData.ctaBanner?.ctaPrimaryText || "BOOK STRATEGY SESSION",
-    ctaPrimaryHref: locationData.ctaBanner?.ctaPrimaryHref || "/contact-us",
+    ctaPrimaryHref: safeHref(locationData.ctaBanner?.ctaPrimaryHref, "/contact-us"),
     ctaSecondaryText: locationData.ctaBanner?.ctaSecondaryText || "EXPLORE SHOWREEL",
-    ctaSecondaryHref: locationData.ctaBanner?.ctaSecondaryHref || "/gallery",
+    ctaSecondaryHref: safeHref(locationData.ctaBanner?.ctaSecondaryHref, "/gallery"),
     portraitSrc: locationData.ctaBanner?.portraitSrc || "/founder_portrait_nobg.png",
     portraitAlt: locationData.ctaBanner?.portraitAlt || "Founder & Lead Architect"
   };
 
-  return (
-    <main className="flex-1 w-full bg-white dark:bg-[#080710] text-brand-dark dark:text-white transition-colors duration-300 relative overflow-x-clip font-sans pb-6">
+  // ── SECTION VISIBILITY ──
+  // Convention: only an explicit `enabled: false` hides a section. Nothing is left behind when
+  // a section is off (no empty wrapper, no orphan anchor, no stray padding).
+  const heroOn = locationData.hero?.enabled !== false;
+  const statsOn = locationData.stats?.enabled !== false;
+  const brandsOn = locationData.brandsStrip?.enabled !== false && marqueeSet.length > 0;
+  const presenceOn = locationData.presence?.enabled !== false;
+  const ctaOn = locationData.ctaBanner?.enabled !== false;
+  // Video testimonials live at the CONTENT root (not under locationPage). The component itself
+  // renders nothing without playable items, so don't leave an empty <section id> behind either.
+  const videoOn =
+    pageContent.videoTestimonials?.enabled !== false &&
+    Array.isArray(pageContent.videoTestimonials?.items) &&
+    pageContent.videoTestimonials.items.length > 0;
 
-      {/* Cursive Font Injector */}
-      <style dangerouslySetInnerHTML={{
-        __html: `
-        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
-        .font-cursive {
-          font-family: 'Dancing Script', cursive;
-        }
-      `}} />
+  // ── FAQ ──
+  // The admin "Page FAQs" tab (shared by every template) saves content.faqs / faqBadge /
+  // faqTitle... The template used to read `pageData.faq` (a field the Page model does not have),
+  // so FAQs entered for this page could never appear. Page-specific FAQs only - no fallback
+  // to the homepage's global FAQ list.
+  const faqItems: any[] = Array.isArray(pageContent.faqs)
+    ? pageContent.faqs.filter((f: any) => f && String(f.question || "").trim() && String(f.answer || "").trim())
+    : [];
+  const faqOn = faqItems.length > 0 && pageContent.faqSection?.enabled !== false;
+
+  return (
+    <div className="flex-1 w-full bg-white dark:bg-[#080710] text-brand-dark dark:text-white transition-colors duration-300 relative overflow-x-clip font-sans pb-6">
 
       {/* ── BACKGROUND ART & EFFECTS ── */}
       <div className="absolute top-0 left-[-10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-tr from-brand-blue/[0.04] to-indigo-500/[0.02] dark:from-brand-blue/[0.08] dark:to-indigo-500/[0.04] blur-[140px] pointer-events-none select-none -z-10 animate-float-blob" />
@@ -355,19 +488,24 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#0306ac05_1px,transparent_1px),linear-gradient(to_bottom,#0306ac05_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:48px_48px] pointer-events-none -z-10" />
 
       {/* ── 1. HERO SECTION ── */}
-      {((hero as any)?.enabled !== false && (locationData as any).hero?.enabled !== false) && (
+      {/* When the hero is hidden the page would have no <h1> at all - keep one for SEO / screen readers. */}
+      {!heroOn && <h1 className="sr-only">{pageData?.title || `${hero.titleIntro} ${hero.titleHighlight}`.trim()}</h1>}
+
+      {heroOn && (
       <section className="pt-28 md:pt-36 lg:pt-40 pb-16 lg:pb-24 relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 min-h-[500px] lg:min-h-[560px] flex items-center">
 
         {/* Full-Bleed Background Images */}
         <div className="absolute inset-0 z-0 select-none pointer-events-none">
           <img
             src={hero.bgLight}
-            alt="Locations Hero Background"
+            alt=""
+            aria-hidden="true"
             className="w-full h-full object-cover object-right block dark:hidden"
           />
           <img
             src={hero.bgDark}
-            alt="Locations Hero Background Dark"
+            alt=""
+            aria-hidden="true"
             className="w-full h-full object-cover object-right hidden dark:block"
           />
 
@@ -396,7 +534,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
               </div>
 
               <h1 className="font-heading text-3xl sm:text-4xl lg:text-[42px] font-black tracking-tight leading-[1.18] text-brand-dark dark:text-white max-w-xl">
-                {hero.titleIntro}
+                {withGap(hero.titleIntro)}
                 <AccentHighlight className="text-brand-blue dark:text-brand-yellow pb-1 font-black">
                   {hero.titleHighlight}
                 </AccentHighlight>
@@ -423,7 +561,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
       )}
 
       {/* ── 2. STATS BAR SECTION with 3D Spring Roller Counters ── */}
-      {((stats as any)?.enabled !== false && (locationData as any).stats?.enabled !== false) && (
+      {statsOn && (
       <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/10 dark:bg-[#0c0b18]/10 section-y">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -486,7 +624,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
       )}
 
       {/* ── 3. LOGO RUNS ADS INFINITE MARQUEE ── */}
-      {((brandsStrip as any)?.enabled !== false && (locationData as any).brandsStrip?.enabled !== false) && (
+      {brandsOn && (
       <section className="py-7 border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/20 dark:bg-[#0c0b18]/40 select-none overflow-hidden logo-marquee-wrapper relative">
         <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-white to-transparent dark:from-[#080710] z-20 pointer-events-none" />
         <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-white to-transparent dark:from-[#080710] z-20 pointer-events-none" />
@@ -497,32 +635,38 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
           </span>
 
           <div className="flex-1 overflow-hidden relative">
-            <div className="logo-marquee-track gap-12 md:gap-16 items-center">
-              {[...Array(3)].map((_, outerIdx) => (
-                <div key={outerIdx} className="flex gap-12 md:gap-16 items-center">
-                  {brandsStrip.logos.map((logoItem: any, lIdx: number) => {
-                    const logoName = typeof logoItem ==="string" ? logoItem : logoItem?.name || "";
-                    const customImage = typeof logoItem ==="object" ? logoItem?.image : null;
+            {/* Three identical sets; the track slides exactly one set (-33.333%) and loops. Each set
+                carries its own trailing gap (pr-*) so the three widths are equal and the loop has no seam.
+                Sets 2 and 3 are visual duplicates and hidden from assistive tech. */}
+            <div className="logo-marquee-track items-center">
+              {[0, 1, 2].map((outerIdx) => (
+                <div key={outerIdx} aria-hidden={outerIdx > 0 ? true : undefined} className="flex shrink-0 gap-12 md:gap-16 pr-12 md:pr-16 items-center">
+                  {marqueeSet.map((logoItem, lIdx: number) => {
+                    const logoName = (logoItem?.name || "").trim();
+                    const customImage = logoItem?.image || null;
+                    const lname = logoName.toLowerCase();
 
+                    // Matched case-insensitively: "google ads" / "Ebay" used to miss their vector logo.
                     const LogoComponent =
-                      logoName.includes("Google") ? GoogleAdsLogo :
-                      logoName.includes("Meta") || logoName.includes("Facebook") ? MetaLogo :
-                      logoName.includes("Amazon") ? AmazonLogo :
-                      logoName.includes("Bing") || logoName.includes("Microsoft") ? BingLogo :
-                      logoName.includes("Apple") ? AppleLogo :
-                      logoName.includes("eBay") ? EbayLogo :
-                      logoName.includes("Reddit") ? RedditLogo : null;
+                      /google/.test(lname) ? GoogleAdsLogo :
+                      /meta|facebook/.test(lname) ? MetaLogo :
+                      /amazon/.test(lname) ? AmazonLogo :
+                      /bing|microsoft/.test(lname) ? BingLogo :
+                      /apple/.test(lname) ? AppleLogo :
+                      /ebay/.test(lname) ? EbayLogo :
+                      /reddit/.test(lname) ? RedditLogo : null;
 
                     return (
                       <div key={lIdx} className="flex items-center gap-2.5 font-sans text-xs font-black uppercase text-brand-dark dark:text-white tracking-wider whitespace-nowrap">
                         {customImage ? (
-                          <img src={customImage} alt={logoName} className="h-[22px] w-auto max-w-[90px] object-contain shrink-0 filter drop-shadow-sm" />
+                          // The brand name is printed right next to the image, so the image itself is decorative.
+                          <img src={customImage} alt="" loading="lazy" className="h-[22px] w-auto max-w-[90px] object-contain shrink-0 filter drop-shadow-sm" />
                         ) : LogoComponent ? (
                           <LogoComponent />
                         ) : (
                           <Sparkles className="h-4 w-4 text-brand-blue dark:text-brand-yellow shrink-0" />
                         )}
-                        <span>{logoName}</span>
+                        {logoName && <span>{logoName}</span>}
                       </div>
                     );
                   })}
@@ -546,19 +690,22 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
           .logo-marquee-wrapper:hover .logo-marquee-track {
             animation-play-state: paused;
           }
+          @media (prefers-reduced-motion: reduce) {
+            .logo-marquee-track { animation: none; }
+          }
         `}</style>
       </section>
       )}
 
       {/* ── VIDEO TESTIMONIALS ── */}
-      {pageContent.videoTestimonials?.enabled !== false && (
+      {videoOn && (
       <section id="video-testimonials">
         <VideoTestimonials data={pageContent.videoTestimonials} />
       </section>
       )}
 
       {/* ── 4. COUNTRIES WE SERVE ── */}
-      {((presence as any)?.enabled !== false && (locationData as any).presence?.enabled !== false) && (
+      {presenceOn && (
       <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] section-y">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 space-y-16">
 
@@ -571,8 +718,8 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
               </div>
 
               <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
-                {presence.titleIntro}{" "}
- <AccentHighlight className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
+                {withGap(presence.titleIntro)}
+                <AccentHighlight className="text-brand-blue dark:text-brand-yellow font-cursive font-normal">
                   {presence.titleHighlight}
                 </AccentHighlight>
               </h2>
@@ -594,64 +741,52 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
             </div>
           </div>
 
-          {/* Location Cards Stack with Spotlight Hover Glow */}
+          {/* Location Cards Stack with Spotlight Hover Glow (nothing is rendered for an empty list) */}
+          {presence.countries.length > 0 && (
           <div className="space-y-10">
             {presence.countries.map((country: any, idx: number) => {
-              // Resolve country URL from linked page or slug.
-              // Note: a trailing slash was tried here and reverted - Next's default
-              // (trailingSlash unset) 308-redirects a"/usa/" request back to"/usa" anyway,
-              // and the only way to make the trailing-slash form canonical is the site-wide
-              // trailingSlash:true config, which breaks /admin/login's client-side routing
-              // (confirmed via testing). Nesting is still fixed below regardless.
-              let cleanCountryUrl = country.pageSlug
-                ? (country.pageSlug.startsWith("/") ? country.pageSlug : `/${country.pageSlug}`)
-                : country.url || (country.slug ? (country.slug.startsWith("/") ? country.slug : `/${country.slug}`) : (country.id ==="USA" ? "/usa" : `/${slugify(country.name)}`));
-              
-              if (!cleanCountryUrl.endsWith("/")) cleanCountryUrl +="/";
-              const countryUrl = cleanCountryUrl;
+              // See resolveCountryUrl / resolveStateUrl above: hierarchical /country/state/ URLs,
+              // and no link at all when the card has no linked page yet.
+              const countryUrl = resolveCountryUrl(country);
 
-              const flagSrc = country.flag || (country.id ==="USA" ? "/flag_usa.png" : country.id ==="NZ" ? "/flag_nz.png" : "/flag_au.png");
+              const flagSrc = country.flag || (country.id === "NZ" ? "/flag_nz.png" : country.id === "AU" ? "/flag_au.png" : "/flag_usa.png");
               const coverImg = country.image || "/country_usa.png";
+              const countryName = String(country.name || "").trim() || "Location";
 
-              // Normalize states: Array of objects or strings
-              let statesList: { name: string; url: string }[] = [];
-              if (Array.isArray(country.states)) {
-                statesList = country.states.map((st: any) => {
-                  if (typeof st ==="string") {
-                    const sSlug = slugify(st);
-                    const targetUrl = `${countryUrl}${sSlug}/`;
-                    return { name: st, url: targetUrl };
-                  }
-                  const stName = st.name || "";
-                  const stSlugSegment = st.pageSlug
-                    ? st.pageSlug.split("/").filter(Boolean).pop()
-                    : slugify(stName);
-                  const targetUrl = `${countryUrl}${stSlugSegment}/`;
-                  return { name: stName, url: targetUrl };
-                }).filter((s: any) => s.name);
-              }
+              // Normalize states: array of {name, pageSlug} objects or plain strings.
+              const statesList: { name: string; url: string | null }[] = Array.isArray(country.states)
+                ? country.states
+                    .map((st: any) => ({
+                      name: String(typeof st === "string" ? st : st?.name || "").trim(),
+                      url: resolveStateUrl(countryUrl, st),
+                    }))
+                    .filter((s: { name: string }) => s.name)
+                : [];
 
               return (
                 <div
-                  key={country.id || idx}
-                  onClick={() => router.push(withTrailingSlash(countryUrl))}
-                  className="block no-underline group/card-link cursor-pointer"
+                  key={`${country.id || "country"}-${idx}`}
+                  // The whole card is a mouse shortcut to the country page; keyboard / screen-reader
+                  // users use the real "Explore" link inside it.
+                  onClick={countryUrl ? () => router.push(withTrailingSlash(countryUrl)) : undefined}
+                  className={`block no-underline group/card-link ${countryUrl ? "cursor-pointer" : ""}`}
                 >
                   <SpotlightCard className="rounded-[28px] border border-brand-zinc-200 dark:border-white/10">
-                    <div className="bg-white dark:bg-[#0c0b18] p-6 sm:p-8 flex flex-col lg:flex-row gap-8 items-center relative overflow-hidden group/card cursor-pointer">
-                      
+                    <div className={`bg-white dark:bg-[#0c0b18] p-6 sm:p-8 flex flex-col lg:flex-row gap-8 items-center relative overflow-hidden group/card ${countryUrl ? "cursor-pointer" : ""}`}>
+
                       {/* Subtle radial glow */}
                       <div className="absolute inset-0 bg-[radial-gradient(#0306ac02_1px,transparent_1.5px)] dark:bg-[radial-gradient(#ffffff01_1px,transparent_1.5px)] bg-[size:24px_24px] pointer-events-none" />
 
                       {/* Left Column: Visual Artwork & Flag */}
                       <div className="w-full lg:w-[35%] h-[260px] sm:h-[280px] rounded-[22px] overflow-hidden relative border border-brand-zinc-200 dark:border-white/10 shrink-0 bg-[#0c0b18]">
-                        <img 
-                          src={coverImg} 
-                          alt={country.name} 
-                          className="w-full h-full object-cover group-hover/card:scale-[1.05] transition-transform duration-700 pointer-events-none filter contrast-[1.03]" 
+                        <img
+                          src={coverImg}
+                          alt={countryName}
+                          loading="lazy"
+                          className="w-full h-full object-cover group-hover/card:scale-[1.05] transition-transform duration-700 pointer-events-none filter contrast-[1.03]"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                        
+
                         {/* Country Tag Badge */}
                         <div className="absolute top-4 left-4 bg-white/90 dark:bg-[#080710]/90 backdrop-blur-md border border-white/20 dark:border-white/10 px-3 py-1 rounded-full">
                           <span className="text-[10px] font-mono font-black text-brand-blue dark:text-brand-yellow uppercase tracking-wider">
@@ -661,9 +796,10 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
 
                         {/* Floating Flag Badge */}
                         <div className="absolute bottom-4 left-4 h-12 w-12 rounded-full overflow-hidden border-2 border-white dark:border-[#080710] shadow-2xl flex items-center justify-center bg-white dark:bg-[#0c0b18]">
-                          <img 
+                          <img
                             src={flagSrc}
-                            alt={`${country.name} Flag`}
+                            alt={`${countryName} flag`}
+                            loading="lazy"
                             className="w-full h-full object-cover"
                           />
                         </div>
@@ -672,34 +808,41 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
                       {/* Right Column: Information & Interactive States */}
                       <div className="flex-1 flex flex-col justify-between space-y-5 text-left relative z-20 w-full">
                         <div className="space-y-4">
-                          
+
                           {/* Title & Button Row */}
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-brand-zinc-200/80 dark:border-white/10 pb-4">
                             <div>
                               <h3 className="font-heading text-2xl sm:text-3xl font-black text-brand-dark dark:text-white tracking-tight group-hover/card:text-brand-blue dark:group-hover/card:text-brand-yellow transition-colors duration-300">
-                                {country.name}
+                                {countryName}
                               </h3>
-                              <span className="block text-[11px] font-mono font-bold text-brand-zinc-400 dark:text-zinc-500 uppercase tracking-widest mt-1">
-                                {country.tagline}
-                              </span>
+                              {country.tagline && (
+                                <span className="block text-[11px] font-mono font-bold text-brand-zinc-400 dark:text-zinc-500 uppercase tracking-widest mt-1">
+                                  {country.tagline}
+                                </span>
+                              )}
                             </div>
 
-                            <Link 
-                              href={countryUrl}
-                              onClick={(e) => e.stopPropagation()}
-                              className="inline-flex items-center gap-2 rounded-full bg-brand-blue/10 dark:bg-brand-yellow/10 border border-brand-blue/20 dark:border-brand-yellow/20 px-5 py-2 text-[11px] font-mono font-black uppercase text-brand-blue dark:text-brand-yellow group-hover/card:bg-brand-blue dark:group-hover/card:bg-brand-yellow group-hover/card:text-white dark:group-hover/card:text-[#080710] transition-all duration-300 shrink-0 no-underline"
-                            >
-                              <span>{country.buttonText || `EXPLORE ${country.name?.toUpperCase() || "LOCATION"}`}</span>
-                              <ArrowUpRight className="h-3.5 w-3.5 shrink-0" />
-                            </Link>
+                            {countryUrl && (
+                              <Link
+                                href={countryUrl}
+                                onClick={(e) => e.stopPropagation()}
+                                className="inline-flex items-center gap-2 rounded-full bg-brand-blue/10 dark:bg-brand-yellow/10 border border-brand-blue/20 dark:border-brand-yellow/20 px-5 py-2 text-[11px] font-mono font-black uppercase text-brand-blue dark:text-brand-yellow group-hover/card:bg-brand-blue dark:group-hover/card:bg-brand-yellow group-hover/card:text-white dark:group-hover/card:text-[#080710] transition-all duration-300 shrink-0 no-underline"
+                              >
+                                <span>{country.buttonText || `EXPLORE ${countryName.toUpperCase()}`}</span>
+                                <ArrowUpRight className="h-3.5 w-3.5 shrink-0" />
+                              </Link>
+                            )}
                           </div>
 
                           {/* Country Description */}
-                          <div className="text-xs sm:text-sm font-sans text-brand-zinc-600 dark:text-zinc-300 leading-relaxed">
-                            <RichTextRenderer content={country.description} />
-                          </div>
+                          {country.description && (
+                            <div className="text-xs sm:text-sm font-sans text-brand-zinc-600 dark:text-zinc-300 leading-relaxed">
+                              <RichTextRenderer content={country.description} />
+                            </div>
+                          )}
 
-                          {/* States Badge List (Clean, non-nested URL /countrySlug/stateSlug) */}
+                          {/* States Badge List (hierarchical URL /countrySlug/stateSlug/) - only when there are states */}
+                          {statesList.length > 0 && (
                           <div className="pt-2 space-y-2.5">
                             <div className="flex items-center gap-2">
                               <MapPin className="h-3.5 w-3.5 text-brand-blue dark:text-brand-yellow" />
@@ -707,19 +850,29 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
                             </div>
 
                             <div className="flex flex-wrap gap-2">
-                              {statesList.map((stateItem: { name: string; url: string }, sIdx: number) => (
-                                <Link 
-                                  key={sIdx} 
-                                  href={stateItem.url}
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="inline-flex items-center gap-1.5 rounded-full bg-zinc-100 dark:bg-white/5 border border-brand-zinc-200/80 dark:border-white/10 px-3.5 py-1.5 text-[10px] font-mono font-bold text-brand-zinc-700 dark:text-zinc-300 uppercase hover:border-brand-blue dark:hover:border-brand-yellow hover:text-brand-blue dark:hover:text-brand-yellow hover:scale-105 transition-all duration-200 no-underline"
-                                >
-                                  <span className="h-1.5 w-1.5 rounded-full bg-brand-blue dark:bg-brand-yellow" />
-                                  {stateItem.name}
-                                </Link>
-                              ))}
+                              {statesList.map((stateItem, sIdx: number) => {
+                                const chipClass = "inline-flex items-center gap-1.5 rounded-full bg-zinc-100 dark:bg-white/5 border border-brand-zinc-200/80 dark:border-white/10 px-3.5 py-1.5 text-[10px] font-mono font-bold text-brand-zinc-700 dark:text-zinc-300 uppercase transition-all duration-200 no-underline";
+                                const dot = <span className="h-1.5 w-1.5 rounded-full bg-brand-blue dark:bg-brand-yellow" />;
+                                return stateItem.url ? (
+                                  <Link
+                                    key={sIdx}
+                                    href={stateItem.url}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className={`${chipClass} hover:border-brand-blue dark:hover:border-brand-yellow hover:text-brand-blue dark:hover:text-brand-yellow hover:scale-105`}
+                                  >
+                                    {dot}
+                                    {stateItem.name}
+                                  </Link>
+                                ) : (
+                                  <span key={sIdx} className={chipClass}>
+                                    {dot}
+                                    {stateItem.name}
+                                  </span>
+                                );
+                              })}
                             </div>
                           </div>
+                          )}
 
                         </div>
                       </div>
@@ -729,13 +882,14 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
               );
             })}
           </div>
+          )}
 
         </div>
       </section>
       )}
 
       {/* ── 5. CTA BANNER SECTION ── */}
-      {((ctaBanner as any)?.enabled !== false && (locationData as any).ctaBanner?.enabled !== false) && (
+      {ctaOn && (
       <section id="contact" className="relative overflow-hidden bg-white dark:bg-[#080710] section-y">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
           <div className="cta-banner-card">
@@ -749,9 +903,9 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
               </div>
 
               <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.18] tracking-tight text-white">
-                {ctaBanner.titleIntro}
+                {withGap(ctaBanner.titleIntro)}
                 <span className="inline-block">
-                  {ctaBanner.titleWord1}
+                  {withGap(ctaBanner.titleWord1)}
                   <AccentHighlight className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
                     {ctaBanner.titleWord2}
                   </AccentHighlight>
@@ -776,6 +930,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
                 <img
                   src={ctaBanner.portraitSrc}
                   alt={ctaBanner.portraitAlt}
+                  loading="lazy"
                   className="w-full h-full object-cover object-top filter contrast-[1.05]"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#010356]/80 via-transparent to-transparent pointer-events-none" />
@@ -787,19 +942,19 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
       </section>
       )}
 
-      {/* Page Inline FAQs if available */}
-      {((pageData?.faq && pageData.faq.length > 0) || (pageData?.faqSchemaMarkup && pageData.faqSchemaMarkup.trim())) && (pageData?.faqSection?.enabled !== false && pageData?.faqs?.enabled !== false) && (
-        <div className="my-16 max-w-7xl mx-auto px-4 sm:px-6 md:px-12">
-          <PageInlineFaqs
-            faqs={pageData.faq}
-            faqSchemaMarkup={pageData.faqSchemaMarkup}
-            badge={pageData.faqBadge || "LOCATIONS FAQ"}
-            title={pageData.faqTitle || "Frequently Asked Questions"}
-            subtitle={pageData.faqDescription || "Key answers about our multi-regional design and development services."}
-          />
-        </div>
+      {/* ── PAGE FAQs (admin "Page FAQs" tab -> content.faqs) ──
+          Page-specific only: no fallback to the homepage's global FAQ list or built-in sample FAQs. */}
+      {faqOn && (
+        <PageInlineFaqs
+          data={pageContent}
+          faqs={faqItems}
+          faqSchemaMarkup={pageContent.faqSchemaMarkup}
+          badge={pageContent.faqBadge}
+          title={pageContent.faqTitleHighlight || pageContent.faqTitle}
+          description={pageContent.faqDescription}
+        />
       )}
 
-    </main>
+    </div>
   );
 }

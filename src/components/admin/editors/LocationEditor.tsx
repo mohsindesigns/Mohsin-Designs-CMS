@@ -25,13 +25,13 @@ const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor")
 const DEFAULT_LOCATION_DATA = {
   hero: {
     eyebrow: "OUR GLOBAL PRESENCE",
-    titleIntro: "Engineered for Growth Across ",
+    titleIntro: "Engineered for Growth Across",
     titleHighlight: "Global Markets.",
     description: "Empowering high-growth businesses and enterprise brands with bespoke web architecture, technical SEO, and conversion science tailored for local dominance.",
     ctaPrimaryText: "EXPLORE OUR WORK",
     ctaPrimaryHref: "/gallery",
     ctaSecondaryText: "GET FREE STRATEGY",
-    ctaSecondaryHref: "/contact",
+    ctaSecondaryHref: "/contact-us",
     bgLight: "/locationhero.png",
     bgDark: "/locationherodark.png"
   },
@@ -55,7 +55,7 @@ const DEFAULT_LOCATION_DATA = {
   },
   presence: {
     eyebrow: "GLOBAL COVERAGE",
-    titleIntro: "Serving High-Growth Brands Across ",
+    titleIntro: "Serving High-Growth Brands Across",
     titleHighlight: "3 Continents",
     description: "Browse our localized service hubs and discover how we engineer high-converting digital assets tailored specifically for regional compliance, language nuances, and target search volume.",
     cursiveText: "Explore Locations",
@@ -122,12 +122,12 @@ const DEFAULT_LOCATION_DATA = {
   },
   ctaBanner: {
     eyebrow: "READY FOR LOCAL DOMINANCE?",
-    titleIntro: "Scale Your Organic Revenue in Your ",
-    titleWord1: "Target Market ",
+    titleIntro: "Scale Your Organic Revenue in Your",
+    titleWord1: "Target Market",
     titleWord2: "Today?",
     description: "Schedule a free technical audit with our lead architect. We'll analyze your existing regional footprint and map out a concrete growth strategy.",
     ctaPrimaryText: "BOOK STRATEGY SESSION",
-    ctaPrimaryHref: "/contact",
+    ctaPrimaryHref: "/contact-us",
     ctaSecondaryText: "EXPLORE SHOWREEL",
     ctaSecondaryHref: "/gallery",
     portraitSrc: "/founder_portrait_nobg.png",
@@ -135,7 +135,59 @@ const DEFAULT_LOCATION_DATA = {
   }
 };
 
-export default function LocationEditor({ pageId, data, setData }: { pageId: string; data: any; setData: (d: any) => void }) {
+// Same slug normalisation the public template uses when it derives a link from a name.
+const slugifyName = (text: string): string =>
+  String(text || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[\s_-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+const cleanSlug = (v: any): string => String(v || "").trim().replace(/^\/+|\/+$/g, "");
+
+// Legacy string states / comma-separated state strings -> {name, pageSlug} objects.
+const normalizeCountries = (raw: any[]): any[] =>
+  raw.map((c: any) => {
+    let normalizedStates = c.states;
+    if (Array.isArray(c.states) && typeof c.states[0] === "string") {
+      normalizedStates = c.states.map((s: string) => ({
+        name: s,
+        pageSlug: `${c.slug || c.id?.toLowerCase() || "location"}/${s.toLowerCase().replace(/\s+/g, "-")}`
+      }));
+    } else if (typeof c.states === "string") {
+      normalizedStates = c.states.split(",").map((s: string) => ({
+        name: s.trim(),
+        pageSlug: `${c.slug || "location"}/${s.trim().toLowerCase().replace(/\s+/g, "-")}`
+      })).filter((s: any) => s.name);
+    }
+    return {
+      ...c,
+      states: Array.isArray(normalizedStates) ? normalizedStates : []
+    };
+  });
+
+// Only an old "serviceArea" value that really has the hub's shape may seed the editor:
+// the homepage's global "serviceArea" section uses the same key with unrelated fields.
+const legacyHubOf = (content: any) => {
+  const sa = content?.serviceArea;
+  return sa && typeof sa === "object" && ["hero", "stats", "brandsStrip", "presence", "ctaBanner"].some((k) => !!sa[k]) ? sa : null;
+};
+
+export default function LocationEditor({
+  pageId,
+  data,
+  setData,
+  seo,
+  setSeo,
+}: {
+  pageId: string;
+  data: any;
+  setData: (d: any) => void;
+  /** Page-level SEO state owned by the admin page shell (same object its SEO / Schema tabs edit). */
+  seo?: any;
+  setSeo?: (s: any) => void;
+}) {
   const [activeTab, setActiveTab] = useState("hero");
   const [availablePages, setAvailablePages] = useState<any[]>([]);
 
@@ -158,7 +210,7 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
         ...(prev || {}),
         locationPage: {
           ...DEFAULT_LOCATION_DATA,
-          ...(prev?.locationPage || prev?.serviceArea || {})
+          ...(prev?.locationPage || legacyHubOf(prev) || {})
         }
       }));
     }
@@ -190,131 +242,172 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
     });
   };
 
-  // ── BRAND MARQUEE CRUD ──
-  const logos = loc.brandsStrip?.logos || DEFAULT_LOCATION_DATA.brandsStrip.logos;
-
-  const handleAddLogo = () => {
-    const newLogos = [...logos, { name: "New Brand Platform", image: "" }];
-    updateNested("brandsStrip", "logos", newLogos);
+  // ── LIST UPDATERS ──
+  // Every list edit is computed against the LATEST state (`prev`), never against the list captured
+  // by the render that created the handler. Two edits in the same tick (or a rich-text field that
+  // reports its normalised HTML on mount) used to overwrite each other - e.g. picking a linked page
+  // called handleUpdateCountry twice and only the second field survived.
+  const updateLogos = (fn: (list: any[]) => any[]) => {
+    setData((prev: any) => {
+      const cur = prev?.locationPage || loc;
+      const list = Array.isArray(cur.brandsStrip?.logos) ? cur.brandsStrip.logos : DEFAULT_LOCATION_DATA.brandsStrip.logos;
+      return {
+        ...(prev || {}),
+        locationPage: { ...cur, brandsStrip: { ...(cur.brandsStrip || {}), logos: fn(list) } }
+      };
+    });
   };
 
-  const handleUpdateLogo = (index: number, field: string, val: any) => {
-    const updated = [...logos];
-    const current = typeof updated[index] === "string" ? { name: updated[index], image: "" } : { ...(updated[index] || {}) };
-    updated[index] = { ...current, [field]: val };
-    updateNested("brandsStrip", "logos", updated);
+  const updateCountries = (fn: (list: any[]) => any[]) => {
+    setData((prev: any) => {
+      const cur = prev?.locationPage || loc;
+      const list = normalizeCountries(Array.isArray(cur.presence?.countries) ? cur.presence.countries : DEFAULT_LOCATION_DATA.presence.countries);
+      return {
+        ...(prev || {}),
+        locationPage: { ...cur, presence: { ...(cur.presence || {}), countries: fn(list) } }
+      };
+    });
   };
 
-  const handleDeleteLogo = (index: number) => {
-    const updated = logos.filter((_: any, idx: number) => idx !== index);
-    updateNested("brandsStrip", "logos", updated);
-  };
-
-  const handleMoveLogo = (index: number, direction: "up" | "down") => {
-    if ((direction === "up" && index === 0) || (direction === "down" && index === logos.length - 1)) return;
+  const moveItem = (list: any[], index: number, direction: "up" | "down") => {
     const target = direction === "up" ? index - 1 : index + 1;
-    const updated = [...logos];
-    const temp = updated[index];
-    updated[index] = updated[target];
-    updated[target] = temp;
-    updateNested("brandsStrip", "logos", updated);
+    if (target < 0 || target >= list.length) return list;
+    const next = [...list];
+    [next[index], next[target]] = [next[target], next[index]];
+    return next;
   };
+
+  // ── BRAND MARQUEE CRUD ──
+  const logos: any[] = Array.isArray(loc.brandsStrip?.logos) ? loc.brandsStrip.logos : DEFAULT_LOCATION_DATA.brandsStrip.logos;
+
+  // Blank name on purpose: the public page skips a logo that has neither a name nor an image,
+  // so a forgotten "New Brand Platform" can never leak onto the live site.
+  const handleAddLogo = () => updateLogos((list) => [...list, { name: "", image: "" }]);
+
+  const handleUpdateLogo = (index: number, field: string, val: any) =>
+    updateLogos((list) =>
+      list.map((item, i) => {
+        if (i !== index) return item;
+        const current = typeof item === "string" ? { name: item, image: "" } : { ...(item || {}) };
+        return { ...current, [field]: val };
+      })
+    );
+
+  const handleDeleteLogo = (index: number) => updateLogos((list) => list.filter((_, i) => i !== index));
+
+  const handleMoveLogo = (index: number, direction: "up" | "down") => updateLogos((list) => moveItem(list, index, direction));
 
   // ── COUNTRIES CRUD ──
-  const rawCountries = loc.presence?.countries || DEFAULT_LOCATION_DATA.presence.countries;
+  const rawCountries = Array.isArray(loc.presence?.countries) ? loc.presence.countries : DEFAULT_LOCATION_DATA.presence.countries;
 
   // Normalize legacy string states to objects if any
-  const countries = rawCountries.map((c: any) => {
-    let normalizedStates = c.states;
-    if (Array.isArray(c.states) && typeof c.states[0] === "string") {
-      normalizedStates = c.states.map((s: string) => ({
-        name: s,
-        pageSlug: `${c.slug || c.id?.toLowerCase() || "location"}/${s.toLowerCase().replace(/\s+/g, "-")}`
-      }));
-    } else if (typeof c.states === "string") {
-      normalizedStates = c.states.split(",").map((s: string) => ({
-        name: s.trim(),
-        pageSlug: `${c.slug || "location"}/${s.trim().toLowerCase().replace(/\s+/g, "-")}`
-      })).filter((s: any) => s.name);
-    }
-    return {
-      ...c,
-      states: Array.isArray(normalizedStates) ? normalizedStates : []
-    };
-  });
+  const countries = normalizeCountries(rawCountries);
+
+  // ── LINK CHECKING ──
+  // What the public hub links to, and whether that page really exists. The hub builds
+  //   country -> /<page slug>/          state -> /<country slug>/<state slug>/
+  // (see LocationTemplate), so the admin sees the exact URL and gets a warning instead of
+  // finding out about a 404 on the live site.
+  const livePages = availablePages.filter((p: any) => !p.isTrashed);
+  const findPage = (slugs: string | string[], templates?: string[]) => {
+    const wanted = (Array.isArray(slugs) ? slugs : [slugs]).map(cleanSlug).filter(Boolean);
+    if (!wanted.length) return null;
+    return (
+      availablePages.find(
+        (p: any) =>
+          !p.isTrashed &&
+          (!templates || templates.includes(p.template)) &&
+          wanted.some((w) => cleanSlug(p.slug) === w || cleanSlug(p.slug).endsWith(`/${w}`))
+      ) || null
+    );
+  };
+  const pagesLoaded = availablePages.length > 0;
+
+  const countryLinkInfo = (country: any) => {
+    const stored = cleanSlug(country.pageSlug || country.slug);
+    if (!stored) return { url: "", warning: "No linked page selected - this card will not be clickable on the live site." };
+    const url = `/${stored}/`;
+    if (!pagesLoaded) return { url, warning: "" };
+    const page = findPage(stored);
+    if (!page) return { url, warning: `No page with the slug "${stored}" exists (or it is in the Trash) - this link will show a 404.` };
+    if (page.status && page.status !== "published") return { url, warning: `"${page.title}" is still a draft - the link will 404 until it is published.` };
+    return { url, warning: "" };
+  };
+
+  const stateLinkInfo = (country: any, stateItem: any) => {
+    const countryStored = cleanSlug(country.pageSlug || country.slug);
+    const segs = cleanSlug(stateItem.pageSlug).split("/").filter(Boolean);
+    const last = segs.length ? segs[segs.length - 1] : slugifyName(stateItem.name);
+    if (!last) return { url: "", warning: "Enter a name or pick a page - this chip will not be clickable." };
+    const url = segs.length >= 3 ? `/${segs.join("/")}/` : countryStored ? `/${countryStored}/${last}/` : segs.length === 2 ? `/${segs.join("/")}/` : "";
+    if (!url) return { url: "", warning: "Link the country card to a page first - this chip will not be clickable." };
+    if (!pagesLoaded) return { url, warning: "" };
+    const page = segs.length >= 3 ? findPage([segs.join("/"), last], ["city"]) : findPage(last, ["state"]);
+    if (!page) return { url, warning: `No state page named "${last}" exists (or it is in the Trash) - this link will show a 404.` };
+    if (page.status && page.status !== "published") return { url, warning: `"${page.title}" is still a draft - the link will 404 until it is published.` };
+    return { url, warning: "" };
+  };
+
+  // Options for the state dropdown: State pages (value = slug) and City pages that carry their full path.
+  const stateOptions = livePages
+    .map((p: any) => {
+      if (p.template === "state") return { value: p.slug, title: p.title, label: `/${p.slug}  (${p.title})${p.status === "draft" ? " - draft" : ""}`, group: "State pages" };
+      if (p.template === "city") {
+        const full = String(p.slug).includes("/")
+          ? p.slug
+          : p.content?.countrySlug && p.content?.stateSlug
+            ? `${p.content.countrySlug}/${p.content.stateSlug}/${p.slug}`
+            : null;
+        return full ? { value: full, title: p.title, label: `/${full}  (${p.title})${p.status === "draft" ? " - draft" : ""}`, group: "City pages" } : null;
+      }
+      return null;
+    })
+    .filter(Boolean) as { value: string; title: string; label: string; group: string }[];
 
   const handleAddCountry = () => {
+    // Deliberately NOT pre-filled as "United States / usa": a second card silently pointing at
+    // /usa/ was a trap. The admin names it and picks its linked page.
     const newCountry = {
       id: Date.now().toString(),
-      name: "United States",
-      slug: "usa",
-      pageSlug: "usa",
+      name: "New Country",
+      slug: "",
+      pageSlug: "",
       tagline: "REGIONAL HUB",
       subtitle: "Major Cities & Districts",
       description: "Localized design, architecture, and organic search growth campaigns.",
-      image: "/country_usa.png",
-      flag: "/flag_usa.png",
-      buttonText: "EXPLORE LOCATION",
-      states: [
-        { name: "Texas", pageSlug: "usa/texas" }
-      ]
+      image: "",
+      flag: "",
+      buttonText: "",
+      states: []
     };
-    updateNested("presence", "countries", [...countries, newCountry]);
+    updateCountries((list) => [...list, newCountry]);
   };
 
-  const handleUpdateCountry = (index: number, field: string, value: any) => {
-    const updated = [...countries];
-    updated[index] = { ...updated[index], [field]: value };
-    updateNested("presence", "countries", updated);
+  // Accepts several fields at once so a multi-field change is ONE state update.
+  const handleUpdateCountry = (index: number, field: string | Record<string, any>, value?: any) => {
+    const patch = typeof field === "string" ? { [field]: value } : field;
+    updateCountries((list) => list.map((c, i) => (i === index ? { ...c, ...patch } : c)));
   };
 
-  const handleDeleteCountry = (index: number) => {
-    const updated = countries.filter((_: any, idx: number) => idx !== index);
-    updateNested("presence", "countries", updated);
-  };
+  const handleDeleteCountry = (index: number) => updateCountries((list) => list.filter((_, i) => i !== index));
 
-  const handleMoveCountry = (index: number, direction: "up" | "down") => {
-    if ((direction === "up" && index === 0) || (direction === "down" && index === countries.length - 1)) return;
-    const targetIndex = direction === "up" ? index - 1 : index + 1;
-    const updated = [...countries];
-    const temp = updated[index];
-    updated[index] = updated[targetIndex];
-    updated[targetIndex] = temp;
-    updateNested("presence", "countries", updated);
-  };
+  const handleMoveCountry = (index: number, direction: "up" | "down") => updateCountries((list) => moveItem(list, index, direction));
 
   // ── STATE ITEM CRUD PER COUNTRY ──
-  const handleAddStateToCountry = (countryIndex: number) => {
-    const updated = [...countries];
-    const country = updated[countryIndex];
-    const currentStates = country.states || [];
-    const newState = {
-      name: "New State / City",
-      pageSlug: country.slug ? `${country.slug}/new-location` : "new-location"
-    };
-    updated[countryIndex] = {
-      ...country,
-      states: [...currentStates, newState]
-    };
-    updateNested("presence", "countries", updated);
-  };
+  const updateStates = (countryIndex: number, fn: (states: any[]) => any[]) =>
+    updateCountries((list) => list.map((c, i) => (i === countryIndex ? { ...c, states: fn(Array.isArray(c.states) ? c.states : []) } : c)));
 
-  const handleUpdateStateInCountry = (countryIndex: number, stateIndex: number, field: string, value: string) => {
-    const updated = [...countries];
-    const country = updated[countryIndex];
-    const states = [...(country.states || [])];
-    states[stateIndex] = { ...states[stateIndex], [field]: value };
-    updated[countryIndex] = { ...country, states };
-    updateNested("presence", "countries", updated);
-  };
+  // Blank name on purpose (same reason as logos): an unnamed chip is not shown on the live page.
+  const handleAddStateToCountry = (countryIndex: number) => updateStates(countryIndex, (states) => [...states, { name: "", pageSlug: "" }]);
 
-  const handleDeleteStateFromCountry = (countryIndex: number, stateIndex: number) => {
-    const updated = [...countries];
-    const country = updated[countryIndex];
-    const states = country.states.filter((_: any, idx: number) => idx !== stateIndex);
-    updated[countryIndex] = { ...country, states };
-    updateNested("presence", "countries", updated);
-  };
+  const handleUpdateStateInCountry = (countryIndex: number, stateIndex: number, field: string, value: string) =>
+    updateStates(countryIndex, (states) => states.map((st, i) => (i === stateIndex ? { ...st, [field]: value } : st)));
+
+  const handleDeleteStateFromCountry = (countryIndex: number, stateIndex: number) =>
+    updateStates(countryIndex, (states) => states.filter((_, i) => i !== stateIndex));
+
+  const handleMoveStateInCountry = (countryIndex: number, stateIndex: number, direction: "up" | "down") =>
+    updateStates(countryIndex, (states) => moveItem(states, stateIndex, direction));
 
   const tabs = [
     { id: "hero", label: "01. Hero Banner" },
@@ -346,6 +439,11 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
           </React.Fragment>
         ))}
       </div>
+
+      <p className="text-[12px] text-[#646970] -mt-6 mb-8">
+        Any empty text field falls back to the default wording shown in gray on the live page. To remove a whole section, use its
+        Visible / Hidden switch at the top of its tab.
+      </p>
 
       <AnimatePresence mode="wait">
         <motion.div
@@ -392,7 +490,7 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
                       value={loc.hero?.titleIntro || ""}
                       onChange={(e) => updateNested("hero", "titleIntro", e.target.value)}
                       className={UI.input}
-                      placeholder="Engineered for Growth Across "
+                      placeholder="Engineered for Growth Across"
                     />
                   </div>
 
@@ -461,7 +559,7 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
                         value={loc.hero?.ctaSecondaryHref || ""}
                         onChange={(e) => updateNested("hero", "ctaSecondaryHref", e.target.value)}
                         className={UI.input}
-                        placeholder="/contact"
+                        placeholder="/contact-us"
                       />
                     </div>
                   </div>
@@ -497,6 +595,11 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
                   label="Stats Counters"
                 />
               </div>
+              <p className={UI.helpText}>
+                The first number in a metric counts up when the card scrolls into view (for example <span className="font-mono">10+</span>,{" "}
+                <span className="font-mono">99.4%</span>, <span className="font-mono">1,200+</span>, <span className="font-mono">$2M</span>); any
+                other text is shown exactly as typed.
+              </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 {/* 1. Experience */}
@@ -741,6 +844,7 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-[#50575e] uppercase tracking-wider">
                       Marquee Brand Items ({logos.length})
+                      {logos.length === 0 && <span className="ml-2 normal-case font-normal text-[#b32d2e]">- empty: the marquee strip is hidden on the live page</span>}
                     </span>
                     <button
                       type="button"
@@ -871,7 +975,7 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
                       value={loc.presence?.titleIntro || ""}
                       onChange={(e) => updateNested("presence", "titleIntro", e.target.value)}
                       className={UI.input}
-                      placeholder="Serving High-Growth Brands Across "
+                      placeholder="Serving High-Growth Brands Across"
                     />
                   </div>
 
@@ -896,6 +1000,18 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
                     className={UI.input + " font-bold text-amber-600 bg-amber-50"}
                     placeholder="Explore Locations"
                   />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className={UI.label}>States Row Label</label>
+                  <input
+                    type="text"
+                    value={loc.presence?.locationsLabel || ""}
+                    onChange={(e) => updateNested("presence", "locationsLabel", e.target.value)}
+                    className={UI.input}
+                    placeholder="ACTIVE REGIONAL LOCATIONS & STATE HUBS"
+                  />
+                  <p className="text-[11px] text-[#646970]">Small caption above the state / city chips on every country card.</p>
                 </div>
 
                 <div className="space-y-1.5">
@@ -978,28 +1094,56 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
                       </div>
 
                       {/* Select Linked Page from Dashboard */}
-                      <div className="space-y-1.5">
-                        <label className={UI.label}>Linked Country Page</label>
-                        <select
-                          value={country.pageSlug || country.slug || ""}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            handleUpdateCountry(index, "pageSlug", val);
-                            handleUpdateCountry(index, "slug", val);
-                          }}
-                          className={UI.input + " font-mono text-xs text-[#2271b1] bg-white"}
-                        >
-                          <option value="">-- Select Linked Page from Dashboard --</option>
-                          {availablePages.map((p: any) => (
-                            <option key={p._id} value={p.slug}>
-                              /{p.slug} &nbsp; ({p.title})
-                            </option>
-                          ))}
-                        </select>
-                        <p className="text-[11px] text-[#646970]">
-                          Clicking this country or its explore button will navigate directly to: <span className="font-mono text-[#2271b1]">/{country.pageSlug || country.slug || "..."}</span>
-                        </p>
-                      </div>
+                      {(() => {
+                        const stored = country.pageSlug || country.slug || "";
+                        const link = countryLinkInfo(country);
+                        const countryPages = livePages.filter((p: any) => p.template === "country");
+                        const otherPages = livePages.filter((p: any) => p.template !== "country");
+                        const storedKnown = !stored || livePages.some((p: any) => p.slug === stored);
+                        // a stored "/usa/" style value still matches the "usa" option
+                        const matchedCountryPage = stored ? livePages.find((p: any) => cleanSlug(p.slug) === cleanSlug(stored)) : undefined;
+                        const optionLabel = (p: any) => `/${p.slug}  (${p.title})${p.status === "draft" ? " - draft" : ""}`;
+                        return (
+                          <div className="space-y-1.5">
+                            <label className={UI.label}>Linked Country Page</label>
+                            <select
+                              value={matchedCountryPage ? matchedCountryPage.slug : stored}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                const page = livePages.find((p: any) => p.slug === val);
+                                // ONE update for both keys (two separate updates overwrote each other and the
+                                // link never changed), and adopt the page title for a still-unnamed card.
+                                const patch: Record<string, any> = { pageSlug: val, slug: val };
+                                if (page && (!country.name || country.name === "New Country")) patch.name = page.title;
+                                handleUpdateCountry(index, patch);
+                              }}
+                              className={UI.input + " font-mono text-xs text-[#2271b1] bg-white"}
+                            >
+                              <option value="">-- Select Linked Page from Dashboard --</option>
+                              {!storedKnown && !matchedCountryPage && <option value={stored}>/{stored}  (page not found)</option>}
+                              {countryPages.length > 0 && (
+                                <optgroup label="Country pages">
+                                  {countryPages.map((p: any) => (
+                                    <option key={p._id} value={p.slug}>{optionLabel(p)}</option>
+                                  ))}
+                                </optgroup>
+                              )}
+                              {otherPages.length > 0 && (
+                                <optgroup label="Other pages">
+                                  {otherPages.map((p: any) => (
+                                    <option key={p._id} value={p.slug}>{optionLabel(p)}</option>
+                                  ))}
+                                </optgroup>
+                              )}
+                            </select>
+                            <p className="text-[11px] text-[#646970]">
+                              Clicking this country or its explore button opens:{" "}
+                              <span className="font-mono text-[#2271b1]">{link.url || "(no link)"}</span>
+                            </p>
+                            {link.warning && <p className="text-[11px] font-semibold text-[#b32d2e]">{link.warning}</p>}
+                          </div>
+                        );
+                      })()}
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1056,7 +1200,7 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
                       />
                       <ImageField
                         label="Floating Flag Icon"
-                        value={country.flag || "/flag_usa.png"}
+                        value={country.flag || (country.id === "NZ" ? "/flag_nz.png" : country.id === "AU" ? "/flag_au.png" : "/flag_usa.png")}
                         onChange={(val) => handleUpdateCountry(index, "flag", val)}
                       />
                     </div>
@@ -1082,44 +1226,102 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
                       </div>
 
                       <div className="space-y-2.5">
-                        {(country.states || []).map((stateItem: any, sIdx: number) => (
-                          <div key={sIdx} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-2.5 bg-white border border-[#dcdcde] rounded-[3px] shadow-sm">
-                            <div className="flex items-center gap-1.5 flex-1 min-w-[140px]">
-                              <span className="text-[11px] font-mono text-[#8c8f94] font-bold">#{sIdx + 1}</span>
-                              <input
-                                type="text"
-                                value={stateItem.name || ""}
-                                onChange={(e) => handleUpdateStateInCountry(index, sIdx, "name", e.target.value)}
-                                className="w-full bg-[#f6f7f7] border border-[#c3c4c7] px-2.5 py-1 text-xs font-bold text-[#1d2327] rounded outline-none focus:border-[#2271b1]"
-                                placeholder="State / City Name (e.g. Texas, Lahore)"
-                              />
-                            </div>
+                        {(country.states || []).map((stateItem: any, sIdx: number) => {
+                          const stateLink = stateLinkInfo(country, stateItem);
+                          const storedState = stateItem.pageSlug || "";
+                          // Stored values such as "usa/texas" (seed data / migrated slugs) and the dropdown's bare
+                          // "texas" point at the same page: select the matching option instead of showing "unselected".
+                          const lastSeg = (v: string) => cleanSlug(v).split("/").pop() || "";
+                          const matchedState =
+                            stateOptions.find((o) => o.value === storedState) ||
+                            (storedState ? stateOptions.find((o) => o.group === "State pages" && lastSeg(o.value) === lastSeg(storedState)) : undefined);
+                          const stateKnown = !storedState || !!matchedState;
+                          const stateStates = country.states || [];
+                          return (
+                          <div key={sIdx} className="p-2.5 bg-white border border-[#dcdcde] rounded-[3px] shadow-sm space-y-1.5">
+                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                              <div className="flex items-center gap-1.5 flex-1 min-w-[140px]">
+                                <span className="text-[11px] font-mono text-[#8c8f94] font-bold">#{sIdx + 1}</span>
+                                <input
+                                  type="text"
+                                  aria-label={`State or city name #${sIdx + 1}`}
+                                  value={stateItem.name || ""}
+                                  onChange={(e) => handleUpdateStateInCountry(index, sIdx, "name", e.target.value)}
+                                  className="w-full bg-[#f6f7f7] border border-[#c3c4c7] px-2.5 py-1 text-xs font-bold text-[#1d2327] rounded outline-none focus:border-[#2271b1]"
+                                  placeholder="State / City Name (e.g. Texas, Lahore)"
+                                />
+                              </div>
 
-                            <div className="flex items-center gap-2 flex-1">
-                              <select
-                                value={stateItem.pageSlug || ""}
-                                onChange={(e) => handleUpdateStateInCountry(index, sIdx, "pageSlug", e.target.value)}
-                                className="w-full bg-white border border-[#c3c4c7] px-2 py-1 text-[11px] font-mono text-[#2271b1] rounded outline-none focus:border-[#2271b1]"
-                              >
-                                <option value="">-- Select Target Page Slug --</option>
-                                {availablePages.map((p: any) => (
-                                  <option key={p._id} value={p.slug}>
-                                    /{p.slug} &nbsp; ({p.title})
-                                  </option>
-                                ))}
-                              </select>
-                              
-                              <button
-                                type="button"
-                                onClick={() => handleDeleteStateFromCountry(index, sIdx)}
-                                className="p-1 text-red-600 hover:text-red-700 shrink-0"
-                                title="Delete State"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
+                              <div className="flex items-center gap-2 flex-1">
+                                <select
+                                  aria-label={`Target page for state or city #${sIdx + 1}`}
+                                  value={matchedState ? matchedState.value : storedState}
+                                  onChange={(e) => {
+                                    const val = e.target.value;
+                                    const opt = stateOptions.find((o) => o.value === val);
+                                    // one update: page + (for a still-unnamed row) the page title
+                                    updateStates(index, (states) =>
+                                      states.map((st, i) =>
+                                        i === sIdx ? { ...st, pageSlug: val, ...(opt && !String(st.name || "").trim() ? { name: opt.title } : {}) } : st
+                                      )
+                                    );
+                                  }}
+                                  className="w-full bg-white border border-[#c3c4c7] px-2 py-1 text-[11px] font-mono text-[#2271b1] rounded outline-none focus:border-[#2271b1]"
+                                >
+                                  <option value="">-- Auto (from name) or pick a page --</option>
+                                  {!stateKnown && <option value={storedState}>/{storedState}  (page not found)</option>}
+                                  {["State pages", "City pages"].map((group) => {
+                                    const opts = stateOptions.filter((o) => o.group === group);
+                                    return opts.length > 0 ? (
+                                      <optgroup key={group} label={group}>
+                                        {opts.map((o) => (
+                                          <option key={o.value} value={o.value}>{o.label}</option>
+                                        ))}
+                                      </optgroup>
+                                    ) : null;
+                                  })}
+                                </select>
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleMoveStateInCountry(index, sIdx, "up")}
+                                  disabled={sIdx === 0}
+                                  className="p-1 text-[#50575e] hover:text-[#1d2327] disabled:opacity-30 shrink-0"
+                                  title="Move Up"
+                                  aria-label="Move state up"
+                                >
+                                  <MoveUp className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleMoveStateInCountry(index, sIdx, "down")}
+                                  disabled={sIdx === stateStates.length - 1}
+                                  className="p-1 text-[#50575e] hover:text-[#1d2327] disabled:opacity-30 shrink-0"
+                                  title="Move Down"
+                                  aria-label="Move state down"
+                                >
+                                  <MoveDown className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteStateFromCountry(index, sIdx)}
+                                  className="p-1 text-red-600 hover:text-red-700 shrink-0"
+                                  title="Delete State"
+                                  aria-label="Delete state"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
                             </div>
+                            {(stateItem.name || storedState) && (
+                              <p className="text-[11px] text-[#646970] pl-6">
+                                Opens: <span className="font-mono text-[#2271b1]">{stateLink.url || "(no link)"}</span>
+                                {stateLink.warning && <span className="ml-2 font-semibold text-[#b32d2e]">{stateLink.warning}</span>}
+                              </p>
+                            )}
                           </div>
-                        ))}
+                          );
+                        })}
 
                         {(!country.states || country.states.length === 0) && (
                           <div className="text-center py-3 bg-white border border-dashed border-[#c3c4c7] rounded text-xs text-[#8c8f94]">
@@ -1170,7 +1372,7 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
                       value={loc.ctaBanner?.titleIntro || ""}
                       onChange={(e) => updateNested("ctaBanner", "titleIntro", e.target.value)}
                       className={UI.input}
-                      placeholder="Scale Your Organic Revenue in Your "
+                      placeholder="Scale Your Organic Revenue in Your"
                     />
                   </div>
 
@@ -1181,7 +1383,7 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
                       value={loc.ctaBanner?.titleWord1 || ""}
                       onChange={(e) => updateNested("ctaBanner", "titleWord1", e.target.value)}
                       className={UI.input + " font-bold"}
-                      placeholder="Target Market "
+                      placeholder="Target Market"
                     />
                   </div>
 
@@ -1226,7 +1428,7 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
                         value={loc.ctaBanner?.ctaPrimaryHref || ""}
                         onChange={(e) => updateNested("ctaBanner", "ctaPrimaryHref", e.target.value)}
                         className={UI.input}
-                        placeholder="/contact"
+                        placeholder="/contact-us"
                       />
                     </div>
                   </div>
@@ -1263,6 +1465,17 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
                     onChange={(val) => updateNested("ctaBanner", "portraitSrc", val)}
                     description="Portrait image with transparent background."
                   />
+                  <div className="space-y-1.5 pt-1">
+                    <label className={UI.label}>Portrait Image Alt Text</label>
+                    <input
+                      type="text"
+                      value={loc.ctaBanner?.portraitAlt || ""}
+                      onChange={(e) => updateNested("ctaBanner", "portraitAlt", e.target.value)}
+                      className={UI.input}
+                      placeholder="Founder & Lead Architect"
+                    />
+                    <p className="text-[11px] text-[#646970]">Describes the portrait for screen readers and search engines.</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1270,17 +1483,14 @@ export default function LocationEditor({ pageId, data, setData }: { pageId: stri
 
           {activeTab === "schema" && (
             <div className="space-y-4">
+              {/* Saving sends page.seo.schemaData and overwrites content.schemaMarkup with it, so this tab must
+                  edit the SAME page-level seo object as the shell's own "Schema Markup" tab (it used to write
+                  only into content, and a previously-saved seo.schemaData silently replaced the edit on Save). */}
               <SchemaEditor
-                value={data.schemaMarkup || data.seo?.schemaData || ""}
+                value={seo?.schemaData ?? data.schemaMarkup ?? data.seo?.schemaData ?? ""}
                 onChange={(val) => {
-                  setData((prev: any) => ({
-                    ...(prev || {}),
-                    schemaMarkup: val,
-                    seo: {
-                      ...(prev?.seo || {}),
-                      schemaData: val
-                    }
-                  }));
+                  if (setSeo) setSeo({ ...(seo || {}), schemaData: val });
+                  setData((prev: any) => ({ ...(prev || {}), schemaMarkup: val, faqSchemaAutoSync: false }));
                 }}
                 pageTitle="Locations Overview"
               />

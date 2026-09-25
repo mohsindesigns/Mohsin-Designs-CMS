@@ -2,78 +2,99 @@
 
 import CtaButton from "@/components/ui/CtaButton";
 import ThemedSelect from "@/components/ui/ThemedSelect";
-import { withTrailingSlash } from "@/lib/url";
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
-import React, { useState } from "react";
-import Image from "next/image";
+import React, { useEffect, useId, useRef, useState } from "react";
 import Link from "@/components/ui/Link";
-import { motion, AnimatePresence } from "framer-motion";
 import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
-import { isSafeHref, getValidHref } from "@/lib/utils";
+import { getValidHref } from "@/lib/utils";
 import {
   ArrowRight,
   Play,
-  Star,
   CheckCircle2,
   Sparkles,
-  ShieldCheck,
-  Award,
-  Globe,
   Briefcase,
-  TrendingUp,
-  Building2,
-  Phone,
   Target,
-  Zap,
-  Clock,
-  Layers,
-  ChevronDown,
+  Phone,
+  Code,
   Mail,
   User,
   Check,
-  ShoppingCart,
-  Heart,
-  Scale,
-  GraduationCap,
-  Database,
-  Cpu,
-  Palette,
-  Search,
-  Monitor,
-  Code,
-  Lock,
-  MessageSquare
+  ShoppingCart
 } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import { useContent } from "@/hooks/useContent";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import AccentHighlight from "@/components/ui/AccentHighlight";
+import { DEFAULT_INDUSTRY_DOMAINS, DEFAULT_INDUSTRY_FEATURES, padIndex } from "./industryDefaults";
 
 // ── Icon Resolver Helper ──────────────────────────────────────────────────────
+// Same namespace the admin IconSelector lists from, so every name it can save resolves here.
 function getIcon(name?: string, FallbackComponent = Briefcase) {
   if (!name) return FallbackComponent;
   const icons = LucideIcons as any;
   return icons[name] || FallbackComponent;
 }
 
-// ── SVG Drawing Underline Animation ──────────────────────────────────────────
-const drawVariants = {
-  hidden: { pathLength: 0 },
-  visible: (custom: { delay: number; duration: number }) => ({
-    pathLength: 1,
-    transition: {
-      duration: custom?.duration ?? 0.5,
-      delay: custom?.delay ?? 0.1,
-      ease: "easeOut" as any
-    }
-  })
+// ── Small text helpers ────────────────────────────────────────────────────────
+// Rich-text fields come back from the editor as HTML ("<p></p>" when cleared), so a plain
+// truthiness check treats an emptied field as filled. These look at the visible text instead.
+const stripHtml = (v: any): string =>
+  typeof v === "string" ? v.replace(/<[^>]*>/g, " ").replace(/&nbsp;/gi, " ").replace(/\s+/g, " ").trim() : "";
+const hasText = (v: any): boolean =>
+  Array.isArray(v) ? v.some(hasText) : /<img\b/i.test(String(v ?? "")) || stripHtml(v).length > 0;
+/** v when it has visible text, otherwise the fallback (blank rich-text -> built-in default). */
+const richOr = (v: any, fallback: any) => (hasText(v) ? v : fallback);
+const excerpt = (v: any, max = 140): string => {
+  const t = stripHtml(v);
+  return t.length > max ? t.slice(0, max).replace(/\s+\S*$/, "") + "..." : t;
 };
+/** Admin-typed link -> a normalised, safe href; falls back when blank/unsafe (never javascript:). */
+const safeLink = (raw: any, fallback: string): string => getValidHref(typeof raw === "string" ? raw : "") || fallback;
+
+/**
+ * <img> for admin-picked / default artwork. A missing or 404 file used to render the browser's
+ * broken-image icon; this reports the failure (onFail) so the caller can drop the frame, and
+ * covers the case where the error fired before React hydrated (checks img.complete on mount).
+ */
+function SafeImg({ src, alt, className, onFail }: { src: string; alt: string; className?: string; onFail?: () => void }) {
+  const ref = useRef<HTMLImageElement>(null);
+  const [failed, setFailed] = useState(false);
+  const fail = () => { setFailed(true); onFail?.(); };
+  useEffect(() => {
+    setFailed(false);
+    const el = ref.current;
+    // (SVGs without intrinsic width/height report naturalWidth 0 even when they loaded fine.)
+    if (el && el.complete && el.naturalWidth === 0 && !/\.svg(\?|#|$)/i.test(src)) fail();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [src]);
+  if (failed) return null;
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img ref={ref} src={src} alt={alt} className={className} loading="lazy" decoding="async" onError={fail} />;
+}
 
 export default function IndustryTemplate({ pageData, params }: { pageData?: any; params?: any }) {
   const { services: cmsServicesData } = useContent();
   const pageContent = pageData?.content || {};
   const industryData = pageContent.industryPage || pageContent || {};
+  const formUid = useId();
+
+  // Section visibility, read up-front: several default links depend on it ("#industry-form"
+  // only exists while the hero is shown, "#sectors" only while the sectors section is).
+  const heroEnabled = industryData.hero?.enabled !== false;
+  const servicesEnabled = industryData.servicesSection?.enabled !== false && industryData.services?.enabled !== false;
+  const sectorsEnabled = industryData.domainExpertise?.enabled !== false;
+  const founderEnabled = industryData.founder?.enabled !== false;
+  const whyEnabled = industryData.whyChooseUs?.enabled !== false;
+  // FAQ visibility: the FAQ questions live in the admin's generic "Page FAQs" tab, but the
+  // hide/show switch is in this template's own editor (writes content.faqSection.enabled).
+  const faqEnabled =
+    pageContent.faqSection?.enabled !== false &&
+    pageContent.faqs?.enabled !== false &&
+    industryData.faqs?.enabled !== false;
+  const ctaEnabled = industryData.ctaBanner?.enabled !== false;
+  // Where "get in touch" links land: the lead form when it is on the page, else the contact page.
+  const formHref = heroEnabled ? "#industry-form" : "/contact-us/";
 
   // ───────────────────────────────────────────────────────────────────────────
   // 1. HERO SECTION DATA & FORM STATE
@@ -87,18 +108,22 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
       ? industryData.hero.description
       : "We engineer bespoke web applications, custom digital architectures, and conversion-first UI/UX tailored specifically for regulated and high-yield commercial industries.",
     primaryCtaText: industryData.hero?.primaryCtaText || "Request Industry Audit",
-    primaryCtaLink: industryData.hero?.primaryCtaLink || "#industry-form",
+    primaryCtaLink: safeLink(industryData.hero?.primaryCtaLink, formHref),
     secondaryCtaText: industryData.hero?.secondaryCtaText || "",
-    secondaryCtaLink: industryData.hero?.secondaryCtaLink || "",
+    secondaryCtaLink: safeLink(industryData.hero?.secondaryCtaLink, sectorsEnabled ? "#sectors" : formHref),
     highlights: (Array.isArray(industryData.hero?.highlights))
       ? industryData.hero.highlights.filter((h: any) => typeof h ==="string" && h.trim().length > 0)
       : [],
     statsPills: (Array.isArray(industryData.hero?.statsPills))
       ? industryData.hero.statsPills.filter((s: any) => s && ((typeof s.value ==="string" && s.value.trim().length > 0) || (typeof s.label ==="string" && s.label.trim().length > 0)))
       : [],
+    formBadge: industryData.hero?.formBadge || "DIRECT ARCHITECT ACCESS",
     formTitle: industryData.hero?.formTitle || "Get a Free Industry Strategy Session",
     formSubtitle: industryData.hero?.formSubtitle || "Direct architecture consultation with zero sales pressure.",
-    formButtonText: industryData.hero?.formButtonText || "Get Free Strategy"
+    formButtonText: industryData.hero?.formButtonText || "Get Free Strategy",
+    successTitle: industryData.hero?.successTitle || "Consultation Request Received!",
+    successMessage: industryData.hero?.successMessage || "Thank you! Our lead architect will review your project requirements and get in touch within 24 hours.",
+    privacyNote: industryData.hero?.privacyNote || "100% Confidential. Zero spam. We never share your data."
   };
 
   // Quick Hero Form State
@@ -109,13 +134,27 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
     industry: "",
     message: ""
   });
+  const [honeypot, setHoneypot] = useState("");
   const [captchaToken, setCaptchaToken] = useState<string>("");
+  // Turnstile tokens are single-use: after a failed submit the widget is remounted (new key)
+  // to issue a fresh one, otherwise every retry would be rejected as a duplicate token.
+  const [captchaKey, setCaptchaKey] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [formError, setFormError] = useState("");
+  // Artwork whose file fails to load is dropped instead of showing a broken-image icon.
+  const [founderImgOk, setFounderImgOk] = useState(true);
+  const [blueImgOk, setBlueImgOk] = useState(true);
+  const [ctaImgOk, setCtaImgOk] = useState(true);
+
+  const resetCaptcha = () => {
+    setCaptchaToken("");
+    setCaptchaKey((k) => k + 1);
+  };
 
   const handleHeroFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return; // double-submit guard (the button is also disabled while loading)
     setIsSubmitting(true);
     setFormError("");
 
@@ -131,7 +170,11 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
           captchaToken: captchaToken,
           subject: `New Industry Lead: ${formData.name} (${formData.industry || "General"})`,
           message: formData.message || `Interested in strategy session for ${formData.industry || "Industry Page"}.`,
-          industry: formData.industry
+          industry: formData.industry,
+          // Which industry page the lead came from (same field the other site forms send).
+          source: typeof window !== "undefined" ? window.location.pathname : "Industry Page",
+          // Honeypot: hidden from people, bots fill it and /api/send silently drops those.
+          _hp: honeypot
         })
       });
 
@@ -141,9 +184,11 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
         setCaptchaToken("");
       } else {
         setFormError(data.error || "Failed to submit request. Please try again.");
+        resetCaptcha();
       }
-    } catch (err: any) {
-      setFormError(err.message || "Network error. Please try again.");
+    } catch {
+      setFormError("Network error. Please check your connection and try again.");
+      resetCaptcha();
     } finally {
       setIsSubmitting(false);
     }
@@ -152,12 +197,31 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
   // ───────────────────────────────────────────────────────────────────────────
   // 2. SERVICES SECTION DATA (From ContentSelector or Global Services)
   // ───────────────────────────────────────────────────────────────────────────
-  const rawServices = (Array.isArray(industryData.servicesSection?.selectedServices) && industryData.servicesSection.selectedServices.length > 0)
-    ? industryData.servicesSection.selectedServices
+  // The route injects the live catalog on pageContent.globalServices; the useContent() context
+  // copy is only the fallback (see the Services.tsx note about that chain being fragile).
+  const catalogAll: any[] = Array.isArray(pageContent.globalServices) && pageContent.globalServices.length > 0
+    ? pageContent.globalServices
+    : Array.isArray(cmsServicesData?.services) ? cmsServicesData.services : [];
+  const isLiveService = (s: any) => !!s && s.status !== "draft" && !s.isTrashed;
+  const findLiveService = (sel: any) =>
+    catalogAll.find((s: any) => s && ((sel?.slug && s.slug === sel.slug) || (sel?._id && s._id === sel._id) || (sel?.id && s.id === sel.id)));
+  // ContentSelector stores a full SNAPSHOT of every ticked service, which goes stale when the
+  // service is later renamed / re-slugged / trashed. Re-read each pick from the live catalog;
+  // a pick that has since been trashed or set to draft is dropped instead of linking to a 404.
+  const curatedServices = (Array.isArray(industryData.servicesSection?.selectedServices) ? industryData.servicesSection.selectedServices : [])
+    .filter((sel: any) => sel && typeof sel === "object")
+    .map((sel: any) => {
+      const live = findLiveService(sel);
+      if (!live) return sel;
+      return isLiveService(live) ? { ...sel, ...live } : null;
+    })
+    .filter(Boolean);
+  const rawServices = curatedServices.length > 0
+    ? curatedServices
     : (Array.isArray(industryData.servicesSection?.items) && industryData.servicesSection.items.length > 0)
       ? industryData.servicesSection.items
-      : (Array.isArray(cmsServicesData?.services) && cmsServicesData.services.length > 0)
-        ? cmsServicesData.services
+      : catalogAll.filter(isLiveService).length > 0
+        ? catalogAll.filter(isLiveService)
         : [
             {
               title: "Custom Web Application Engineering",
@@ -193,72 +257,47 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
     eyebrow: industryData.servicesSection?.eyebrow || "OUR CORE DISCIPLINES",
     titleIntro: industryData.servicesSection?.titleIntro || "Comprehensive Solutions Tailored for",
     titleHighlight: industryData.servicesSection?.titleHighlight || "Market Dominance",
-    description: industryData.servicesSection?.description || "Modular, high-performance web engineering services built to address the unique commercial requirements of your sector.",
+    description: richOr(industryData.servicesSection?.description, "Modular, high-performance web engineering services built to address the unique commercial requirements of your sector."),
     items: rawServices.map((srv: any) => ({
       id: srv.id || srv.slug,
       title: srv.title || srv.name || "Specialized Service",
-      desc: srv.desc || srv.tagline || srv.description || "Tailored industry digital engineering solution.",
+      // Cards are plain text: tagline first, else a short excerpt of the service's own intro.
+      desc: stripHtml(srv.desc || srv.tagline || srv.description) || excerpt(srv.hero?.description) || "Tailored industry digital engineering solution.",
       iconName: srv.iconName || srv.icon || "Code",
       tag: srv.tag || srv.category || "Service",
-      href: srv.href || (srv.slug ? `/services/${srv.slug}` : "/services")
+      href: safeLink(srv.href || (srv.slug ? `/services/${srv.slug}` : ""), "/services")
     }))
   };
 
   // ───────────────────────────────────────────────────────────────────────────
   // 3. DOMAIN EXPERTISE / INDUSTRIES SECTION DATA
   // ───────────────────────────────────────────────────────────────────────────
+  const savedDomains = (Array.isArray(industryData.domainExpertise?.domains) ? industryData.domainExpertise.domains : [])
+    .filter((d: any) => d && typeof d === "object");
   const domainExpertise = {
     eyebrow: industryData.domainExpertise?.eyebrow || "INDUSTRY SECTORS WE SERVE",
     titleIntro: industryData.domainExpertise?.titleIntro || "Proven Experience Across",
     titleHighlight: industryData.domainExpertise?.titleHighlight || "Key Market Verticals",
-    description: industryData.domainExpertise?.description || "Every industry has distinct compliance, customer acquisition funnels, and technical requirements. We tailor our engineering to your exact vertical.",
-    domains: (Array.isArray(industryData.domainExpertise?.domains) && industryData.domainExpertise.domains.length > 0)
-      ? industryData.domainExpertise.domains
-      : [
-        {
-          id: "01",
-          title: "Healthcare & MedTech",
-          desc: "HIPAA-compliant, trustworthy patient portals and medical practice booking systems.",
-          iconName: "Heart",
-          tags: ["HIPAA Compliance", "Telehealth", "Patient Portals"]
-        },
-        {
-          id: "02",
-          title: "FinTech & Financial Services",
-          desc: "Ultra-secure financial dashboards, loan calculators, and bank-grade digital security.",
-          iconName: "ShieldCheck",
-          tags: ["FinTech", "SOC2 Compliant", "Real-time Telemetry"]
-        },
-        {
-          id: "03",
-          title: "E-Commerce & High-Volume Retail",
-          desc: "Sub-second product catalogs, custom Shopify headless setups, and frictionless checkouts.",
-          iconName: "ShoppingCart",
-          tags: ["Headless Commerce", "Shopify Plus", "Conversion Rate"]
-        },
-        {
-          id: "04",
-          title: "Legal & Professional Services",
-          desc: "Authoritative, lead-generating corporate websites for law firms and consultancy practices.",
-          iconName: "Scale",
-          tags: ["Lead Capture", "Case Studies", "SEO Authority"]
-        },
-        {
-          id: "05",
-          title: "B2B SaaS & Enterprise Technology",
-          desc: "Product tour interfaces, documentation hubs, and high-velocity SaaS landing systems.",
-          iconName: "Cpu",
-          tags: ["SaaS Funnels", "Product Tours", "API Portals"]
-        },
-        {
-          id: "06",
-          title: "Real Estate & Architecture",
-          desc: "High-resolution property showcases, dynamic MLS mapping, and interactive floorplans.",
-          iconName: "Building2",
-          tags: ["Property Hubs", "Interactive Maps", "Luxury Design"]
-        }
-      ]
+    description: richOr(industryData.domainExpertise?.description, "Every industry has distinct compliance, customer acquisition funnels, and technical requirements. We tailor our engineering to your exact vertical."),
+    // No saved cards yet -> the built-in samples (same list the editor offers to load and edit).
+    domains: savedDomains.length > 0 ? savedDomains : DEFAULT_INDUSTRY_DOMAINS
   };
+
+  // "Industry / Sector" dropdown in the lead form: the sectors this page actually lists (so it
+  // follows whatever the admin put in the Industry Sectors tab) plus a catch-all.
+  const industryOptions = (() => {
+    const seen = new Set<string>();
+    const opts: { value: string; label: string }[] = [];
+    domainExpertise.domains.forEach((d: any) => {
+      const t = stripHtml(d.title);
+      if (t && !seen.has(t)) {
+        seen.add(t);
+        opts.push({ value: t, label: t });
+      }
+    });
+    opts.push({ value: "Other Industry", label: "Other Commercial Industry" });
+    return opts;
+  })();
 
   // ───────────────────────────────────────────────────────────────────────────
   // 4. ABOUT FOUNDER SECTION DATA
@@ -286,54 +325,30 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
   // ───────────────────────────────────────────────────────────────────────────
   // 5. WHY BUSINESSES CHOOSE US SECTION DATA
   // ───────────────────────────────────────────────────────────────────────────
+  const savedFeatures = (Array.isArray(industryData.whyChooseUs?.features) ? industryData.whyChooseUs.features : [])
+    .filter((f: any) => f && typeof f === "object");
   const whyChooseUs = {
     eyebrow: industryData.whyChooseUs?.eyebrow || "THE MOHSIN ADVANTAGE",
     titleIntro: industryData.whyChooseUs?.titleIntro || "Why Market Leaders Choose",
     titleHighlight: industryData.whyChooseUs?.titleHighlight || "Mohsin Designs",
-    description: industryData.whyChooseUs?.description || "We deliver measurable advantages through clean code, direct communication, and relentless performance standards.",
+    description: richOr(industryData.whyChooseUs?.description, "We deliver measurable advantages through clean code, direct communication, and relentless performance standards."),
     blueCardLine1: industryData.whyChooseUs?.blueCardLine1 || "Direct Senior Architect",
     blueCardLine2: industryData.whyChooseUs?.blueCardLine2 || "Zero Junior Hand-Offs",
     blueCardImage: industryData.whyChooseUs?.blueCardImage || "/founder.png",
     blueCardImageAlt: industryData.whyChooseUs?.blueCardImageAlt || "Architect",
-    features: (Array.isArray(industryData.whyChooseUs?.features) && industryData.whyChooseUs.features.length > 0)
-      ? industryData.whyChooseUs.features
-      : [
-        {
-          title: "Sub-Second Edge Speeds",
-          desc: "Lightning fast asset delivery and edge routing boosting Core Web Vitals to 100/100.",
-          iconName: "Zap",
-          iconBg: "amber"
-        },
-        {
-          title: "Conversion-First UX Flow",
-          desc: "Psychologically optimized layouts engineered to maximize form completions and discovery calls.",
-          iconName: "Target",
-          iconBg: "blue"
-        },
-        {
-          title: "Clean Modular Code",
-          desc: "Zero technical debt. Modular React and Next.js components built to scale effortlessly.",
-          iconName: "Code",
-          iconBg: "blue"
-        },
-        {
-          title: "Guaranteed Security & Uptime",
-          desc: "Serverless cloud infrastructure backed by automatic SSL and 99.9% uptime guarantees.",
-          iconName: "ShieldCheck",
-          iconBg: "amber"
-        }
-      ]
+    features: savedFeatures.length > 0 ? savedFeatures : DEFAULT_INDUSTRY_FEATURES
   };
 
   // ───────────────────────────────────────────────────────────────────────────
   // 6. PAGE INLINE FAQS DATA
   // ───────────────────────────────────────────────────────────────────────────
+  // Questions / heading / description / strategy box come from the admin's generic
+  // "Page FAQs" tab (content.faqs, faqBadge, faqTitle..., strategyAudit). With none saved
+  // the page shows the four industry-specific starters below.
   const faqsList = (Array.isArray(pageContent.faqs) && pageContent.faqs.length > 0)
     ? pageContent.faqs
-    : (Array.isArray(pageData?.content?.faqs) && pageData.content.faqs.length > 0)
-      ? pageData.content.faqs
-      : (Array.isArray(industryData.faqs) && industryData.faqs.length > 0)
-        ? industryData.faqs
+    : (Array.isArray(industryData.faqs) && industryData.faqs.length > 0)
+      ? industryData.faqs
       : [
         {
           question: "How do you tailor development for regulated industries? ",
@@ -353,6 +368,18 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
         }
       ];
 
+  // The FAQ box's "Book ... Call" button defaults to the shared "#contact" anchor, which does
+  // not exist on this page. Unless the admin typed their own link, point it at the lead form.
+  const faqData = {
+    ...pageContent,
+    strategyAudit: {
+      ...(pageContent.strategyAudit || {}),
+      href: (typeof pageContent.strategyAudit?.href === "string" && pageContent.strategyAudit.href.trim())
+        ? pageContent.strategyAudit.href
+        : formHref
+    }
+  };
+
   // ───────────────────────────────────────────────────────────────────────────
   // 7. FINAL CTA BANNER DATA
   // ───────────────────────────────────────────────────────────────────────────
@@ -361,21 +388,21 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
     titleIntro: industryData.ctaBanner?.titleIntro || "Let's Build Your Next",
     titleWord1: industryData.ctaBanner?.titleWord1 || "Competitive",
     titleWord2: industryData.ctaBanner?.titleWord2 || "Advantage.",
-    description: industryData.ctaBanner?.description || "Schedule a free 30-minute industry strategy session. We will audit your current presence and deliver an actionable architecture blueprint.",
+    description: richOr(industryData.ctaBanner?.description, "Schedule a free 30-minute industry strategy session. We will audit your current presence and deliver an actionable architecture blueprint."),
     ctaPrimaryText: industryData.ctaBanner?.ctaPrimaryText || "Book Strategy Session",
-    ctaPrimaryHref: industryData.ctaBanner?.ctaPrimaryHref || "#industry-form",
+    ctaPrimaryHref: safeLink(industryData.ctaBanner?.ctaPrimaryHref, formHref),
     ctaSecondaryText: industryData.ctaBanner?.ctaSecondaryText || "Explore Our Work",
-    ctaSecondaryHref: industryData.ctaBanner?.ctaSecondaryHref || "/gallery",
+    ctaSecondaryHref: safeLink(industryData.ctaBanner?.ctaSecondaryHref, "/gallery"),
     portraitSrc: industryData.ctaBanner?.portraitSrc || "/founder_portrait_nobg.png",
     portraitAlt: industryData.ctaBanner?.portraitAlt || "Mohsin Lead Architect"
   };
 
   return (
-    <main className="min-h-screen bg-white dark:bg-[#06050b] text-brand-dark dark:text-white selection:bg-[#0306AC] selection:text-white transition-colors duration-300">
+    <div className="min-h-screen bg-white dark:bg-[#06050b] text-brand-dark dark:text-white selection:bg-[#0306AC] selection:text-white transition-colors duration-300">
       {/* ─────────────────────────────────────────────────────────────────── */}
       {/* 1. HERO SECTION WITH EMBEDDED RIGHT FORM                            */}
       {/* ─────────────────────────────────────────────────────────────────── */}
-      {((hero as any)?.enabled !== false && (industryData as any).hero?.enabled !== false) && (
+      {heroEnabled && (
       <section className="relative overflow-hidden pt-28 pb-16 lg:pt-36 lg:pb-24 border-b border-brand-zinc-200 dark:border-white/10">
         {/* Ambient background glows */}
         <div className="absolute top-0 left-1/4 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-br from-[#0306AC]/15 dark:from-[#0306AC]/25 to-transparent rounded-full blur-[140px] pointer-events-none -z-10" />
@@ -402,7 +429,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                 {hero.titleSuffix}
               </h1>
 
-              {hero.description && (
+              {hasText(hero.description) && (
                 <div className="text-sm sm:text-base font-sans text-brand-zinc-600 dark:text-zinc-300 leading-relaxed max-w-xl font-normal">
                   <RichTextRenderer content={hero.description} />
                 </div>
@@ -437,10 +464,10 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
               {/* Action Buttons Row */}
               <div className="flex items-center gap-3.5 flex-wrap pt-2">
                 {hero.primaryCtaText && (
-                  <CtaButton href={hero.primaryCtaLink || "#industry-form"}>{hero.primaryCtaText}</CtaButton>
+                  <CtaButton href={hero.primaryCtaLink}>{hero.primaryCtaText}</CtaButton>
                 )}
                 {hero.secondaryCtaText && (
-                  <CtaButton href={hero.secondaryCtaLink || "#sectors"} variant="secondary">{hero.secondaryCtaText}</CtaButton>
+                  <CtaButton href={hero.secondaryCtaLink} variant="secondary">{hero.secondaryCtaText}</CtaButton>
                 )}
               </div>
             </div>
@@ -451,39 +478,45 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
 
                 {/* Form Header */}
                 <div className="space-y-1.5 mb-6 text-left">
-                  <div className="inline-flex items-center gap-2 text-[9px] font-mono font-bold text-[#0306AC] dark:text-[#E9BD36] uppercase tracking-widest">
-                    <Sparkles className="h-3 w-3" />
-                    <span>DIRECT ARCHITECT ACCESS</span>
-                  </div>
-                  <h3 className="font-heading text-xl sm:text-2xl font-black text-brand-dark dark:text-white tracking-tight">
+                  {hero.formBadge && (
+                    <div className="inline-flex items-center gap-2 text-[9px] font-mono font-bold text-[#0306AC] dark:text-[#E9BD36] uppercase tracking-widest">
+                      <Sparkles className="h-3 w-3" />
+                      <span>{hero.formBadge}</span>
+                    </div>
+                  )}
+                  {/* h2, not h3: the h1 above is followed directly by this heading */}
+                  <h2 className="font-heading text-xl sm:text-2xl font-black text-brand-dark dark:text-white tracking-tight">
                     {hero.formTitle}
-                  </h3>
+                  </h2>
                   <p className="text-xs text-brand-zinc-500 dark:text-zinc-400 font-sans">
                     {hero.formSubtitle}
                   </p>
                 </div>
 
                 {formSubmitted ? (
-                  <div className="p-8 text-center space-y-4 min-h-[300px] flex flex-col items-center justify-center">
+                  <div role="status" aria-live="polite" className="p-8 text-center space-y-4 min-h-[300px] flex flex-col items-center justify-center">
                     <div className="h-16 w-16 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                       <CheckCircle2 className="h-8 w-8" />
                     </div>
-                    <h4 className="font-heading text-xl font-bold text-brand-dark dark:text-white">Consultation Request Received!</h4>
+                    <h3 className="font-heading text-xl font-bold text-brand-dark dark:text-white">{hero.successTitle}</h3>
                     <p className="text-xs text-brand-zinc-550 dark:text-zinc-300 leading-relaxed">
-                      Thank you! Our lead architect will review your project requirements and get in touch within 24 hours.
+                      {hero.successMessage}
                     </p>
                   </div>
                 ) : (
                   <form onSubmit={handleHeroFormSubmit} className="space-y-4 text-left">
                     <div>
-                      <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-brand-zinc-700 dark:text-zinc-300 mb-1.5">
+                      <label htmlFor={`${formUid}-name`} className="block text-[11px] font-mono font-bold uppercase tracking-wider text-brand-zinc-700 dark:text-zinc-300 mb-1.5">
                         Full Name *
                       </label>
                       <div className="relative">
-                        <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-brand-zinc-400" />
+                        <User aria-hidden="true" className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-brand-zinc-400" />
                         <input
+                          id={`${formUid}-name`}
+                          name="name"
                           type="text"
                           required
+                          autoComplete="name"
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                           placeholder="Your Name"
@@ -494,65 +527,69 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-brand-zinc-700 dark:text-zinc-300 mb-1.5">
+                        <label htmlFor={`${formUid}-email`} className="block text-[11px] font-mono font-bold uppercase tracking-wider text-brand-zinc-700 dark:text-zinc-300 mb-1.5">
                           Work Email *
                         </label>
                         <div className="relative">
-                          <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-brand-zinc-400" />
+                          <Mail aria-hidden="true" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-brand-zinc-400" />
                           <input
+                            id={`${formUid}-email`}
+                            name="email"
                             type="email"
                             required
+                            autoComplete="email"
                             value={formData.email}
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                             placeholder="you@company.com"
-                            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-white/5 border border-brand-zinc-200 dark:border-white/10 text-base sm:text-sm text-brand-dark dark:text-white focus:border-[#0306AC] dark:focus:border-[#E9BD36] focus:ring-1 focus:ring-[#0306AC] dark:focus:ring-[#E9BD36] outline-none transition-all"
+                            className="w-full pl-9 pr-2 py-2.5 rounded-xl bg-zinc-50 dark:bg-white/5 border border-brand-zinc-200 dark:border-white/10 text-base sm:text-sm text-brand-dark dark:text-white focus:border-[#0306AC] dark:focus:border-[#E9BD36] focus:ring-1 focus:ring-[#0306AC] dark:focus:ring-[#E9BD36] outline-none transition-all"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-brand-zinc-700 dark:text-zinc-300 mb-1.5">
+                        <label htmlFor={`${formUid}-phone`} className="block text-[11px] font-mono font-bold uppercase tracking-wider text-brand-zinc-700 dark:text-zinc-300 mb-1.5">
                           Phone Number
                         </label>
                         <div className="relative">
-                          <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-brand-zinc-400" />
+                          <Phone aria-hidden="true" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-brand-zinc-400" />
                           <input
+                            id={`${formUid}-phone`}
+                            name="phone"
                             type="tel"
+                            autoComplete="tel"
                             value={formData.phone}
                             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                             placeholder="(555) 000-0000"
-                            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-white/5 border border-brand-zinc-200 dark:border-white/10 text-base sm:text-sm text-brand-dark dark:text-white focus:border-[#0306AC] dark:focus:border-[#E9BD36] focus:ring-1 focus:ring-[#0306AC] dark:focus:ring-[#E9BD36] outline-none transition-all"
+                            className="w-full pl-9 pr-2 py-2.5 rounded-xl bg-zinc-50 dark:bg-white/5 border border-brand-zinc-200 dark:border-white/10 text-base sm:text-sm text-brand-dark dark:text-white focus:border-[#0306AC] dark:focus:border-[#E9BD36] focus:ring-1 focus:ring-[#0306AC] dark:focus:ring-[#E9BD36] outline-none transition-all"
                           />
                         </div>
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-brand-zinc-700 dark:text-zinc-300 mb-1.5">
+                      <label htmlFor={`${formUid}-industry`} className="block text-[11px] font-mono font-bold uppercase tracking-wider text-brand-zinc-700 dark:text-zinc-300 mb-1.5">
                         Industry / Sector
                       </label>
+                      {/* Options = the sector cards listed further down this page (+ "Other"), so the
+                          dropdown always matches what the admin put in the Industry Sectors tab. */}
                       <ThemedSelect
+                        id={`${formUid}-industry`}
+                        name="industry"
                         value={formData.industry}
                         onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
                         className="!rounded-xl !py-2.5 !px-3.5 text-base sm:text-sm bg-zinc-50 dark:bg-white/5"
                         placeholder="Select Your Industry..."
-                        options={[
-                          { value: "Healthcare & MedTech", label: "Healthcare & MedTech" },
-                          { value: "FinTech & Finance", label: "FinTech & Financial Services" },
-                          { value: "E-Commerce & Retail", label: "E-Commerce & Retail" },
-                          { value: "B2B SaaS & Tech", label: "B2B SaaS & Enterprise Tech" },
-                          { value: "Legal & Professional", label: "Legal & Professional Services" },
-                          { value: "Real Estate & Construction", label: "Real Estate & Construction" },
-                          { value: "Other Industry", label: "Other Commercial Industry" },
-                        ]}
+                        options={industryOptions}
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-brand-zinc-700 dark:text-zinc-300 mb-1.5">
+                      <label htmlFor={`${formUid}-message`} className="block text-[11px] font-mono font-bold uppercase tracking-wider text-brand-zinc-700 dark:text-zinc-300 mb-1.5">
                         Project Goals / Notes (Optional)
                       </label>
                       <textarea
+                        id={`${formUid}-message`}
+                        name="message"
                         rows={3}
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
@@ -561,13 +598,28 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                       />
                     </div>
 
+                    {/* Honeypot (see handleHeroFormSubmit): off-screen, unreachable by keyboard, ignored by assistive tech. */}
+                    <div aria-hidden="true" className="absolute -left-[9999px] top-auto h-px w-px overflow-hidden">
+                      <label htmlFor={`${formUid}-hp`}>Leave this field empty</label>
+                      <input
+                        id={`${formUid}-hp`}
+                        type="text"
+                        name="_hp"
+                        tabIndex={-1}
+                        autoComplete="off"
+                        value={honeypot}
+                        onChange={(e) => setHoneypot(e.target.value)}
+                      />
+                    </div>
+
                     {formError && (
-                      <div className="p-3 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 text-xs rounded-xl">
+                      <div role="alert" className="p-3 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 text-xs rounded-xl">
                         {formError}
                       </div>
                     )}
 
                     <TurnstileCaptcha
+                      key={captchaKey}
                       onVerify={(token) => setCaptchaToken(token)}
                       onExpire={() => setCaptchaToken("")}
                       theme="auto"
@@ -578,7 +630,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                     </CtaButton>
 
                     <p className="text-[10px] text-center text-brand-zinc-400 dark:text-zinc-500 pt-1">
-                      🔒 100% Confidential. Zero spam. We never share your data.
+                      <span aria-hidden="true">🔒 </span>{hero.privacyNote}
                     </p>
                   </form>
                 )}
@@ -593,7 +645,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
       {/* ─────────────────────────────────────────────────────────────────── */}
       {/* 2. SERVICES CAPABILITIES GRID SECTION                               */}
       {/* ─────────────────────────────────────────────────────────────────── */}
-      {((servicesSec as any)?.enabled !== false && (industryData as any).servicesSection?.enabled !== false && (industryData as any).services?.enabled !== false) && (
+      {servicesEnabled && (
       <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/50 dark:bg-white/[0.01] section-y">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 space-y-14">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 text-left border-b border-brand-zinc-200/80 dark:border-white/10 pb-8">
@@ -608,13 +660,13 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                 </div>
               )}
               <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
-                {servicesSec.titleIntro}
- <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+                {servicesSec.titleIntro}{" "}
+                <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
                   {servicesSec.titleHighlight}
                 </AccentHighlight>
               </h2>
             </div>
-            {servicesSec.description && (
+            {hasText(servicesSec.description) && (
               <RichTextRenderer
                 content={servicesSec.description}
                 className="text-xs sm:text-sm text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed max-w-md"
@@ -627,7 +679,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
               const ServiceIcon = getIcon(service.iconName || service.icon, Code);
               return (
                 <div
-                  key={service.id || idx}
+                  key={`${service.id || "service"}-${idx}`}
                   className="rounded-[32px] bg-white dark:bg-[#0c0b18] border border-brand-zinc-200/80 dark:border-white/10 p-6 sm:p-7 flex flex-col justify-between space-y-6 group hover:border-[#0306AC]/60 dark:hover:border-[#E9BD36]/60 transition-all duration-300 shadow-sm hover:shadow-xl relative overflow-hidden"
                 >
                   <div className="space-y-4 relative z-10">
@@ -647,14 +699,14 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                         {service.title}
                       </h3>
                       <p className="text-xs text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed">
-                        {service.desc || service.description}
+                        {service.desc}
                       </p>
                     </div>
                   </div>
 
                   <div className="pt-4 border-t border-brand-zinc-200/70 dark:border-white/10 flex items-center justify-between">
                     <Link
-                      href={service.href || "/services"}
+                      href={service.href}
                       className="inline-flex items-center gap-2 text-xs font-mono font-black text-brand-dark dark:text-white group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors"
                     >
                       <span>Learn More</span>
@@ -672,7 +724,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
       {/* ─────────────────────────────────────────────────────────────────── */}
       {/* 3. DOMAIN EXPERTISE / INDUSTRIES SECTION                            */}
       {/* ─────────────────────────────────────────────────────────────────── */}
-      {((domainExpertise as any)?.enabled !== false && (industryData as any).domainExpertise?.enabled !== false) && (
+      {sectorsEnabled && (
       <section id="sectors" className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] section-y">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 space-y-16">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 text-left border-b border-brand-zinc-200/80 dark:border-white/10 pb-10">
@@ -687,13 +739,13 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                 </div>
               )}
               <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
-                {domainExpertise.titleIntro}
- <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+                {domainExpertise.titleIntro}{" "}
+                <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
                   {domainExpertise.titleHighlight}
                 </AccentHighlight>
               </h2>
             </div>
-            {domainExpertise.description && (
+            {hasText(domainExpertise.description) && (
               <div className="text-xs sm:text-sm text-brand-zinc-550 dark:text-zinc-400 font-sans leading-relaxed max-w-md">
                 <RichTextRenderer content={domainExpertise.description} />
               </div>
@@ -709,7 +761,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
 
               return (
                 <div
-                  key={domain.id || idx}
+                  key={`${domain.id || "domain"}-${idx}`}
                   className={`rounded-[32px] bg-zinc-50/90 dark:bg-[#0c0b18] border border-brand-zinc-200/80 dark:border-white/10 p-6 sm:p-8 flex flex-col justify-between space-y-6 group hover:border-[#0306AC]/60 dark:hover:border-[#E9BD36]/60 transition-all duration-300 shadow-sm hover:shadow-2xl relative overflow-hidden ${validHref ? "cursor-pointer" : ""}`}
                 >
                   <div className="space-y-4 relative z-10">
@@ -717,8 +769,8 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                       <div className="h-12 w-12 rounded-2xl bg-[#0306AC]/10 dark:bg-white/10 border border-[#0306AC]/15 dark:border-white/15 flex items-center justify-center text-[#0306AC] dark:text-[#E9BD36] group-hover:scale-110 transition-all duration-300 shadow-md">
                         <DomainIcon className="h-5 w-5" />
                       </div>
- <span className="font-cursive text-2xl font-black text-brand-zinc-300 dark:text-zinc-600 group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors">
-                        {domain.id || `0${idx + 1}`}
+                      <span aria-hidden="true" className="font-cursive text-2xl font-black text-brand-zinc-300 dark:text-zinc-600 group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors">
+                        {domain.id || padIndex(idx + 1)}
                       </span>
                     </div>
 
@@ -767,26 +819,38 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
       {/* ─────────────────────────────────────────────────────────────────── */}
       {/* 4. ABOUT FOUNDER SECTION                                            */}
       {/* ─────────────────────────────────────────────────────────────────── */}
-      {((founder as any)?.enabled !== false && (industryData as any).founder?.enabled !== false) && (
+      {founderEnabled && (
       <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/50 dark:bg-white/[0.01] section-y">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
 
-            {/* Founder Portrait */}
-            <div className="lg:col-span-5 min-w-0 flex justify-center">
-              {founder.portraitSrc && (
+            {/* Founder Portrait (dropped entirely if the image file is missing, so no broken-image frame) */}
+            {founder.portraitSrc && founderImgOk && (
+              <div className="lg:col-span-5 min-w-0 flex justify-center">
                 <div className="relative aspect-[4/5] w-full max-w-[440px] rounded-[32px] overflow-hidden shadow-2xl border border-brand-zinc-200/60 dark:border-white/10 group">
-                  <img
+                  <SafeImg
                     src={founder.portraitSrc}
                     alt={founder.portraitAlt || "Founder"}
+                    onFail={() => setFounderImgOk(false)}
                     className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 pointer-events-none"
                   />
+                  {/* Name / title caption: over a permanent dark scrim so it reads in light AND dark theme */}
+                  {(founder.founderName || founder.founderTitle) && (
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-6 pb-6 pt-16 text-left">
+                      {founder.founderName && (
+                        <p className="font-heading text-lg sm:text-xl font-black leading-tight text-white">{founder.founderName}</p>
+                      )}
+                      {founder.founderTitle && (
+                        <p className="mt-1 text-[10px] font-mono font-bold uppercase tracking-wider text-[#E9BD36]">{founder.founderTitle}</p>
+                      )}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Founder Narrative & Metrics */}
-            <div className="lg:col-span-7 min-w-0 space-y-6 text-left">
+            <div className={`${founder.portraitSrc && founderImgOk ? "lg:col-span-7" : "lg:col-span-12"} min-w-0 space-y-6 text-left`}>
               {founder.eyebrow && (
                 <div className="eyebrow-pill">
                   <span className="relative flex h-2 w-2">
@@ -798,21 +862,23 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
               )}
 
               <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
-                {founder.titleIntro}
- <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+                {founder.titleIntro}{" "}
+                <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
                   {founder.titleHighlight}
                 </AccentHighlight>
               </h2>
 
-              <div className="text-sm sm:text-base font-sans leading-relaxed text-brand-zinc-600 dark:text-zinc-300">
-                <RichTextRenderer content={founder.bio} className="space-y-4" />
-              </div>
+              {hasText(founder.bio) && (
+                <div className="text-sm sm:text-base font-sans leading-relaxed text-brand-zinc-600 dark:text-zinc-300">
+                  <RichTextRenderer content={founder.bio} className="space-y-4" />
+                </div>
+              )}
 
               {Array.isArray(founder.metrics) && founder.metrics.length > 0 && (
                 <div className="grid grid-cols-3 gap-6 sm:gap-8 border-t border-brand-zinc-200/80 dark:border-white/10 pt-6">
                   {founder.metrics.map((m: any, idx: number) => (
                     <div key={idx} className="space-y-1 text-left">
- <div className="font-cursive text-3xl sm:text-4xl lg:text-5xl font-black text-[#0306AC] dark:text-[#E9BD36]">{m.value}</div>
+                      <div className="font-cursive text-3xl sm:text-4xl lg:text-5xl font-black text-[#0306AC] dark:text-[#E9BD36]">{m.value}</div>
                       <span className="text-[10px] font-mono font-bold text-brand-dark dark:text-white uppercase tracking-wider block">{m.label}</span>
                     </div>
                   ))}
@@ -828,7 +894,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
       {/* ─────────────────────────────────────────────────────────────────── */}
       {/* 5. WHY BUSINESSES CHOOSE US SECTION                                 */}
       {/* ─────────────────────────────────────────────────────────────────── */}
-      {((whyChooseUs as any)?.enabled !== false && (industryData as any).whyChooseUs?.enabled !== false) && (
+      {whyEnabled && (
       <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] section-y">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10 space-y-16">
           <div className="text-center flex flex-col items-center max-w-3xl mx-auto space-y-4">
@@ -843,13 +909,13 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
             )}
 
             <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark dark:text-white tracking-tight leading-[1.15]">
-              {whyChooseUs.titleIntro}
- <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
+              {whyChooseUs.titleIntro}{" "}
+              <AccentHighlight className="text-[#0306AC] dark:text-[#E9BD36] font-cursive font-normal">
                 {whyChooseUs.titleHighlight}
               </AccentHighlight>
             </h2>
 
-            {whyChooseUs.description && (
+            {hasText(whyChooseUs.description) && (
               <RichTextRenderer
                 content={whyChooseUs.description}
                 className="text-xs sm:text-sm font-sans text-brand-zinc-600 dark:text-zinc-300 leading-relaxed max-w-2xl mx-auto"
@@ -867,9 +933,14 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                   <p className="text-[#E9BD36] text-lg sm:text-xl font-extrabold leading-none pt-1">{whyChooseUs.blueCardLine2}</p>
                 </div>
 
-                {whyChooseUs.blueCardImage && (
+                {whyChooseUs.blueCardImage && blueImgOk && (
                   <div className="relative mt-8 -mx-8 sm:-mx-9 -mb-8 sm:-mb-9 rounded-b-[36px] overflow-hidden shadow-inner">
-                    <img src={whyChooseUs.blueCardImage} alt={whyChooseUs.blueCardImageAlt || "Feature"} className="w-full h-64 sm:h-72 lg:h-80 object-cover object-center" />
+                    <SafeImg
+                      src={whyChooseUs.blueCardImage}
+                      alt={whyChooseUs.blueCardImageAlt || "Feature"}
+                      onFail={() => setBlueImgOk(false)}
+                      className="w-full h-64 sm:h-72 lg:h-80 object-cover object-center"
+                    />
                   </div>
                 )}
               </div>
@@ -880,7 +951,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
               {whyChooseUs.features.map((feat: any, idx: number) => {
                 const FeatIcon = getIcon(feat.iconName, Target);
                 return (
-                  <div key={idx} className="p-7 rounded-[28px] bg-zinc-50 dark:bg-[#0c0b18] border border-brand-zinc-200/80 dark:border-white/10 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col items-start justify-between min-h-[220px] group">
+                  <div key={`${feat.title || "feature"}-${idx}`} className="p-7 rounded-[28px] bg-zinc-50 dark:bg-[#0c0b18] border border-brand-zinc-200/80 dark:border-white/10 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col items-start justify-between min-h-[220px] group">
                     <div className={`h-12 w-12 rounded-2xl flex items-center justify-center ${feat.iconBg ==="amber" ? "bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-[#E9BD36]" : "bg-blue-50 dark:bg-white/10 text-[#0306AC] dark:text-[#E9BD36]"} group-hover:scale-110 transition-transform`}>
                       <FeatIcon className="h-6 w-6" />
                     </div>
@@ -904,14 +975,14 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
       {/* ─────────────────────────────────────────────────────────────────── */}
       {/* 6. PAGE INLINE FAQS SECTION                                         */}
       {/* ─────────────────────────────────────────────────────────────────── */}
-      {(pageContent?.faqs?.enabled !== false && pageContent?.faqSection?.enabled !== false && industryData?.faqs?.enabled !== false) && (
+      {faqEnabled && (
         <PageInlineFaqs
           faqs={faqsList}
           faqSchemaMarkup={pageContent.faqSchemaMarkup || industryData.faqSchemaMarkup}
           badge={pageContent.faqBadge || industryData.faqBadge || "INDUSTRY FAQS"}
           title={pageContent.faqTitle || industryData.faqTitle || "Frequently Asked Questions"}
           description={pageContent.faqDescription || industryData.faqDescription || "Key answers regarding our industry-specific architectural workflows and delivery."}
-          data={pageContent}
+          data={faqData}
         />
       )}
 
@@ -919,7 +990,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
       {/* ─────────────────────────────────────────────────────────────────── */}
       {/* 7. FINAL HIGH-CONVERSION CTA BANNER SECTION                         */}
       {/* ─────────────────────────────────────────────────────────────────── */}
-      {((ctaBanner as any)?.enabled !== false && (industryData as any).ctaBanner?.enabled !== false) && (
+      {ctaEnabled && (
       <section className="relative overflow-hidden bg-white dark:bg-[#080710] section-y">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
           <div className="cta-banner-card !shadow-[0_16px_40px_-12px_rgba(3,6,172,0.22)] dark:!shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)]">
@@ -935,7 +1006,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
               )}
 
               <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.18] tracking-tight text-white">
-                {ctaBanner.titleIntro}
+                {ctaBanner.titleIntro}{" "}
                 <span className="inline-block">
                   {ctaBanner.titleWord1}
                   <AccentHighlight className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
@@ -944,7 +1015,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                 </span>
               </h2>
 
-              {ctaBanner.description && (
+              {hasText(ctaBanner.description) && (
                 <RichTextRenderer
                   content={ctaBanner.description}
                   className="text-sm sm:text-base font-sans text-white/90 font-normal leading-relaxed max-w-lg"
@@ -952,16 +1023,17 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
               )}
 
               <div className="flex items-center gap-4 flex-wrap pt-2">
-                <CtaButton href={ctaBanner.ctaPrimaryHref || "#industry-form"}>{ctaBanner.ctaPrimaryText}</CtaButton>
-                <CtaButton href={ctaBanner.ctaSecondaryHref || "/gallery"} variant="secondary" icon={<Play className="fill-current ml-0.5" />}>{ctaBanner.ctaSecondaryText}</CtaButton>
+                <CtaButton href={ctaBanner.ctaPrimaryHref}>{ctaBanner.ctaPrimaryText}</CtaButton>
+                <CtaButton href={ctaBanner.ctaSecondaryHref} variant="secondary" icon={<Play className="fill-current ml-0.5" />}>{ctaBanner.ctaSecondaryText}</CtaButton>
               </div>
             </div>
 
             <div className="hidden lg:flex flex-1 items-end justify-center relative pr-8">
               <div className="absolute bottom-0 w-[320px] h-[320px] bg-gradient-to-t from-[#020485] to-[#0408d9] rounded-full opacity-90 border border-white/20 shadow-2xl" />
-              {ctaBanner.portraitSrc && (
+              {ctaBanner.portraitSrc && ctaImgOk && (
                 <div className="relative z-10 w-[280px] h-[370px] self-end drop-shadow-2xl overflow-hidden rounded-t-[32px] border-t border-l border-r border-white/25 shadow-2xl">
-                  <Image src={ctaBanner.portraitSrc} alt={ctaBanner.portraitAlt || "Portrait"} width={320} height={420} className="w-full h-full object-cover object-top filter contrast-[1.05]" />
+                  {/* plain <img>: the admin can pick any media URL, and next/image throws for hosts missing from next.config */}
+                  <SafeImg src={ctaBanner.portraitSrc} alt={ctaBanner.portraitAlt || "Portrait"} onFail={() => setCtaImgOk(false)} className="w-full h-full object-cover object-top filter contrast-[1.05]" />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#010356]/80 via-transparent to-transparent pointer-events-none" />
                 </div>
               )}
@@ -971,15 +1043,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
         </div>
       </section>
       )}
-
-      {/* Cursive Font Style Injector */}
-      <style dangerouslySetInnerHTML={{
-        __html: `
-        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
-        .font-cursive {
-          font-family: 'Dancing Script', cursive;
-        }
-      `}} />
-    </main>
+      {/* .font-cursive (Dancing Script) is defined once in globals.css + tailwind.config - no per-page @import injector needed */}
+    </div>
   );
 }

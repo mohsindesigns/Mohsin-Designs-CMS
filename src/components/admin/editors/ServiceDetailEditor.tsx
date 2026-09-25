@@ -2029,7 +2029,7 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
                     <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live service page.</p>
                   </div>
                   <SectionToggle
-                    enabled={data.pricing?.enabled !== false}
+                    enabled={data.pricing?.enabled === true}
                     onChange={(v) => updateSection("pricing", "enabled", v)}
                     label="Pricing Plans"
                   />

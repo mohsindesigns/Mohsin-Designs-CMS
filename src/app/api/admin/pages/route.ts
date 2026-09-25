@@ -1,9 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
+import mongoose from 'mongoose';
 import connectToDatabase from '@/lib/mongodb';
 import Page from '@/models/Page';
 import { hasPermission, getSessionUser } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
 import { normalizePageSlug } from '@/lib/utils';
+import {
+  PAGE_STATUSES,
+  HOMEPAGE_GUARD_MESSAGE,
+  canonicalFor,
+  getHomepageId,
+  isLiveHomepage,
+  revalidatePageCaches,
+  validatePageSlug,
+  validationMessage,
+} from './pageRules';
 
 export async function GET(req: NextRequest) {
   if (!(await hasPermission(req, 'pages', 'read'))) {
@@ -11,6 +22,8 @@ export async function GET(req: NextRequest) {
   }
   try {
     await connectToDatabase();
+    // Deliberately a slim projection: the full `content` of every page is several MB. Consumers
+    // (page manager, location pickers, settings homepage picker, FAQ page picker) only need these.
     const pages = await Page.find({})
       .select('_id title slug template status isTrashed createdAt updatedAt content.parentLocationId content.parentLocationSlug content.countrySlug content.stateSlug content.citySlug content.country content.state content.city')
       .sort({ createdAt: -1 })
@@ -30,35 +43,62 @@ export async function POST(req: NextRequest) {
   try {
     await connectToDatabase();
     const body = await req.json();
-    const { title, template } = body;
+    const { template } = body;
+    const title = typeof body.title === 'string' ? body.title.trim() : '';
+    if (!title) {
+      return NextResponse.json({ error: 'A page title is required.' }, { status: 400 });
+    }
+    const allowedTemplates: string[] = (Page.schema.path('template') as any)?.enumValues || [];
+    if (typeof template !== 'string' || (allowedTemplates.length > 0 && !allowedTemplates.includes(template))) {
+      return NextResponse.json({ error: 'Please choose a valid template.' }, { status: 400 });
+    }
+
     const slug = normalizePageSlug(body.slug || "");
     if (!slug) {
       return NextResponse.json({ error: 'A valid slug is required.' }, { status: 400 });
     }
-
-    const existing = await Page.findOne({ slug }).select('_id title').lean();
-    if (existing) {
-      return NextResponse.json({ error: `The slug "${slug}" is already used by "${(existing as any).title}". Please choose a different slug.` }, { status: 409 });
+    const slugProblem = validatePageSlug(slug, template);
+    if (slugProblem) {
+      return NextResponse.json({ error: slugProblem }, { status: 400 });
     }
 
-    const canonicalUrl = body.seo?.canonicalUrl || `https://mohsindesigns.com/${slug}/`;
-    const pageStatus = body.status === 'draft' ? 'draft' : 'published';
+    const existing: any = await Page.findOne({ slug }).select('_id title isTrashed').lean();
+    if (existing) {
+      const where = existing.isTrashed ? ' (it is in the Trash - restore or permanently delete it first)' : '';
+      return NextResponse.json({ error: `The slug "${slug}" is already used by "${existing.title}"${where}. Please choose a different slug.` }, { status: 409 });
+    }
 
-    const cleanContent = (body.content && typeof body.content === 'object') ? { ...body.content } : {};
+    const pageStatus = body.status === 'draft' ? 'draft' : 'published';
+    if (pageStatus === 'published' && !(await hasPermission(req, 'pages', 'publish'))) {
+      return NextResponse.json({ error: 'You do not have permission to publish pages. Save it as a Draft instead.' }, { status: 403 });
+    }
+
+    const seoIn: any = (body.seo && typeof body.seo === 'object') ? { ...body.seo } : {};
+    const canonicalUrl: string = seoIn.canonicalUrl || canonicalFor(slug);
+    seoIn.canonicalUrl = canonicalUrl.endsWith('/') ? canonicalUrl : `${canonicalUrl}/`;
+
+    const cleanContent = (body.content && typeof body.content === 'object' && !Array.isArray(body.content)) ? { ...body.content } : {};
     delete cleanContent.navbar;
     delete cleanContent.footer;
 
-    const newPage = await Page.create({
-      title,
-      slug,
-      template,
-      status: pageStatus,
-      content: cleanContent,
-      seo: {
-        canonicalUrl: canonicalUrl.endsWith('/') ? canonicalUrl : `${canonicalUrl}/`,
-        ...(body.seo || {})
+    let newPage;
+    try {
+      newPage = await Page.create({
+        title,
+        slug,
+        template,
+        status: pageStatus,
+        content: cleanContent,
+        seo: seoIn
+      });
+    } catch (err: any) {
+      const message = validationMessage(err);
+      if (message) return NextResponse.json({ error: message }, { status: 400 });
+      if (err?.code === 11000) {
+        return NextResponse.json({ error: `The slug "${slug}" is already used by another page.` }, { status: 409 });
       }
-    });
+      throw err;
+    }
 
     await recordActivity({
       user: (session as any).userId,
@@ -70,11 +110,20 @@ export async function POST(req: NextRequest) {
       ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
     });
 
+    // A visitor (or crawler) may already have hit this URL and had the 404 cached.
+    revalidatePageCaches({ slugs: [slug], template, moved: true });
+
     return NextResponse.json(newPage);
   } catch (error: any) {
     console.error('Page create error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
+}
+
+/** Accepts only real ObjectId strings (an invalid id would make Mongoose throw a CastError -> 500). */
+function cleanIds(ids: unknown): string[] {
+  if (!Array.isArray(ids)) return [];
+  return ids.map(String).filter((i) => mongoose.isValidObjectId(i));
 }
 
 export async function PATCH(req: NextRequest) {
@@ -85,27 +134,50 @@ export async function PATCH(req: NextRequest) {
 
   try {
     await connectToDatabase();
-    const { action, ids, status } = await req.json();
-    
-    if (action === 'duplicate' && ids && Array.isArray(ids)) {
+    const { action, ids: rawIds, status } = await req.json();
+    const ids = cleanIds(rawIds);
+    const ip = req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown';
+
+    if (!ids.length) {
+      return NextResponse.json({ error: 'No pages selected.' }, { status: 400 });
+    }
+
+    if (action === 'duplicate') {
+      // Duplicating creates pages, so it needs the create permission (it used to only need update).
+      if (!(await hasPermission(req, 'pages', 'create'))) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+      }
       const sourcePages = await Page.find({ _id: { $in: ids } });
       const newPages = [];
-      
+
       for (const source of sourcePages) {
-        const baseSlug = normalizePageSlug(source.slug) || 'page';
-        let candidateSlug = `${baseSlug}-copy-${Date.now()}`;
-        // Extremely unlikely to collide (timestamp-suffixed), but guarantee it rather than assume it.
-        while (await Page.findOne({ slug: candidateSlug }).select('_id').lean()) {
-          candidateSlug = `${baseSlug}-copy-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+        const src: any = source.toObject();
+        const segs = (normalizePageSlug(src.slug) || 'page').split('/');
+        const baseSlug = segs.join('/');
+
+        // "<slug>-copy", "<slug>-copy-2", ... (readable and sequential instead of a timestamp).
+        let candidateSlug = `${baseSlug}-copy`;
+        for (let n = 2; await Page.exists({ slug: candidateSlug }); n++) {
+          candidateSlug = `${baseSlug}-copy-${n}`;
         }
 
+        // Deep copy: the duplicate must never share nested objects/arrays with the original.
+        const content = JSON.parse(JSON.stringify(src.content || {}));
+        const seo = JSON.parse(JSON.stringify(src.seo || {}));
+        seo.canonicalUrl = canonicalFor(candidateSlug);
+
+        // A copied location page must not keep claiming the original's place in the hierarchy.
+        const ownSegment = candidateSlug.split('/').pop() as string;
+        if (src.template === 'city' && content.citySlug) content.citySlug = ownSegment;
+        if (src.template === 'state' && content.stateSlug) content.stateSlug = ownSegment;
+
         const duplicate = await Page.create({
-          title: `${source.title} (Copy)`,
+          title: `${src.title} (Copy)`,
           slug: candidateSlug,
-          template: source.template,
-          content: source.content,
-          seo: source.seo,
-          status: 'draft'
+          template: src.template,
+          content,
+          seo,
+          status: 'draft' // never publish a copy automatically
         });
         newPages.push(duplicate);
 
@@ -115,97 +187,78 @@ export async function PATCH(req: NextRequest) {
           action: 'DUPLICATE_PAGE',
           entity: 'Page',
           entityId: duplicate._id.toString(),
-          details: { message: `Duplicated page: ${source.title} -> ${duplicate.title}` },
-          ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
+          details: { message: `Duplicated page: ${src.title} -> ${duplicate.title}`, slug: candidateSlug },
+          ip
         });
       }
       return NextResponse.json(newPages);
     }
 
-    if (action === 'status' && ids && Array.isArray(ids)) {
-      const affectedPages = await Page.find({ _id: { $in: ids } }, 'slug');
-      await Page.updateMany(
-        { _id: { $in: ids } },
-        { $set: { status: status || 'draft' } },
-        { runValidators: true }
-      );
-
-      await recordActivity({
-        user: (session as any).userId,
-        userName: (session as any).username,
-        action: 'BULK_STATUS_UPDATE',
-        entity: 'Page',
-        details: { ids, status: status || 'draft', message: `Bulk updated ${ids.length} pages to ${status || 'draft'}` },
-        ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
-      });
-
-      try {
-        const { revalidatePath } = await import('next/cache');
-        for (const p of affectedPages) {
-          revalidatePath(p.slug.startsWith('/') ? p.slug : `/${p.slug}`);
+    if (action === 'status' || action === 'trash' || action === 'restore') {
+      if (action === 'status') {
+        if (!PAGE_STATUSES.includes(status)) {
+          return NextResponse.json({ error: 'Invalid status.' }, { status: 400 });
         }
-        revalidatePath('/');
-      } catch (err) {
-        console.error('Failed to revalidate path:', err);
+        // Publishing / unpublishing needs the separate `pages.publish` permission.
+        if (!(await hasPermission(req, 'pages', 'publish'))) {
+          return NextResponse.json({ error: 'You do not have permission to publish or unpublish pages.' }, { status: 403 });
+        }
       }
 
-      return NextResponse.json({ success: true });
-    } else if (action === 'trash' && ids && Array.isArray(ids)) {
-      const affectedPages = await Page.find({ _id: { $in: ids } }, 'slug');
-      await Page.updateMany(
-        { _id: { $in: ids } },
-        { $set: { isTrashed: true, trashedAt: new Date() } }
-      );
+      const affectedPages: any[] = await Page.find({ _id: { $in: ids } }).select('_id slug title template').lean();
 
-      await recordActivity({
-        user: (session as any).userId,
-        userName: (session as any).username,
-        action: 'BULK_TRASH_PAGES',
-        entity: 'Page',
-        details: { message: `Bulk moved ${ids.length} pages to trash` },
-        ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
-      });
+      // Taking pages offline: the homepage is protected.
+      let targets = affectedPages;
+      const skipped: Array<{ id: string; title: string; reason: string }> = [];
+      if (action === 'trash' || (action === 'status' && status === 'draft')) {
+        const homepageId = await getHomepageId();
+        targets = affectedPages.filter((p) => {
+          if (isLiveHomepage(p, homepageId)) {
+            skipped.push({ id: String(p._id), title: p.title, reason: HOMEPAGE_GUARD_MESSAGE });
+            return false;
+          }
+          return true;
+        });
+      }
+      const targetIds = targets.map((p) => p._id);
 
-      try {
-        const { revalidatePath } = await import('next/cache');
-        for (const p of affectedPages) {
-          revalidatePath(p.slug.startsWith('/') ? p.slug : `/${p.slug}`);
+      if (targetIds.length > 0) {
+        if (action === 'status') {
+          await Page.updateMany({ _id: { $in: targetIds } }, { $set: { status } }, { runValidators: true });
+        } else if (action === 'trash') {
+          await Page.updateMany({ _id: { $in: targetIds } }, { $set: { isTrashed: true, trashedAt: new Date() } });
+        } else {
+          await Page.updateMany({ _id: { $in: targetIds } }, { $set: { isTrashed: false, trashedAt: null } });
         }
-        revalidatePath('/');
-      } catch (err) {
-        console.error('Failed to revalidate path:', err);
+
+        await recordActivity({
+          user: (session as any).userId,
+          userName: (session as any).username,
+          action: action === 'status' ? 'BULK_STATUS_UPDATE' : action === 'trash' ? 'BULK_TRASH_PAGES' : 'BULK_RESTORE_PAGES',
+          entity: 'Page',
+          details: {
+            ids: targetIds.map(String),
+            slugs: targets.map((p) => p.slug),
+            ...(action === 'status' ? { status } : {}),
+            message:
+              action === 'status'
+                ? `Bulk updated ${targetIds.length} pages to ${status}`
+                : action === 'trash'
+                  ? `Bulk moved ${targetIds.length} pages to trash`
+                  : `Bulk restored ${targetIds.length} pages from trash`
+          },
+          ip
+        });
+
+        for (const p of targets) revalidatePageCaches({ slugs: [p.slug], template: p.template });
       }
 
-      return NextResponse.json({ success: true });
-    } else if (action === 'restore' && ids && Array.isArray(ids)) {
-      const affectedPages = await Page.find({ _id: { $in: ids } }, 'slug');
-      await Page.updateMany(
-        { _id: { $in: ids } },
-        { $set: { isTrashed: false, trashedAt: null } }
-      );
-
-      await recordActivity({
-        user: (session as any).userId,
-        userName: (session as any).username,
-        action: 'BULK_RESTORE_PAGES',
-        entity: 'Page',
-        details: { message: `Bulk restored ${ids.length} pages from trash` },
-        ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
-      });
-
-      try {
-        const { revalidatePath } = await import('next/cache');
-        for (const p of affectedPages) {
-          revalidatePath(p.slug.startsWith('/') ? p.slug : `/${p.slug}`);
-        }
-        revalidatePath('/');
-      } catch (err) {
-        console.error('Failed to revalidate path:', err);
+      if (targetIds.length === 0 && skipped.length > 0) {
+        return NextResponse.json({ error: skipped[0].reason, code: 'HOMEPAGE', skipped }, { status: 409 });
       }
-
-      return NextResponse.json({ success: true });
+      return NextResponse.json({ success: true, updated: targetIds.length, skipped });
     }
-    
+
     return NextResponse.json({ error: 'Invalid Action' }, { status: 400 });
   } catch (error: any) {
     console.error('Bulk action error:', error);
@@ -221,22 +274,35 @@ export async function DELETE(req: NextRequest) {
 
   try {
     await connectToDatabase();
-    const { ids } = await req.json();
-    if (!ids || !Array.isArray(ids)) {
+    const { ids: rawIds } = await req.json();
+    const ids = cleanIds(rawIds);
+    if (!ids.length) {
       return NextResponse.json({ error: 'Invalid IDs' }, { status: 400 });
     }
-    await Page.deleteMany({ _id: { $in: ids } });
+
+    const pages: any[] = await Page.find({ _id: { $in: ids } }).select('_id slug title template').lean();
+    const homepageId = await getHomepageId();
+    const skipped = pages.filter((p) => isLiveHomepage(p, homepageId));
+    const targets = pages.filter((p) => !skipped.includes(p));
+
+    if (targets.length === 0 && skipped.length > 0) {
+      return NextResponse.json({ error: HOMEPAGE_GUARD_MESSAGE, code: 'HOMEPAGE' }, { status: 409 });
+    }
+
+    await Page.deleteMany({ _id: { $in: targets.map((p) => p._id) } });
 
     await recordActivity({
       user: (session as any).userId,
       userName: (session as any).username,
       action: 'BULK_DELETE_PAGES',
       entity: 'Page',
-      details: { ids, message: `Bulk deleted ${ids.length} pages` },
+      details: { ids: targets.map((p) => String(p._id)), slugs: targets.map((p) => p.slug), message: `Bulk deleted ${targets.length} pages` },
       ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
     });
 
-    return NextResponse.json({ success: true });
+    for (const p of targets) revalidatePageCaches({ slugs: [p.slug], template: p.template });
+
+    return NextResponse.json({ success: true, deleted: targets.length, skipped: skipped.map((p) => ({ id: String(p._id), title: p.title })) });
   } catch (error: any) {
     console.error('Bulk delete error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

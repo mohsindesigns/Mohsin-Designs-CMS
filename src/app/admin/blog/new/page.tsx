@@ -1,7 +1,2 @@
-"use client";
-
-import BlogPostEditor from "@/components/admin/BlogPostEditor";
-
-export default function NewBlogPost() {
-  return <BlogPostEditor />;
-}
+// Alias of /admin/blogs/... (the sidebar links to /admin/blogs). Re-exported so the two admin trees can never drift.
+export { default } from '../../blogs/new/page';

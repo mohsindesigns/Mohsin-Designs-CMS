@@ -4,7 +4,7 @@ import CtaButton from "@/components/ui/CtaButton";
 import ThemedSelect from "@/components/ui/ThemedSelect";
 import { withTrailingSlash } from "@/lib/url";
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
-import React, { use, useState, useEffect, useRef } from "react";
+import React, { use, useState, useEffect, useRef, useId } from "react";
 import Link from "@/components/ui/Link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
@@ -168,6 +168,22 @@ const DigitTicker = ({ value }: { value: string | number }) => {
 function SpotlightCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
+  const innerRef = useRef<HTMLDivElement>(null);
+
+  // Subscribe ONCE (and clean up). This used to live in an inline ref callback, which React
+  // re-invokes on every re-render of the parent - so every keystroke in the contact form added
+  // two more motion-value listeners to each of ~30 cards (a slow leak that made every
+  // mouse-move run hundreds of handlers).
+  useEffect(() => {
+    const el = innerRef.current;
+    if (!el) return;
+    const offX = mouseX.on("change", (x: number) => el.style.setProperty("--x", `${x}px`));
+    const offY = mouseY.on("change", (y: number) => el.style.setProperty("--y", `${y}px`));
+    return () => {
+      offX();
+      offY();
+    };
+  }, [mouseX, mouseY]);
 
   function handleMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
     const { left, top } = currentTarget.getBoundingClientRect();
@@ -198,12 +214,7 @@ function SpotlightCard({ children, className = "" }: { children: React.ReactNode
       />
 
       <div
-        ref={(el) => {
-          if (el) {
-            mouseX.on("change", (x: number) => el.style.setProperty("--x", `${x}px`));
-            mouseY.on("change", (y: number) => el.style.setProperty("--y", `${y}px`));
-          }
-        }}
+        ref={innerRef}
         className="w-full h-full relative z-20"
       >
         {children}
@@ -215,6 +226,19 @@ function SpotlightCard({ children, className = "" }: { children: React.ReactNode
 // ── Animated Circular Stat ──
 const RADIUS = 34;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+
+// Splits a stat like "99.8%", "<24h", "+340%", "4.9★", "1,200+" or "24/7" into a static prefix, the
+// animated number and a static suffix. Returns null when there is no digit at all (e.g. "N/A"), in
+// which case the value is shown as-is with no count-up.
+function parseStatValue(value: string) {
+  const m = String(value ?? "").match(/^([^0-9]*)([0-9][0-9,]*(?:\.[0-9]+)?)(.*)$/);
+  if (!m) return null;
+  const numText = m[2];
+  const numeric = parseFloat(numText.replace(/,/g, ""));
+  if (!Number.isFinite(numeric)) return null;
+  const decimals = numText.includes(".") ? numText.split(".")[1].length : 0;
+  return { prefix: m[1], numeric, decimals, suffix: m[3], grouped: numText.includes(",") };
+}
 
 function AnimatedStat({
   value,
@@ -229,23 +253,22 @@ function AnimatedStat({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: false, margin: "-80px" });
-  const [displayed, setDisplayed] = useState(value.replace(/[0-9.]/g, "0"));
+  const gradientId = `ringGradient-${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
+  const safeValue = String(value ?? "");
+  const [displayed, setDisplayed] = useState(safeValue.replace(/[0-9]/g, "0"));
   const [dotProgress, setDotProgress] = useState(0);
+
+  // The ring fill is a fraction 0-1. The admin editors are inconsistent (the page editor asks for
+  // 0-1, the services catalog editor for 0-100), so accept both: anything above 1 is a percentage.
+  const fill = (() => {
+    const p = Number(percentage);
+    if (!Number.isFinite(p) || p < 0) return 0.85;
+    return Math.min(1, p > 1 ? p / 100 : p);
+  })();
 
   useEffect(() => {
     if (isInView) {
-      let numeric = 0;
-      let suffix = "";
-      if (value.includes("/")) {
-        const parts = value.split("/");
-        numeric = parseFloat(parts[0]);
-        suffix = "/" + parts[1];
-      } else {
-        const isPercent = value.includes("%");
-        suffix = isPercent ? "%" : value.replace(/[0-9.]/g, "");
-        numeric = parseFloat(value.replace(/[^0-9.]/g, ""));
-      }
-      const isFloat = value.includes(".");
+      const parsed = parseStatValue(safeValue);
       const DURATION = 1400;
       const DELAY = 150;
       const startTime = performance.now() + DELAY;
@@ -256,34 +279,43 @@ function AnimatedStat({
         const raw = Math.min(elapsed / DURATION, 1);
         const eased = 1 - Math.pow(1 - raw, 4);
 
-        setDisplayed((isFloat ? (eased * numeric).toFixed(1) : Math.round(eased * numeric).toString()) + suffix);
-        setDotProgress(eased * percentage);
+        if (parsed) {
+          const current = eased * parsed.numeric;
+          const text = parsed.decimals > 0
+            ? current.toFixed(parsed.decimals)
+            : parsed.grouped
+              ? Math.round(current).toLocaleString("en-US")
+              : Math.round(current).toString();
+          setDisplayed(parsed.prefix + text + parsed.suffix);
+        } else {
+          setDisplayed(safeValue);
+        }
+        setDotProgress(eased * fill);
 
         if (raw < 1) {
           rafId = requestAnimationFrame(tick);
         } else {
-          setDotProgress(percentage);
+          setDotProgress(fill);
         }
       };
 
       rafId = requestAnimationFrame(tick);
       return () => cancelAnimationFrame(rafId);
     } else {
-      setDisplayed(value.replace(/[0-9.]/g, "0"));
+      setDisplayed(safeValue.replace(/[0-9]/g, "0"));
       setDotProgress(0);
     }
-  }, [isInView, percentage, value]);
+  }, [isInView, fill, safeValue]);
 
   const dotAngle = 2 * Math.PI * dotProgress;
   const dotX = 41 + RADIUS * Math.cos(dotAngle);
   const dotY = 41 + RADIUS * Math.sin(dotAngle);
-  const gradientId = `ringGradient-${label.replace(/[^a-zA-Z0-9]/g, "")}`;
 
   return (
     <div ref={ref} className="flex flex-col items-center gap-3">
       <div className="relative w-[80px] h-[80px] sm:w-[90px] sm:h-[90px]">
         <div className="absolute inset-0 rounded-full bg-brand-blue/5 dark:bg-brand-yellow/5 blur-md" />
-        <svg viewBox="0 0 82 82" className="relative w-full h-full -rotate-90">
+        <svg viewBox="0 0 82 82" className="relative w-full h-full -rotate-90" aria-hidden="true">
           <defs>
             <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#0306AC" />
@@ -320,11 +352,13 @@ function AnimatedStat({
       </div>
       <div className="text-center">
         <p className="text-[9px] font-black uppercase tracking-widest text-brand-dark dark:text-white">{label}</p>
-        <p className="text-[8px] text-brand-zinc-400 dark:text-zinc-400 mt-0.5 leading-snug">
-          {sublabel.split('\\n').map((line, i) => (
-            <span key={i} className="block">{line}</span>
-          ))}
-        </p>
+        {sublabel && (
+          <p className="text-[8px] text-brand-zinc-400 dark:text-zinc-400 mt-0.5 leading-snug">
+            {sublabel.split(/\\n|\n/).map((line, i) => (
+              <span key={i} className="block">{line}</span>
+            ))}
+          </p>
+        )}
       </div>
     </div>
   );
@@ -416,12 +450,181 @@ const getToolDescription = (name: string) => {
   };
 };
 
+// First NON-EMPTY array among the candidates. If none has items but at least one exists as an
+// (empty) array, the admin deliberately emptied the list -> []. Only when nothing was ever saved
+// (every candidate undefined / not an array) do we return null so the caller can use the built-in
+// starter content. Before this, deleting every card in an editor made the built-in demo cards
+// (fake ROI numbers, fake tools...) reappear on the live page.
+function pickList(...candidates: any[]): any[] | null {
+  let sawEmptyArray = false;
+  for (const c of candidates) {
+    if (Array.isArray(c)) {
+      if (c.length > 0) return c;
+      sawEmptyArray = true;
+    }
+  }
+  return sawEmptyArray ? [] : null;
+}
+
+const cleanStrings = (arr: any): string[] =>
+  Array.isArray(arr) ? arr.filter((f: any) => typeof f === "string" && f.trim().length > 0) : [];
+
+// Which in-page anchors exist depends on which sections are currently visible. Used to hide a
+// button whose target section is switched off instead of rendering a dead "#anchor" link.
+type AnchorMap = Record<string, boolean>;
+
+function resolveCmsLink(raw: any, fallback: string, anchors: AnchorMap): string | null {
+  const href = getValidHref(raw) || getValidHref(fallback);
+  if (!href) return null;
+  if (href.startsWith("#") && href in anchors && !anchors[href]) return null;
+  return href;
+}
+
+// ── Hero consultation form ──
+// Owns its own state so typing never re-renders the (very large) page. Posts to /api/send, which
+// stores a Submission and emails the site owner. The API answers 200 even when only the email step
+// failed (the lead is saved), so ok === saved. Errors (bad captcha, network, 5xx) are shown to the
+// visitor instead of the old behaviour of always claiming success.
+function ConsultationForm({
+  heading, subheading, buttonText, serviceTitle, serviceOptions, serviceSlug,
+}: {
+  heading: string; subheading?: string; buttonText: string; serviceTitle: string; serviceOptions: string[]; serviceSlug: string;
+}) {
+  const blank = { fullName: "", email: "", phone: "", company: "", service: serviceTitle, message: "", agreePrivacy: false };
+  const [formData, setFormData] = useState(blank);
+  const [captchaToken, setCaptchaToken] = useState<string>("");
+  const [captchaKey, setCaptchaKey] = useState(0);
+  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+  const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (resetTimer.current) clearTimeout(resetTimer.current); }, []);
+
+  const set = (patch: Partial<typeof blank>) => setFormData((f) => ({ ...f, ...patch }));
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (status === "submitting") return; // double-submit guard
+    setStatus("submitting");
+    setErrorMsg("");
+    try {
+      const res = await fetch("/api/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.fullName.trim(),
+          email: formData.email.trim(),
+          phone: formData.phone.trim(),
+          company: formData.company.trim(),
+          service: formData.service || serviceTitle,
+          message: formData.message.trim(),
+          type: "Service Detail Consultation",
+          captchaToken,
+          source: typeof window !== "undefined" ? window.location.pathname : `/services/${serviceSlug}`,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err?.error || "We could not send your request. Please try again.");
+      }
+      setStatus("success");
+      resetTimer.current = setTimeout(() => {
+        setFormData({ ...blank });
+        setStatus("idle");
+      }, 6000);
+    } catch (err: any) {
+      setErrorMsg(err?.message || "We could not send your request. Please try again.");
+      setStatus("error");
+    } finally {
+      // Turnstile tokens are single-use: remount the widget for the next attempt.
+      setCaptchaToken("");
+      setCaptchaKey((k) => k + 1);
+    }
+  };
+
+  const busy = status === "submitting";
+  return (
+    <div id="contact-form" className="contact-card-glass p-4.5 xs:p-6 sm:p-7 rounded-[24px] xs:rounded-[30px] shadow-2xl relative border border-brand-zinc-200/95 dark:border-white/10 overflow-hidden w-full max-w-[390px] scroll-mt-28">
+      <div className="mb-4 text-left">
+        <h2 className="font-heading text-xl sm:text-2xl font-extrabold text-brand-dark dark:text-white leading-tight">{heading}</h2>
+        {subheading && (
+          <p className="text-xs font-sans text-brand-zinc-500 dark:text-zinc-400 mt-1 leading-snug">{subheading}</p>
+        )}
+      </div>
+
+      <AnimatePresence>
+        {status === "success" && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            role="status"
+            className="absolute inset-0 bg-white/98 dark:bg-[#12121e]/98 backdrop-blur-md rounded-[24px] xs:rounded-[30px] p-6 sm:p-8 flex flex-col items-center justify-center text-center z-30 space-y-3"
+          >
+            <div className="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto border border-emerald-500/20 shadow-md animate-pulse">
+              <Check className="w-6 h-6" />
+            </div>
+            <h3 className="font-heading text-lg font-bold text-brand-dark dark:text-white">Request Received!</h3>
+            <p className="text-xs font-sans text-brand-zinc-655 dark:text-zinc-355 max-w-xs mx-auto leading-relaxed">
+              Thanks for reaching out! We'll review your project and get back to you within 24 hours.
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <form onSubmit={handleSubmit} className="space-y-3" aria-busy={busy}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <input type="text" required name="name" autoComplete="name" aria-label="Full name" placeholder="Full Name *" value={formData.fullName} onChange={(e) => set({ fullName: e.target.value })} className="contact-input text-base sm:text-sm" />
+          <input type="email" required name="email" autoComplete="email" aria-label="Email address" placeholder="Email Address *" value={formData.email} onChange={(e) => set({ email: e.target.value })} className="contact-input text-base sm:text-sm" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <input type="tel" name="phone" autoComplete="tel" aria-label="Phone number" placeholder="Phone Number" value={formData.phone} onChange={(e) => set({ phone: e.target.value })} className="contact-input text-base sm:text-sm" />
+          <input type="text" name="company" autoComplete="organization" aria-label="Company name" placeholder="Company Name (Optional)" value={formData.company} onChange={(e) => set({ company: e.target.value })} className="contact-input text-base sm:text-sm" />
+        </div>
+        <div className="relative">
+          <ThemedSelect
+            value={formData.service}
+            onChange={(e) => set({ service: e.target.value })}
+            className="contact-input !flex text-base sm:text-sm"
+            options={serviceOptions.map((t) => ({ value: t, label: t }))}
+          />
+        </div>
+        <textarea required rows={3} name="message" aria-label="Your business goals" placeholder="Tell us about your business goals *" value={formData.message} onChange={(e) => set({ message: e.target.value })} className="contact-input resize-none text-base sm:text-sm" />
+        <div className="flex items-center gap-2.5 pt-0.5">
+          <input type="checkbox" id="service-privacy" required checked={formData.agreePrivacy} onChange={(e) => set({ agreePrivacy: e.target.checked })} className="w-4 h-4 rounded border-brand-zinc-300 text-brand-blue focus:ring-brand-blue cursor-pointer" />
+          <label htmlFor="service-privacy" className="text-[11px] font-sans text-brand-zinc-655 dark:text-zinc-400 cursor-pointer select-none">
+            I agree to the <Link href="/privacy" className="text-brand-blue dark:text-brand-yellow font-bold underline">Privacy Policy</Link>
+          </label>
+        </div>
+
+        <TurnstileCaptcha
+          key={captchaKey}
+          onVerify={(token) => setCaptchaToken(token)}
+          onExpire={() => setCaptchaToken("")}
+          size="flexible"
+          theme="auto"
+        />
+
+        {status === "error" && (
+          <p role="alert" className="text-xs font-semibold text-red-600 dark:text-red-400">{errorMsg}</p>
+        )}
+
+        <CtaButton type="submit" fullWidth icon={<Send />} loading={busy}>
+          {busy ? "Sending..." : buttonText}
+        </CtaButton>
+      </form>
+    </div>
+  );
+}
+
 export default function ServiceDetailTemplate({ params, pageData }: any) {
   const content = useContent();
 
   // Resolve slug safely (handling Promise or plain object)
   const unwrappedParams = (params && typeof params.then === 'function') ? use(params) as any : params;
-  const resolvedSlug = unwrappedParams?.slug ? String(unwrappedParams.slug) : (pageData?.slug || '');
+  // The catch-all route hands us slug as string[] (["my-page"]); the services route as a plain string.
+  const resolvedSlug = unwrappedParams?.slug
+    ? (Array.isArray(unwrappedParams.slug) ? unwrappedParams.slug.join('/') : String(unwrappedParams.slug))
+    : (pageData?.slug || '');
 
   // Extract all services
   const rawServices = Array.isArray(content?.services?.services) && content.services.services.length > 0
@@ -430,13 +633,27 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       ? content.services.list
       : (Array.isArray(content?.services) && content.services.length > 0 ? content.services : []));
 
-  // Find target service
-  const dbService = rawServices.find((s: any) => s.slug === resolvedSlug) || pageData?.content || pageData;
+  // Two authoring paths feed this template and they must not shadow each other:
+  //  1. /services/<slug>/  -> pageData IS the catalog entry (SiteContent.services.services[], edited in
+  //     Admin > Services). It has no `content`, so we read the live catalog entry for the slug.
+  //  2. /<page-slug>/      -> a Page document (template "service-detail", edited in Admin > Pages).
+  //     pageData.content holds the editor's output. The route always adds `globalServices` to it, so
+  //     "has its own content" means it has at least one other key.
+  // Before this, a Page whose slug happened to equal a catalog slug silently rendered the CATALOG
+  // entry and every edit made in the Pages editor was ignored.
+  const pageOwnContent =
+    pageData?.content && typeof pageData.content === "object" && !Array.isArray(pageData.content) &&
+    Object.keys(pageData.content).some((k) => k !== "globalServices")
+      ? pageData.content
+      : null;
+  const dbService = pageOwnContent || rawServices.find((s: any) => s.slug === resolvedSlug) || pageData?.content || pageData;
 
   // Defaults fallback & normalization
   const service = {
-    title: dbService?.title || "Professional Service",
-    slug: dbService?.slug || resolvedSlug,
+    title: dbService?.title || pageData?.title || "Professional Service",
+    // The URL slug wins: a Page document's content.slug is just whatever example slug the editor
+    // seeded ("custom-web-development"), which would break "exclude myself from recommendations".
+    slug: resolvedSlug || dbService?.slug || "",
     tag: dbService?.tag || "Premium Solution",
     hero: {
       enabled: dbService?.hero?.enabled,
@@ -453,16 +670,17 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
         text: dbService?.hero?.secondaryCta?.text || "Explore Inclusions",
         link: dbService?.hero?.secondaryCta?.link || "#what-included"
       },
-      benefits: (Array.isArray(dbService?.hero?.benefits) && dbService.hero.benefits.length > 0)
-        ? dbService.hero.benefits.filter((b: any) => typeof b === 'string' && b.trim().length > 0)
-        : (Array.isArray(dbService?.features) && dbService.features.length > 0
-          ? dbService.features.filter((b: any) => typeof b === 'string' && b.trim().length > 0)
+      benefits: (() => {
+        const picked = pickList(dbService?.hero?.benefits, dbService?.features);
+        return picked
+          ? cleanStrings(picked)
           : [
 "Data-Driven Growth Strategies",
 "Next.js Speed & Performance",
 "Conversion-Focused Architecture",
 "Dedicated Support & Real-Time Sync"
-          ]),
+          ];
+      })(),
       formHeading: dbService?.hero?.formHeading || dbService?.hero?.formTitle || "Request a Free Audit",
       formSubheading: dbService?.hero?.formSubheading || dbService?.hero?.formSubtitle || "Direct architect consultation and custom scope estimation within 24 hours.",
       formButtonText: dbService?.hero?.formButtonText || dbService?.hero?.btnSubmit || "Request Free Proposal"
@@ -470,17 +688,16 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
     clientTrust: {
       enabled: dbService?.clientTrust?.enabled,
       heading: dbService?.clientTrust?.heading || "ENTERPRISE PLATFORMS WE INTEGRATE & ACCELERATE",
-      logos: (Array.isArray(dbService?.clientTrust?.logos) && dbService.clientTrust.logos.length > 0)
-        ? dbService.clientTrust.logos
-        : (Array.isArray(dbService?.clientTrust) && dbService.clientTrust.length > 0
-          ? dbService.clientTrust
-          : [
+      // Optional one-line supporting copy (saved by the services importer / catalog data). It was
+      // stored on the record but never shown anywhere.
+      description: dbService?.clientTrust?.description || "",
+      logos: pickList(dbService?.clientTrust?.logos, dbService?.clientTrust) ?? [
             { name: "Google Ads" },
             { name: "Meta Business" },
             { name: "Amazon Ads" },
             { name: "Bing Ads" },
             { name: "Apple Search" }
-          ])
+          ]
     },
     whatIncluded: {
       enabled: dbService?.whatIncluded?.enabled,
@@ -488,13 +705,11 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       titleIntro: dbService?.whatIncluded?.titleIntro || "What's Included in",
       titleHighlight: dbService?.whatIncluded?.titleHighlight || "Our Delivery",
       description: dbService?.whatIncluded?.description || "",
-      pillars: (Array.isArray(dbService?.whatIncluded?.pillars) && dbService.whatIncluded.pillars.length > 0)
-        ? dbService.whatIncluded.pillars.map((p: any) => ({
+      pillars: pickList(dbService?.whatIncluded?.pillars)
+        ? pickList(dbService?.whatIncluded?.pillars)!.map((p: any) => ({
           title: p.title || p.name || "",
           desc: p.desc || p.description || "",
-          features: Array.isArray(p.features)
-            ? p.features.filter((f: any) => typeof f === 'string' && f.trim().length > 0)
-            : []
+          features: cleanStrings(p.features)
         }))
         : [
           {
@@ -520,8 +735,8 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       titleIntro: dbService?.strategy?.titleIntro || "Engineered For",
       titleHighlight: dbService?.strategy?.titleHighlight || "Compounding Impact",
       description: dbService?.strategy?.description || "A custom implementation plan targeting bottlenecks and compounding acquisition flows.",
-      components: (Array.isArray(dbService?.strategy?.components) && dbService.strategy.components.length > 0)
-        ? dbService.strategy.components.map((c: any, idx: number) => ({
+      components: pickList(dbService?.strategy?.components)
+        ? pickList(dbService?.strategy?.components)!.map((c: any, idx: number) => ({
           num: c.num || `0${idx + 1}`,
           title: c.title || "",
           desc: c.desc || c.description || ""
@@ -539,17 +754,14 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       titleHighlight: dbService?.benefits?.titleHighlight || "Advantages",
       description: dbService?.benefits?.description || "",
       outcomeText: dbService?.benefits?.outcomeText || "Guaranteed Outcome",
-      list: (Array.isArray(dbService?.benefits?.list) && dbService.benefits.list.length > 0)
-        ? dbService.benefits.list.map((b: any) => ({
-          metric: b.metric || "",
-          title: b.title || "",
-          desc: b.desc || b.description || "",
-          tag: b.tag || b.num || "",
-          iconName: b.iconName || b.icon || "TrendingUp",
-          outcomeText: b.outcomeText || dbService?.benefits?.outcomeText || ""
-        }))
-        : (Array.isArray(dbService?.benefits?.items) && dbService.benefits.items.length > 0
-          ? dbService.benefits.items.map((b: any) => ({
+      list: (() => {
+        const picked = pickList(
+          dbService?.benefits?.list,
+          dbService?.benefits?.items,
+          (Array.isArray(dbService?.benefits) && typeof dbService.benefits[0] === 'object') ? dbService.benefits : undefined
+        );
+        return picked
+          ? picked.map((b: any) => ({
             metric: b.metric || "",
             title: b.title || "",
             desc: b.desc || b.description || "",
@@ -557,21 +769,13 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             iconName: b.iconName || b.icon || "TrendingUp",
             outcomeText: b.outcomeText || dbService?.benefits?.outcomeText || ""
           }))
-          : (Array.isArray(dbService?.benefits) && dbService.benefits.length > 0 && typeof dbService.benefits[0] === 'object'
-            ? dbService.benefits.map((b: any) => ({
-              metric: b.metric || "",
-              title: b.title || "",
-              desc: b.desc || b.description || "",
-              tag: b.tag || b.num || "",
-              iconName: b.iconName || b.icon || "TrendingUp",
-              outcomeText: b.outcomeText || ""
-            }))
-            : [
-              { title: "Organic Visibility", desc: "Accelerating discovery on top search engines through clean structured code.", iconName: "TrendingUp", outcomeText: "Guaranteed Outcome" },
-              { title: "Conversion Yield", desc: "Frictionless UX funnels designed specifically to capture and convert leads.", iconName: "Target", outcomeText: "Guaranteed Outcome" },
-              { title: "Reliability & Uptime", desc: "Enterprise infrastructure built on modern serverless edge architecture.", iconName: "ShieldCheck", outcomeText: "Guaranteed Outcome" },
-              { title: "Load Performance", desc: "Lightning fast asset delivery boosting Core Web Vitals and SEO rankings.", iconName: "Zap", outcomeText: "Guaranteed Outcome" }
-            ]))
+          : [
+            { title: "Organic Visibility", desc: "Accelerating discovery on top search engines through clean structured code.", iconName: "TrendingUp", outcomeText: "Guaranteed Outcome" },
+            { title: "Conversion Yield", desc: "Frictionless UX funnels designed specifically to capture and convert leads.", iconName: "Target", outcomeText: "Guaranteed Outcome" },
+            { title: "Reliability & Uptime", desc: "Enterprise infrastructure built on modern serverless edge architecture.", iconName: "ShieldCheck", outcomeText: "Guaranteed Outcome" },
+            { title: "Load Performance", desc: "Lightning fast asset delivery boosting Core Web Vitals and SEO rankings.", iconName: "Zap", outcomeText: "Guaranteed Outcome" }
+          ];
+      })()
     },
     process: {
       enabled: dbService?.process?.enabled,
@@ -581,29 +785,17 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       description: dbService?.process?.description || "We orchestrate campaigns sequentially, guaranteeing structured code deliverables and auditable checkpoints at each stage of your roadmap.",
       calloutTag: dbService?.process?.calloutTag || "",
       calloutText: dbService?.process?.calloutText || "",
-      steps: (Array.isArray(dbService?.process?.steps) && dbService.process.steps.length > 0)
-        ? dbService.process.steps.map((p: any, idx: number) => ({
+      steps: pickList(dbService?.process?.steps, dbService?.process)
+        ? pickList(dbService?.process?.steps, dbService?.process)!.map((p: any, idx: number) => ({
           title: p.title || p.name || `Sprint 0${idx + 1}`,
           desc: p.desc || p.description || "",
           phaseTag: p.phaseTag || p.badge || p.tag || `PHASE 0${idx + 1} // SPRINT`,
-          deliverables: Array.isArray(p.deliverables)
-            ? p.deliverables.filter((d: any) => typeof d === 'string' && d.trim().length > 0)
-            : [],
+          deliverables: cleanStrings(p.deliverables),
+          image: p.image || "",
           footerLeft: p.footerLeft || "",
           footerRight: p.footerRight || ""
         }))
-        : (Array.isArray(dbService?.process) && dbService.process.length > 0
-          ? dbService.process.map((p: any, idx: number) => ({
-            title: p.title || p.name || "Milestone",
-            desc: p.desc || p.description || "Structured sprint execution.",
-            phaseTag: p.phaseTag || p.badge || `PHASE 0${idx + 1} // SPRINT`,
-            deliverables: Array.isArray(p.deliverables)
-              ? p.deliverables.filter((d: any) => typeof d === 'string' && d.trim().length > 0)
-              : [],
-            footerLeft: p.footerLeft || "",
-            footerRight: p.footerRight || ""
-          }))
-          : [
+        : [
             {
               title: "Discovery & Technical Diagnostics",
               desc: "Full audit of your digital ecosystem, tech stack, and user funnels.",
@@ -636,7 +828,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               footerLeft: "Production Launch",
               footerRight: "Verified Milestone"
             }
-          ])
+          ]
     },
     results: {
       enabled: dbService?.results?.enabled,
@@ -646,6 +838,8 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       description: dbService?.results?.description || "Verifiable metric indicators driven by precise performance scaling and custom coding.",
       caseStudiesEyebrow: dbService?.results?.caseStudiesEyebrow || "Featured Case Studies",
       caseStudies: (() => {
+        // An explicitly emptied caseStudies array (the catalog editor also blanks the legacy single
+        // caseStudy when the last card is deleted) means "no case studies", not "show the demos".
         if (Array.isArray(dbService?.results?.caseStudies) && dbService.results.caseStudies.length > 0) {
           return dbService.results.caseStudies.map((cs: any) => ({
             title: cs.title || "",
@@ -656,6 +850,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             desc: cs.desc || "",
             iconName: cs.iconName || cs.icon || ""
           }));
+        }
+        if (Array.isArray(dbService?.results?.caseStudies) && !(dbService?.results?.caseStudy?.title || dbService?.results?.caseStudy?.metric || dbService?.results?.caseStudy?.desc)) {
+          return [];
         }
         if (dbService?.results?.caseStudy && (dbService.results.caseStudy.title || dbService.results.caseStudy.metric || dbService.results.caseStudy.desc)) {
           return [{
@@ -689,8 +886,8 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
           }
         ];
       })(),
-      metrics: (Array.isArray(dbService?.results?.metrics) && dbService.results.metrics.length > 0)
-        ? dbService.results.metrics.map((m: any, idx: number) => ({
+      metrics: pickList(dbService?.results?.metrics)
+        ? pickList(dbService?.results?.metrics)!.map((m: any, idx: number) => ({
           value: m.value || "",
           label: m.label || "",
           desc: m.desc || m.subtext || "",
@@ -713,15 +910,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       footerLeft: dbService?.industries?.footerLeft || "",
       footerRight: dbService?.industries?.footerRight || "",
       list: (() => {
-        const rawList = Array.isArray(dbService?.industries?.list) && dbService.industries.list.length > 0
-          ? dbService.industries.list
-          : (Array.isArray(dbService?.industries?.items) && dbService.industries.items.length > 0
-            ? dbService.industries.items
-            : (Array.isArray(dbService?.industries) && dbService.industries.length > 0
-              ? dbService.industries
-              : []));
+        const rawList = pickList(dbService?.industries?.list, dbService?.industries?.items, dbService?.industries);
 
-        if (rawList.length > 0) {
+        if (rawList) {
           return rawList.map((ind: any) => {
             const title = ind.title || ind.name || "";
             const words = String(title).trim().split(/\s+/).filter(Boolean);
@@ -755,18 +946,13 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       titleHighlight: dbService?.tools?.titleHighlight || "Frameworks & Tools",
       description: dbService?.tools?.description || "High-performance frameworks and analytics systems driving client ROI metrics.",
       list: (() => {
-        if (Array.isArray(dbService?.tools?.list) && dbService.tools.list.length > 0) {
-          return dbService.tools.list.map((t: any) => ({
+        // Source order: individual tool cards (list/items/legacy array) -> category groups -> starter
+        // demo tools. Category groups are ONLY used when there are no individual tool cards.
+        const direct = pickList(dbService?.tools?.list, dbService?.tools?.items, Array.isArray(dbService?.tools) ? dbService.tools : undefined);
+        if (direct && direct.length > 0) {
+          return direct.map((t: any) => ({
             name: t.name || t.title || "Tool",
-            tag: t.tag || "CORE DEV",
-            desc: t.desc || t.description || "",
-            iconName: t.iconName || t.icon || "Cpu"
-          }));
-        }
-        if (Array.isArray(dbService?.tools?.items) && dbService.tools.items.length > 0) {
-          return dbService.tools.items.map((t: any) => ({
-            name: t.name || t.title || "Tool",
-            tag: t.tag || "CORE DEV",
+            tag: t.tag || t.category || "CORE DEV",
             desc: t.desc || t.description || "",
             iconName: t.iconName || t.icon || "Cpu"
           }));
@@ -789,14 +975,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             });
           });
         }
-        if (Array.isArray(dbService?.tools) && dbService.tools.length > 0) {
-          return dbService.tools.map((t: any) => ({
-            name: t.name || t.title || "Tool",
-            tag: t.tag || "CORE DEV",
-            desc: t.desc || t.description || "",
-            iconName: t.iconName || t.icon || "Cpu"
-          }));
-        }
+        if (direct) return []; // admin deliberately removed every tool card
         return [
           { name: "Next.js", iconName: "Monitor", tag: "CORE DEV", desc: "Headless rendering backend with automatic static optimization and route pre-fetching." },
           { name: "React.js", iconName: "Cpu", tag: "FRONTEND", desc: "Modular, reactive front-end library built for speedy interaction states." },
@@ -811,12 +990,12 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       titleIntro: dbService?.whyChooseUs?.titleIntro || "Why Leaders Choose",
       titleHighlight: dbService?.whyChooseUs?.titleHighlight || "Mohsin Designs",
       description: dbService?.whyChooseUs?.description || "We design fully custom solutions engineered around revenue metrics, performance, and transparency.",
-      stats: (Array.isArray(dbService?.whyChooseUs?.stats) && dbService.whyChooseUs.stats.length > 0)
-        ? dbService.whyChooseUs.stats.map((st: any) => ({
+      stats: pickList(dbService?.whyChooseUs?.stats)
+        ? pickList(dbService?.whyChooseUs?.stats)!.map((st: any) => ({
           value: st.value || "",
           label: st.label || "",
           sublabel: st.sublabel || "",
-          percentage: typeof st.percentage ==="number" ? st.percentage : undefined
+          percentage: typeof st.percentage === "number" ? st.percentage : (st.percentage !== "" && st.percentage != null && Number.isFinite(Number(st.percentage)) ? Number(st.percentage) : undefined)
         }))
         : [
           { value: "100%", label: "PERFORMANCE", sublabel: "Next.js Headless\nSpeed Optimization", percentage: 1.0 },
@@ -824,17 +1003,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
           { value: "24/7", label: "DATA SYNC", sublabel: "Live Tracking\nReal-time Reports", percentage: 0.85 }
         ],
       list: (() => {
-        const rawList = Array.isArray(dbService?.whyChooseUs?.list) && dbService.whyChooseUs.list.length > 0
-          ? dbService.whyChooseUs.list
-          : (Array.isArray(dbService?.whyChooseUs?.points) && dbService.whyChooseUs.points.length > 0
-            ? dbService.whyChooseUs.points
-            : (Array.isArray(dbService?.whyChooseUs?.items) && dbService.whyChooseUs.items.length > 0
-              ? dbService.whyChooseUs.items
-              : (Array.isArray(dbService?.whyChooseUs) && dbService.whyChooseUs.length > 0
-                ? dbService.whyChooseUs
-                : [])));
+        const rawList = pickList(dbService?.whyChooseUs?.list, dbService?.whyChooseUs?.points, dbService?.whyChooseUs?.items, dbService?.whyChooseUs);
 
-        if (rawList.length > 0) {
+        if (rawList) {
           return rawList.map((item: any, idx: number) => ({
             tag: item.tag || `Differentiator 0${idx + 1}`,
             title: item.title || item.name || "",
@@ -858,8 +1029,9 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       titleIntro: dbService?.pricing?.titleIntro || "Scalable Growth",
       titleHighlight: dbService?.pricing?.titleHighlight || "Investment Packages",
       description: dbService?.pricing?.description || "",
-      plans: (Array.isArray(dbService?.pricing?.plans) && dbService.pricing.plans.length > 0)
-        ? dbService.pricing.plans.map((p: any) => ({
+      // No built-in demo plans: an admin who switches pricing on without entering plans must not
+      // publish invented prices ("$2,450 / sprint"). Empty -> the section stays hidden.
+      plans: (pickList(dbService?.pricing?.plans) || []).map((p: any) => ({
           name: p.name || "",
           tag: p.tag || "",
           desc: p.desc || p.description || "",
@@ -870,59 +1042,21 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
           badgeText: p.badgeText || (p.isPopular || p.popular ? "Most Popular" : p.isCustom || p.custom ? "Custom Scoped" : ""),
           ctaText: p.ctaText || "Select Plan",
           ctaLink: p.ctaLink || "",
-          features: Array.isArray(p.features)
-            ? p.features.filter((f: any) => typeof f === 'string' && f.trim().length > 0)
-            : []
+          features: cleanStrings(p.features)
         }))
-        : [
-          {
-            name: "Sprint Tier",
-            desc: "Targeted execution for focused optimization and rapid turnaround.",
-            price: "$2,450",
-            period: "sprint",
-            isPopular: false,
-            isCustom: false,
-            badgeText: "",
-            ctaText: "Select Sprint",
-            features: ["Full Technical Diagnostic", "Core Feature Implementation", "Speed & Security Hardening", "2 Weeks Dedicated Support"]
-          },
-          {
-            name: "Growth Tier",
-            desc: "Complete comprehensive solution built to dominate competitive markets.",
-            price: "$4,850",
-            period: "project",
-            isPopular: true,
-            isCustom: false,
-            badgeText: "Most Popular",
-            ctaText: "Start Growth Plan",
-            features: ["End-to-End Custom Build", "Conversion Rate Optimization", "Custom Analytics & Tracking", "SEO & Speed Maxima", "30 Days Hypercare Support"]
-          },
-          {
-            name: "Enterprise Tier",
-            desc: "Custom architected multi-location and enterprise-grade infrastructure.",
-            price: "Custom",
-            period: "custom scope",
-            isPopular: false,
-            isCustom: true,
-            badgeText: "Custom Scoped",
-            ctaText: "Request Scope",
-            features: ["Unlimited Dynamic Architecture", "Headless CMS Integration", "Dedicated Lead Engineering", "Priority SLA & SLA Support"]
-          }
-        ]
     },
-    faqs: (Array.isArray(dbService?.faqs) && dbService.faqs.length > 0)
-      ? dbService.faqs.map((f: any) => ({ question: f.question || f.q || "", answer: f.answer || f.a || "", category: f.category || "" }))
-      : (Array.isArray(dbService?.faq) && dbService.faq.length > 0
-        ? dbService.faq.map((f: any) => ({ question: f.question || f.q || "", answer: f.answer || f.a || "", category: f.category || "" }))
-        : [
-          { question: "How quickly can we get started? ", answer: "We typically onboard new projects within 3-5 business days following the initial strategy discovery call." },
-          { question: "Do you offer ongoing support and updates? ", answer: "Yes, we provide flexible retainer and maintenance support options to ensure your platform remains fast, secure, and continuously optimized." },
-          { question: "Will I have complete ownership of all assets? ", answer: "100%. You retain full ownership of all code, design files, domains, and analytics accounts upon project completion." }
-        ]),
+    // FAQ items. Page-editor docs store {q, a} (and the editor also mirrors question/answer);
+    // the catalog stores {question, answer, category}. No invented demo FAQs: with no items the
+    // section is simply not rendered (see showFaq below).
+    faqs: (pickList(dbService?.faqs, dbService?.faq) || [])
+      .map((f: any) => ({ question: f.question || f.q || "", answer: f.answer || f.a || "", category: f.category || "" }))
+      .filter((f: any) => f.question || f.answer),
     faqSection: {
       enabled: dbService?.faqSection?.enabled,
       sectionTag: dbService?.faqBadge || dbService?.faqSection?.sectionTag || "14 // FREQUENTLY ASKED",
-      titleIntro: dbService?.faqTitleIntro !== undefined ? dbService?.faqTitleIntro : (dbService?.faqSection?.titleIntro ?? "Service"),
+      // Was "Service" by default -> heading read "Service Frequently Asked Questions" on every page
+      // authored in the Pages editor (which has no FAQ-heading fields).
+      titleIntro: dbService?.faqTitleIntro !== undefined ? dbService?.faqTitleIntro : (dbService?.faqSection?.titleIntro ?? ""),
       titleHighlight: dbService?.faqTitleHighlight || dbService?.faqSection?.titleHighlight || dbService?.faqTitle || "Frequently Asked Questions",
       description: dbService?.faqDescription || dbService?.faqSection?.description || ""
     },
@@ -931,7 +1065,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       title: dbService?.strategyAudit?.title || "Have a complex custom build in mind? ",
       desc: dbService?.strategyAudit?.desc || "Book a 30-minute high-level technical strategy session with our lead engineer.",
       button: dbService?.strategyAudit?.button || "Book Architecture Call",
-      href: dbService?.strategyAudit?.href || "#contact"
+      href: dbService?.strategyAudit?.href || "#contact-form"
     },
     finalCta: {
       enabled: dbService?.finalCta?.enabled,
@@ -971,61 +1105,67 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
     }
   };
 
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    company: "",
-    service: service.title,
-    message: "",
-    agreePrivacy: false
-  });
-  const [captchaToken, setCaptchaToken] = useState<string>("");
-  const [submitted, setSubmitted] = useState(false);
+  // (The consultation form keeps its own state inside <ConsultationForm>: it used to live here, so
+  // every keystroke re-rendered the whole page - ~100 RichTextRenderer/DOMPurify passes per key.)
   const [activeCaseIdx, setActiveCaseIdx] = useState<number>(0);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitted(true);
-    try {
-      await fetch('/api/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: formData.fullName,
-          email: formData.email,
-          phone: formData.phone,
-          company: formData.company,
-          service: formData.service || service.title,
-          message: formData.message,
-          type: "Service Detail Consultation",
-          captchaToken: captchaToken,
-          source: typeof window !=="undefined" ? window.location.pathname : `/services/${service.slug}`
-        })
-      });
-    } catch (err) {
-      console.error('Failed to submit consultation form:', err);
+  // Only live, titled, routable services: rawServices also contains drafts and trashed entries, which
+  // must never appear as a recommendation card or as a choice in the public form's service dropdown.
+  const publicServices = rawServices.filter((s: any) => s && s.title && s.slug && s.status !== 'draft' && !s.isTrashed);
+  const recommendedServices = publicServices.filter((s: any) => s.slug !== service.slug);
+  const serviceOptions: string[] = Array.from(new Set([service.title, ...publicServices.map((s: any) => String(s.title))]));
+
+  // ── Section visibility (single source of truth) ──
+  // `enabled !== false` shows a section (undefined = visible); an emptied list hides the section too,
+  // instead of rendering an empty shell. Pricing is the one opt-IN section (must be === true).
+  const showHero = (service as any).hero?.enabled !== false;
+  const showClientTrust = (service as any).clientTrust?.enabled !== false && service.clientTrust.logos.length > 0;
+  const videoTestimonialsData = pageData?.content?.videoTestimonials ?? dbService?.videoTestimonials;
+  const showVideoTestimonials =
+    videoTestimonialsData?.enabled !== false &&
+    Array.isArray(videoTestimonialsData?.items) && videoTestimonialsData.items.length > 0;
+  const showWhatIncluded = (service as any).whatIncluded?.enabled !== false && service.whatIncluded.pillars.length > 0;
+  const showStrategy = (service as any).strategy?.enabled !== false && service.strategy.components.length > 0;
+  const showBenefits = (service as any).benefits?.enabled !== false && service.benefits.list.length > 0;
+  const showProcess = (service as any).process?.enabled !== false && service.process.steps.length > 0;
+  const showResults = (service as any).results?.enabled !== false && (service.results.caseStudies.length > 0 || service.results.metrics.length > 0);
+  const showIndustries = (service as any).industries?.enabled !== false && service.industries.list.length > 0;
+  const showTools = (service as any).tools?.enabled !== false && service.tools.list.length > 0;
+  const showWhyChooseUs = (service as any).whyChooseUs?.enabled !== false && (service.whyChooseUs.list.length > 0 || service.whyChooseUs.stats.length > 0);
+  const showPricing = (service as any).pricing?.enabled === true && service.pricing.plans.length > 0;
+  const showRecommended = (service as any).recommendedSection?.enabled !== false && recommendedServices.length > 0;
+  const showServiceArea = (service as any).serviceArea?.enabled !== false;
+  const showFaq = (service as any).faqSection?.enabled !== false && service.faqs.length > 0;
+  const showFinalCta = (service as any).finalCta?.enabled !== false;
+
+  // In-page anchors that exist right now (a hero button pointing at "#what-included" while that
+  // section is hidden would otherwise be a dead link).
+  const anchors: AnchorMap = {
+    "#contact-form": showHero,
+    "#contact": showHero,
+    "#what-included": showWhatIncluded,
+    "#faq": showFaq,
+    "#video-testimonials": showVideoTestimonials,
+    "#service-area": showServiceArea,
+  };
+  const heroPrimaryHref = resolveCmsLink(service.hero.primaryCta?.link, "#contact-form", anchors);
+  const heroSecondaryHref = resolveCmsLink(service.hero.secondaryCta?.link, "#what-included", anchors);
+  const finalPrimaryHref = resolveCmsLink(service.finalCta.primaryCtaLink, "#contact-form", anchors);
+  const finalSecondaryHref = resolveCmsLink(service.finalCta.secondaryCtaLink, "/contact-us", anchors);
+
+  // Data handed to <PageInlineFaqs>. Everything else (items, badge, heading, description) goes in as
+  // explicit props; passing the whole service record made the FAQ subtitle silently fall back to the
+  // service's root `description`. The FAQ CTA card ("strategyAudit") is authored on the service but
+  // used to be ignored (its default link was "#contact", an id that did not exist on this page).
+  const faqSectionData = {
+    strategyAudit: {
+      ...service.strategyAudit,
+      href: resolveCmsLink(service.strategyAudit.href, "#contact-form", anchors) || "/contact-us"
     }
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({
-        fullName: "",
-        email: "",
-        phone: "",
-        company: "",
-        service: service.title,
-        message: "",
-        agreePrivacy: false
-      });
-      setCaptchaToken("");
-    }, 4500);
   };
 
-  // Recommended services list from CMS or fallback
-  const recommendedServices = rawServices.filter((s: any) => s.slug !== service.slug && s.status !== 'draft' && !s.isTrashed);
-
   return (
-    <main className="flex-1 w-full bg-white dark:bg-[#080710] text-brand-dark dark:text-white transition-colors duration-300 relative overflow-x-clip font-sans">
+    <div className="flex-1 w-full bg-white dark:bg-[#080710] text-brand-dark dark:text-white transition-colors duration-300 relative overflow-x-clip font-sans">
 
       {/* ── Background Grid Pattern ── */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808007_1px,transparent_1px),linear-gradient(to_bottom,#80808007_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none -z-10" />
@@ -1036,7 +1176,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       <div className="absolute bottom-[20%] left-[-12%] w-[48vw] h-[48vw] rounded-full bg-brand-blue/[0.02] dark:bg-brand-blue/[0.04] blur-[140px] pointer-events-none select-none -z-10 animate-float-blob" />
 
       {/* ── 01. SERVICE HERO ── */}
-      {(service as any).hero?.enabled !== false && (
+      {showHero && (
         <section className="pt-28 md:pt-36 lg:pt-40 pb-16 lg:pb-24 relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10">
           <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
             <img
@@ -1091,8 +1231,8 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
                 {/* CTA Buttons */}
                 <div className="flex flex-wrap items-center gap-4 pt-4">
-                  <CtaButton href={service.hero.primaryCta?.link || "#contact-form"}>{service.hero.primaryCta?.text || "Start Your Project"}</CtaButton>
-                  <CtaButton href={service.hero.secondaryCta?.link || "#what-included"} variant="secondary">{service.hero.secondaryCta?.text || "Explore Inclusions"}</CtaButton>
+                  {heroPrimaryHref && <CtaButton href={heroPrimaryHref}>{service.hero.primaryCta?.text || "Start Your Project"}</CtaButton>}
+                  {heroSecondaryHref && <CtaButton href={heroSecondaryHref} variant="secondary">{service.hero.secondaryCta?.text || "Explore Inclusions"}</CtaButton>}
                 </div>
               </motion.div>
 
@@ -1103,120 +1243,14 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
                 className="lg:col-span-5 min-w-0 flex justify-center lg:justify-end w-full"
               >
-                <div id="contact-form" className="contact-card-glass p-4.5 xs:p-6 sm:p-7 rounded-[24px] xs:rounded-[30px] shadow-2xl relative border border-brand-zinc-200/95 dark:border-white/10 overflow-hidden w-full max-w-[390px]">
-                  <div className="mb-4 text-left">
-                    <h2 className="font-heading text-xl sm:text-2xl font-extrabold text-brand-dark dark:text-white leading-tight">
-                      {service.hero.formHeading || "Request a Free Audit"}
-                    </h2>
-                    {service.hero.formSubheading && (
-                      <p className="text-xs font-sans text-brand-zinc-500 dark:text-zinc-400 mt-1 leading-snug">
-                        {service.hero.formSubheading}
-                      </p>
-                    )}
-                  </div>
-
-                  <AnimatePresence>
-                    {submitted && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.96 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.96 }}
-                        className="absolute inset-0 bg-white/98 dark:bg-[#12121e]/98 backdrop-blur-md rounded-[30px] p-6 sm:p-8 flex flex-col items-center justify-center text-center z-30 space-y-3"
-                      >
-                        <div className="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto border border-emerald-500/20 shadow-md animate-pulse">
-                          <Check className="w-6 h-6" />
-                        </div>
-                        <h3 className="font-heading text-lg font-bold text-brand-dark dark:text-white">
-                          Consultation Booked!
-                        </h3>
-                        <p className="text-xs font-sans text-brand-zinc-655 dark:text-zinc-355 max-w-xs mx-auto leading-relaxed">
-                          Thanks for reaching out! We'll audit your project requirements and email you a customized growth strategy within 24 hours.
-                        </p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  <form onSubmit={handleSubmit} className="space-y-3">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <input
-                        type="text"
-                        required
-                        placeholder="Full Name *"
-                        value={formData.fullName}
-                        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                        className="contact-input text-base sm:text-sm"
-                      />
-                      <input
-                        type="email"
-                        required
-                        placeholder="Email Address *"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="contact-input text-base sm:text-sm"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <input
-                        type="tel"
-                        placeholder="Phone Number"
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="contact-input text-base sm:text-sm"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Company Name (Optional)"
-                        value={formData.company}
-                        onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                        className="contact-input text-base sm:text-sm"
-                      />
-                    </div>
-
-                    <div className="relative">
-                      <ThemedSelect
-                        value={formData.service}
-                        onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                        className="contact-input !flex text-base sm:text-sm"
-                        options={[service, ...rawServices.filter((s: any) => s.title !== service.title)].map((srv: any) => ({ value: srv.title, label: srv.title }))}
-                      />
-                    </div>
-
-                    <textarea
-                      required
-                      rows={3}
-                      placeholder="Tell us about your business goals *"
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="contact-input resize-none text-base sm:text-sm"
-                    />
-
-                    <div className="flex items-center gap-2.5 pt-0.5">
-                      <input
-                        type="checkbox"
-                        id="privacy"
-                        required
-                        checked={formData.agreePrivacy}
-                        onChange={(e) => setFormData({ ...formData, agreePrivacy: e.target.checked })}
-                        className="w-4 h-4 rounded border-brand-zinc-300 text-brand-blue focus:ring-brand-blue cursor-pointer"
-                      />
-                      <label htmlFor="privacy" className="text-[11px] font-sans text-brand-zinc-655 dark:text-zinc-400 cursor-pointer select-none">
-                        I agree to the <Link href="/privacy" className="text-brand-blue dark:text-brand-yellow font-bold underline">Privacy Policy</Link>
-                      </label>
-                    </div>
-
-                    <TurnstileCaptcha
-                      onVerify={(token) => setCaptchaToken(token)}
-                      onExpire={() => setCaptchaToken("")}
-                      size="flexible"
-                      theme="auto"
-                    />
-
-                    <CtaButton type="submit" fullWidth icon={<Send />}>
-                      {service.hero.formButtonText || "Request Free Proposal"}
-                    </CtaButton>
-                  </form>
-                </div>
+                <ConsultationForm
+                  heading={service.hero.formHeading || "Request a Free Audit"}
+                  subheading={service.hero.formSubheading}
+                  buttonText={service.hero.formButtonText || "Request Free Proposal"}
+                  serviceTitle={service.title}
+                  serviceOptions={serviceOptions}
+                  serviceSlug={service.slug}
+                />
               </motion.div>
 
             </div>
@@ -1225,15 +1259,22 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       )}
 
       {/* ── 02. CLIENT TRUST MARQUEE ── */}
-      {(service as any).clientTrust?.enabled !== false && (
+      {showClientTrust && (
         <section className="py-7 border-b border-brand-zinc-200 dark:border-white/10 bg-zinc-50/20 dark:bg-[#0c0b18]/40 select-none overflow-hidden logo-marquee-track-container relative">
           <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-white to-transparent dark:from-[#080710] z-20 pointer-events-none" />
           <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-white to-transparent dark:from-[#080710] z-20 pointer-events-none" />
 
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 flex flex-col md:flex-row items-center gap-6">
-            <span className="text-[11px] font-mono font-black text-brand-blue dark:text-brand-yellow uppercase tracking-widest text-center md:text-left shrink-0">
-              {service.clientTrust.heading}
-            </span>
+            <div className="text-center md:text-left shrink-0 md:max-w-xs space-y-1">
+              <span className="block text-[11px] font-mono font-black text-brand-blue dark:text-brand-yellow uppercase tracking-widest">
+                {service.clientTrust.heading}
+              </span>
+              {service.clientTrust.description && (
+                <span className="block text-[11px] font-sans normal-case text-brand-zinc-500 dark:text-zinc-400 leading-snug">
+                  {service.clientTrust.description}
+                </span>
+              )}
+            </div>
 
             <div className="flex-1 overflow-hidden relative">
               <div className="logo-marquee-track gap-12 md:gap-16 items-center">
@@ -1295,14 +1336,14 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       {/* The service-detail editor saves onto this page's own content. dbService is usually the
           global catalog entry for the slug (which never carries this section), so read the
           page document first and only fall back to dbService. */}
-      {(pageData?.content?.videoTestimonials ?? dbService?.videoTestimonials)?.enabled !== false && (
+      {showVideoTestimonials && (
         <section id="video-testimonials">
-          <VideoTestimonials data={pageData?.content?.videoTestimonials ?? dbService?.videoTestimonials} />
+          <VideoTestimonials data={videoTestimonialsData} />
         </section>
       )}
 
       {/* ── 03. WHAT'S INCLUDED (3 Core Pillars) ── */}
-      {(service as any).whatIncluded?.enabled !== false && (
+      {showWhatIncluded && (
         <section id="what-included" className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
@@ -1368,7 +1409,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       )}
 
       {/* ── 04. SERVICE STRATEGY (Left Sticky Right Scroll) ── */}
-      {((service as any).strategy?.enabled !== false && (service as any).fullScope?.enabled !== false) && (
+      {showStrategy && (
         <section className="relative overflow-x-clip bg-zinc-50/15 dark:bg-[#0c0b18]/10 border-b border-brand-zinc-200 dark:border-white/10 section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
@@ -1418,7 +1459,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       )}
 
       {/* ── 05. BUSINESS BENEFITS (4 Key Benefits) ── */}
-      {(service as any).benefits?.enabled !== false && (
+      {showBenefits && (
         <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
@@ -1488,7 +1529,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       )}
 
       {/* ── 06. OUR PROCESS / ROADMAP (Sticky Left, Scroll Right Editorial Cards) ── */}
-      {(service as any).process?.enabled !== false && (
+      {showProcess && (
         <section className="relative overflow-x-clip bg-zinc-50/15 dark:bg-[#0c0b18]/10 border-b border-brand-zinc-200 dark:border-white/10 section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
@@ -1591,7 +1632,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       )}
 
       {/* ── 07. RESULTS (Metrics & Dynamic Cases Switcher) ── */}
-      {(service as any).results?.enabled !== false && (
+      {showResults && (
         <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-[#F9FAFB]/50 dark:bg-[#0c0b18]/15 section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
@@ -1749,7 +1790,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       )}
 
       {/* ── 08. INDUSTRIES WE SERVE (Dashed Icon Container Style) ── */}
-      {(service as any).industries?.enabled !== false && (
+      {showIndustries && (
         <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
@@ -1841,7 +1882,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       )}
 
       {/* ── 09. TOOLS & TECHNOLOGY (Console Mockup Style) ── */}
-      {(service as any).tools?.enabled !== false && (
+      {showTools && (
         <section className="relative overflow-hidden bg-zinc-50/10 dark:bg-[#0c0b18]/10 border-b border-brand-zinc-200 dark:border-white/10 section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
@@ -1915,7 +1956,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       )}
 
       {/* ── 10. WHY CHOOSE US (Sticky Left, Scroll Right Differentiators) ── */}
-      {(service as any).whyChooseUs?.enabled !== false && (
+      {showWhyChooseUs && (
         <section className="relative overflow-x-clip border-b border-brand-zinc-200 dark:border-white/10 section-y">
           <div className="absolute inset-0 opacity-[0.022] pointer-events-none" style={{ backgroundImage: "radial-gradient(#0306AC 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
 
@@ -2020,7 +2061,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       )}
 
       {/* ── 10.5 PRICING PLANS ── */}
-      {((service as any).pricing?.enabled === true && service.pricing && Array.isArray(service.pricing.plans) && service.pricing.plans.length > 0) && (() => {
+      {showPricing && (() => {
         const pricingPlanCount = service.pricing.plans.length;
         const pricingLgColsClass = pricingPlanCount >= 4 ? "lg:grid-cols-4" : pricingPlanCount === 3 ? "lg:grid-cols-3" : pricingPlanCount === 2 ? "lg:grid-cols-2" : "lg:grid-cols-1";
         const pricingMdColsClass = pricingPlanCount === 1 ? "md:grid-cols-1" : "md:grid-cols-2";
@@ -2135,7 +2176,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       })()}
 
       {/* ── 11. RECOMMENDED SERVICES ── */}
-      {((service as any).recommendedSection?.enabled !== false && recommendedServices.length > 0) && (
+      {showRecommended && (
         <section className="relative overflow-hidden bg-zinc-50/10 dark:bg-[#0c0b18]/15 border-b border-brand-zinc-200 dark:border-white/10 section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
 
@@ -2240,33 +2281,26 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       )}
 
       {/* ── 13. SERVICE AREA SECTION ── */}
-      {(service as any).serviceArea?.enabled !== false && (
+      {showServiceArea && (
         <ServiceArea data={service.serviceArea || content?.serviceArea} />
       )}
 
       {/* ── 14. FAQ SECTION ── */}
-      {((service as any).faqSection?.enabled !== false && (service as any).faqs?.enabled !== false) && (
-        <section id="faq">
-          <PageInlineFaqs
-            faqs={(Array.isArray(pageData?.content?.faqs) && pageData.content.faqs.length > 0)
-              ? pageData.content.faqs
-              : (Array.isArray(service.faqs) && service.faqs.length > 0)
-                ? service.faqs
-                : (Array.isArray(dbService?.faq) && dbService.faq.length > 0)
-                  ? dbService.faq
-                  : (service.faqs || [])}
-            faqSchemaMarkup={pageData?.content?.faqSchemaMarkup || dbService?.faqSchemaMarkup}
-            badge={dbService?.faqBadge || service.faqSection?.sectionTag || "14 // FREQUENTLY ASKED"}
-            titleIntro={dbService?.faqTitleIntro !== undefined ? dbService?.faqTitleIntro : service.faqSection?.titleIntro}
-            titleHighlight={dbService?.faqTitleHighlight || service.faqSection?.titleHighlight || "Frequently Asked Questions"}
-            description={dbService?.faqDescription || service.faqSection?.description || ""}
-            data={pageData?.content || dbService || service}
-          />
-        </section>
+      {showFaq && (
+        // PageInlineFaqs renders its own <section id="faq">
+        <PageInlineFaqs
+          faqs={service.faqs}
+          faqSchemaMarkup={pageData?.content?.faqSchemaMarkup || dbService?.faqSchemaMarkup}
+          badge={service.faqSection.sectionTag}
+          titleIntro={service.faqSection.titleIntro}
+          titleHighlight={service.faqSection.titleHighlight}
+          description={service.faqSection.description}
+          data={faqSectionData}
+        />
       )}
 
       {/* ── 14. FINAL CTA BANNER ── */}
-      {(service as any).finalCta?.enabled !== false && (
+      {showFinalCta && (
         <section className="relative overflow-hidden section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12">
             <motion.div
@@ -2305,11 +2339,11 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 )}
 
                 <div className="flex flex-wrap items-center gap-4 pt-2">
-                  {service.finalCta.primaryCtaText && (
-                    <CtaButton href={service.finalCta.primaryCtaLink || "#contact-form"}>{service.finalCta.primaryCtaText}</CtaButton>
+                  {service.finalCta.primaryCtaText && finalPrimaryHref && (
+                    <CtaButton href={finalPrimaryHref}>{service.finalCta.primaryCtaText}</CtaButton>
                   )}
-                  {service.finalCta.secondaryCtaText && (
-                    <CtaButton href={service.finalCta.secondaryCtaLink || "/contact-us"} variant="secondary">{service.finalCta.secondaryCtaText}</CtaButton>
+                  {service.finalCta.secondaryCtaText && finalSecondaryHref && (
+                    <CtaButton href={finalSecondaryHref} variant="secondary">{service.finalCta.secondaryCtaText}</CtaButton>
                   )}
                 </div>
               </div>
@@ -2338,6 +2372,6 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
           font-family: 'Dancing Script', cursive;
         }
       `}} />
-    </main>
+    </div>
   );
 }

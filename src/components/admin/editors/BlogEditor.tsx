@@ -21,11 +21,12 @@ const DEFAULT_BLOG_DATA = {
     titleLine1: "Modern Engineering &",
     titleHighlight: "Growth Insights",
     description: "Actionable blueprints, architectural deep-dives, and conversion rate science to build compounding market advantage.",
-    backgroundImage: "/portfolio_hero_bg.png",
-    heroBgImage: "/portfolio_hero_bg.png",
-    heroBgAlt: "Blog Header Background",
+    // No default image: /portfolio_hero_bg.png does not exist in /public (it used to be saved into every
+    // new blog page and rendered as a broken image). The hero background is decorative, so there is no alt field.
+    backgroundImage: "",
+    heroBgImage: "",
     ctaPrimary: { label: "Explore Articles", href: "#articles" },
-    ctaSecondary: { label: "Schedule Strategy Call", href: "/contact" }
+    ctaSecondary: { label: "Schedule Strategy Call", href: "/contact-us" }
   },
   filterMode: "all", // "all" | "selective"
   selectedBlogIds: [],
@@ -36,9 +37,9 @@ const DEFAULT_BLOG_DATA = {
     titleHighlight: "Competitive Edge",
     titleLine2: "Together.",
     description: "Schedule a free 30-minute technical audit. We'll diagnose bottlenecks in your existing presence and map out a concrete blueprint for compounding growth.",
-    ctaPrimary: { label: "Book Strategy Session", href: "/contact" },
+    ctaPrimary: { label: "Book Strategy Session", href: "/contact-us" },
     ctaSecondary: { label: "Watch Showreel", href: "/gallery" },
-    portraitSrc: "/founder.png",
+    portraitSrc: "", // /founder.png does not exist in /public
     portraitAlt: "Mohsin Designs Lead Architect"
   },
   detailSidebarCta: {
@@ -52,18 +53,37 @@ const DEFAULT_BLOG_DATA = {
     eyebrow: "EXPLORE MORE INSIGHTS",
     title: "Related Articles & Guides"
   },
+  authorBox: {
+    enabled: true,
+    label: "Article Strategist",
+    name: "Mohsin",
+    role: "Founder & Creative Director",
+    avatar: ""
+  },
   detailCtaBanner: {
     eyebrow: "READY TO ACCELERATE?",
     titleIntro: "Let's Build Your Next",
     titleHighlight: "Competitive Edge",
     titleLine2: "Together.",
     description: "Schedule a free 30-minute technical audit. We'll diagnose bottlenecks in your existing presence and map out a concrete blueprint for compounding growth.",
-    ctaPrimary: { label: "Book Strategy Session", href: "/contact" },
+    ctaPrimary: { label: "Book Strategy Session", href: "/contact-us" },
     ctaSecondary: { label: "Watch Showreel", href: "/gallery" },
-    portraitSrc: "/founder.png",
+    portraitSrc: "", // /founder.png does not exist in /public
     portraitAlt: "Mohsin Designs Lead Architect"
   }
 };
+
+// Defaults under whatever is saved (per section, so a missing sub-key never crashes an input).
+const mergeBlog = (saved: any) => ({
+  ...DEFAULT_BLOG_DATA,
+  ...(saved || {}),
+  hero: { ...DEFAULT_BLOG_DATA.hero, ...(saved?.hero || {}) },
+  ctaBanner: { ...DEFAULT_BLOG_DATA.ctaBanner, ...(saved?.ctaBanner || {}) },
+  detailSidebarCta: { ...DEFAULT_BLOG_DATA.detailSidebarCta, ...(saved?.detailSidebarCta || {}) },
+  relatedSection: { ...DEFAULT_BLOG_DATA.relatedSection, ...(saved?.relatedSection || {}) },
+  authorBox: { ...DEFAULT_BLOG_DATA.authorBox, ...(saved?.authorBox || {}) },
+  detailCtaBanner: { ...DEFAULT_BLOG_DATA.detailCtaBanner, ...(saved?.detailCtaBanner || {}) }
+});
 
 export default function BlogEditor({ pageId, data, setData }: { pageId: string, data: any, setData: (d: any) => void }) {
   const [activeTab, setActiveTab] = useState("hero");
@@ -83,21 +103,14 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
 
   if (!data) return <div className="flex items-center justify-center h-64"><Loader2 className="w-5 h-5 text-[#2271b1] animate-spin" /></div>;
 
-  const blog = {
-    ...DEFAULT_BLOG_DATA,
-    ...(data.blogPage || {}),
-    hero: { ...DEFAULT_BLOG_DATA.hero, ...(data.blogPage?.hero || {}) },
-    ctaBanner: { ...DEFAULT_BLOG_DATA.ctaBanner, ...(data.blogPage?.ctaBanner || {}) },
-    detailSidebarCta: { ...DEFAULT_BLOG_DATA.detailSidebarCta, ...(data.blogPage?.detailSidebarCta || {}) },
-    relatedSection: { ...DEFAULT_BLOG_DATA.relatedSection, ...(data.blogPage?.relatedSection || {}) },
-    detailCtaBanner: { ...DEFAULT_BLOG_DATA.detailCtaBanner, ...(data.blogPage?.detailCtaBanner || {}) }
-  };
+  const blog = mergeBlog(data.blogPage);
 
+  // The updater runs against the LATEST saved state (not the render-time snapshot), so two quick edits
+  // (e.g. a rich-text change followed straight away by another field) can no longer overwrite each other.
   const updateBlog = (updater: (prev: typeof blog) => typeof blog) => {
-    const updated = updater(blog);
     setData((prev: any) => ({
       ...prev,
-      blogPage: updated
+      blogPage: updater(mergeBlog(prev?.blogPage))
     }));
   };
 
@@ -149,7 +162,7 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-bold text-[#50575e]">Badge Pill Text</label>
+                  <label className="text-[11px] font-bold text-[#50575e]">Badge Pill Text <span className="font-normal text-[#646970]">(clear it to hide the pill)</span></label>
                   <input
                     type="text"
                     value={blog.hero.badgeText}
@@ -208,7 +221,7 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
                 <div className="bg-white border border-[#c3c4c7] p-3 rounded-[3px] space-y-2">
                   <h4 className="font-bold text-xs text-[#1d2327]">Primary Button (Yellow)</h4>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-[#50575e]">Label</label>
+                    <label className="text-[10px] font-bold text-[#50575e]">Label <span className="font-normal text-[#646970]">(empty = no button)</span></label>
                     <input
                       type="text"
                       value={blog.hero.ctaPrimary?.label || ""}
@@ -244,7 +257,7 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
                 <div className="bg-white border border-[#c3c4c7] p-3 rounded-[3px] space-y-2">
                   <h4 className="font-bold text-xs text-[#1d2327]">Secondary Button (White Outline)</h4>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-[#50575e]">Label</label>
+                    <label className="text-[10px] font-bold text-[#50575e]">Label <span className="font-normal text-[#646970]">(empty = no button)</span></label>
                     <input
                       type="text"
                       value={blog.hero.ctaSecondary?.label || ""}
@@ -272,7 +285,7 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
                         }
                       }))}
                       className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-mono text-[11px]"
-                      placeholder="/contact"
+                      placeholder="/contact-us"
                     />
                   </div>
                 </div>
@@ -320,7 +333,7 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
                     <div>
                       <h4 className="text-xs font-bold text-[#1d2327]">Show All Published Blogs</h4>
                       <p className="text-[11px] text-[#646970] mt-0.5">
-                        Automatically pulls all published articles from MongoDB and lists them with dynamic category filters and pagination.
+                        Automatically lists every published article (newest first) with category filters, search and pagination. Drafts, scheduled and trashed posts never appear.
                       </p>
                     </div>
                   </label>
@@ -343,7 +356,7 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
                     <div>
                       <h4 className="text-xs font-bold text-[#1d2327]">Curate Selective Blogs</h4>
                       <p className="text-[11px] text-[#646970] mt-0.5">
-                        Pick specific curated blog articles to feature on this page using the selector below.
+                        Pick specific curated blog articles to feature on this page using the selector below. Until you pick at least one, all published articles are shown.
                       </p>
                     </div>
                   </label>
@@ -398,7 +411,7 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
               <h3 className="text-xs font-bold uppercase tracking-wider text-[#1d2327]">Signature Agency CTA Banner</h3>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-bold text-[#50575e]">Eyebrow Badge Pill</label>
+                <label className="text-[11px] font-bold text-[#50575e]">Eyebrow Badge Pill <span className="font-normal text-[#646970]">(clear it to hide the pill)</span></label>
                 <input
                   type="text"
                   value={blog.ctaBanner.eyebrow}
@@ -472,7 +485,7 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
                 <div className="bg-white border border-[#c3c4c7] p-3 rounded-[3px] space-y-2">
                   <h4 className="font-bold text-xs text-[#1d2327]">Primary Button (Yellow)</h4>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-[#50575e]">Label</label>
+                    <label className="text-[10px] font-bold text-[#50575e]">Label <span className="font-normal text-[#646970]">(empty = no button)</span></label>
                     <input
                       type="text"
                       value={blog.ctaBanner.ctaPrimary?.label || ""}
@@ -508,7 +521,7 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
                 <div className="bg-white border border-[#c3c4c7] p-3 rounded-[3px] space-y-2">
                   <h4 className="font-bold text-xs text-[#1d2327]">Secondary Button (White Outline)</h4>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-[#50575e]">Label</label>
+                    <label className="text-[10px] font-bold text-[#50575e]">Label <span className="font-normal text-[#646970]">(empty = no button)</span></label>
                     <input
                       type="text"
                       value={blog.ctaBanner.ctaSecondary?.label || ""}
@@ -584,6 +597,60 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
                 label="Detail Page CTAs"
               />
             </div>
+            {/* Author box shown above the article text */}
+            <div className="bg-[#f8f9fa] border border-[#dcdcde] p-4 rounded-[4px] space-y-4">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[#1d2327]">Author Box</h3>
+                  <p className="text-[11px] text-[#646970]">
+                    The byline card at the top of every article. It is the same for all articles (it does not use the CMS login name).
+                  </p>
+                </div>
+                <SectionToggle
+                  enabled={blog.authorBox?.enabled !== false}
+                  onChange={(v) => updateBlog(prev => ({ ...prev, authorBox: { ...(prev.authorBox || {}), enabled: v } }))}
+                  label="Author Box"
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-[#50575e]">Small Label</label>
+                  <input
+                    type="text"
+                    value={blog.authorBox?.label ?? ""}
+                    onChange={(e) => updateBlog(prev => ({ ...prev, authorBox: { ...(prev.authorBox || {}), label: e.target.value } }))}
+                    className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
+                    placeholder="Article Strategist"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-[#50575e]">Name</label>
+                  <input
+                    type="text"
+                    value={blog.authorBox?.name ?? ""}
+                    onChange={(e) => updateBlog(prev => ({ ...prev, authorBox: { ...(prev.authorBox || {}), name: e.target.value } }))}
+                    className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
+                    placeholder="Mohsin"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-[#50575e]">Role</label>
+                  <input
+                    type="text"
+                    value={blog.authorBox?.role ?? ""}
+                    onChange={(e) => updateBlog(prev => ({ ...prev, authorBox: { ...(prev.authorBox || {}), role: e.target.value } }))}
+                    className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
+                    placeholder="Founder & Creative Director"
+                  />
+                </div>
+              </div>
+              <ImageField
+                label="Author Photo (optional)"
+                value={blog.authorBox?.avatar || ""}
+                onChange={(url) => updateBlog(prev => ({ ...prev, authorBox: { ...(prev.authorBox || {}), avatar: url } }))}
+              />
+            </div>
+
             {/* Sidebar Consultation CTA Box */}
             <div className="bg-[#f8f9fa] border border-[#dcdcde] p-4 rounded-[4px] space-y-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-[#1d2327]">Sticky Sidebar Consultation Box</h3>
@@ -701,6 +768,9 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
             {/* Bottom Detail Signature CTA Banner */}
             <div className="bg-[#f8f9fa] border border-[#dcdcde] p-4 rounded-[4px] space-y-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-[#1d2327]">Detail Page Bottom Signature CTA Banner</h3>
+              <p className="text-[11px] text-[#646970]">
+                The banner at the bottom of every article. A field left empty here falls back to the same field of the &quot;Index CTA Banner&quot; (tab 03).
+              </p>
 
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-[#50575e]">Eyebrow Badge Pill</label>
@@ -741,7 +811,7 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
                       detailCtaBanner: { ...(prev.detailCtaBanner || {}), titleLine2: e.target.value }
                     }))}
                     className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
-                    placeholder="Competitive Edge"
+                    placeholder="Together."
                   />
                 </div>
 
@@ -755,7 +825,7 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
                       detailCtaBanner: { ...(prev.detailCtaBanner || {}), titleHighlight: e.target.value }
                     }))}
                     className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
-                    placeholder="Together."
+                    placeholder="Competitive Edge"
                   />
                 </div>
               </div>
@@ -845,6 +915,19 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
                     detailCtaBanner: { ...(prev.detailCtaBanner || {}), portraitSrc: url }
                   }))}
                 />
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-[#50575e]">Portrait Alt Text</label>
+                  <input
+                    type="text"
+                    value={blog.detailCtaBanner?.portraitAlt || ""}
+                    onChange={(e) => updateBlog(prev => ({
+                      ...prev,
+                      detailCtaBanner: { ...(prev.detailCtaBanner || {}), portraitAlt: e.target.value }
+                    }))}
+                    className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs rounded-[3px] bg-white"
+                    placeholder="Mohsin Designs Lead Architect"
+                  />
+                </div>
               </div>
             </div>
           </div>

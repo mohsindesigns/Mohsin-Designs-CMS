@@ -113,10 +113,15 @@ export default function ProjectsAdminPage() {
     }
     const newProjects = [...projects];
     if (isEditing !== null && isEditing < projects.length) {
-      newProjects[isEditing] = { ...form };
+      // Merge over the stored project instead of replacing it: the form only knows some fields, and a plain
+      // `{ ...form }` silently dropped everything else on the record (id, slug, link, tag, tech ...) on every edit.
+      newProjects[isEditing] = { ...projects[isEditing], ...form };
     } else {
       const number = String(newProjects.length + 1).padStart(2, '0');
-      newProjects.push({ ...form, number });
+      // Stable id: pages that showcase this project (Portfolio page selection, Home) match it back to the catalog by id,
+      // so renaming or duplicating titles no longer breaks the link.
+      const id = `prj-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+      newProjects.push({ ...form, number, id });
     }
     saveToDb(newProjects);
   };
@@ -355,7 +360,7 @@ export default function ProjectsAdminPage() {
                  <div className="px-3 py-2 bg-[#f6f7f7] border-t border-[#c3c4c7] flex justify-between items-center">
                     <button onClick={() => setIsEditing(null)} className="text-[#d63638] underline text-[13px]">Cancel</button>
                     <button onClick={handleSaveProject} disabled={saving} className="bg-[#2271b1] text-white px-4 py-1.5 rounded-[3px] text-[13px] font-semibold hover:bg-[#135e96]">
-                       {saving ? "Saving..." : "Update"}
+                       {saving ? "Saving..." : (isEditing !== null && isEditing < projects.length ? "Update" : "Add Project")}
                     </button>
                  </div>
               </div>
@@ -387,7 +392,7 @@ export default function ProjectsAdminPage() {
                                 <div className="flex items-center gap-2 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                    <button onClick={() => handleEdit(idx)} className="text-[#2271b1] hover:underline text-[12px]">Edit</button>
                                    <span className="text-[#a7aaad]">|</span>
-                                   <button onClick={() => { if(confirm("Delete?")) saveToDb(projects.filter((_,i)=>i!==idx)); }} className="text-[#d63638] hover:underline text-[12px]">Trash</button>
+                                   <button onClick={() => { if(confirm("Delete this project? It is removed for good and will disappear from the Portfolio page and the Home page selection.")) saveToDb(projects.filter((_,i)=>i!==idx)); }} className="text-[#d63638] hover:underline text-[12px]">Delete</button>
                                 </div>
                              </div>
                           </div>

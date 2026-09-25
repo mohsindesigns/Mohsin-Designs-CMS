@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trash2, Loader2, Plus, Sparkles, CheckCircle2 } from "lucide-react";
+import { Trash2, Loader2, ArrowUp, ArrowDown } from "lucide-react";
 import dynamic from "next/dynamic";
 import IconSelector from "@/components/admin/IconSelector";
 import ImageField from "@/components/admin/ImageField";
@@ -10,6 +10,8 @@ import ContentSelector from "@/components/admin/ContentSelector";
 import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
 import SchemaEditor from "@/components/admin/SchemaEditor";
+// Built-in sample sectors / pillars the public page shows while nothing is saved yet.
+import { DEFAULT_INDUSTRY_DOMAINS, DEFAULT_INDUSTRY_FEATURES, padIndex } from "@/components/templates/industryDefaults";
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
   ssr: false,
   loading: () => <div className="h-20 bg-[#f6f7f7] animate-pulse border border-[#c3c4c7] rounded-sm flex items-center justify-center text-[#8c8f94] text-xs">Loading Rich Text Editor...</div>
@@ -61,14 +63,43 @@ function CommaSeparatedInput({
   );
 }
 
+/** Returns a copy of `arr` with the item at `from` moved to index `to` (no-op when out of range). */
+function moveInArray<T>(arr: T[], from: number, to: number): T[] {
+  if (to < 0 || to >= arr.length || from === to) return arr;
+  const next = [...arr];
+  const [item] = next.splice(from, 1);
+  next.splice(to, 0, item);
+  return next;
+}
+
+/** Up / down arrows for reordering a repeatable card. */
+function MoveButtons({ index, count, onMove }: { index: number; count: number; onMove: (to: number) => void }) {
+  const cls = "p-1 rounded text-[#50575e] hover:bg-[#f0f0f1] disabled:opacity-30 disabled:cursor-not-allowed";
+  return (
+    <span className="inline-flex items-center gap-0.5">
+      <button type="button" aria-label="Move up" title="Move up" disabled={index === 0} onClick={() => onMove(index - 1)} className={cls}>
+        <ArrowUp className="h-3.5 w-3.5" />
+      </button>
+      <button type="button" aria-label="Move down" title="Move down" disabled={index === count - 1} onClick={() => onMove(index + 1)} className={cls}>
+        <ArrowDown className="h-3.5 w-3.5" />
+      </button>
+    </span>
+  );
+}
+
 export default function IndustryEditor({
   pageId,
   data,
-  setData
+  setData,
+  seo,
+  setSeo
 }: {
   pageId: string;
   data: any;
   setData: (d: any) => void;
+  /** Page-level SEO state handed down by the admin page shell (schema JSON-LD lives in seo.schemaData). */
+  seo?: any;
+  setSeo?: (s: any) => void;
 }) {
   const [activeTab, setActiveTab] = useState("hero");
 
@@ -108,14 +139,26 @@ export default function IndustryEditor({
     });
   };
 
+  // The FAQ section is driven by the page shell's generic "Page FAQs" tab (content.faqs,
+  // faqBadge, faqTitle..., strategyAudit), so its hide/show switch lives at the TOP level of the
+  // content object - not inside `industryPage` like the other sections.
+  const setFaqVisible = (visible: boolean) => {
+    setData((prev: any) => ({
+      ...(prev || {}),
+      faqSection: { ...((prev || {}).faqSection || {}), enabled: visible }
+    }));
+  };
+  const faqVisible = data?.faqSection?.enabled !== false;
+
   const tabs = [
     { id: "hero", label: "1. Hero & Form" },
     { id: "services", label: "2. Services Selection" },
     { id: "sectors", label: "3. Industry Sectors" },
     { id: "founder", label: "4. About Founder" },
     { id: "whyChooseUs", label: "5. Why Choose Us" },
-    { id: "cta", label: "6. Final CTA Banner" },
-    { id: "schema", label: "7. Schema Markup" }
+    { id: "faqs", label: "6. FAQs" },
+    { id: "cta", label: "7. Final CTA Banner" },
+    { id: "schema", label: "8. Schema Markup" }
   ];
 
   return (
@@ -125,6 +168,7 @@ export default function IndustryEditor({
         {tabs.map((tab: any, idx: number) => (
           <React.Fragment key={tab.id}>
             <button
+              type="button"
               onClick={() => setActiveTab(tab.id)}
               className={`px-1.5 py-1 transition-colors ${
                 activeTab === tab.id
@@ -326,16 +370,23 @@ export default function IndustryEditor({
                     <div key={idx} className={UI.card + " space-y-4"}>
                       <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
                         <span className="text-[10px] font-bold text-[#646970] uppercase">Stat #{idx + 1}</span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const updated = (industryData.hero?.statsPills || []).filter((_: any, i: number) => i !== idx);
-                            updateSection("hero", "statsPills", updated);
-                          }}
-                          className="text-[#d63638] text-[11px] font-bold hover:underline"
-                        >
-                          Remove Stat
-                        </button>
+                        <div className="flex items-center gap-3">
+                          <MoveButtons
+                            index={idx}
+                            count={(industryData.hero?.statsPills || []).length}
+                            onMove={(to) => updateSection("hero", "statsPills", moveInArray(industryData.hero?.statsPills || [], idx, to))}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updated = (industryData.hero?.statsPills || []).filter((_: any, i: number) => i !== idx);
+                              updateSection("hero", "statsPills", updated);
+                            }}
+                            className="text-[#d63638] text-[11px] font-bold hover:underline"
+                          >
+                            Remove Stat
+                          </button>
+                        </div>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-1.5">
@@ -384,7 +435,21 @@ export default function IndustryEditor({
 
               <div className="space-y-6">
                 <h3 className={UI.sectionHeader}>7. Right-Side Consultation Form Box</h3>
+                <p className={UI.helpText}>
+                  The form's "Industry / Sector" dropdown is built automatically from the cards in the
+                  "Industry Sectors" tab (plus an "Other" choice). Leads are e-mailed to the receiver set on the Contact page.
+                </p>
                 <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Form Badge (small line above the title)</label>
+                    <input
+                      type="text"
+                      value={industryData.hero?.formBadge || ""}
+                      onChange={(e) => updateSection("hero", "formBadge", e.target.value)}
+                      placeholder="e.g. DIRECT ARCHITECT ACCESS"
+                      className={UI.input}
+                    />
+                  </div>
                   <div className="space-y-1.5">
                     <label className={UI.label}>Form Title</label>
                     <input
@@ -412,6 +477,36 @@ export default function IndustryEditor({
                       value={industryData.hero?.formButtonText || ""}
                       onChange={(e) => updateSection("hero", "formButtonText", e.target.value)}
                       placeholder="e.g. Get Free Strategy"
+                      className={UI.input}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Success Message - Title (shown after the form is sent)</label>
+                    <input
+                      type="text"
+                      value={industryData.hero?.successTitle || ""}
+                      onChange={(e) => updateSection("hero", "successTitle", e.target.value)}
+                      placeholder="e.g. Consultation Request Received!"
+                      className={UI.input}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Success Message - Text</label>
+                    <textarea
+                      rows={2}
+                      value={industryData.hero?.successMessage || ""}
+                      onChange={(e) => updateSection("hero", "successMessage", e.target.value)}
+                      placeholder="e.g. Thank you! Our lead architect will review your project requirements and get in touch within 24 hours."
+                      className={UI.textarea}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Privacy Note (small print under the button)</label>
+                    <input
+                      type="text"
+                      value={industryData.hero?.privacyNote || ""}
+                      onChange={(e) => updateSection("hero", "privacyNote", e.target.value)}
+                      placeholder="e.g. 100% Confidential. Zero spam. We never share your data."
                       className={UI.input}
                     />
                   </div>
@@ -486,13 +581,34 @@ export default function IndustryEditor({
                 <h3 className={UI.sectionHeader}>2. Curated Services for This Industry</h3>
                 <p className={UI.helpText}>
                   Choose which services from your master services catalog will appear in the services grid on this industry page.
+                  Nothing selected = the page shows every published service from the catalog. Each card links to the service's own page,
+                  and always shows the service's current name and link (drafts and trashed services are skipped).
                 </p>
 
                 <ContentSelector
                   type="services"
                   label="Select Services to Display"
                   selectedItems={industryData.servicesSection?.selectedServices || []}
-                  onSelect={(items) => updateSection("servicesSection", "selectedServices", items)}
+                  onSelect={(items) =>
+                    // ContentSelector hands back the WHOLE service document (hero, FAQs, pricing...).
+                    // Keep only what this page needs plus the keys the selector uses to recognise a pick,
+                    // otherwise every ticked service is copied in full into this page's content.
+                    updateSection(
+                      "servicesSection",
+                      "selectedServices",
+                      (items || []).map((s: any) => ({
+                        _id: s._id,
+                        id: s.id,
+                        slug: s.slug,
+                        title: s.title || s.name,
+                        tag: s.tag,
+                        category: s.category,
+                        tagline: s.tagline,
+                        icon: s.icon || s.iconName,
+                        status: s.status
+                      }))
+                    )
+                  }
                 />
               </div>
             </div>
@@ -562,23 +678,56 @@ export default function IndustryEditor({
 
               <div className="space-y-6">
                 <h3 className={UI.sectionHeader}>2. Industry Vertical Cards</h3>
+                <p className={UI.helpText}>
+                  These cards also fill the "Industry / Sector" dropdown of the hero form. A card with a Link URL becomes clickable.
+                </p>
+                {(industryData.domainExpertise?.domains || []).length === 0 && (
+                  <div className="border border-dashed border-[#2271b1] bg-[#f0f6fb] rounded-[3px] p-4 space-y-3">
+                    <p className="text-[13px] text-[#1d2327]">
+                      No sector cards saved yet, so the live page is showing {DEFAULT_INDUSTRY_DOMAINS.length} built-in example sectors.
+                      Load them here to edit, reorder or delete them (removing every card brings the examples back).
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        updateSection(
+                          "domainExpertise",
+                          "domains",
+                          DEFAULT_INDUSTRY_DOMAINS.map((d) => ({ ...d, tags: [...d.tags], link: "" }))
+                        )
+                      }
+                      className={UI.buttonAdd}
+                    >
+                      Load the built-in example sectors
+                    </button>
+                  </div>
+                )}
                 <div className="space-y-6">
                   {(industryData.domainExpertise?.domains || []).map((domain: any, idx: number) => (
                     <div key={idx} className={UI.card + " space-y-4"}>
                       <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
                         <span className="text-[10px] font-bold text-[#646970] uppercase">
-                          Sector Card #{idx + 1} ({domain.id || `0${idx + 1}`})
+                          Sector Card #{idx + 1} ({domain.id || padIndex(idx + 1)})
                         </span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const updated = (industryData.domainExpertise?.domains || []).filter((_: any, i: number) => i !== idx);
-                            updateSection("domainExpertise", "domains", updated);
-                          }}
-                          className="text-[#d63638] text-[11px] font-bold hover:underline"
-                        >
-                          Remove Sector
-                        </button>
+                        <div className="flex items-center gap-3">
+                          <MoveButtons
+                            index={idx}
+                            count={(industryData.domainExpertise?.domains || []).length}
+                            onMove={(to) =>
+                              updateSection("domainExpertise", "domains", moveInArray(industryData.domainExpertise?.domains || [], idx, to))
+                            }
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updated = (industryData.domainExpertise?.domains || []).filter((_: any, i: number) => i !== idx);
+                              updateSection("domainExpertise", "domains", updated);
+                            }}
+                            className="text-[#d63638] text-[11px] font-bold hover:underline"
+                          >
+                            Remove Sector
+                          </button>
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -597,7 +746,7 @@ export default function IndustryEditor({
                           />
                         </div>
                         <div className="space-y-1.5">
-                          <label className={UI.label}>Numeric Index</label>
+                          <label className={UI.label}>Card Number (shown in cursive)</label>
                           <input
                             type="text"
                             value={domain.id || ""}
@@ -672,7 +821,7 @@ export default function IndustryEditor({
                       updateSection("domainExpertise", "domains", [
                         ...current,
                         {
-                          id: `0${current.length + 1}`,
+                          id: padIndex(current.length + 1),
                           title: "New Sector Vertical",
                           desc: "Tailored architecture and compliant digital workflows.",
                           iconName: "Briefcase",
@@ -748,7 +897,7 @@ export default function IndustryEditor({
                 <h3 className={UI.sectionHeader}>2. Founder Identity & Portrait</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className={UI.label}>Founder Full Name</label>
+                    <label className={UI.label}>Founder Full Name (caption on the portrait)</label>
                     <input
                       type="text"
                       value={industryData.founder?.founderName || ""}
@@ -758,7 +907,7 @@ export default function IndustryEditor({
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className={UI.label}>Founder Official Title</label>
+                    <label className={UI.label}>Founder Official Title (caption on the portrait)</label>
                     <input
                       type="text"
                       value={industryData.founder?.founderTitle || ""}
@@ -774,6 +923,9 @@ export default function IndustryEditor({
                   <ImageField
                     value={industryData.founder?.portraitSrc || ""}
                     onChange={(url) => updateSection("founder", "portraitSrc", url)}
+                    altValue={industryData.founder?.portraitAlt || ""}
+                    onAltChange={(alt) => updateSection("founder", "portraitAlt", alt)}
+                    description="Leave empty to use the default portrait. If the image file cannot be loaded, the portrait is simply not shown."
                   />
                 </div>
               </div>
@@ -812,16 +964,23 @@ export default function IndustryEditor({
                     <div key={idx} className={UI.card + " space-y-4"}>
                       <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
                         <span className="text-[10px] font-bold text-[#646970] uppercase">Metric #{idx + 1}</span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const updated = (industryData.founder?.metrics || []).filter((_: any, i: number) => i !== idx);
-                            updateSection("founder", "metrics", updated);
-                          }}
-                          className="text-[#d63638] text-[11px] font-bold hover:underline"
-                        >
-                          Remove
-                        </button>
+                        <div className="flex items-center gap-3">
+                          <MoveButtons
+                            index={idx}
+                            count={(industryData.founder?.metrics || []).length}
+                            onMove={(to) => updateSection("founder", "metrics", moveInArray(industryData.founder?.metrics || [], idx, to))}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updated = (industryData.founder?.metrics || []).filter((_: any, i: number) => i !== idx);
+                              updateSection("founder", "metrics", updated);
+                            }}
+                            className="text-[#d63638] text-[11px] font-bold hover:underline"
+                          >
+                            Remove
+                          </button>
+                        </div>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-1.5">
@@ -962,6 +1121,9 @@ export default function IndustryEditor({
                     <ImageField
                       value={industryData.whyChooseUs?.blueCardImage || ""}
                       onChange={(url) => updateSection("whyChooseUs", "blueCardImage", url)}
+                      altValue={industryData.whyChooseUs?.blueCardImageAlt || ""}
+                      onAltChange={(alt) => updateSection("whyChooseUs", "blueCardImageAlt", alt)}
+                      description="Shown at the bottom of the blue card. Leave empty to use the default image."
                     />
                   </div>
                 </div>
@@ -969,21 +1131,45 @@ export default function IndustryEditor({
 
               <div className="space-y-6">
                 <h3 className={UI.sectionHeader}>3. Value Proposition Pillars</h3>
+                {(industryData.whyChooseUs?.features || []).length === 0 && (
+                  <div className="border border-dashed border-[#2271b1] bg-[#f0f6fb] rounded-[3px] p-4 space-y-3">
+                    <p className="text-[13px] text-[#1d2327]">
+                      No pillars saved yet, so the live page is showing {DEFAULT_INDUSTRY_FEATURES.length} built-in example pillars.
+                      Load them here to edit, reorder or delete them (removing every pillar brings the examples back).
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => updateSection("whyChooseUs", "features", DEFAULT_INDUSTRY_FEATURES.map((f) => ({ ...f })))}
+                      className={UI.buttonAdd}
+                    >
+                      Load the built-in example pillars
+                    </button>
+                  </div>
+                )}
                 <div className="space-y-6">
                   {(industryData.whyChooseUs?.features || []).map((feat: any, idx: number) => (
                     <div key={idx} className={UI.card + " space-y-4"}>
                       <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
                         <span className="text-[10px] font-bold text-[#646970] uppercase">Pillar #{idx + 1}</span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const updated = (industryData.whyChooseUs?.features || []).filter((_: any, i: number) => i !== idx);
-                            updateSection("whyChooseUs", "features", updated);
-                          }}
-                          className="text-[#d63638] text-[11px] font-bold hover:underline"
-                        >
-                          Remove Pillar
-                        </button>
+                        <div className="flex items-center gap-3">
+                          <MoveButtons
+                            index={idx}
+                            count={(industryData.whyChooseUs?.features || []).length}
+                            onMove={(to) =>
+                              updateSection("whyChooseUs", "features", moveInArray(industryData.whyChooseUs?.features || [], idx, to))
+                            }
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updated = (industryData.whyChooseUs?.features || []).filter((_: any, i: number) => i !== idx);
+                              updateSection("whyChooseUs", "features", updated);
+                            }}
+                            className="text-[#d63638] text-[11px] font-bold hover:underline"
+                          >
+                            Remove Pillar
+                          </button>
+                        </div>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div className="space-y-1.5 sm:col-span-2">
@@ -1010,6 +1196,21 @@ export default function IndustryEditor({
                             }}
                           />
                         </div>
+                      </div>
+                      <div className="space-y-1.5 max-w-xs">
+                        <label className={UI.label}>Icon Tile Colour</label>
+                        <select
+                          value={feat.iconBg === "amber" ? "amber" : "blue"}
+                          onChange={(e) => {
+                            const updated = [...(industryData.whyChooseUs?.features || [])];
+                            updated[idx] = { ...updated[idx], iconBg: e.target.value };
+                            updateSection("whyChooseUs", "features", updated);
+                          }}
+                          className={UI.input}
+                        >
+                          <option value="blue">Blue</option>
+                          <option value="amber">Gold / Amber</option>
+                        </select>
                       </div>
                       <div className="space-y-1.5">
                         <label className={UI.label}>Description</label>
@@ -1049,7 +1250,32 @@ export default function IndustryEditor({
           )}
 
           {/* ───────────────────────────────────────────────────────────── */}
-          {/* 6. FINAL CTA BANNER                                           */}
+          {/* 6. FAQ SECTION (visibility only - questions live in "Page FAQs") */}
+          {/* ───────────────────────────────────────────────────────────── */}
+          {activeTab === "faqs" && (
+            <div className="space-y-12">
+              <div className="flex items-center justify-between pb-4 mb-2 border-b border-[#f0f0f1]">
+                <div>
+                  <h2 className="text-base font-bold text-[#1d2327]">FAQ Section Visibility</h2>
+                  <p className="text-xs text-[#646970]">Enable or disable displaying the FAQ section on the live page.</p>
+                </div>
+                <SectionToggle enabled={faqVisible} onChange={setFaqVisible} label="FAQ Section" />
+              </div>
+              <div className={UI.card + " space-y-3"}>
+                <p className="text-[13px] text-[#1d2327]">
+                  The questions and answers, the section heading and description, and the sticky "Book a call" box are edited in the{" "}
+                  <strong>Page FAQs</strong> tab at the top of this page (next to "Page Content" and "SEO Settings").
+                </p>
+                <p className={UI.helpText + " !mb-0"}>
+                  Currently {Array.isArray(data?.faqs) ? data.faqs.length : 0} question(s) saved. With none saved, the live page shows 4 built-in
+                  industry FAQs. The box's call-to-action button jumps to the hero lead form unless you give it a different link there.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* ───────────────────────────────────────────────────────────── */}
+          {/* 7. FINAL CTA BANNER                                           */}
           {/* ───────────────────────────────────────────────────────────── */}
           {activeTab === "cta" && (
             <div className="space-y-12">
@@ -1180,6 +1406,9 @@ export default function IndustryEditor({
                   <ImageField
                     value={industryData.ctaBanner?.portraitSrc || ""}
                     onChange={(url) => updateSection("ctaBanner", "portraitSrc", url)}
+                    altValue={industryData.ctaBanner?.portraitAlt || ""}
+                    onAltChange={(alt) => updateSection("ctaBanner", "portraitAlt", alt)}
+                    description="Desktop only (hidden on phones and tablets). Leave empty to use the default portrait."
                   />
                 </div>
               </div>
@@ -1188,21 +1417,15 @@ export default function IndustryEditor({
 
           {activeTab === "schema" && (
             <div className="space-y-4">
+              {/* Same wiring as the page shell's own "Schema Markup" tab. On save the shell sends
+                  seo.schemaData and mirrors it into content.schemaMarkup (seo wins), and the public
+                  route renders exactly those two - so seo.schemaData MUST be updated here too, or an
+                  edit made in this tab is silently overwritten by the older seo value. */}
               <SchemaEditor
-                value={data.schemaMarkup || data.industryPage?.schemaMarkup || data.seo?.schemaData || ""}
+                value={seo?.schemaData || data.schemaMarkup || ""}
                 onChange={(val) => {
-                  setData((prev: any) => ({
-                    ...(prev || {}),
-                    schemaMarkup: val,
-                    industryPage: {
-                      ...(prev?.industryPage || {}),
-                      schemaMarkup: val
-                    },
-                    seo: {
-                      ...(prev?.seo || {}),
-                      schemaData: val
-                    }
-                  }));
+                  if (setSeo) setSeo({ ...(seo || {}), schemaData: val });
+                  setData((prev: any) => ({ ...(prev || {}), schemaMarkup: val }));
                 }}
                 pageTitle="Industry Page"
               />

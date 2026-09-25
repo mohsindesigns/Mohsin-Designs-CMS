@@ -8,316 +8,333 @@ import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";
 import { verifyTurnstileToken } from '@/lib/turnstile';
-import { sanitizeFormString, sanitizeFormData } from '@/lib/sanitizeInput';
+import { buildLeadEmail, cleanExtra, cleanSubject, cleanText, isValidEmail } from '@/lib/leadMail';
 
 export const dynamic = 'force-dynamic';
 
+// ─────────────────────────────────────────────────────────────────────────────
+// /api/send - the ONE lead endpoint shared by every site form.
+//
+// Callers (keep them all working): ContactForm, ContactTemplate, QAForm, QuickQuote,
+// ServiceDetailTemplate, IndustryTemplate (JSON) and CareersTemplate (multipart + resume),
+// plus the Footer newsletter box (JSON, no captcha).
+//
+// Contract:
+//   accepts   name | fullName, email (required), phone, message, subject | _subject, type,
+//             captchaToken | turnstileToken | _captcha | cf-turnstile-response,
+//             any other scalar field (service, company, zipCode, role, industry, source ...)
+//             -> stored in Submission.extraData and printed in the notification email.
+//             `source` (page path) is promoted to Submission.source.
+//   responds  200 { success:true, submissionId, emailSent }   lead stored and/or e-mailed
+//             400 { error }   validation / captcha      429 { error }   rate limited
+//             500 { error }   nothing could be stored AND e-mail failed (caller may fall back to mailto:)
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Best-effort in-memory rate limit per client IP (per server instance). Not a substitute for
+// Turnstile, but stops a single client from flooding the inbox / DB.
+const RATE_WINDOW_MS = 10 * 60 * 1000;
+const RATE_MAX = 10;
+const rateHits = new Map<string, number[]>();
+
+function isRateLimited(ip: string): boolean {
+  if (!ip || ip === 'unknown') return false; // no trustworthy IP -> don't lock everyone into one bucket
+  const now = Date.now();
+  const recent = (rateHits.get(ip) || []).filter((t) => now - t < RATE_WINDOW_MS);
+  if (recent.length >= RATE_MAX) {
+    rateHits.set(ip, recent);
+    return true;
+  }
+  recent.push(now);
+  rateHits.set(ip, recent);
+  if (rateHits.size > 5000) {
+    for (const [key, times] of rateHits) {
+      if (!times.some((t) => now - t < RATE_WINDOW_MS)) rateHits.delete(key);
+    }
+  }
+  return false;
+}
+
+// Keys that are control fields, never lead data.
+const RESERVED_KEYS = new Set([
+  'name', 'fullName', 'email', 'phone', 'message', 'subject', '_subject', 'type', 'attachment', '_template',
+  'captchaToken', 'turnstileToken', '_captcha', 'cf-turnstile-response',
+  '_hp', '_gotcha', // honeypot fields (bots fill them, humans never see them)
+]);
+
+const str = (v: unknown): string => (typeof v === 'string' ? v : '');
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.png', '.jpg', '.jpeg', '.webp', '.txt', '.csv'];
+
+/** Page-level receiver (Contact page editor) -> site-wide Settings receiver -> env -> default. */
+async function resolveReceiverEmail(type: string): Promise<string> {
+  const extract = (value: unknown): string => {
+    if (typeof value !== 'string') return '';
+    const match = value.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+    return match ? match[0].toLowerCase() : '';
+  };
+
+  let receiver = '';
+  try {
+    // 1. The Contact page's own "Notification Receiver Email" (Contact editor > Notifications). It
+    //    applies to contact enquiries only ('Contact Inquiry' / 'Contact Form'); quotes, careers,
+    //    consultations and the newsletter use the site-wide address below. The live contact page is
+    //    served at /contact-us (see next.config redirects), so find it by TEMPLATE, not a guessed slug.
+    if (/^contact/i.test(type)) {
+      const contactPages = (await Page.find({
+        $or: [{ template: 'contact' }, { slug: { $in: ['contact', '/contact', 'contact-us'] } }],
+        isTrashed: { $ne: true },
+      })
+        .select('status content.contactPage.receiverEmail content.receiverEmail')
+        .lean()) as any[];
+      contactPages.sort((a, b) => (a.status === 'published' ? 0 : 1) - (b.status === 'published' ? 0 : 1));
+      for (const doc of contactPages) {
+        receiver = extract(doc?.content?.contactPage?.receiverEmail) || extract(doc?.content?.receiverEmail);
+        if (receiver) break;
+      }
+    }
+
+    // 2. Site-wide settings (Admin > Settings > Contact) and legacy locations
+    if (!receiver) {
+      const contentDoc = (await Content.findOne({ key: 'complete_data' }).lean()) as any;
+      const d = contentDoc?.data;
+      if (d) {
+        receiver =
+          extract(d.contact?.receiverEmail) ||
+          extract(d.contact?.email) ||
+          extract(d.settings?.notificationEmail) ||
+          (type === 'Quote Request' ? extract(d.quote?.email) : '') ||
+          extract(d.contactPage?.receiverEmail) ||
+          extract(d.contactPage?.email) ||
+          extract(d.contactPage?.office?.email) ||
+          extract(d.quote?.email) ||
+          extract(d.footer?.contact?.email);
+      }
+    }
+  } catch (e) {
+    console.error('Error fetching dynamic receiver email', e);
+  }
+
+  return receiver || extract(process.env.ADMIN_NOTIFICATION_EMAIL) || 'hello@mohsindesigns.com';
+}
+
 export async function POST(request: Request) {
   try {
+    const clientIp = (request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown').split(',')[0].trim() || 'unknown';
+
+    if (isRateLimited(clientIp)) {
+      return NextResponse.json({ error: 'Too many submissions from your connection. Please wait a few minutes and try again.' }, { status: 429 });
+    }
+
+    const declaredLength = Number(request.headers.get('content-length') || 0);
+    if (declaredLength > MAX_FILE_SIZE + 2 * 1024 * 1024) {
+      return NextResponse.json({ error: 'The submission is too large.' }, { status: 413 });
+    }
+
     await connectDB();
     const contentType = request.headers.get('content-type') || '';
-    const clientIp = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
 
-    let name, email, phone, message, subject, type, attachmentUrl: string | undefined, extraData: any = {};
-    let attachments: any[] = [];
-    let captchaToken: string | undefined;
+    let rawName = '', rawEmail = '', rawPhone = '', rawMessage = '', rawSubject = '', rawType = '';
+    let captchaToken = '';
+    let honeypot = '';
+    let extraRaw: Record<string, unknown> = {};
+    let pendingFile: { name: string; ext: string; buffer: Buffer } | null = null;
+    let defaultType = 'Contact Form';
 
     if (contentType.includes('multipart/form-data')) {
+      defaultType = 'Job Application'; // multipart is only used by the careers form (resume upload)
       const formData = await request.formData();
-      console.log('Received Form Keys:', Array.from(formData.keys()));
-      name = formData.get('name') as string;
-      email = formData.get('email') as string;
-      phone = formData.get('phone') as string;
-      message = formData.get('message') as string;
-      subject = formData.get('subject') as string || formData.get('_subject') as string;
-      type = formData.get('type') as string || 'Career Application';
-      captchaToken = (formData.get('captchaToken') || formData.get('turnstileToken') || formData.get('_captcha') || formData.get('cf-turnstile-response')) as string;
+      rawName = str(formData.get('name'));
+      rawEmail = str(formData.get('email'));
+      rawPhone = str(formData.get('phone'));
+      rawMessage = str(formData.get('message'));
+      rawSubject = str(formData.get('subject')) || str(formData.get('_subject'));
+      rawType = str(formData.get('type'));
+      captchaToken = str(formData.get('captchaToken')) || str(formData.get('turnstileToken')) || str(formData.get('_captcha')) || str(formData.get('cf-turnstile-response'));
+      honeypot = str(formData.get('_hp')) || str(formData.get('_gotcha'));
 
-      // Handle file attachment
-      const file = formData.get('attachment') as File;
-      if (file && file.size > 0) {
-        const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+      // Optional file attachment (validated now, written to disk only after the lead is accepted)
+      const file = formData.get('attachment');
+      if (file && typeof file !== 'string' && file.size > 0) {
         if (file.size > MAX_FILE_SIZE) {
           return NextResponse.json({ error: 'Attached file exceeds the 10MB limit.' }, { status: 400 });
         }
-
-        const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.png', '.jpg', '.jpeg', '.webp', '.txt', '.csv'];
         const dotIdx = file.name.lastIndexOf('.');
         const ext = dotIdx !== -1 ? file.name.substring(dotIdx).toLowerCase() : '';
-
         if (!ALLOWED_EXTENSIONS.includes(ext)) {
           return NextResponse.json({
             error: 'Invalid file extension. Only PDF, Word (.doc, .docx), images (.png, .jpg, .webp), and text/CSV documents are allowed.'
           }, { status: 400 });
         }
-
-        const buffer = Buffer.from(await file.arrayBuffer());
-
-        // Clean filename and save file to public/uploads
-        const rawBase = dotIdx !== -1 ? file.name.substring(0, dotIdx) : file.name;
-        const cleanBase = rawBase.replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 50);
-        const filename = `${Date.now()}_${cleanBase}${ext}`;
-
-        try {
-          const uploadDir = path.join(process.cwd(), "public", "uploads");
-          if (!existsSync(uploadDir)) {
-            await mkdir(uploadDir, { recursive: true });
-          }
-          const filePath = path.join(uploadDir, filename);
-          await writeFile(filePath, buffer);
-          attachmentUrl = `/uploads/${filename}`;
-          console.log('File saved to:', filePath);
-        } catch (fsErr: any) {
-          console.warn('Filesystem write not available or failed:', fsErr.message);
-        }
-
-        attachments.push({
-          filename: file.name,
-          content: buffer.toString('base64'),
-        });
-      } else {
-        console.log('No file attachment found in multipart data');
+        pendingFile = { name: file.name, ext, buffer: Buffer.from(await file.arrayBuffer()) };
       }
 
-      // Collect other fields
+      // Collect other (text) fields; files other than `attachment` are ignored
       formData.forEach((value, key) => {
-        if (!['name', 'email', 'phone', 'message', 'subject', '_subject', 'type', 'attachment', '_captcha', 'captchaToken', 'turnstileToken', 'cf-turnstile-response', '_template'].includes(key)) {
-          extraData[key] = value;
-        }
+        if (typeof value === 'string' && !RESERVED_KEYS.has(key)) extraRaw[key] = value;
       });
     } else {
-      const body = await request.json();
-      name = body.name || body.fullName;
-      email = body.email;
-      phone = body.phone;
-      message = body.message;
-      subject = body.subject;
-      type = body.type || 'Contact Form';
-      captchaToken = body.captchaToken || body.turnstileToken || body._captcha || body['cf-turnstile-response'];
-
-      // Collect other fields
+      let body: any;
+      try {
+        body = await request.json();
+      } catch {
+        return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
+      }
+      if (!body || typeof body !== 'object' || Array.isArray(body)) {
+        return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
+      }
+      rawName = str(body.name) || str(body.fullName);
+      rawEmail = str(body.email);
+      rawPhone = str(body.phone);
+      rawMessage = str(body.message);
+      rawSubject = str(body.subject) || str(body._subject);
+      rawType = str(body.type);
+      captchaToken = str(body.captchaToken) || str(body.turnstileToken) || str(body._captcha) || str(body['cf-turnstile-response']);
+      honeypot = str(body._hp) || str(body._gotcha);
       for (const [key, value] of Object.entries(body)) {
-        if (!['name', 'fullName', 'email', 'phone', 'message', 'subject', 'type', 'captchaToken', 'turnstileToken', '_captcha', 'cf-turnstile-response'].includes(key)) {
-          extraData[key] = value;
-        }
+        if (!RESERVED_KEYS.has(key)) extraRaw[key] = value;
       }
     }
 
-    // ── 1. Cloudflare Turnstile Security Verification ──
+    // Honeypot tripped -> pretend success so bots learn nothing; nothing is stored or mailed.
+    if (honeypot.trim()) {
+      return NextResponse.json({ success: true, message: 'Submission received' });
+    }
+
+    // ── Clean inputs (output is escaped everywhere it is rendered) ──
+    const type = cleanText(rawType, 80) || defaultType;
+    const name = cleanText(rawName, 200);
+    const email = cleanText(rawEmail, 254);
+    const phone = cleanText(rawPhone, 60);
+    const message = cleanText(rawMessage, 10000);
+    const subject = cleanSubject(rawSubject, '');
+
+    // ── 1. Cloudflare Turnstile ──
+    // A supplied token is always verified. When a real secret key is configured a missing token is
+    // rejected too (otherwise a bot could just omit it); the Footer newsletter box cannot render the
+    // widget, so 'Newsletter' stays exempt (it is rate limited instead).
+    const turnstileConfigured = !!process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY;
     if (captchaToken) {
       const captchaResult = await verifyTurnstileToken(captchaToken, clientIp);
       if (!captchaResult.success) {
         return NextResponse.json({ error: captchaResult.error || 'Security challenge verification failed. Please try again.' }, { status: 400 });
       }
+    } else if (turnstileConfigured && type !== 'Newsletter') {
+      return NextResponse.json({ error: 'Please complete the security check and try again.' }, { status: 400 });
     }
 
-    // ── 2. Strip / Disable All JavaScript and Dangerous Tags from Form Inputs ──
-    name = sanitizeFormString(name);
-    email = sanitizeFormString(email);
-    phone = sanitizeFormString(phone);
-    message = sanitizeFormString(message);
-    subject = sanitizeFormString(subject);
-    type = sanitizeFormString(type);
-    extraData = sanitizeFormData(extraData);
-
+    // ── 2. Validate ──
     if (!email) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
+    if (!isValidEmail(email)) {
+      return NextResponse.json({ error: 'Please enter a valid email address.' }, { status: 400 });
+    }
 
-    // Save to Database
+    const extraData = (cleanExtra(extraRaw) || {}) as Record<string, unknown>;
+    // `source` (page the form was sent from) belongs on the Submission itself, not in "extra".
+    let source: string | undefined;
+    if (typeof extraData.source === 'string' && extraData.source) source = extraData.source.slice(0, 200);
+    delete extraData.source;
+
+    // ── 3. Persist the attachment (public/uploads; silently skipped on read-only hosts) ──
+    let attachmentUrl: string | undefined;
+    const attachments: { filename: string; content: string }[] = [];
+    if (pendingFile) {
+      const dotIdx = pendingFile.name.lastIndexOf('.');
+      const rawBase = dotIdx !== -1 ? pendingFile.name.substring(0, dotIdx) : pendingFile.name;
+      const cleanBase = rawBase.replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 50);
+      const filename = `${Date.now()}_${cleanBase}${pendingFile.ext}`;
+      try {
+        const uploadDir = path.join(process.cwd(), "public", "uploads");
+        if (!existsSync(uploadDir)) {
+          await mkdir(uploadDir, { recursive: true });
+        }
+        await writeFile(path.join(uploadDir, filename), pendingFile.buffer);
+        attachmentUrl = `/uploads/${filename}`;
+      } catch (fsErr: any) {
+        console.warn('Filesystem write not available or failed:', fsErr.message);
+      }
+      attachments.push({
+        filename: pendingFile.name.replace(/[\\/\r\n]/g, '_').slice(0, 120),
+        content: pendingFile.buffer.toString('base64'),
+      });
+    }
+
+    // ── 4. Save to database ──
     let submission: any = null;
     try {
       submission = await Submission.create({
         name: name || 'Anonymous',
         email,
         phone,
+        subject: subject || undefined,
         message,
-        type: type || 'Contact Form',
+        type,
+        source: source || undefined, // model default ("Website") applies when absent
         attachmentUrl,
-        extraData
+        extraData,
       });
-      console.log('Submission saved successfully:', submission._id);
     } catch (dbError: any) {
       console.error('DATABASE SAVE ERROR:', dbError);
     }
 
-    // Fetch dynamic email from Page or Content CMS
-    let receiverEmail = '';
-    try {
-      // 1. Check Page collection for contact document first
-      const contactPageDoc = await Page.findOne({ slug: { $in: ['contact', '/contact'] } }).lean() as any;
-      if (contactPageDoc && contactPageDoc.content) {
-        const cContent = contactPageDoc.content;
-        receiverEmail = cContent.contactPage?.receiverEmail ||
-                        cContent.contactPage?.email ||
-                        cContent.contactPage?.office?.email ||
-                        cContent.receiverEmail ||
-                        cContent.email || '';
-      }
-
-      // 2. If not found, check Content collection (complete_data)
-      if (!receiverEmail) {
-        const contentDoc = await Content.findOne({ key: "complete_data" }).lean() as any;
-        if (contentDoc && contentDoc.data) {
-          if (contentDoc.data.contact?.receiverEmail) {
-            receiverEmail = contentDoc.data.contact.receiverEmail;
-          } else if (contentDoc.data.contact?.email) {
-            receiverEmail = contentDoc.data.contact.email;
-          } else if (contentDoc.data.settings?.notificationEmail) {
-            receiverEmail = contentDoc.data.settings.notificationEmail;
-          } else if (type === 'Quote Request' && contentDoc.data.quote?.email) {
-            receiverEmail = contentDoc.data.quote.email;
-          } else if (contentDoc.data.contactPage?.receiverEmail) {
-            receiverEmail = contentDoc.data.contactPage.receiverEmail;
-          } else if (contentDoc.data.contactPage?.email) {
-            receiverEmail = contentDoc.data.contactPage.email;
-          } else if (contentDoc.data.contactPage?.office?.email) {
-            receiverEmail = contentDoc.data.contactPage.office.email;
-          } else if (contentDoc.data.quote?.email) {
-            receiverEmail = contentDoc.data.quote.email;
-          } else if (contentDoc.data.footer?.contact?.email) {
-            receiverEmail = contentDoc.data.footer.contact.email;
-          }
-        }
-      }
-    } catch (e) {
-      console.error("Error fetching dynamic email", e);
-    }
-
-    if (receiverEmail) {
-      // If receiverEmail contains HTML or multiple commas, extract clean email
-      const match = receiverEmail.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-      if (match) {
-        receiverEmail = match[0].toLowerCase();
-      }
-    }
-
-    if (!receiverEmail || !receiverEmail.includes('@')) {
-      receiverEmail = process.env.ADMIN_NOTIFICATION_EMAIL || 'hello@mohsindesigns.com';
-    }
-
-    // Construct email HTML
-    let html = `
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; padding: 24px; border-radius: 12px; background: #ffffff;">
-        <h2 style="color: #0306AC; border-bottom: 2px solid #E9BD36; padding-bottom: 12px; margin-top: 0; font-size: 20px;">⚡ Mohsin Designs - New ${type || 'Inquiry'}</h2>
-        <p style="margin: 8px 0;"><strong>Type:</strong> <span style="background: #f1f5f9; padding: 2px 8px; border-radius: 4px; font-weight: 600;">${type || 'General Inquiry'}</span></p>
-        <p style="margin: 8px 0;"><strong>Name:</strong> ${name}</p>
-        <p style="margin: 8px 0;"><strong>Email:</strong> <a href="mailto:${email}" style="color: #0306AC;">${email}</a></p>
-        <p style="margin: 8px 0;"><strong>Phone:</strong> ${phone || 'Not provided'}</p>
-        ${subject ? `<p style="margin: 8px 0;"><strong>Subject:</strong> ${subject}</p>` : ''}
-        <div style="background: #f8fafc; padding: 16px; border-radius: 8px; margin-top: 16px; border-left: 4px solid #0306AC;">
-          <p style="margin-top: 0; font-weight: bold; color: #334155;">Message:</p>
-          <p style="white-space: pre-wrap; margin-bottom: 0; color: #0f172a; line-height: 1.5;">${message || 'No message provided'}</p>
-        </div>
-    `;
-
-    // Add attachment link if present
-    if (attachmentUrl) {
-      const fullUrl = `${process.env.NEXT_PUBLIC_APP_URL || ''}${attachmentUrl}`;
-      html += `<p style="margin-top: 20px;"><strong>📎 Attachment:</strong> <a href="${fullUrl}">Download File</a></p>`;
-    }
-
-    // Add extra data if any
-    if (Object.keys(extraData).length > 0) {
-      html += `<div style="margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 12px;">
-        <p style="font-weight: bold; color: #334155; margin-bottom: 8px;">Additional Details:</p>
-        <ul style="list-style: none; padding: 0; margin: 0;">`;
-
-      for (const [key, value] of Object.entries(extraData)) {
-        if (value && typeof value !== 'object') {
-          html += `<li style="margin-bottom: 5px;"><strong>${key.replace('_', ' ').toUpperCase()}:</strong> ${value}</li>`;
-        }
-      }
-
-      html += `</ul></div>`;
-    }
-
-    html += `
-        <p style="font-size: 12px; color: #666; margin-top: 30px; border-top: 1px solid #eee; padding-top: 10px;">
-          ⏱️ Submitted: ${new Date().toLocaleString()}<br>
-          🚀 Mohsin Designs Web & SEO Agency
-        </p>
-      </div>
-    `;
-
-    // Prepare email content
-    const emailContent = `
-NEW SUBMISSION - MOHSIN DESIGNS
-----------------------------------
-Name: ${name}
-Email: ${email}
-Phone: ${phone || 'Not provided'}
-Type: ${type || 'Contact Form'}
-Subject: ${subject || 'No Subject'}
-
-DETAILS:
-${message || 'No message provided'}
-
-${Object.entries(extraData).length > 0 ? `
-ADDITIONAL INFO:
-${Object.entries(extraData).map(([key, value]) => `${key}: ${value}`).join('\n')}
-` : ''}
-
-Submitted: ${new Date().toLocaleString()}
-Source: Website
-    `;
-
-    // Send email using Resend
-    const resend = new Resend(process.env.RESEND_API_KEY || 're_placeholder');
-    const { data: resendData, error: resendError } = await resend.emails.send({
-      from: 'Mohsin Designs <onboarding@resend.dev>',
-      to: [receiverEmail],
-      subject: subject || `New Lead: ${name}`,
-      html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
-          <div style="background-color: #2430d2; padding: 20px; text-align: center;">
-            <h1 style="color: white; margin: 0; font-size: 20px;">New Submission</h1>
-          </div>
-          <div style="padding: 30px;">
-            <p style="margin-top: 0; color: #64748b; font-size: 14px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.05em;">Customer Info</p>
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
-              <tr>
-                <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Name:</td>
-                <td style="padding: 8px 0; color: #0f172a; font-weight: 500; font-size: 14px;">${name}</td>
-              </tr>
-              <tr>
-                <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Email:</td>
-                <td style="padding: 8px 0; color: #0f172a; font-weight: 500; font-size: 14px;">${email}</td>
-              </tr>
-              <tr>
-                <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Phone:</td>
-                <td style="padding: 8px 0; color: #0f172a; font-weight: 500; font-size: 14px;">${phone || 'Not provided'}</td>
-              </tr>
-            </table>
-
-            <p style="margin-top: 0; color: #64748b; font-size: 14px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.05em;">Message</p>
-            <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; color: #0f172a; font-style: italic; line-height: 1.6;">
-              "${message || 'No message provided'}"
-            </div>
-          </div>
-        </div>
-      `,
-      attachments: attachments.length > 0 ? attachments : []
+    // ── 5. Notification e-mail ──
+    const receiverEmail = await resolveReceiverEmail(type);
+    const origin = (process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_BASE_URL || new URL(request.url).origin).replace(/\/+$/, '');
+    const { html, text } = buildLeadEmail({
+      type,
+      name: name || 'Anonymous',
+      email,
+      phone,
+      subject,
+      message,
+      source,
+      extraData,
+      attachmentUrl: attachmentUrl ? `${origin}${attachmentUrl}` : undefined,
+      attachmentNames: attachmentUrl ? undefined : attachments.map((a) => a.filename),
     });
 
-    if (resendError) {
-      console.error('RESEND API ERROR:', {
-        name: resendError.name,
-        message: resendError.message,
-        receiver: receiverEmail,
-        isDefaultSender: !process.env.RESEND_DOMAIN_VERIFIED
-      });
-      return NextResponse.json({
-        error: 'Email failed but DB saved',
-        details: resendError.message,
-        submissionId: submission?._id
-      }, { status: 200 }); // Return 200 so UI doesn't show error if DB saved
+    let emailSent = false;
+    if (!process.env.RESEND_API_KEY) {
+      console.warn('RESEND_API_KEY is not set - lead was stored but no notification e-mail was sent.');
+    } else {
+      try {
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        const { error: resendError } = await resend.emails.send({
+          from: process.env.RESEND_FROM_EMAIL || 'Mohsin Designs <onboarding@resend.dev>',
+          to: [receiverEmail],
+          replyTo: email,
+          subject: cleanSubject(subject, `New ${type}: ${name || email}`),
+          html,
+          text,
+          attachments,
+        });
+        if (resendError) {
+          console.error('RESEND API ERROR:', {
+            name: resendError.name,
+            message: resendError.message,
+            receiver: receiverEmail,
+            isDefaultSender: !process.env.RESEND_FROM_EMAIL && !process.env.RESEND_DOMAIN_VERIFIED,
+          });
+        } else {
+          emailSent = true;
+        }
+      } catch (mailErr: any) {
+        console.error('RESEND SEND FAILED:', mailErr?.message);
+      }
+    }
+
+    // Lost lead: nothing stored AND nothing mailed -> tell the caller so it can fall back (e.g. mailto:).
+    if (!submission && !emailSent) {
+      return NextResponse.json({ error: 'We could not process your request right now. Please try again or email us directly.' }, { status: 500 });
     }
 
     return NextResponse.json({
       success: true,
-      message: 'Submission saved and email sent',
-      submissionId: submission?._id
+      message: emailSent ? 'Submission saved and email sent' : 'Submission saved',
+      emailSent,
+      submissionId: submission?._id,
     });
 
   } catch (error: any) {
@@ -328,7 +345,7 @@ Source: Website
     });
     return NextResponse.json({
       error: 'Critical server error',
-      details: error.message,
+      ...(process.env.NODE_ENV !== 'production' ? { details: error.message } : {}),
     }, { status: 500 });
   }
 }

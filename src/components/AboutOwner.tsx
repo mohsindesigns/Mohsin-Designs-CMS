@@ -7,6 +7,7 @@ import { motion, useInView } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import { useContent } from "../hooks/useContent";
+import { Icon } from "../config/icons";
 import RichTextRenderer from "./ui/RichTextRenderer";
 import AccentHighlight from "./ui/AccentHighlight";
 
@@ -99,8 +100,14 @@ export default function AboutOwner() {
     { value: 99, suffix: "%", label: "Success Rate" }
   ];
 
-  const ctaText = about?.buttons?.[0]?.text || "Let's Collaborate";
-  const ctaHref = about?.buttons?.[0]?.href || "/contact-us";
+  // CTA buttons from the About tab (label, link, icon, primary style). The single default
+  // "Let's Collaborate" button is only used when the tab has never saved a buttons list; once it
+  // has, a removed/blank button stays removed. (Only the first button used to be rendered, so
+  // extra buttons, their icons and the "Primary Style" checkbox were dead fields.)
+  const ctaButtons: any[] = (Array.isArray(about?.buttons)
+    ? about.buttons
+    : [{ text: "Let's Collaborate", href: "/contact-us", icon: "ArrowUpRight", primary: false }]
+  ).filter((b: any) => b && typeof b.text === "string" && b.text.trim());
 
   return (
     <section id="about" className="relative overflow-hidden bg-transparent border-b border-brand-zinc-200 dark:border-white/10 section-y">
@@ -253,7 +260,8 @@ export default function AboutOwner() {
               <RichTextRenderer content={bioContent} />
             </div>
 
-            {/* Stats Row */}
+            {/* Stats Row (skipped when every stat was removed, instead of leaving an empty ruled row) */}
+            {statsList.length > 0 && (
             <div className="grid grid-cols-3 gap-1.5 xs:gap-3 sm:gap-6 pt-8 border-t border-brand-zinc-200 dark:border-white/10 mt-8 w-full">
               {statsList.map((s: any, i: number) => (
                 <div key={i} className="relative pl-2 sm:pl-6 border-l-2 border-brand-accent">
@@ -266,11 +274,23 @@ export default function AboutOwner() {
                 </div>
               ))}
             </div>
+            )}
 
-            {/* Premium CTA Button */}
-            <div className="pt-4">
-              <CtaButton href={ctaHref} variant="secondary" icon={<ArrowUpRight />}>{ctaText}</CtaButton>
-            </div>
+            {/* Premium CTA Buttons */}
+            {ctaButtons.length > 0 && (
+              <div className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-4">
+                {ctaButtons.map((btn: any, i: number) => (
+                  <CtaButton
+                    key={i}
+                    href={btn.href || "/contact-us"}
+                    variant={btn.primary ? "primary" : "secondary"}
+                    icon={btn.icon ? <Icon name={btn.icon} /> : <ArrowUpRight />}
+                  >
+                    {btn.text}
+                  </CtaButton>
+                ))}
+              </div>
+            )}
 
           </motion.div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Save, Loader2, LayoutTemplate, Type, Image as ImageIcon,
@@ -23,41 +23,13 @@ const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor")
   loading: () => <div className="h-64 bg-[#f6f7f7] animate-pulse border border-[#c3c4c7] rounded-sm flex items-center justify-center text-[#8c8f94] text-xs">Loading Rich Text Editor...</div>
 });
 
-export default function ServicesEditor({ pageId, data, setData }: { pageId: string, data: any, setData: (d: any) => void }) {
+export default function ServicesEditor({ pageId, data, setData, seo, setSeo }: { pageId: string, data: any, setData: (d: any) => void, seo?: any, setSeo?: (d: any) => void }) {
   const [activeTab, setActiveTab] = useState("hero");
 
-  useEffect(() => {
-    if (data && Object.keys(data).length === 0) {
-      setData({
-        hero: {
-          badgeText: "ENGINEERED FOR COMPOUNDING ROI",
-          titleIntro: "High-Performance Growth &",
-          titleHighlight: "Digital Architecture",
-          description: "From custom Next.js platforms to full-funnel acquisition engines, we design, engineer, and scale market-leading digital products that dominate competitive categories.",
-          ctaPrimary: { label: "Schedule Strategy Call", href: "/contact" },
-          ctaSecondary: { label: "Explore Inclusions", href: "#services-grid" }
-        },
-        grid: {
-          eyebrow: "OUR CORE CAPABILITIES",
-          titleIntro: "Engineered Services For",
-          titleHighlight: "Compounding Growth",
-          subtext: "Every service is built on scalable modern engineering, conversion rate science, and relentless performance standards.",
-          ctaText: "Explore Scope & Inclusions"
-        },
-        ctaBanner: {
-          eyebrow: "READY TO ACCELERATE?",
-          titleIntro: "Let's Build Your Next",
-          titleHighlight: "Competitive Edge",
-          titleLine2: "Together.",
-          description: "Schedule a free 30-minute technical audit. We'll diagnose bottlenecks in your existing presence and map out a concrete blueprint for compounding growth.",
-          ctaPrimary: { label: "Book Strategy Session", href: "/contact" },
-          ctaSecondary: { label: "Direct Office Line", href: "/contact" },
-          portraitSrc: "/founder.png",
-          portraitAlt: "Mohsin Designs Lead Architect"
-        }
-      });
-    }
-  }, [data, setData]);
+  // (A "seed defaults when content is empty" effect used to live here. It could never fire: the
+  // page host always adds `faqs: []` to a new page's content, so `data` is never empty. It was
+  // also redundant - the public template already falls back to the same defaults for any blank
+  // field, and the inputs below show them as placeholders.)
 
   if (!data) return <div className="flex items-center justify-center h-64"><Loader2 className="w-5 h-5 text-[#2271b1] animate-spin" /></div>;
 
@@ -71,13 +43,15 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
     }));
   };
 
+  // Tab order mirrors the order the sections appear on the public page.
   const tabs = [
     { id: "hero", label: "Hero Banner", title: "1. Hero Banner Section", desc: "Configure top badge, dynamic headlines, description narrative, buttons, and bleed background." },
     { id: "videoTestimonials", label: "Video Testimonials", title: "2. Video Testimonials", desc: "Manage the video testimonial carousel shown below the hero." },
     { id: "grid", label: "Services Grid Header", title: "3. Services Grid Intro Header", desc: "Introductory eyebrow, title, description, and card action button labels for the catalog." },
     { id: "cta", label: "Bottom CTA Banner", title: "4. Bottom Conversion Banner", desc: "High-converting strategy session CTA banner with portrait photo and action links." },
-    { id: "blog", label: "Featured Blog Posts", title: "5. Curated Insights & Articles", desc: "Featured blog articles shown below the services listing." },
-    { id: "schema", label: "Schema Markup", title: "6. Schema Markup", desc: "Structured data JSON-LD configuration for the services listing page." },
+    { id: "faqs", label: "FAQs", title: "5. FAQ Section", desc: "Show or hide the FAQ block below the banner. The questions themselves live in this page's \"Page FAQs\" tab." },
+    { id: "blog", label: "Featured Blog Posts", title: "6. Curated Insights & Articles", desc: "Featured blog articles shown below the services listing." },
+    { id: "schema", label: "Schema Markup", title: "7. Schema Markup", desc: "Structured data JSON-LD configuration for the services listing page." },
   ];
 
   const currentTabInfo = tabs.find(t => t.id === activeTab) || tabs[0];
@@ -159,7 +133,7 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <label className={UI.label}>Headline Highlight (Yellow)</label>
+                        <label className={UI.label}>Headline Highlight (accent word)</label>
                         <input
                           type="text"
                           value={data.hero?.titleHighlight || ""}
@@ -185,7 +159,7 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
                   <h3 className={UI.sectionHeader}>3. Call To Action Buttons</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="bg-[#f6f7f7] p-4 rounded border border-[#dcdcde] space-y-3">
-                      <span className="text-xs font-bold text-[#1d2327] uppercase">Primary CTA Button (Yellow)</span>
+                      <span className="text-xs font-bold text-[#1d2327] uppercase">Primary CTA Button</span>
                       <div className="space-y-1.5">
                         <label className={UI.label}>Button Label</label>
                         <input
@@ -200,7 +174,7 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
                         <label className={UI.label}>Link (URL or Anchor)</label>
                         <input
                           type="text"
-                          placeholder="/contact"
+                          placeholder="/contact-us"
                           value={data.hero?.ctaPrimary?.href || ""}
                           onChange={(e) => updateSection("hero", "ctaPrimary", { ...(data.hero?.ctaPrimary || {}), href: e.target.value })}
                           className={UI.input}
@@ -239,8 +213,16 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
                   <ImageField
                     label="Hero Background Image (Bleed Header Banner)"
                     value={data.hero?.backgroundImage || data.hero?.bgImage || ""}
-                    onChange={(url) => updateSection("hero", "backgroundImage", url)}
+                    onChange={(url) =>
+                      // Older pages stored the photo under `bgImage`; write both keys so
+                      // changing/removing it here always wins over a stale legacy value.
+                      setData((prev: any) => ({
+                        ...prev,
+                        hero: { ...(prev?.hero || {}), backgroundImage: url, bgImage: url },
+                      }))
+                    }
                   />
+                  <p className="text-[11px] text-[#646970] -mt-2">Leave empty for a clean hero without a background photo.</p>
                 </div>
               </div>
             )}
@@ -249,7 +231,7 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
             {activeTab === "videoTestimonials" && (
               <VideoTestimonialsEditor
                 value={data.videoTestimonials}
-                onChange={(next) => setData({ ...data, videoTestimonials: next })}
+                onChange={(next) => setData((prev: any) => ({ ...(prev || {}), videoTestimonials: next }))}
               />
             )}
 
@@ -266,6 +248,15 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
                     onChange={(v) => updateSection("grid", "enabled", v)}
                     label="Services Grid"
                   />
+                </div>
+                <div className="rounded border border-[#c3c4c7] bg-[#f6f7f7] p-3 text-[12px] text-[#50575e] space-y-1">
+                  <p className="font-semibold text-[#1d2327]">Where do the service cards come from?</p>
+                  <p>
+                    The cards are generated automatically from your service catalog (Admin &rarr; Services). Draft and trashed
+                    services are left out, and the rest are ordered by their &ldquo;Order / Position&rdquo; number. Each card&apos;s
+                    icon, tag, summary and bullet points come from that service, and it links to the service page. Edit a
+                    service there to change its card; this tab only controls the heading above the cards.
+                  </p>
                 </div>
                 <div className="space-y-6">
                   <h3 className={UI.sectionHeader}>1. Section Headings</h3>
@@ -293,7 +284,7 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <label className={UI.label}>Title Highlight (Yellow)</label>
+                        <label className={UI.label}>Title Highlight (accent word)</label>
                         <input
                           type="text"
                           value={data.grid?.titleHighlight || ""}
@@ -422,7 +413,7 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
                         <label className={UI.label}>Link</label>
                         <input
                           type="text"
-                          placeholder="/contact"
+                          placeholder="/contact-us"
                           value={data.ctaBanner?.ctaPrimary?.href || ""}
                           onChange={(e) => updateSection("ctaBanner", "ctaPrimary", { ...(data.ctaBanner?.ctaPrimary || {}), href: e.target.value })}
                           className={UI.input}
@@ -446,7 +437,7 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
                         <label className={UI.label}>Link</label>
                         <input
                           type="text"
-                          placeholder="/contact"
+                          placeholder="/contact-us"
                           value={data.ctaBanner?.ctaSecondary?.href || ""}
                           onChange={(e) => updateSection("ctaBanner", "ctaSecondary", { ...(data.ctaBanner?.ctaSecondary || {}), href: e.target.value })}
                           className={UI.input}
@@ -462,7 +453,35 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
                     label="Portrait Image (Arch card on right)"
                     value={data.ctaBanner?.portraitSrc || ""}
                     onChange={(url) => updateSection("ctaBanner", "portraitSrc", url)}
+                    altValue={data.ctaBanner?.portraitAlt || ""}
+                    onAltChange={(alt) => updateSection("ctaBanner", "portraitAlt", alt)}
                   />
+                  <p className="text-[11px] text-[#646970] -mt-2">Leave empty to show a text-only banner (the portrait is desktop-only). The alt text field appears once an image is set; leave it blank to mark the photo as decorative.</p>
+                </div>
+              </div>
+            )}
+
+            {/* TAB: FAQS (visibility only - the questions are edited in the host's "Page FAQs" tab) */}
+            {activeTab === "faqs" && (
+              <div className="space-y-8">
+                <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#f0f0f1]">
+                  <div>
+                    <h2 className="text-base font-bold text-[#1d2327]">FAQ Section Visibility</h2>
+                    <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
+                  </div>
+                  <SectionToggle
+                    enabled={data.faqs?.enabled !== false && data.faqSection?.enabled !== false}
+                    onChange={(v) => updateSection("faqSection", "enabled", v)}
+                    label="FAQ Section"
+                  />
+                </div>
+                <div className="rounded border border-[#c3c4c7] bg-[#f6f7f7] p-3 text-[12px] text-[#50575e] space-y-1">
+                  <p className="font-semibold text-[#1d2327]">Where are the questions?</p>
+                  <p>
+                    Add, edit and reorder them in this page&apos;s <strong>Page FAQs</strong> tab (next to &ldquo;Page Content&rdquo;).
+                    If that list is empty, FAQs from the global FAQ manager that are set to &ldquo;Global&rdquo; or targeted at this
+                    page are shown instead. With no FAQs at all, the section is not displayed.
+                  </p>
                 </div>
               </div>
             )}
@@ -475,12 +494,12 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
                     <h2 className="text-base font-bold text-[#1d2327]">Featured Blog Visibility</h2>
                     <p className="text-xs text-[#646970]">Enable or disable displaying this section on the live page.</p>
                   </div>
+                  {/* The template reads `blogSection.enabled` only. (This used to also write a
+                      `blog.enabled` key that nothing reads, and that shadowed the site-wide
+                      `blog` object in the page's content context.) */}
                   <SectionToggle
-                    enabled={data.blogSection?.enabled !== false && data.blog?.enabled !== false}
-                    onChange={(v) => {
-                      updateSection("blogSection", "enabled", v);
-                      updateSection("blog", "enabled", v);
-                    }}
+                    enabled={data.blogSection?.enabled !== false}
+                    onChange={(v) => updateSection("blogSection", "enabled", v)}
                     label="Featured Blog"
                   />
                 </div>
@@ -492,7 +511,7 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
                       <input
                         type="text"
                         value={data.blogSection?.subtitle || ""}
-                        onChange={(e) => setData({ ...data, blogSection: { ...(data.blogSection || {}), subtitle: e.target.value } })}
+                        onChange={(e) => updateSection("blogSection", "subtitle", e.target.value)}
                         className={UI.input}
                         placeholder="LATEST STRATEGIC INSIGHTS"
                       />
@@ -502,7 +521,7 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
                       <input
                         type="text"
                         value={data.blogSection?.title || ""}
-                        onChange={(e) => setData({ ...data, blogSection: { ...(data.blogSection || {}), title: e.target.value } })}
+                        onChange={(e) => updateSection("blogSection", "title", e.target.value)}
                         className={UI.inputLarge}
                         placeholder="Engineering & Growth Articles"
                       />
@@ -510,16 +529,20 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
                     <RichTextEditor 
                       label="Description Narrative" 
                       content={data.blogSection?.description || ""} 
-                      onChange={(html) => setData({ ...data, blogSection: { ...(data.blogSection || {}), description: html } })} 
+                      onChange={(html) => updateSection("blogSection", "description", html)} 
                     />
                   </div>
                 </div>
 
                 <div className="space-y-6">
                   <h3 className={UI.sectionHeader}>2. Curated Articles Selection</h3>
-                  <BlogSelector 
-                    selectedIds={data.blogSection?.selectedPosts || []} 
-                    onChange={(ids) => setData({ ...data, blogSection: { ...(data.blogSection || {}), selectedPosts: ids } })} 
+                  <p className="text-[11px] text-[#646970] -mt-2">
+                    The first article you pick becomes the large featured card. The section only appears on the live page
+                    once at least one published article is selected (deleted or trashed articles are skipped).
+                  </p>
+                  <BlogSelector
+                    selectedIds={data.blogSection?.selectedPosts || []}
+                    onChange={(ids) => updateSection("blogSection", "selectedPosts", ids)}
                   />
                 </div>
               </div>
@@ -527,17 +550,22 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
 
             {activeTab === "schema" && (
               <div className="space-y-4">
+                {/* The public page emits page.seo.schemaData first, then content.schemaMarkup, and the
+                    host's Save button copies seo.schemaData over content.schemaMarkup. So this tab has
+                    to read AND write the host's `seo` state too - writing only into content (as it
+                    did) was silently overwritten on save whenever seo.schemaData already existed. */}
                 <SchemaEditor
-                  value={data.schemaMarkup || data.seo?.schemaData || ""}
+                  value={seo?.schemaData || data.schemaMarkup || data.seo?.schemaData || ""}
                   onChange={(val) => {
-                    setData({
-                      ...data,
+                    setData((prev: any) => ({
+                      ...(prev || {}),
                       schemaMarkup: val,
                       seo: {
-                        ...(data.seo || {}),
+                        ...(prev?.seo || {}),
                         schemaData: val
                       }
-                    });
+                    }));
+                    setSeo?.((prev: any) => ({ ...(prev || {}), schemaData: val }));
                   }}
                   pageTitle={data.title || "Services Overview"}
                 />

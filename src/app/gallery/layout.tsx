@@ -1,33 +1,6 @@
-import connectToDatabase from "@/lib/mongodb";
-import SiteContent from "@/models/Content";
-import { BASE_URL } from "@/lib/constants";
-import { Metadata } from "next";
-import { resolveRobotsMetadata } from "@/lib/seo";
-
-export async function generateMetadata(): Promise<Metadata> {
-  await connectToDatabase();
-  const content = await SiteContent.findOne({ key: "complete_data" }).lean() as any;
-  const isGlobalNoIndex = !!content?.data?.settings?.globalNoIndex;
-  const galleryData = content?.data?.galleryPage || content?.data?.gallery || {};
-  const seo = galleryData.seo || {};
-  const pageUrl = `${BASE_URL}/gallery/`;
-
-  return {
-    title: seo.metaTitle || "Project Gallery",
-    description: seo.metaDescription,
-    alternates: {
-      canonical: seo.canonicalUrl || pageUrl,
-    },
-    robots: resolveRobotsMetadata(seo, isGlobalNoIndex),
-    openGraph: {
-      title: seo.ogTitle || seo.metaTitle || "Project Gallery",
-      description: seo.ogDescription || seo.metaDescription,
-      url: pageUrl,
-      type: "website",
-    },
-  };
-}
-
+// Metadata for /gallery/ lives in page.tsx (it needs the resolved Page document). A layout-level generateMetadata used
+// to sit here reading global `galleryPage.seo`, but page.tsx defines every key it set (title, description, canonical,
+// robots, openGraph), so that copy was always overridden - dead code plus an extra DB query. Layout is now a passthrough.
 export default function GalleryLayout({
   children,
 }: {

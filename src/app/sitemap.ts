@@ -4,6 +4,7 @@ import SiteContent from '@/models/Content';
 import Page from '@/models/Page';
 import Post from '@/models/Post';
 import { BASE_URL } from '@/lib/constants';
+import { resolveLocationPaths } from '@/lib/locationPath';
 export const revalidate = 0;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -99,14 +100,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Dynamic custom pages
   // Filter out slugs that are already in staticRoutes to avoid duplicates
   const staticSlugs = new Set(staticRoutes.map(r => r.url.replace(BASE_URL, '').replace(/^\/+|\/+$/g, '')));
+  // Country/State/City pages are served at /country/state/city/ whatever their stored slug is
+  // (legacy docs have flat slugs like "texas"), so list the canonical URL - and skip pages whose
+  // parent chain cannot be resolved, since those URLs 404.
+  const locationIndex = resolveLocationPaths(dynamicPages);
   const customPageRoutes: MetadataRoute.Sitemap = dynamicPages
-    .map((page: any) => ({
-      ...page,
-      cleanSlug: String(page.slug || '').replace(/^\/+|\/+$/g, '')
-    }))
+    .filter((page: any) => page.seo?.metaRobotsIndex !== 'noindex')
+    .map((page: any) => {
+      const isLocation = page.template === 'country' || page.template === 'state' || page.template === 'city';
+      const cleanSlug = isLocation
+        ? (locationIndex.byId.get(String(page._id))?.path || '')
+        : String(page.slug || '').replace(/^\/+|\/+$/g, '');
+      return { ...page, cleanSlug };
+    })
     .filter((page: any) =>
       page.cleanSlug !== '' &&
       page.cleanSlug !== 'home' &&
+      page.cleanSlug !== 'homepage' &&
       !staticSlugs.has(page.cleanSlug)
     )
     .map((page: any) => ({

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import mongoose from 'mongoose';
 import connectDB from '@/lib/mongodb';
 import Submission from '@/models/Submission';
 import { hasPermission, getSessionUser } from '@/lib/rbac';
@@ -11,7 +12,9 @@ export async function GET(req: NextRequest) {
 
   try {
     await connectDB();
-    const submissions = await Submission.find({}).sort({ createdAt: -1 });
+    // lean(): plain objects are all the admin table needs, and it keeps fields that older
+    // documents carry but the schema no longer declares (e.g. attachmentUrls).
+    const submissions = await Submission.find({}).sort({ createdAt: -1 }).lean();
 
     const session = await getSessionUser(req);
     await recordActivity({
@@ -42,14 +45,22 @@ export async function DELETE(req: NextRequest) {
 
     const session = await getSessionUser(req);
 
-    if (ids && Array.isArray(ids) && ids.length > 0) {
-      const result = await Submission.deleteMany({ _id: { $in: ids } });
+    // Reject malformed ids up front - a bad one would otherwise surface as a Mongoose CastError / 500.
+    const validIds: string[] = Array.isArray(ids)
+      ? ids.filter((v: unknown): v is string => typeof v === 'string' && mongoose.isValidObjectId(v))
+      : [];
+    if ((Array.isArray(ids) && ids.length > 0 && validIds.length === 0) || (id && !mongoose.isValidObjectId(id))) {
+      return NextResponse.json({ error: 'Invalid submission id' }, { status: 400 });
+    }
+
+    if (validIds.length > 0) {
+      const result = await Submission.deleteMany({ _id: { $in: validIds } });
       await recordActivity({
         user: (session as any).userId,
         userName: (session as any).username,
         action: 'DELETE_SUBMISSIONS_BULK',
         entity: 'Submission',
-        details: { count: result.deletedCount, ids },
+        details: { count: result.deletedCount, ids: validIds },
         ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
       });
       return NextResponse.json({ success: true, count: result.deletedCount });

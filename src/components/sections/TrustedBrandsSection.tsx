@@ -61,7 +61,7 @@ const WebflowLogo = () => (
 );
 
 export default function TrustedBrandsSection({ data }: { data?: any }) {
-  const badge = data?.badge || data?.eyebrow || "02 // CLIENT PROOF";
+  const badge = data?.badge ?? data?.eyebrow ?? "02 // CLIENT PROOF";
   const titleIntro = data?.titleIntro !== undefined ? data.titleIntro : "Trusted by";
   const titleHighlight = data?.titleHighlight !== undefined ? data.titleHighlight : "Leading Brands";
   const description = data?.description !== undefined
