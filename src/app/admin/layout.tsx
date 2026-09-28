@@ -215,8 +215,8 @@ function Sidebar({ user, navItems, onClose, isMobile }: { user: any, navItems: a
                     href={item.href}
                     onClick={onClose}
                     className={`flex items-center gap-2.5 py-2.5 text-[13px] transition-all ${
-                      active 
-                        ? "bg-[#1c2226] border-l-[3px] border-[#72aee6] text-white font-bold pl-[13px] pr-3" 
+                      active
+                        ? "bg-[#1c2226] border-l-[3px] border-[#72aee6] text-white hover:text-white font-bold pl-[13px] pr-3"
                         : "border-l-[3px] border-transparent hover:bg-[#2c3338] hover:text-[#72aee6] text-[#c3c4c7] pl-[13px] pr-3"
                     }`}
                   >
