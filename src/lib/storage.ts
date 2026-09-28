@@ -36,15 +36,25 @@ export async function uploadFile(file: File, buffer: Buffer): Promise<{ url: str
     try {
       const formData = new FormData();
       formData.append('file', new Blob([buffer], { type: file.type }));
-      
+
       // Use original filename (without extension) as the public_id in Cloudinary
       const dotIdx = file.name.lastIndexOf('.');
       const baseName = dotIdx !== -1 ? file.name.substring(0, dotIdx) : file.name;
       const cleanFileName = baseName.replace(/[^a-zA-Z0-9_-]/g, '_');
       formData.append('public_id', cleanFileName);
-      
-      let endpoint = `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`;
-      
+
+      // The `/auto/upload` endpoint content-sniffs the file to pick a resource type, and Cloudinary
+      // classifies SVGs (and anything it doesn't recognize as a raster image, e.g. a mislabeled or
+      // corrupted file) as `raw`. Unlike `image`/`video`, a `raw` upload's secure_url does NOT get
+      // the original extension appended, so the returned URL came back with no extension at all and
+      // was served as `application/octet-stream` - a browser <img> tag can't render that, so the
+      // upload "succeeded" but the picture never actually appeared anywhere on the site. Telling
+      // Cloudinary the resource type ourselves, from the browser-reported MIME type (which is what
+      // the file picker's `accept="image/*"` already restricted uploads to), avoids the
+      // mis-detection: `image`/`video` still auto-append the correct extension on their own.
+      const resourceType = file.type.startsWith('video/') ? 'video' : file.type.startsWith('image/') ? 'image' : 'auto';
+      let endpoint = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
+
       if (uploadPreset) {
         formData.append('upload_preset', uploadPreset);
       } else if (apiKey && apiSecret) {
@@ -52,14 +62,14 @@ export async function uploadFile(file: File, buffer: Buffer): Promise<{ url: str
         const timestamp = Math.round(new Date().getTime() / 1000).toString();
         formData.append('timestamp', timestamp);
         formData.append('api_key', apiKey);
-        
+
         // Generate signature
         const { createHash } = await import('crypto');
         const signatureStr = `public_id=${cleanFileName}&timestamp=${timestamp}${apiSecret}`;
         const signature = createHash('sha1').update(signatureStr).digest('hex');
         formData.append('signature', signature);
       }
-      
+
       const res = await fetch(endpoint, {
         method: 'POST',
         body: formData,
