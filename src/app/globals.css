@@ -4,6 +4,21 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Without this, native form UI (<select> dropdown popups, checkboxes, radios, date/time
+   pickers, and in some browsers the scrollbar) is styled by the BROWSER/OS's own dark-light
+   preference, not by the site's own theme - so a visitor whose device is set to dark but who
+   picks LIGHT on the site (or the reverse) got a light page with a dark-chrome dropdown popup,
+   or vice versa. Declaring color-scheme per theme makes every native control follow whichever
+   theme is actually active on the page, the device's setting is never consulted again once the
+   page decides. (Admin overrides this explicitly via an inline style - see admin/layout.tsx -
+   which always wins over this rule for the same element.) */
+:root {
+  color-scheme: light;
+}
+.dark {
+  color-scheme: dark;
+}
+
 /* ── Smooth light/dark theme toggle ──
    Navbar's toggleTheme() briefly adds `.theme-transition` to <html> around the class
    swap. This USED to also select `*` (every single element - all the marquee logo
