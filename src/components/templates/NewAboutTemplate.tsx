@@ -1256,11 +1256,16 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
               <div className="lg:col-span-4 min-w-0 relative flex justify-center z-10">
-                <div className="relative w-full rounded-[36px] overflow-hidden bg-brand-blue border border-brand-blue shadow-2xl p-8 sm:p-9 flex flex-col justify-between min-h-[460px] lg:min-h-[520px] z-10">
+                {/* This card is a permanently-blue surface (like .cta-banner-card), not the page background,
+                    so its accent needs its own light/dark split - it was hardcoded brand-yellow, which is
+                    the DARK-mode accent shown even in light mode (the leak). `on-dark-surface` brings in
+                    --cta-accent, which already swaps correctly on every other dark surface (footer, CTA
+                    cards): light blue-white in light mode, brand yellow in dark mode. */}
+                <div className="on-dark-surface relative w-full rounded-[36px] overflow-hidden bg-brand-blue border border-brand-blue shadow-2xl p-8 sm:p-9 flex flex-col justify-between min-h-[460px] lg:min-h-[520px] z-10">
                   <div className="max-w-[220px] space-y-1.5 z-10 text-left">
-                    <div className="h-[2.5px] w-7 bg-brand-yellow mb-4" />
+                    <div className="h-[2.5px] w-7 bg-[var(--cta-accent)] mb-4" />
                     <p className="text-white text-sm sm:text-base font-semibold leading-snug tracking-tight">{whyChooseUs.blueCardLine1 || "Direct Founder"}</p>
-                    <p className="text-brand-yellow text-lg sm:text-xl font-extrabold leading-none pt-1">{whyChooseUs.blueCardLine2 || "Architecture & Execution"}</p>
+                    <p className="text-[var(--cta-accent)] text-lg sm:text-xl font-extrabold leading-none pt-1">{whyChooseUs.blueCardLine2 || "Architecture & Execution"}</p>
                   </div>
 
                   {whyChooseUs.blueCardImage && (
