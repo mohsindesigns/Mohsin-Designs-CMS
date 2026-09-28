@@ -926,11 +926,15 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
             {/* Left Blue Highlight Card */}
             <div className="lg:col-span-4 min-w-0 relative flex justify-center z-10">
-              <div className="relative w-full rounded-[36px] overflow-hidden bg-[#0306AC] border border-[#0306AC] shadow-2xl p-8 sm:p-9 flex flex-col justify-between min-h-[440px] lg:min-h-[500px]">
+              {/* Permanently-blue surface (like .cta-banner-card), not the page background, so its accent
+                  needs its own light/dark split - it was hardcoded brand-yellow, the DARK-mode accent,
+                  shown even in light mode. on-dark-surface brings in --cta-accent, which already swaps
+                  correctly on every other dark surface (footer, CTA cards, the About page's own card). */}
+              <div className="on-dark-surface relative w-full rounded-[36px] overflow-hidden bg-[#0306AC] border border-[#0306AC] shadow-2xl p-8 sm:p-9 flex flex-col justify-between min-h-[440px] lg:min-h-[500px]">
                 <div className="max-w-[220px] space-y-1.5 z-10 text-left">
-                  <div className="h-[2.5px] w-7 bg-[#E9BD36] mb-4" />
+                  <div className="h-[2.5px] w-7 bg-[var(--cta-accent)] mb-4" />
                   <p className="text-white text-sm sm:text-base font-semibold leading-snug tracking-tight">{whyChooseUs.blueCardLine1}</p>
-                  <p className="text-[#E9BD36] text-lg sm:text-xl font-extrabold leading-none pt-1">{whyChooseUs.blueCardLine2}</p>
+                  <p className="text-[var(--cta-accent)] text-lg sm:text-xl font-extrabold leading-none pt-1">{whyChooseUs.blueCardLine2}</p>
                 </div>
 
                 {whyChooseUs.blueCardImage && blueImgOk && (
