@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { MessageCircle, Send, X, RotateCcw, Sparkles } from "lucide-react";
+import { MessageCircle, Send, X, RotateCcw, Sparkles, Loader2 } from "lucide-react";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -119,6 +119,14 @@ export default function ChatWidget() {
     setMessages([...nextMessages, { role: "assistant", content: "" }]);
     setSending(true);
 
+    // Guarantees the send button re-enables no matter what the network/stream does - a plain timer
+    // that fires on its own, not dependent on the fetch, the reader, or an AbortController actually
+    // cancelling a stream cleanly (that turned out not to reliably unstick things in every case
+    // encountered testing this). Whichever finishes first - the reply completing normally, or this
+    // - clears "sending"; if the request does eventually finish after the timer already fired, its
+    // own already-scheduled setSending(false) below is just a harmless repeat.
+    const unstick = setTimeout(() => setSending(false), 30_000);
+
     try {
       const res = await fetch("/api/chat/", {
         method: "POST",
@@ -150,6 +158,7 @@ export default function ChatWidget() {
       setError(err?.message || "Something went wrong. Please try again.");
       setMessages((prev) => (prev[prev.length - 1]?.content === "" ? prev.slice(0, -1) : prev));
     } finally {
+      clearTimeout(unstick);
       setSending(false);
     }
   };
@@ -173,7 +182,15 @@ export default function ChatWidget() {
   const isEmptyLastAssistant = messages[messages.length - 1]?.role === "assistant" && messages[messages.length - 1]?.content === "";
 
   return (
-    <div className="fixed bottom-0 right-0 z-[90] sm:bottom-6 sm:right-6">
+    // A plain block-flow column here left the toggle button wherever it happened to shrink-wrap
+    // to (visibly off to the left of the panel), and the panel's height was only capped by vh with
+    // no allowance for its own margin + the button's own space below it - on a browser window
+    // shorter than ~730px tall (a perfectly normal laptop/small-monitor height, not an edge case)
+    // the stacked total was taller than the viewport, so the fixed bottom-anchored column pushed
+    // its own top edge above y=0 and the header rendered clipped, overlapping the site's navbar.
+    // `items-end` fixes the alignment; `max-h-[calc(100dvh-Xrem)]` on the panel guarantees the
+    // whole column - panel + gap + button - always fits under the viewport, whatever its height.
+    <div className="fixed inset-x-0 bottom-0 z-[90] flex flex-col items-end gap-4 p-4 sm:inset-x-auto sm:bottom-6 sm:right-6 sm:p-0">
       <AnimatePresence>
         {open && (
           <motion.div
@@ -186,7 +203,7 @@ export default function ChatWidget() {
             onKeyDown={(e) => {
               if (e.key === "Escape") setOpen(false);
             }}
-            className="fixed inset-0 flex h-[100dvh] w-screen flex-col overflow-hidden bg-white text-brand-dark dark:bg-[#0c0b18] dark:text-white sm:static sm:mb-4 sm:h-[min(72vh,600px)] sm:w-[min(94vw,392px)] sm:rounded-[28px] sm:border sm:border-brand-zinc-200/70 sm:shadow-[0_30px_80px_-20px_rgba(3,6,172,0.3)] sm:dark:border-white/10 sm:dark:shadow-[0_30px_80px_-20px_rgba(0,0,0,0.75)]"
+            className="fixed inset-0 flex h-[100dvh] w-screen flex-col overflow-hidden bg-white text-brand-dark dark:bg-[#0c0b18] dark:text-white sm:static sm:h-[600px] sm:max-h-[calc(100dvh-9rem)] sm:w-[min(94vw,392px)] sm:rounded-[28px] sm:border sm:border-brand-zinc-200/70 sm:shadow-[0_30px_80px_-20px_rgba(3,6,172,0.3)] sm:dark:border-white/10 sm:dark:shadow-[0_30px_80px_-20px_rgba(0,0,0,0.75)]"
           >
             {/* Header */}
             <div className="relative shrink-0 overflow-hidden bg-gradient-to-br from-brand-blue via-brand-blue to-[#161ce0] px-4 pb-4 pt-[calc(env(safe-area-inset-top)+14px)] text-white dark:from-[#0c0b18] dark:via-[#0c0b18] dark:to-[#141225] sm:rounded-t-[28px] sm:pt-4">
@@ -309,9 +326,16 @@ export default function ChatWidget() {
                   type="submit"
                   disabled={sending || !input.trim()}
                   aria-label="Send message"
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-blue text-white transition-all hover:scale-105 disabled:scale-100 disabled:opacity-30 dark:bg-brand-yellow dark:text-[#0c0b18]"
+                  // Disabled-while-sending used to look identical to disabled-because-empty (same
+                  // faded state, no spinner) - a reply that takes ten-odd seconds to finish reads
+                  // as a frozen/broken button the whole time it's actually working. The spinner (and
+                  // full, not faded, opacity while sending) makes "still generating" visibly
+                  // different from "nothing typed yet".
+                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-blue text-white transition-all dark:bg-brand-yellow dark:text-[#0c0b18] ${
+                    sending ? "opacity-100" : "hover:scale-105 disabled:scale-100 disabled:opacity-30"
+                  }`}
                 >
-                  <Send className="h-4 w-4" />
+                  {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                 </button>
               </div>
               <p className="mt-2 text-center text-[10px] leading-none text-brand-zinc-400 dark:text-zinc-600">
@@ -332,7 +356,7 @@ export default function ChatWidget() {
         transition={{ type: "spring", stiffness: 260, damping: 18, delay: 0.3 }}
         whileHover={{ scale: 1.06 }}
         whileTap={{ scale: 0.94 }}
-        className={`relative m-4 flex h-14 w-14 items-center justify-center rounded-full bg-brand-blue text-white shadow-[0_16px_40px_-12px_rgba(3,6,172,0.5)] dark:bg-brand-yellow dark:text-[#0c0b18] dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.6)] ${open ? "hidden sm:flex" : ""}`}
+        className={`relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-brand-blue text-white shadow-[0_16px_40px_-12px_rgba(3,6,172,0.5)] dark:bg-brand-yellow dark:text-[#0c0b18] dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.6)] ${open ? "hidden sm:flex" : ""}`}
       >
         {!open && (
           <span className="absolute inset-0 -z-10 animate-ping rounded-full bg-brand-blue/40 dark:bg-brand-yellow/40" style={{ animationDuration: "2.4s" }} aria-hidden="true" />

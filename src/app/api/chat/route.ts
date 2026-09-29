@@ -160,6 +160,12 @@ export async function POST(req: NextRequest) {
     headers: {
       "Content-Type": "text/plain; charset=utf-8",
       "Cache-Control": "no-store",
+      // Production runs this behind nginx (see pm2 setup). Without this header nginx buffers the
+      // whole response before forwarding it, which can silently stall the connection close signal
+      // even after all the text has arrived - the browser's reader.read() loop then never resolves
+      // with done:true, the "sending" state on the widget never clears, and every message after the
+      // first is stuck (the send button stays disabled). Standard nginx opt-out for a streamed route.
+      "X-Accel-Buffering": "no",
     },
   });
 }
