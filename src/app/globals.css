@@ -1462,12 +1462,7 @@
 }
 
 /* ── Accent heading highlight (components/ui/AccentHighlight.tsx) ─────────────────────
-   Dry-brush swipe behind the accent phrase, in the same hue family as the phrase itself:
-   a translucent brand-BLUE highlighter behind blue text in light mode (multiplied into
-   the page like ink) and a translucent brand-YELLOW highlighter behind yellow text in
-   dark mode. Kept translucent so the solid-coloured letters always stay brighter than
-   the stroke behind them. Always-dark cards (yellow text on navy) get a stronger blue
-   stroke so it still shows against the card. */
+/* Dry-brush swipe behind the accent phrase (commented out per request)
 :root {
   --accent-brush: #3644ff;
   --accent-brush-opacity: 0.48;
@@ -1476,33 +1471,19 @@
   --accent-brush: #e9bd36;
   --accent-brush-opacity: 0.3;
 }
-/* Always-dark CTA surfaces. The card never changes with the theme, and the phrase used to be
-   drawn in a soft accent (periwinkle / gold) over a blue stroke on a blue card - text and paint
-   in the same colour family, so the highlighted words nearly disappeared.
-   Now the phrase uses the CTA BUTTON's own colour pair, which is already tuned per theme for
-   full contrast on this card (see --cta-bg / --cta-fg above):
-     light mode: WHITE paint  + brand-BLUE letters   (#fff  / #0306AC)
-     dark  mode: YELLOW paint + near-black letters   (#E9BD36 / #080710)
-   The stroke is fully opaque and AccentHighlight draws it word-height on these surfaces. */
 .on-dark-surface,
 .cta-banner-card,
 .cta-on-dark {
   --accent-brush: var(--cta-bg);
   --accent-brush-opacity: 1;
 }
+*/
 :is(.on-dark-surface, .cta-banner-card, .cta-on-dark) .accent-text {
   /* !important: the call sites colour the phrase with utility classes (text-[var(--cta-accent)],
      text-brand-blue, dark:text-brand-yellow ...) that would otherwise win. */
   color: var(--cta-fg) !important;
 }
 .accent-brush {
-  color: var(--accent-brush);
-  opacity: var(--accent-brush-opacity);
-  mix-blend-mode: multiply;
+  display: none !important;
 }
-.dark .accent-brush,
-.on-dark-surface .accent-brush,
-.cta-banner-card .accent-brush,
-.cta-on-dark .accent-brush {
-  mix-blend-mode: normal;
-}
+
