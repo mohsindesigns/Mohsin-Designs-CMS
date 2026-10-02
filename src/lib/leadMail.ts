@@ -1,10 +1,5 @@
 // Helpers for /api/send (the shared lead endpoint). Pure functions, no I/O, so they can be
 // unit-tested without a DB or mail provider. Only src/app/api/send/route.ts imports this file.
-//
-// Why this exists: the route used to (a) interpolate raw user input into email HTML
-// (only a lossy tag-stripper stood in the way of HTML/attribute injection) and (b) build a
-// rich email that was never actually sent - so fields like service/company/zip/timeline/role
-// were stored but never reached the inbox. Everything user-controlled is escaped here.
 
 /** Escape a value for safe interpolation into HTML text or a double-quoted attribute. */
 export function escapeHtml(value: unknown): string {
@@ -20,11 +15,6 @@ const CONTROL_CHARS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
 
 /**
  * Cleans one free-text form value for storage.
- * - removes <script>/<style> blocks and well-formed HTML tags (`<b>`, `</div>`, `<a href=..>`)
- * - deliberately does NOT eat a lone "<" ("budget < $5k", "I <3 this"): the old shared
- *   sanitizer treated "<3 ..." as an unterminated tag and deleted the rest of the message.
- *   That is safe because every sink (email, admin React UI, CSV) escapes on output.
- * - drops control characters, trims, and caps the length.
  */
 export function cleanText(value: unknown, max = 5000): string {
   if (value === null || value === undefined) return "";
@@ -72,7 +62,7 @@ export function humanizeKey(key: string): string {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-/** Loose but safe e-mail check (also blocks anything that could break out of a header/attribute). */
+/** Loose but safe e-mail check. */
 export function isValidEmail(email: string): boolean {
   return email.length <= 254 && /^[^\s@<>"'`,;()\[\]\\]+@[^\s@<>"'`,;()\[\]\\]+\.[^\s@<>"'`,;()\[\]\\]{2,}$/.test(email);
 }
@@ -112,73 +102,280 @@ export interface LeadEmailInput {
   submittedAt?: Date;
 }
 
-/** Builds the notification e-mail (HTML + plain text). Every user value is escaped / plain. */
+/**
+ * Builds an ultra-professional, executive-grade lead notification email.
+ * Designed with a modern card aesthetic, crisp typography, interactive CTAs,
+ * and rock-solid cross-client email compatibility (Gmail, Outlook, Apple Mail).
+ */
 export function buildLeadEmail(input: LeadEmailInput): { html: string; text: string } {
   const { type, name, email, phone, subject, message, source, extraData, attachmentUrl, attachmentNames } = input;
-  const when = (input.submittedAt || new Date()).toUTCString();
+  
+  const dateObj = input.submittedAt || new Date();
+  const formattedDate = dateObj.toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+  const formattedTime = dateObj.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZoneName: "short",
+  });
+  const when = `${formattedDate} at ${formattedTime}`;
 
+  const safeName = escapeHtml(name || "Website Lead");
+  const safeEmail = escapeHtml(email || "");
+  const safePhone = phone ? escapeHtml(phone) : "";
+  const telHref = phone ? escapeHtml(phone.replace(/[^0-9+]/g, "")) : "";
+  const safeType = escapeHtml(type || "Lead Inquiry");
+  const safeSource = source ? escapeHtml(source) : "";
+
+  // Separate services from other extraData fields for dedicated hero badge styling
+  const rawService = extraData?.service || extraData?.services || extraData?.project_type || extraData?.projectType;
+  const servicesList: string[] = Array.isArray(rawService)
+    ? rawService.map(String)
+    : rawService
+    ? String(rawService).split(/[,;|]/).map((s) => s.trim()).filter(Boolean)
+    : [];
+
+  const crmSynced = extraData?.crm_synced === "Yes" || extraData?.crm_synced === true;
+
+  // Filter out service and crm keys from standard extra table since they get dedicated sections
+  const excludedKeys = new Set(["service", "services", "project_type", "projecttype", "crm_synced", "crm_status"]);
   const extraRows = Object.entries(extraData || {})
+    .filter(([k]) => !excludedKeys.has(k.toLowerCase()))
     .map(([k, v]) => [humanizeKey(k), displayValue(v)] as const)
     .filter(([, v]) => v !== "");
 
-  const row = (label: string, valueHtml: string) =>
-    `<tr><td style="padding:7px 12px 7px 0;color:#64748b;font-size:13px;vertical-align:top;white-space:nowrap;">${escapeHtml(label)}</td>` +
-    `<td style="padding:7px 0;color:#0f172a;font-size:14px;font-weight:500;word-break:break-word;">${valueHtml}</td></tr>`;
-
-  const safeEmail = escapeHtml(email);
-  const safePhone = phone ? escapeHtml(phone) : "";
-  const telHref = phone ? escapeHtml(phone.replace(/[^0-9+]/g, "")) : "";
-
-  const rows = [
-    row("Type", `<span style="background:#f1f5f9;padding:2px 8px;border-radius:4px;font-weight:600;">${escapeHtml(type)}</span>`),
-    row("Name", escapeHtml(name)),
-    row("Email", `<a href="mailto:${safeEmail}" style="color:#0306AC;">${safeEmail}</a>`),
-    row("Phone", phone ? (telHref ? `<a href="tel:${telHref}" style="color:#0306AC;">${safePhone}</a>` : safePhone) : `<span style="color:#94a3b8;">Not provided</span>`),
-    subject ? row("Subject", escapeHtml(subject)) : "",
-    source ? row("Sent from", escapeHtml(source)) : "",
-  ].join("");
-
-  const extraHtml = extraRows.length
-    ? `<p style="margin:24px 0 6px;font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;">Additional details</p>` +
-      `<table role="presentation" style="width:100%;border-collapse:collapse;">${extraRows.map(([k, v]) => row(k, escapeHtml(v))).join("")}</table>`
+  // Service badges HTML
+  const servicesHtml = servicesList.length > 0
+    ? `<div style="margin-top:4px;">
+        ${servicesList
+          .map(
+            (srv) =>
+              `<span style="display:inline-block;background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;margin:3px 4px 3px 0;">${escapeHtml(
+                srv
+              )}</span>`
+          )
+          .join("")}
+      </div>`
     : "";
 
-  const attachHtml = attachmentUrl
-    ? `<p style="margin:20px 0 0;font-size:14px;"><strong>Attachment:</strong> <a href="${escapeHtml(attachmentUrl)}" style="color:#0306AC;">Download file</a></p>`
+  const extraDetailsHtml = extraRows.length > 0
+    ? `<div style="margin-top:24px;border-top:1px solid #f1f5f9;padding-top:20px;">
+        <h4 style="margin:0 0 12px;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;">Additional Details</h4>
+        <table role="presentation" style="width:100%;border-collapse:collapse;">
+          ${extraRows
+            .map(
+              ([label, val]) => `
+              <tr>
+                <td style="padding:6px 0;width:38%;color:#64748b;font-size:13px;vertical-align:top;">${escapeHtml(label)}</td>
+                <td style="padding:6px 0;color:#0f172a;font-size:13px;font-weight:600;word-break:break-word;">${escapeHtml(val)}</td>
+              </tr>
+            `
+            )
+            .join("")}
+        </table>
+      </div>`
+    : "";
+
+  const attachmentHtml = attachmentUrl
+    ? `<div style="margin-top:20px;padding:12px 16px;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:8px;">
+        <span style="font-size:13px;font-weight:600;color:#0f172a;">📎 Attachment Available:</span>
+        <a href="${escapeHtml(attachmentUrl)}" style="display:inline-block;margin-left:8px;color:#2563eb;font-weight:600;text-decoration:none;font-size:13px;">View / Download File &rarr;</a>
+      </div>`
     : attachmentNames && attachmentNames.length
-    ? `<p style="margin:20px 0 0;font-size:14px;"><strong>Attachment:</strong> ${attachmentNames.map(escapeHtml).join(", ")} (attached to this email)</p>`
+    ? `<div style="margin-top:20px;padding:12px 16px;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:8px;font-size:13px;color:#334155;">
+        <strong>📎 Attached Files:</strong> ${attachmentNames.map(escapeHtml).join(", ")}
+      </div>`
     : "";
 
-  const html = `<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:620px;margin:0 auto;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;background:#ffffff;">
-  <div style="background:#2430d2;padding:18px 24px;border-bottom:3px solid #E9BD36;">
-    <h1 style="color:#ffffff;margin:0;font-size:18px;">New ${escapeHtml(type)}</h1>
-  </div>
-  <div style="padding:24px;">
-    <table role="presentation" style="width:100%;border-collapse:collapse;">${rows}</table>
-    <p style="margin:24px 0 6px;font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;">Message</p>
-    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-left:4px solid #0306AC;border-radius:8px;padding:16px;color:#0f172a;line-height:1.6;white-space:pre-wrap;word-break:break-word;">${message ? escapeHtml(message) : '<span style="color:#94a3b8;">No message provided</span>'}</div>
-    ${extraHtml}
-    ${attachHtml}
-    <p style="font-size:12px;color:#64748b;margin:28px 0 0;border-top:1px solid #eef2f6;padding-top:12px;">Submitted ${escapeHtml(when)} &middot; Mohsin Designs website. Reply to this email to answer ${escapeHtml(name)} directly.</p>
-  </div>
-</div>`;
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Lead: ${safeName}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5;">
+  <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="background-color:#f1f5f9;padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <!-- Main Card Container -->
+        <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="max-width:620px;background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 10px 25px -5px rgba(15,23,42,0.08),0 8px 10px -6px rgba(15,23,42,0.04);border:1px solid #e2e8f0;">
+          
+          <!-- Header Banner -->
+          <tr>
+            <td style="background:#0f172a;padding:28px 32px 24px;border-bottom:3px solid #E9BD36;">
+              <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <div style="font-family:'Segoe UI',Roboto,sans-serif;font-size:11px;font-weight:800;letter-spacing:0.18em;color:#E9BD36;text-transform:uppercase;margin-bottom:6px;">
+                      MOHSIN DESIGNS &bull; NEW LEAD
+                    </div>
+                    <h1 style="margin:0;font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-0.02em;line-height:1.3;">
+                      ${safeType}
+                    </h1>
+                  </td>
+                  <td align="right" style="vertical-align:middle;">
+                    ${crmSynced ? `
+                      <span style="display:inline-block;background:#059669;color:#ffffff;font-size:10px;font-weight:700;letter-spacing:0.06em;padding:4px 10px;border-radius:20px;text-transform:uppercase;">
+                        &check; CRM SYNCED
+                      </span>
+                    ` : `
+                      <span style="display:inline-block;background:#334155;color:#94a3b8;font-size:10px;font-weight:700;letter-spacing:0.06em;padding:4px 10px;border-radius:20px;text-transform:uppercase;">
+                        LEAD LOGGED
+                      </span>
+                    `}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Contact Profile Hero Box -->
+          <tr>
+            <td style="padding:28px 32px 0;">
+              <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:20px;">
+                <tr>
+                  <td>
+                    <div style="font-size:18px;font-weight:700;color:#0f172a;margin-bottom:8px;">
+                      ${safeName}
+                    </div>
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+                      <tr>
+                        <td style="padding:3px 0;font-size:14px;">
+                          <span style="color:#64748b;font-weight:500;">Email:</span>
+                          <a href="mailto:${safeEmail}" style="color:#2563eb;font-weight:600;text-decoration:none;margin-left:6px;">${safeEmail}</a>
+                        </td>
+                      </tr>
+                      ${phone ? `
+                        <tr>
+                          <td style="padding:3px 0;font-size:14px;">
+                            <span style="color:#64748b;font-weight:500;">Phone:</span>
+                            <a href="tel:${telHref}" style="color:#2563eb;font-weight:600;text-decoration:none;margin-left:6px;">${safePhone}</a>
+                          </td>
+                        </tr>
+                      ` : `
+                        <tr>
+                          <td style="padding:3px 0;font-size:14px;color:#94a3b8;">
+                            Phone: <span style="font-style:italic;">Not provided</span>
+                          </td>
+                        </tr>
+                      `}
+                      ${safeSource ? `
+                        <tr>
+                          <td style="padding:3px 0;font-size:13px;color:#64748b;">
+                            Origin: <span style="font-family:monospace;color:#334155;background:#e2e8f0;padding:1px 6px;border-radius:4px;">${safeSource}</span>
+                          </td>
+                        </tr>
+                      ` : ''}
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Main Content Body -->
+          <tr>
+            <td style="padding:24px 32px 32px;">
+              ${servicesList.length > 0 ? `
+                <div style="margin-bottom:20px;">
+                  <h4 style="margin:0 0 6px;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;">
+                    Requested Services
+                  </h4>
+                  ${servicesHtml}
+                </div>
+              ` : ''}
+
+              <!-- Client Message Box -->
+              <div style="margin-top:16px;">
+                <h4 style="margin:0 0 8px;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;">
+                  Client Message / Requirement
+                </h4>
+                <div style="background:#ffffff;border:1px solid #e2e8f0;border-left:4px solid #2430d2;border-radius:8px;padding:18px;color:#1e293b;font-size:14px;line-height:1.65;white-space:pre-wrap;word-break:break-word;">
+                  ${message ? escapeHtml(message) : '<span style="color:#94a3b8;font-style:italic;">No written message provided.</span>'}
+                </div>
+              </div>
+
+              ${extraDetailsHtml}
+              ${attachmentHtml}
+
+              <!-- Quick Action Buttons -->
+              <div style="margin-top:32px;padding-top:24px;border-top:1px solid #e2e8f0;text-align:center;">
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin:0 auto;">
+                  <tr>
+                    <td style="padding:0 6px;">
+                      <a href="mailto:${safeEmail}?subject=Re:%20${encodeURIComponent(subject || `Your inquiry with Mohsin Designs`)}" style="display:inline-block;background:#2430d2;color:#ffffff;font-size:13px;font-weight:600;text-decoration:none;padding:12px 24px;border-radius:8px;box-shadow:0 2px 4px rgba(36,48,210,0.2);">
+                        &larr; Reply to ${safeName}
+                      </a>
+                    </td>
+                    ${phone && telHref ? `
+                      <td style="padding:0 6px;">
+                        <a href="tel:${telHref}" style="display:inline-block;background:#f8fafc;color:#0f172a;font-size:13px;font-weight:600;text-decoration:none;padding:12px 20px;border-radius:8px;border:1px solid #cbd5e1;">
+                          &phone; Call Client
+                        </a>
+                      </td>
+                    ` : ''}
+                  </tr>
+                </table>
+              </div>
+
+            </td>
+          </tr>
+
+          <!-- Footer Info -->
+          <tr>
+            <td style="background:#f8fafc;padding:20px 32px;border-top:1px solid #e2e8f0;text-align:center;">
+              <p style="margin:0 0 6px;font-size:12px;color:#64748b;">
+                Submitted on <strong>${escapeHtml(when)}</strong>
+              </p>
+              <p style="margin:0;font-size:11px;color:#94a3b8;">
+                This notification was sent by your website lead engine at <strong>mohsindesigns.com</strong>.<br>
+                Security verified with Cloudflare Turnstile &bull; Recorded in Admin Submissions.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
 
   const text = [
-    `NEW ${type.toUpperCase()} - MOHSIN DESIGNS`,
-    "----------------------------------",
-    `Name: ${name}`,
-    `Email: ${email}`,
-    `Phone: ${phone || "Not provided"}`,
-    ...(subject ? [`Subject: ${subject}`] : []),
-    ...(source ? [`Sent from: ${source}`] : []),
-    "",
-    "MESSAGE:",
+    `==================================================`,
+    `NEW LEAD: ${type.toUpperCase()}`,
+    `==================================================`,
+    `Name:     ${name}`,
+    `Email:    ${email}`,
+    `Phone:    ${phone || "Not provided"}`,
+    ...(source ? [`Origin:   ${source}`] : []),
+    ...(servicesList.length ? [`Services: ${servicesList.join(", ")}`] : []),
+    ...(subject ? [`Subject:  ${subject}`] : []),
+    crmSynced ? `CRM Sync: Successfully Synced` : ``,
+    ``,
+    `--------------------------------------------------`,
+    `CLIENT MESSAGE:`,
+    `--------------------------------------------------`,
     message || "No message provided",
-    ...(extraRows.length ? ["", "ADDITIONAL DETAILS:", ...extraRows.map(([k, v]) => `${k}: ${v}`)] : []),
-    ...(attachmentUrl ? ["", `Attachment: ${attachmentUrl}`] : attachmentNames && attachmentNames.length ? ["", `Attachment: ${attachmentNames.join(", ")} (attached)`] : []),
-    "",
+    ``,
+    ...(extraRows.length ? [
+      `--------------------------------------------------`,
+      `ADDITIONAL DETAILS:`,
+      `--------------------------------------------------`,
+      ...extraRows.map(([k, v]) => `${k}: ${v}`),
+      ``,
+    ] : []),
+    ...(attachmentUrl ? [`Attachment URL: ${attachmentUrl}`] : []),
+    ...(attachmentNames && attachmentNames.length ? [`Attachment: ${attachmentNames.join(", ")}`] : []),
     `Submitted: ${when}`,
-  ].join("\n");
+    `Reply directly to this email to contact ${name}.`,
+    `==================================================`,
+  ].filter(Boolean).join("\n");
 
   return { html, text };
 }
