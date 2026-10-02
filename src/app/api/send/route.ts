@@ -8,8 +8,8 @@ import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";
 import { verifyTurnstileToken } from '@/lib/turnstile';
-import { buildLeadEmail, cleanExtra, cleanSubject, cleanText, isValidEmail } from '@/lib/leadMail';
-import { submitLeadToCrm } from '@/lib/crmLead';
+import { buildAdminLeadEmail, buildCustomerConfirmationEmail, buildLeadEmail, cleanExtra, cleanSubject, cleanText, isValidEmail } from '@/lib/leadMail';
+import { submitLeadToCrm, mapToCrmServices } from '@/lib/crmLead';
 
 export const dynamic = 'force-dynamic';
 
@@ -320,41 +320,111 @@ export async function POST(request: Request) {
       console.error('DATABASE SAVE ERROR:', dbError);
     }
 
-    // ── 5. Notification e-mail ──
+    // ── 5. Notification & Confirmation e-mails (Dual Delivery) ──
     const receiverEmail = await resolveReceiverEmail(type);
     const origin = (process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_BASE_URL || new URL(request.url).origin).replace(/\/+$/, '');
-    const { html, text } = buildLeadEmail({
-      type,
-      name: name || 'Anonymous',
+
+    // Resolve dynamic company contact settings for branded emails
+    let companyPhone = process.env.COMPANY_PHONE || '+1 (307) 555-0100';
+    let companyEmail = process.env.COMPANY_EMAIL || 'info@mohsindesigns.com';
+    let companyAddress = process.env.COMPANY_ADDRESS || 'Mohsin Designs LLC · Sheridan, WY, USA';
+    const bookingUrl = process.env.CALENDLY_URL || `${origin}/contact-us/#book`;
+    try {
+      const contentDoc = (await Content.findOne({ key: 'complete_data' }).lean()) as any;
+      const d = contentDoc?.data;
+      if (d) {
+        if (d.contact?.phone || d.settings?.phone || d.contactPage?.phone) {
+          companyPhone = d.contact?.phone || d.settings?.phone || d.contactPage?.phone;
+        }
+        if (d.contact?.email || d.settings?.email || d.footer?.contact?.email) {
+          companyEmail = d.contact?.email || d.settings?.email || d.footer?.contact?.email;
+        }
+        if (d.contact?.address || d.settings?.address || d.contactPage?.office?.address) {
+          companyAddress = d.contact?.address || d.settings?.address || d.contactPage?.office?.address;
+        }
+      }
+    } catch {
+      // non-fatal, uses env/defaults
+    }
+
+    const mappedServices = mapToCrmServices(rawService);
+    const serviceDisplay = mappedServices.length > 0
+      ? mappedServices.join(', ')
+      : (cleanText(rawService, 120) || 'Website Design');
+
+    const leadId = submission?._id
+      ? `MD-${submission._id.toString().slice(-5).toUpperCase()}`
+      : `MD-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+    const pageUrl = source
+      ? `${origin}${source.startsWith('/') ? source : '/' + source}`
+      : `${origin}/contact-us/`;
+    const crmLeadUrl = `${origin}/admin/submissions`;
+    const logoWhiteUrl = `${origin}/images/logo-white.png`;
+    const logoNavyUrl = `${origin}/images/logo-navy.png`;
+
+    // 1. Internal Team Alert (admin-new-lead.html)
+    const adminEmailData = buildAdminLeadEmail({
+      fullName: name || 'Website Lead',
       email,
       phone,
-      subject,
+      service: serviceDisplay,
       message,
-      source,
-      extraData,
-      attachmentUrl: attachmentUrl ? `${origin}${attachmentUrl}` : undefined,
-      attachmentNames: attachmentUrl ? undefined : attachments.map((a) => a.filename),
+      formSource: source ? `Mohsin Designs (${source})` : `${type} Form`,
+      submittedAt: new Date(),
+      leadId,
+      pageUrl,
+      crmLeadUrl,
+      logoWhiteUrl,
     });
 
-    // Sent through the shared SMTP transport (Brevo, see src/lib/mailer.ts). The lead is already
-    // in the DB (and visible in Admin > Submissions) by this point, so a mail failure is logged,
-    // not fatal.
+    // 2. Customer Confirmation Receipt (customer-confirmation.html)
+    const customerEmailData = buildCustomerConfirmationEmail({
+      fullName: name || 'there',
+      email,
+      phone,
+      service: serviceDisplay,
+      message,
+      leadId,
+      bookingUrl,
+      companyPhone,
+      companyEmail,
+      companyAddress,
+      logoUrl: logoNavyUrl,
+    });
+
     let emailSent = false;
+    let customerEmailSent = false;
+
     if (!isMailConfigured()) {
-      console.warn('SMTP is not configured - lead was stored but no notification e-mail was sent.');
+      console.warn('SMTP is not configured - lead was stored but no notification e-mails were sent.');
     } else {
+      // Dispatch Admin Notification (Reply-To points directly to prospective client)
       try {
         await sendMail({
           to: receiverEmail,
           replyTo: email,
-          subject: cleanSubject(subject, `New ${type}: ${name || email}`),
-          html,
-          text,
+          subject: adminEmailData.subject,
+          html: adminEmailData.html,
+          text: adminEmailData.text,
           attachments: attachments.map((a) => ({ ...a, encoding: 'base64' as const })),
         });
         emailSent = true;
       } catch (mailErr: any) {
-        console.error('SMTP SEND FAILED:', { message: mailErr?.message, receiver: receiverEmail });
+        console.error('ADMIN SMTP SEND FAILED:', { message: mailErr?.message, receiver: receiverEmail });
+      }
+
+      // Dispatch Customer Auto-Reply (Reply-To points to company email; non-fatal if recipient rejects)
+      try {
+        await sendMail({
+          to: email,
+          replyTo: companyEmail,
+          subject: customerEmailData.subject,
+          html: customerEmailData.html,
+          text: customerEmailData.text,
+        });
+        customerEmailSent = true;
+      } catch (custErr: any) {
+        console.warn('CUSTOMER AUTO-REPLY SMTP SEND FAILED:', { message: custErr?.message, customerEmail: email });
       }
     }
 
@@ -367,6 +437,7 @@ export async function POST(request: Request) {
       success: true,
       message: emailSent ? 'Submission saved and email sent' : 'Submission saved',
       emailSent,
+      customerEmailSent,
       crmSynced,
       submissionId: submission?._id,
     });
