@@ -6,6 +6,7 @@ import { FormEvent, useState } from "react";
 import Link from "@/components/ui/Link";
 import { useContent } from "../hooks/useContent";
 import RichTextRenderer from "./ui/RichTextRenderer";
+import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
 import { Icon } from "../config/icons";
  
 const stripHtml = (html: string) => {
@@ -17,33 +18,51 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const content = useContent();
   const { footer, services: servicesData } = content;
   const contact = footer?.contact;
  
   const handleSubscribe = async (e: FormEvent) => {
     e.preventDefault();
-    if (email.trim()) {
-      try {
-        await fetch('/api/send', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            type: 'Newsletter',
-            subject: 'New Newsletter Subscription',
-            name: 'Newsletter Subscriber',
-            email: email,
-            message: `New subscription from: ${email}`
-          })
-        });
-      } catch (error) {
-        console.error('Newsletter submission failed:', error);
+    if (isSubmitting) return;
+    setErrorMsg("");
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) return;
+
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('/api/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          type: 'Newsletter',
+          subject: 'New Newsletter Subscription',
+          name: 'Newsletter Subscriber',
+          email: trimmedEmail,
+          phone: '+1 000 000 0000',
+          service: 'Content Marketing',
+          message: `New subscription from: ${trimmedEmail}`,
+          captchaToken,
+        })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error || 'Subscription failed. Please try again.');
       }
       setSubscribed(true);
       setEmail("");
+      setCaptchaToken("");
       setTimeout(() => setSubscribed(false), 5000);
+    } catch (error: any) {
+      console.error('Newsletter submission failed:', error);
+      setErrorMsg(error.message || 'Subscription failed. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
  
@@ -273,27 +292,46 @@ export default function Footer() {
             
             <AnimatePresence mode="wait">
               {!subscribed ? (
-                <motion.form 
-                  key="form"
-                  onSubmit={handleSubscribe} 
-                  className="flex rounded-xl overflow-hidden bg-white/5 border border-white/10"
-                >
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-transparent px-3 py-2.5 text-base sm:text-xs text-white focus:outline-none placeholder:text-slate-400 dark:placeholder:text-zinc-500 font-medium"
-                    placeholder={footer?.newsletterPlaceholder || "Your email"}
-                  />
-                  <button
-                    type="submit"
-                    className="bg-brand-blue text-white dark:bg-brand-yellow dark:text-[#080710] px-3.5 flex items-center justify-center hover:bg-[var(--cta-bg-hover)] transition-colors duration-300 cursor-pointer"
-                    aria-label={footer?.ariaSubscribe || "Subscribe"}
+                <div key="form" className="space-y-2">
+                  <motion.form 
+                    onSubmit={handleSubscribe} 
+                    className="flex rounded-xl overflow-hidden bg-white/5 border border-white/10"
                   >
-                    <ArrowRight className="h-4 w-4" />
-                  </button>
-                </motion.form>
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      disabled={isSubmitting}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (errorMsg) setErrorMsg("");
+                      }}
+                      className="w-full bg-transparent px-3 py-2.5 text-base sm:text-xs text-white focus:outline-none placeholder:text-slate-400 dark:placeholder:text-zinc-500 font-medium"
+                      placeholder={footer?.newsletterPlaceholder || "Your email"}
+                    />
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="bg-brand-blue text-white dark:bg-brand-yellow dark:text-[#080710] px-3.5 flex items-center justify-center hover:bg-[var(--cta-bg-hover)] transition-colors duration-300 cursor-pointer disabled:opacity-50"
+                      aria-label={footer?.ariaSubscribe || "Subscribe"}
+                    >
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </motion.form>
+                  <TurnstileCaptcha
+                    theme="dark"
+                    size="flexible"
+                    onVerify={(token) => {
+                      setCaptchaToken(token);
+                      setErrorMsg("");
+                    }}
+                    onExpire={() => setCaptchaToken("")}
+                    className="my-1 scale-90 origin-left"
+                  />
+                  {errorMsg && (
+                    <p className="text-[11px] text-red-400 font-medium">{errorMsg}</p>
+                  )}
+                </div>
               ) : (
                 <motion.span 
                   key="success"

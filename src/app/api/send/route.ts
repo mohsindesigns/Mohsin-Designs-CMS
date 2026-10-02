@@ -9,6 +9,7 @@ import path from "path";
 import { existsSync } from "fs";
 import { verifyTurnstileToken } from '@/lib/turnstile';
 import { buildLeadEmail, cleanExtra, cleanSubject, cleanText, isValidEmail } from '@/lib/leadMail';
+import { submitLeadToCrm } from '@/lib/crmLead';
 
 export const dynamic = 'force-dynamic';
 
@@ -137,7 +138,7 @@ export async function POST(request: Request) {
     let rawName = '', rawEmail = '', rawPhone = '', rawMessage = '', rawSubject = '', rawType = '';
     let captchaToken = '';
     let honeypot = '';
-    let extraRaw: Record<string, unknown> = {};
+    const extraRaw: Record<string, unknown> = {};
     let pendingFile: { name: string; ext: string; buffer: Buffer } | null = null;
     let defaultType = 'Contact Form';
 
@@ -209,21 +210,7 @@ export async function POST(request: Request) {
     const message = cleanText(rawMessage, 10000);
     const subject = cleanSubject(rawSubject, '');
 
-    // ── 1. Cloudflare Turnstile ──
-    // A supplied token is always verified. When a real secret key is configured a missing token is
-    // rejected too (otherwise a bot could just omit it); the Footer newsletter box cannot render the
-    // widget, so 'Newsletter' stays exempt (it is rate limited instead).
-    const turnstileConfigured = !!process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY;
-    if (captchaToken) {
-      const captchaResult = await verifyTurnstileToken(captchaToken, clientIp);
-      if (!captchaResult.success) {
-        return NextResponse.json({ error: captchaResult.error || 'Security challenge verification failed. Please try again.' }, { status: 400 });
-      }
-    } else if (turnstileConfigured && type !== 'Newsletter') {
-      return NextResponse.json({ error: 'Please complete the security check and try again.' }, { status: 400 });
-    }
-
-    // ── 2. Validate ──
+    // ── 1. Validate required email ──
     if (!email) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
@@ -231,11 +218,64 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Please enter a valid email address.' }, { status: 400 });
     }
 
+    // ── 2. Cloudflare Turnstile & CRM Sync ──
+    // Every form across the site (Contact, Quotes, Consultations, QA, Newsletter, Careers)
+    // connects to the Mohsin Designs CRM API:
+    // https://app.mohsindesigns.com/api/public/lead-forms/otXOxJkQULota1Ghk8Fh8ZQgGfFcmu4o/submit
+    // Note: Cloudflare Turnstile tokens are strictly single-use. The CRM endpoint validates the token
+    // directly with Cloudflare. If the CRM succeeds, Turnstile verification is confirmed.
+    let crmSynced = false;
+    let crmMessage = '';
+
+    const rawService =
+      extraRaw.service ||
+      extraRaw.services ||
+      extraRaw.project_type ||
+      extraRaw.projectType ||
+      extraRaw.industry ||
+      (type === 'Newsletter' ? 'Content Marketing' : undefined) ||
+      (rawSubject.includes('-') ? rawSubject.split('-').pop() : undefined);
+
+    if (captchaToken) {
+      const crmResult = await submitLeadToCrm({
+        name: name || (type === 'Newsletter' ? 'Newsletter Subscriber' : 'Website Lead'),
+        email,
+        phone: phone || (typeof extraRaw.phone === 'string' ? extraRaw.phone : '') || '+1 000 000 0000',
+        service: rawService,
+        captchaToken,
+      });
+
+      if (crmResult.success) {
+        crmSynced = true;
+        crmMessage = crmResult.message || 'Synced to CRM';
+      } else if (crmResult.status === 400) {
+        // Cloudflare challenge verification failure from Turnstile or validation error on CRM
+        return NextResponse.json({
+          error: crmResult.message || crmResult.error || 'Verification challenge failed. Please try again.'
+        }, { status: 400 });
+      } else {
+        // Non-fatal upstream error (e.g. timeout or 500): log and run local verification fallback
+        console.warn('CRM lead submission non-fatal upstream status:', crmResult.error || crmResult.status);
+        crmMessage = `Upstream error: ${crmResult.error || crmResult.status}`;
+        if (process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY) {
+          const fallbackResult = await verifyTurnstileToken(captchaToken, clientIp);
+          if (!fallbackResult.success) {
+            return NextResponse.json({ error: fallbackResult.error || 'Security challenge verification failed. Please try again.' }, { status: 400 });
+          }
+        }
+      }
+    } else if (process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY) {
+      return NextResponse.json({ error: 'Please complete the security check and try again.' }, { status: 400 });
+    }
+
     const extraData = (cleanExtra(extraRaw) || {}) as Record<string, unknown>;
     // `source` (page the form was sent from) belongs on the Submission itself, not in "extra".
     let source: string | undefined;
     if (typeof extraData.source === 'string' && extraData.source) source = extraData.source.slice(0, 200);
     delete extraData.source;
+
+    extraData.crm_synced = crmSynced ? 'Yes' : 'No';
+    if (crmMessage) extraData.crm_status = crmMessage;
 
     // ── 3. Persist the attachment (public/uploads; silently skipped on read-only hosts) ──
     let attachmentUrl: string | undefined;
@@ -326,6 +366,7 @@ export async function POST(request: Request) {
       success: true,
       message: emailSent ? 'Submission saved and email sent' : 'Submission saved',
       emailSent,
+      crmSynced,
       submissionId: submission?._id,
     });
 
