@@ -72,6 +72,7 @@ async function runTestSuite() {
     email: "audit@test.com",
     phone: "+1 555 012 3456",
     service: "Web Application",
+    message: "Test inquiry message",
   });
 
   assert(resNoToken.status === 400, "Missing token returns HTTP 400 from endpoint");
@@ -86,6 +87,7 @@ async function runTestSuite() {
     email: "audit@test.com",
     phone: "+1 555 012 3456",
     service: "Web Application",
+    message: "Test inquiry message",
     captchaToken: "invalid_dummy_token_12345",
   });
 
@@ -105,6 +107,7 @@ async function runTestSuite() {
     email: "newsletter.subscriber@example.com",
     phone: "+1 000 000 0000",
     service: "Content Marketing",
+    message: "New newsletter subscription",
     captchaToken: "test_token_newsletter",
   });
 

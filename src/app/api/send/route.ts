@@ -242,6 +242,7 @@ export async function POST(request: Request) {
         email,
         phone: phone || (typeof extraRaw.phone === 'string' ? extraRaw.phone : '') || '+1 000 000 0000',
         service: rawService,
+        message: message || (type === 'Newsletter' ? `Newsletter subscription from ${email}` : subject || 'Website consultation inquiry'),
         captchaToken,
       });
 

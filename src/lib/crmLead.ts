@@ -147,6 +147,7 @@ export interface CrmSubmitParams {
   email: string;
   phone?: string;
   service?: unknown;
+  message?: string;
   captchaToken?: string;
 }
 
@@ -168,6 +169,7 @@ export async function submitLeadToCrm({
   email,
   phone,
   service,
+  message,
   captchaToken,
 }: CrmSubmitParams): Promise<CrmSubmitResult> {
   const endpoint =
@@ -176,13 +178,19 @@ export async function submitLeadToCrm({
     DEFAULT_CRM_LEAD_FORM_ENDPOINT;
 
   const servicesArray = mapToCrmServices(service);
+  // Service is REQUIRED by CRM API - ensure at least 1 valid option is sent
+  const finalServices = servicesArray.length > 0 ? servicesArray : ["Website Design"];
+
+  // Message is REQUIRED by CRM API - ensure non-empty string is sent
+  const finalMessage = (message || "Inquiry from website lead form").trim();
 
   const payload: Record<string, any> = {
     answers: {
       full_name: (name || "Website Lead").trim(),
       email: (email || "").trim(),
-      phone_number: (phone || "").trim() || "Not provided",
-      service: servicesArray,
+      phone_number: (phone || "").trim() || "+1 000 000 0000",
+      service: finalServices,
+      message: finalMessage,
     },
   };
 
