@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X, FileDown, Download, Trash2, RefreshCw, MessageSquare } from "lucide-react";
+import { Search, X, FileDown, Download, Trash2, RefreshCw, MessageSquare, Copy, Check } from "lucide-react";
 
 // Lead "types" are whatever the form that posted to /api/send called itself. Group the known ones
 // into the tabs an admin thinks in; anything new/unknown lands in "Other" so no lead is ever
@@ -46,6 +46,78 @@ const csvCell = (value: unknown): string => {
 };
 
 const isSitePath = (s?: string) => !!s && s.startsWith("/") && !s.startsWith("//");
+
+const formatLeadSummary = (sub: any): string => {
+  if (!sub) return "";
+  const lines: string[] = [
+    `LEAD DETAILS`,
+    `----------------------------------------`,
+    `Name:      ${sub.name || "N/A"}`,
+    `Email:     ${sub.email || "N/A"}`,
+    `Phone:     ${sub.phone || "Not provided"}`,
+    `Type:      ${sub.type || "Contact Form"}`,
+  ];
+  if (sub.subject) lines.push(`Subject:   ${sub.subject}`);
+  if (sub.source) lines.push(`Origin:    ${sub.source}`);
+  if (sub.createdAt) lines.push(`Submitted: ${new Date(sub.createdAt).toLocaleString()}`);
+  
+  const extras = extraEntries(sub);
+  if (extras.length > 0) {
+    lines.push(`\nADDITIONAL DETAILS:`);
+    extras.forEach(([k, v]) => lines.push(`- ${k.replace(/_/g, " ")}: ${v}`));
+  }
+  
+  if (sub.message) {
+    lines.push(`\nMESSAGE:`);
+    lines.push(sub.message);
+  }
+  return lines.join("\n");
+};
+
+function CopyBtn({
+  text,
+  id,
+  title = "Copy to clipboard",
+  label,
+  copiedKey,
+  onCopy,
+  className = "",
+}: {
+  text: string;
+  id: string;
+  title?: string;
+  label?: string;
+  copiedKey: string | null;
+  onCopy: (text: string, id: string, label?: string, e?: React.MouseEvent) => void;
+  className?: string;
+}) {
+  const isCopied = copiedKey === id;
+  return (
+    <button
+      type="button"
+      onClick={(e) => onCopy(text, id, label || title, e)}
+      title={isCopied ? "Copied to clipboard!" : title}
+      aria-label={title}
+      className={`inline-flex items-center gap-1 transition-all rounded px-1.5 py-0.5 text-xs select-none cursor-pointer ${
+        isCopied
+          ? "bg-emerald-50 text-emerald-700 border border-emerald-300 font-semibold"
+          : "text-[#646970] hover:text-[#2271b1] hover:bg-[#eaf2fa] border border-transparent hover:border-[#c3c4c7]"
+      } ${className}`}
+    >
+      {isCopied ? (
+        <>
+          <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+          <span className="text-[11px] text-emerald-700 font-medium">Copied</span>
+        </>
+      ) : (
+        <>
+          <Copy className="w-3.5 h-3.5 shrink-0 opacity-70 group-hover:opacity-100" />
+          {label && <span className="text-[11px]">{label}</span>}
+        </>
+      )}
+    </button>
+  );
+}
 
 export default function SubmissionsPage() {
   const [submissions, setSubmissions] = useState<any[]>([]);
@@ -96,6 +168,38 @@ export default function SubmissionsPage() {
   const showToast = (msg: string, type: "ok" | "err" = "ok") => {
     setToast({ type, msg });
     setTimeout(() => setToast(null), 3000);
+  };
+
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  const handleCopy = async (text: string, key: string, label = "Copied", e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    if (!text) return;
+    try {
+      if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
+      setCopiedKey(key);
+      showToast(`${label} copied to clipboard!`, "ok");
+      setTimeout(() => {
+        setCopiedKey((curr) => (curr === key ? null : curr));
+      }, 2000);
+    } catch (err) {
+      console.error("Copy failed", err);
+      showToast("Failed to copy to clipboard", "err");
+    }
   };
 
   const handleDeleteSingle = async (id: string, e?: React.MouseEvent) => {
@@ -389,9 +493,31 @@ export default function SubmissionsPage() {
                         className="w-4 h-4 border-[#8c8f94] rounded-[3px]"
                       />
                     </td>
-                    <td className="py-3 px-3 align-top">
-                      <strong className="text-[#2271b1] block text-[14px]">{sub.name}</strong>
-                      <span className="text-[#646970] text-xs font-mono">{sub.email}</span>
+                    <td className="py-3 px-3 align-top select-text">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <strong className="text-[#2271b1] text-[14px]">{sub.name}</strong>
+                        {sub.name && (
+                          <CopyBtn
+                            text={sub.name}
+                            id={`name-${sub._id}`}
+                            title="Copy name"
+                            copiedKey={copiedKey}
+                            onCopy={handleCopy}
+                          />
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
+                        <span className="text-[#646970] text-xs font-mono">{sub.email}</span>
+                        {sub.email && (
+                          <CopyBtn
+                            text={sub.email}
+                            id={`email-${sub._id}`}
+                            title="Copy email"
+                            copiedKey={copiedKey}
+                            onCopy={handleCopy}
+                          />
+                        )}
+                      </div>
                       <div className="flex items-center gap-2 mt-1.5 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
                         <button
                           onClick={(e) => {
@@ -401,6 +527,21 @@ export default function SubmissionsPage() {
                           className="text-[#2271b1] hover:underline text-[12px]"
                         >
                           View Full Details
+                        </button>
+                        <span className="text-[#a7aaad]">|</span>
+                        <button
+                          onClick={(e) => handleCopy(formatLeadSummary(sub), `all-${sub._id}`, "Lead summary", e)}
+                          className="text-[#2271b1] hover:underline text-[12px] flex items-center gap-1"
+                        >
+                          {copiedKey === `all-${sub._id}` ? (
+                            <span className="text-emerald-700 font-semibold flex items-center gap-0.5">
+                              <Check className="w-3 h-3" /> Copied All
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-0.5">
+                              <Copy className="w-3 h-3" /> Copy All
+                            </span>
+                          )}
                         </button>
                         <span className="text-[#a7aaad]">|</span>
                         <a
@@ -419,33 +560,75 @@ export default function SubmissionsPage() {
                         </button>
                       </div>
                     </td>
-                    <td className="py-3 px-3 align-top text-xs font-mono text-[#50575e]">
+                    <td className="py-3 px-3 align-top text-xs font-mono text-[#50575e] select-text">
                       {sub.phone ? (
-                        <a
-                          href={`tel:${sub.phone.replace(/[^0-9+]/g, '')}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="hover:text-[#2271b1] hover:underline"
-                        >
-                          {sub.phone}
-                        </a>
+                        <div className="flex items-center gap-1 flex-wrap">
+                          <a
+                            href={`tel:${sub.phone.replace(/[^0-9+]/g, '')}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="hover:text-[#2271b1] hover:underline"
+                          >
+                            {sub.phone}
+                          </a>
+                          <CopyBtn
+                            text={sub.phone}
+                            id={`phone-${sub._id}`}
+                            title="Copy phone number"
+                            copiedKey={copiedKey}
+                            onCopy={handleCopy}
+                          />
+                        </div>
                       ) : (
                         <span className="text-[#a7aaad] italic">None</span>
                       )}
                     </td>
-                    <td className="py-3 px-3 align-top">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold ${badgeFor(sub.type)}`}>
-                        {sub.type || "Contact Form"}
-                      </span>
-                      {service && (
-                        <span className="block mt-1 text-[11px] text-[#646970] max-w-[180px] truncate" title={formatExtra(service)}>
-                          {formatExtra(service)}
+                    <td className="py-3 px-3 align-top select-text">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold ${badgeFor(sub.type)}`}>
+                          {sub.type || "Contact Form"}
                         </span>
+                        {sub.type && (
+                          <CopyBtn
+                            text={sub.type}
+                            id={`type-${sub._id}`}
+                            title="Copy type"
+                            copiedKey={copiedKey}
+                            onCopy={handleCopy}
+                          />
+                        )}
+                      </div>
+                      {service && (
+                        <div className="flex items-center gap-1 mt-1 max-w-[200px]">
+                          <span className="text-[11px] text-[#646970] truncate" title={formatExtra(service)}>
+                            {formatExtra(service)}
+                          </span>
+                          <CopyBtn
+                            text={formatExtra(service)}
+                            id={`srv-${sub._id}`}
+                            title="Copy service"
+                            copiedKey={copiedKey}
+                            onCopy={handleCopy}
+                          />
+                        </div>
                       )}
                     </td>
-                    <td className="py-3 px-3 align-top text-[#50575e] text-xs max-w-xs truncate">
-                      {sub.message || <span className="italic text-[#a7aaad]">No message content.</span>}
+                    <td className="py-3 px-3 align-top text-[#50575e] text-xs max-w-xs select-text">
+                      <div className="flex items-start justify-between gap-1.5">
+                        <span className="truncate flex-1">
+                          {sub.message || <span className="italic text-[#a7aaad]">No message content.</span>}
+                        </span>
+                        {sub.message && (
+                          <CopyBtn
+                            text={sub.message}
+                            id={`msg-${sub._id}`}
+                            title="Copy full message"
+                            copiedKey={copiedKey}
+                            onCopy={handleCopy}
+                          />
+                        )}
+                      </div>
                     </td>
-                    <td className="py-3 px-3 align-top text-[#50575e] text-xs whitespace-nowrap">
+                    <td className="py-3 px-3 align-top text-[#50575e] text-xs whitespace-nowrap select-text">
                       {sub.createdAt ? new Date(sub.createdAt).toLocaleDateString("en-US", {
                         year: "numeric",
                         month: "short",
@@ -482,30 +665,97 @@ export default function SubmissionsPage() {
                   <MessageSquare className="w-5 h-5 text-[#2271b1]" />
                   <h2 className="text-[#1d2327] text-lg font-normal font-serif">Lead Details</h2>
                 </div>
-                <button onClick={() => setSelectedSubmission(null)} aria-label="Close" className="text-[#787c82] hover:text-[#d63638]">
-                  <X className="w-5 h-5" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={(e) => handleCopy(formatLeadSummary(selectedSubmission), `modal-all-${selectedSubmission._id}`, "Full lead summary", e)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#f0f6fb] text-[#135e96] border border-[#72aee6] rounded text-[12px] font-medium hover:bg-[#2271b1] hover:text-white transition-colors cursor-pointer select-none"
+                    title="Copy complete lead info (name, email, phone, service, message)"
+                  >
+                    {copiedKey === `modal-all-${selectedSubmission._id}` ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        <span className="font-semibold text-emerald-700">Summary Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>Copy All Info</span>
+                      </>
+                    )}
+                  </button>
+                  <button onClick={() => setSelectedSubmission(null)} aria-label="Close" className="text-[#787c82] hover:text-[#d63638]">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
 
               <div className="p-6 space-y-6 bg-[#f0f0f1] overflow-y-auto max-h-[75vh]">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 bg-white p-5 rounded border border-[#c3c4c7]">
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-[#8c8f94] uppercase tracking-wider">Full Name</label>
-                    <p className="text-[15px] text-[#1d2327] font-semibold break-words">{selectedSubmission.name}</p>
+                    <div className="flex items-center justify-between">
+                      <label className="text-[10px] font-bold text-[#8c8f94] uppercase tracking-wider">Full Name</label>
+                      {selectedSubmission.name && (
+                        <CopyBtn
+                          text={selectedSubmission.name}
+                          id={`m-name-${selectedSubmission._id}`}
+                          title="Copy full name"
+                          label="Copy"
+                          copiedKey={copiedKey}
+                          onCopy={handleCopy}
+                        />
+                      )}
+                    </div>
+                    <p className="text-[15px] text-[#1d2327] font-semibold break-words select-text">{selectedSubmission.name}</p>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-[#8c8f94] uppercase tracking-wider">Submission Type</label>
-                    <p className="text-[14px] text-[#1d2327] font-medium">{selectedSubmission.type || "Contact Form"}</p>
+                    <div className="flex items-center justify-between">
+                      <label className="text-[10px] font-bold text-[#8c8f94] uppercase tracking-wider">Submission Type</label>
+                      {selectedSubmission.type && (
+                        <CopyBtn
+                          text={selectedSubmission.type}
+                          id={`m-type-${selectedSubmission._id}`}
+                          title="Copy submission type"
+                          label="Copy"
+                          copiedKey={copiedKey}
+                          onCopy={handleCopy}
+                        />
+                      )}
+                    </div>
+                    <p className="text-[14px] text-[#1d2327] font-medium select-text">{selectedSubmission.type || "Contact Form"}</p>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-[#8c8f94] uppercase tracking-wider">Email Address</label>
-                    <a href={`mailto:${selectedSubmission.email}`} className="text-[14px] text-[#2271b1] hover:underline font-mono block break-all">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[10px] font-bold text-[#8c8f94] uppercase tracking-wider">Email Address</label>
+                      {selectedSubmission.email && (
+                        <CopyBtn
+                          text={selectedSubmission.email}
+                          id={`m-email-${selectedSubmission._id}`}
+                          title="Copy email address"
+                          label="Copy"
+                          copiedKey={copiedKey}
+                          onCopy={handleCopy}
+                        />
+                      )}
+                    </div>
+                    <a href={`mailto:${selectedSubmission.email}`} className="text-[14px] text-[#2271b1] hover:underline font-mono block break-all select-text">
                       {selectedSubmission.email}
                     </a>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-[#8c8f94] uppercase tracking-wider">Phone Number</label>
-                    <p className="text-[14px] text-[#1d2327] font-mono">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[10px] font-bold text-[#8c8f94] uppercase tracking-wider">Phone Number</label>
+                      {selectedSubmission.phone && (
+                        <CopyBtn
+                          text={selectedSubmission.phone}
+                          id={`m-phone-${selectedSubmission._id}`}
+                          title="Copy phone number"
+                          label="Copy"
+                          copiedKey={copiedKey}
+                          onCopy={handleCopy}
+                        />
+                      )}
+                    </div>
+                    <p className="text-[14px] text-[#1d2327] font-mono select-text">
                       {selectedSubmission.phone ? (
                         <a href={`tel:${selectedSubmission.phone.replace(/[^0-9+]/g, '')}`} className="text-[#2271b1] hover:underline">
                           {selectedSubmission.phone}
@@ -516,14 +766,38 @@ export default function SubmissionsPage() {
                     </p>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-[#8c8f94] uppercase tracking-wider">Submitted On</label>
-                    <p className="text-[13px] text-[#50575e]">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[10px] font-bold text-[#8c8f94] uppercase tracking-wider">Submitted On</label>
+                      {selectedSubmission.createdAt && (
+                        <CopyBtn
+                          text={new Date(selectedSubmission.createdAt).toLocaleString()}
+                          id={`m-date-${selectedSubmission._id}`}
+                          title="Copy submission date"
+                          label="Copy"
+                          copiedKey={copiedKey}
+                          onCopy={handleCopy}
+                        />
+                      )}
+                    </div>
+                    <p className="text-[13px] text-[#50575e] select-text">
                       {selectedSubmission.createdAt ? new Date(selectedSubmission.createdAt).toLocaleString() : "-"}
                     </p>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-[#8c8f94] uppercase tracking-wider">Origin / Page</label>
-                    <p className="text-[13px] text-[#50575e] font-mono break-all">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[10px] font-bold text-[#8c8f94] uppercase tracking-wider">Origin / Page</label>
+                      {selectedSubmission.source && (
+                        <CopyBtn
+                          text={selectedSubmission.source}
+                          id={`m-src-${selectedSubmission._id}`}
+                          title="Copy origin page"
+                          label="Copy"
+                          copiedKey={copiedKey}
+                          onCopy={handleCopy}
+                        />
+                      )}
+                    </div>
+                    <p className="text-[13px] text-[#50575e] font-mono break-all select-text">
                       {isSitePath(selectedSubmission.source) ? (
                         <a href={selectedSubmission.source} target="_blank" rel="noopener noreferrer" className="text-[#2271b1] hover:underline">
                           {selectedSubmission.source}
@@ -535,8 +809,18 @@ export default function SubmissionsPage() {
                   </div>
                   {selectedSubmission.subject && (
                     <div className="space-y-1 sm:col-span-2">
-                      <label className="text-[10px] font-bold text-[#8c8f94] uppercase tracking-wider">Subject</label>
-                      <p className="text-[14px] text-[#1d2327] break-words">{selectedSubmission.subject}</p>
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] font-bold text-[#8c8f94] uppercase tracking-wider">Subject</label>
+                        <CopyBtn
+                          text={selectedSubmission.subject}
+                          id={`m-subj-${selectedSubmission._id}`}
+                          title="Copy subject"
+                          label="Copy"
+                          copiedKey={copiedKey}
+                          onCopy={handleCopy}
+                        />
+                      </div>
+                      <p className="text-[14px] text-[#1d2327] break-words select-text">{selectedSubmission.subject}</p>
                     </div>
                   )}
                 </div>
@@ -546,9 +830,19 @@ export default function SubmissionsPage() {
                     <label className="text-[11px] font-bold text-[#646970] uppercase">Additional Information</label>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {extraEntries(selectedSubmission).map(([key, value]) => (
-                        <div key={key} className="bg-white border border-[#c3c4c7] p-2.5 rounded-[3px]">
-                          <label className="block text-[10px] text-[#8c8f94] font-bold uppercase mb-0.5">{key.replace(/_/g, ' ')}</label>
-                          <p className="text-[13px] text-[#2c3338] break-words">{value}</p>
+                        <div key={key} className="bg-white border border-[#c3c4c7] p-2.5 rounded-[3px] space-y-1">
+                          <div className="flex items-center justify-between">
+                            <label className="block text-[10px] text-[#8c8f94] font-bold uppercase mb-0.5">{key.replace(/_/g, ' ')}</label>
+                            <CopyBtn
+                              text={value}
+                              id={`m-extra-${key}-${selectedSubmission._id}`}
+                              title={`Copy ${key.replace(/_/g, ' ')}`}
+                              label="Copy"
+                              copiedKey={copiedKey}
+                              onCopy={handleCopy}
+                            />
+                          </div>
+                          <p className="text-[13px] text-[#2c3338] break-words select-text font-medium">{value}</p>
                         </div>
                       ))}
                     </div>
@@ -556,8 +850,21 @@ export default function SubmissionsPage() {
                 )}
 
                 <div className="space-y-2">
-                  <label className="text-[11px] font-bold text-[#646970] uppercase">Message Content</label>
-                  <div className="bg-white border border-[#c3c4c7] p-4 text-[14px] text-[#2c3338] rounded-[3px] whitespace-pre-wrap break-words leading-relaxed shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-bold text-[#646970] uppercase">Message Content</label>
+                    {selectedSubmission.message && (
+                      <CopyBtn
+                        text={selectedSubmission.message}
+                        id={`m-msg-${selectedSubmission._id}`}
+                        title="Copy message content"
+                        label="Copy Message"
+                        copiedKey={copiedKey}
+                        onCopy={handleCopy}
+                        className="font-medium bg-white border-[#c3c4c7]"
+                      />
+                    )}
+                  </div>
+                  <div className="bg-white border border-[#c3c4c7] p-4 text-[14px] text-[#2c3338] rounded-[3px] whitespace-pre-wrap break-words leading-relaxed shadow-sm select-text">
                     {selectedSubmission.message || <span className="italic text-[#8c8f94]">No message text provided.</span>}
                   </div>
                 </div>

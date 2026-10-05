@@ -8,7 +8,7 @@ import {
   ImageIcon, Phone, Settings, Plus, ExternalLink,
   Home, Layers, Users, Settings2, MessageSquare,
   Activity, Clock, CheckCircle, XCircle, RefreshCw,
-  ArrowRight, Inbox, TrendingUp, Zap, Eye, User
+  ArrowRight, Inbox, TrendingUp, Zap, Eye, User, Copy, Check
 } from "lucide-react";
 
 const ACTION_LABELS: Record<string, { label: string; color: string; bg: string }> = {
@@ -43,6 +43,33 @@ let memoryDashboardCache: any = null;
 export default function AdminDashboard() {
   const [data, setData] = useState<any>(() => memoryDashboardCache);
   const [loading, setLoading] = useState(!memoryDashboardCache);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  const copyText = (text: string, key: string, e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    if (!text) return;
+    try {
+      if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(text);
+      } else {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+      setCopiedKey(key);
+      setTimeout(() => setCopiedKey((curr) => (curr === key ? null : curr)), 2000);
+    } catch (err) {
+      console.error("Failed to copy", err);
+    }
+  };
 
   const fetchDashboard = async (isManual = false) => {
     if (isManual || !memoryDashboardCache) setLoading(true);
@@ -201,10 +228,42 @@ export default function AdminDashboard() {
             ) : (
               <div className="divide-y divide-[#f0f0f1]">
                 {recentSubmissions.map((sub: any, i: number) => (
-                  <div key={sub._id || i} className="px-4 py-2.5 hover:bg-[#fcfcfc]">
-                    <p className="text-[13px] font-semibold text-[#1d2327] truncate">{sub.name || "Anonymous"}</p>
-                    <p className="text-[11px] text-[#646970] truncate">{sub.email}</p>
-                    <p className="text-[10px] text-[#8c8f94] mt-0.5">{timeAgo(sub.createdAt)}</p>
+                  <div key={sub._id || i} className="px-4 py-2.5 hover:bg-[#fcfcfc] select-text flex items-center justify-between group">
+                    <div className="min-w-0 flex-1 pr-2">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <p className="text-[13px] font-semibold text-[#1d2327] truncate">{sub.name || "Anonymous"}</p>
+                        {sub.name && (
+                          <button
+                            type="button"
+                            onClick={(e) => copyText(sub.name, `d-name-${sub._id || i}`, e)}
+                            title="Copy name"
+                            className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 text-[#646970] hover:text-[#2271b1] rounded cursor-pointer"
+                          >
+                            {copiedKey === `d-name-${sub._id || i}` ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                          </button>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
+                        <p className="text-[11px] text-[#646970] truncate font-mono">{sub.email}</p>
+                        {sub.email && (
+                          <button
+                            type="button"
+                            onClick={(e) => copyText(sub.email, `d-email-${sub._id || i}`, e)}
+                            title="Copy email"
+                            className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 text-[#646970] hover:text-[#2271b1] rounded cursor-pointer"
+                          >
+                            {copiedKey === `d-email-${sub._id || i}` ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                          </button>
+                        )}
+                      </div>
+                      <p className="text-[10px] text-[#8c8f94] mt-0.5">{timeAgo(sub.createdAt)}</p>
+                    </div>
+                    <Link
+                      href="/admin/submissions"
+                      className="text-[11px] text-[#2271b1] hover:underline opacity-0 group-hover:opacity-100 transition-opacity shrink-0 font-medium"
+                    >
+                      View &rarr;
+                    </Link>
                   </div>
                 ))}
               </div>

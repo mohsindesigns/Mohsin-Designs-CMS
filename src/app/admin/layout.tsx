@@ -144,9 +144,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   });
 
   return (
-    <div className="flex flex-col h-screen bg-[#f0f0f1] overflow-hidden select-none antialiased">
+    <div className="flex flex-col h-screen bg-[#f0f0f1] overflow-hidden antialiased">
       {/* Top Bar */}
-      <header className="flex items-center justify-between px-2 h-10 bg-[#1d2327] text-[#c3c4c7] text-[13px] z-[60] flex-shrink-0 shadow-[0_1px_0_rgba(255,255,255,0.05)]">
+      <header className="flex items-center justify-between px-2 h-10 bg-[#1d2327] text-[#c3c4c7] text-[13px] z-[60] flex-shrink-0 shadow-[0_1px_0_rgba(255,255,255,0.05)] select-none">
          <div className="flex items-center h-full">
             <button onClick={() => setMobileOpen(!mobileOpen)} className="lg:hidden hover:bg-[#2c3338] px-3 h-full"><Menu className="w-4 h-4" /></button>
             <Link href="/admin" className="hover:bg-[#2c3338] px-4 h-full flex items-center gap-2">
@@ -170,7 +170,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       <div className="flex-1 flex overflow-hidden">
         <Sidebar user={user} navItems={filteredNav} onClose={() => setMobileOpen(false)} isMobile={mobileOpen} />
-        <main className="flex-1 overflow-y-auto p-4 sm:p-8 relative">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-8 relative select-text">
            <AnimatePresence mode="wait">
              <motion.div key={pathname} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
                {children}
