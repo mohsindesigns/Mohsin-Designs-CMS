@@ -1490,6 +1490,11 @@
   --accent-brush: var(--cta-bg);
   --accent-brush-opacity: 1;
 }
+/* Every accent phrase uses the curly script face (Dancing Script), whatever font class the call
+   site adds (font-heading, font-black, none ...). !important so those classes can't override it. */
+.accent-text {
+  font-family: 'Dancing Script', cursive !important;
+}
 :is(.on-dark-surface, .cta-banner-card, .cta-on-dark) .accent-text {
   /* !important: the call sites colour the phrase with utility classes (text-[var(--cta-accent)],
      text-brand-blue, dark:text-brand-yellow ...) that would otherwise win. */
