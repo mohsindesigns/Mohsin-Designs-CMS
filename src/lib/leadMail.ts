@@ -1,3 +1,5 @@
+import { ADMIN_LEAD_TEMPLATE, CUSTOMER_CONFIRMATION_TEMPLATE } from "./leadEmailTemplates";
+
 // Helpers for /api/send (the shared lead endpoint). Pure functions, no I/O, so they can be
 // unit-tested without a DB or mail provider. Only src/app/api/send/route.ts imports this file.
 
@@ -472,6 +474,21 @@ function emButton(href: string, label: string, kind: 'primary' | 'ghost' | 'gold
 // INTERNAL: new-lead alert to the team
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ─── Lead e-mails ────────────────────────────────────────────────────────────
+// Both builders fill the handoff templates in leadEmailTemplates.ts. Every value is cleaned and
+// HTML-escaped here first, so the templates only ever see safe text.
+
+function fillTemplate(template: string, values: Record<string, string>): string {
+  return template.replace(/\{\{(\w+)\}\}/g, (_match, key: string) => values[key] ?? "");
+}
+
+/** Escaped message text with line breaks kept, or a grey note when empty. */
+function messageToHtml(message: string): string {
+  return message
+    ? escapeHtml(message).replace(/\r\n|\r|\n/g, "<br>")
+    : `<span style="color:#7A8296;font-style:italic;">No message provided.</span>`;
+}
+
 export interface AdminLeadEmailInput {
   fullName: string;
   firstName?: string;
@@ -488,109 +505,47 @@ export interface AdminLeadEmailInput {
 }
 
 /**
- * Builds the internal team notification. Blue header with the logo and a gold "New lead" badge,
- * a headline stating who wants what, one-tap actions (Reply, Call, Open in CRM), the contact
- * details, and the message as a quoted block.
+ * Internal new-lead alert, filled into ADMIN_LEAD_TEMPLATE. Reply-To is set by the send route
+ * to the lead's own address, so hitting Reply goes straight to them.
  */
 export function buildAdminLeadEmail(input: AdminLeadEmailInput): { html: string; text: string; subject: string } {
-  const fullName = cleanText(input.fullName || 'Website Lead', 120) || 'Website Lead';
-  const firstName = cleanText(input.firstName || fullName.trim().split(/\s+/)[0] || 'there', 60) || 'there';
-  const email = cleanText(input.email || '', 160);
-  const phone = cleanText(input.phone || '', 50);
-  const service = cleanText(input.service || 'Website Design', 120) || 'Website Design';
-  const message = cleanText(input.message || '', 5000);
-  const formSource = cleanText(input.formSource || 'Mohsin Designs Website Form', 160) || 'Mohsin Designs Website Form';
-  const leadId = cleanText(input.leadId || 'MD-10001', 50) || 'MD-10001';
-  const pageUrl = input.pageUrl || 'https://mohsindesigns.com';
-  const crmLeadUrl = input.crmLeadUrl || 'https://mohsindesigns.com/admin/submissions';
-  const logoWhiteUrl = input.logoWhiteUrl || 'https://mohsindesigns.com/images/logo-white.png';
+  const fullName = cleanText(input.fullName || "Website Lead", 120) || "Website Lead";
+  const firstName = cleanText(input.firstName || fullName.trim().split(/\s+/)[0] || "there", 60) || "there";
+  const email = cleanText(input.email || "", 160);
+  const phone = cleanText(input.phone || "", 50);
+  const service = cleanText(input.service || "Website Design", 120) || "Website Design";
+  const message = cleanText(input.message || "", 5000);
+  const formSource = cleanText(input.formSource || "Mohsin Designs Website Form", 160) || "Mohsin Designs Website Form";
+  const leadId = cleanText(input.leadId || "MD-10001", 50) || "MD-10001";
+  const pageUrl = input.pageUrl || "https://mohsindesigns.com";
+  const crmLeadUrl = input.crmLeadUrl || "https://mohsindesigns.com/admin/submissions";
+  const logoWhiteUrl = input.logoWhiteUrl || "https://mohsindesigns.com/images/logo-white.png";
 
-  const dateObj = typeof input.submittedAt === 'string' ? new Date(input.submittedAt) : (input.submittedAt || new Date());
-  const submittedAtStr = `${dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} at ${dateObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`;
+  const dateObj = typeof input.submittedAt === "string" ? new Date(input.submittedAt) : input.submittedAt || new Date();
+  const submittedAtStr = `${dateObj.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} at ${dateObj.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true })}`;
 
-  const safeFullName = escapeHtml(fullName);
-  const safeFirstName = escapeHtml(firstName);
-  const safeEmail = escapeHtml(email);
-  const safePhone = escapeHtml(phone);
-  const telHref = escapeHtml(phone.replace(/[^0-9+]/g, ''));
-  const safeService = escapeHtml(service);
-  const safeFormSource = escapeHtml(formSource);
-  const safeSubmittedAt = escapeHtml(submittedAtStr);
-  const safeLeadId = escapeHtml(leadId);
-  const safePageUrl = escapeHtml(pageUrl);
-  const safeCrmLeadUrl = escapeHtml(crmLeadUrl);
-  const safeLogoWhiteUrl = escapeHtml(logoWhiteUrl);
-  const safeMessageHtml = message
-    ? escapeHtml(message).replace(/\r\n|\r|\n/g, '<br>')
-    : `<span class="em-muted" style="color:${EM.muted};font-style:italic;">No message was included.</span>`;
+  const phoneTel = phone.replace(/[^0-9+]/g, "");
+  const phoneHtml = phone
+    ? `<a href="tel:${escapeHtml(phoneTel)}" style="color:#1F5BD8;text-decoration:none;font-weight:bold;">${escapeHtml(phone)}</a>`
+    : `<span style="color:#7A8296;">Not provided</span>`;
 
-  const replyHref = escapeHtml(`mailto:${email}?subject=${encodeURIComponent(`Re: Your ${service} inquiry`)}`);
-  const callHref = `tel:${telHref}`;
-  const priority = message.length > 0 ? 'Message included' : 'No message';
+  const html = fillTemplate(ADMIN_LEAD_TEMPLATE, {
+    full_name: escapeHtml(fullName),
+    first_name: escapeHtml(firstName),
+    email: escapeHtml(email),
+    phone_html: phoneHtml,
+    service: escapeHtml(service),
+    service_query: encodeURIComponent(service),
+    message: messageToHtml(message),
+    form_source: escapeHtml(formSource),
+    submitted_at: escapeHtml(submittedAtStr),
+    lead_id: escapeHtml(leadId),
+    page_url: escapeHtml(pageUrl),
+    crm_lead_url: escapeHtml(crmLeadUrl),
+    logo_white_url: escapeHtml(logoWhiteUrl),
+  });
 
   const subject = `New lead: ${fullName} · ${service}`;
-
-  // Row 1: reply + CRM side by side (stacked on phones). Row 2: call, only when a phone exists.
-  const actionRows = `<tr>
-      <td class="em-stack" width="50%" style="padding:0 6px 10px 0;">${emButton(replyHref, `Reply to ${safeFirstName}`, 'primary')}</td>
-      <td class="em-stack" width="50%" style="padding:0 0 10px 6px;">${emButton(safeCrmLeadUrl, 'Open in CRM', 'ghost')}</td>
-    </tr>${phone ? `<tr>
-      <td colspan="2" style="padding:0;">${emButton(escapeHtml(callHref), `Call ${safePhone}`, 'gold')}</td>
-    </tr>` : ''}`;
-
-  const inner = `
-  <!-- Header -->
-  <tr><td class="em-px" style="background-color:${EM.blue};border-radius:16px 16px 0 0;padding:24px 36px;">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
-      <td valign="middle" align="left">
-        <img src="${safeLogoWhiteUrl}" alt="Mohsin Designs" width="150" style="display:block;border:0;outline:none;max-width:150px;height:auto;color:#FFFFFF;font-family:${EM_FONT};font-size:18px;font-weight:700;">
-      </td>
-      <td valign="middle" align="right">
-        <span style="display:inline-block;background-color:${EM.gold};color:${EM.ink};border-radius:999px;padding:6px 14px;font-family:${EM_FONT};font-size:11px;font-weight:800;letter-spacing:1px;">&#9679;&nbsp;NEW LEAD</span>
-      </td>
-    </tr></table>
-  </td></tr>
-
-  <!-- Body -->
-  <tr><td class="em-card em-px" style="background-color:${EM.white};padding:34px 36px 30px 36px;">
-    <h1 class="em-h1 em-ink" style="margin:0 0 8px 0;font-family:${EM_FONT};font-size:26px;line-height:33px;font-weight:800;color:${EM.ink};">
-      ${safeFullName} wants ${safeService}
-    </h1>
-    <p class="em-muted" style="margin:0 0 26px 0;font-family:${EM_FONT};font-size:14px;line-height:21px;color:${EM.muted};">
-      ${safeFormSource} &middot; ${safeSubmittedAt} &middot; ${priority}
-    </p>
-
-    <!-- Actions -->
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 30px 0;">
-      ${actionRows}
-    </table>
-
-    <!-- Contact details -->
-    <p class="em-muted" style="margin:0 0 10px 0;font-family:${EM_FONT};font-size:12px;letter-spacing:1px;font-weight:700;color:${EM.muted};">CONTACT DETAILS</p>
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="em-line" style="border:1px solid ${EM.line};border-radius:12px;">
-      ${emRow('Name', safeFullName)}
-      ${emRow('Email', `<a href="mailto:${safeEmail}" class="em-link" style="color:${EM.blue};text-decoration:none;font-weight:700;">${safeEmail}</a>`)}
-      ${emRow('Phone', phone ? `<a href="${escapeHtml(callHref)}" class="em-link" style="color:${EM.blue};text-decoration:none;font-weight:700;">${safePhone}</a>` : `<span class="em-muted" style="color:${EM.muted};">Not provided</span>`)}
-      ${emRow('Service', safeService, true)}
-    </table>
-
-    <!-- Message -->
-    <p class="em-muted" style="margin:28px 0 10px 0;font-family:${EM_FONT};font-size:12px;letter-spacing:1px;font-weight:700;color:${EM.muted};">MESSAGE</p>
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
-      <td class="em-soft em-body" style="background-color:${EM.soft};border-left:4px solid ${EM.gold};border-radius:0 12px 12px 0;padding:18px 22px;font-family:${EM_FONT};font-size:15px;line-height:24px;color:${EM.body};">
-        ${safeMessageHtml}
-      </td>
-    </tr></table>
-
-    <p class="em-muted" style="margin:26px 0 0 0;font-family:${EM_FONT};font-size:12px;line-height:18px;color:${EM.muted};">
-      Lead ID <strong class="em-body" style="color:${EM.body};">${safeLeadId}</strong> &middot; Page <a href="${safePageUrl}" class="em-link" style="color:${EM.blue};text-decoration:none;">${safePageUrl}</a>
-    </p>
-  </td></tr>
-
-  <!-- Footer -->
-  <tr><td class="em-soft em-px" style="background-color:${EM.soft};border-radius:0 0 16px 16px;padding:18px 36px;font-family:${EM_FONT};font-size:12px;line-height:18px;color:${EM.muted};">
-    Internal notification from the Mohsin Designs website. Please don&#39;t forward outside the team.
-  </td></tr>`;
 
   const text = [
     `NEW LEAD — ${fullName}`,
@@ -599,26 +554,22 @@ export function buildAdminLeadEmail(input: AdminLeadEmailInput): { html: string;
     `Lead ID:   ${leadId}`,
     `Name:      ${fullName}`,
     `Email:     ${email}`,
-    `Phone:     ${phone || 'Not provided'}`,
+    `Phone:     ${phone || "Not provided"}`,
     `Service:   ${service}`,
     `Source:    ${formSource}`,
     `Page:      ${pageUrl}`,
     `Submitted: ${submittedAtStr}`,
     ``,
     `MESSAGE`,
-    message || 'No message was included.',
+    message || "No message provided.",
     ``,
-    `Reply:  mailto:${email}?subject=${encodeURIComponent(`Re: Your ${service} inquiry`)}`,
-    phone ? `Call:   tel:${telHref}` : '',
-    `CRM:    ${crmLeadUrl}`,
-  ].filter((l, i, a) => !(l === '' && a[i - 1] === '')).join('\n');
+    `Reply: mailto:${email}?subject=Re:%20Your%20${encodeURIComponent(service)}%20inquiry`,
+    phone ? `Call:  tel:${phoneTel}` : "",
+    `CRM:   ${crmLeadUrl}`,
+  ].join("\n");
 
-  return { html: emailDocument({ title: `New lead — ${safeFullName}`, preheader: `${safeFullName} wants ${safeService}. ${priority}.`, inner }), text, subject };
+  return { html, text, subject };
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// CUSTOMER: confirmation receipt
-// ─────────────────────────────────────────────────────────────────────────────
 
 export interface CustomerConfirmationEmailInput {
   fullName?: string;
@@ -636,149 +587,65 @@ export interface CustomerConfirmationEmailInput {
 }
 
 /**
- * Builds the customer's confirmation. A white logo bar, a blue hero with a gold check badge,
- * a summary of what they sent (with their reference number), three "what happens next" steps,
- * and a clear next action (book a call, or just reply).
+ * Customer receipt, filled into CUSTOMER_CONFIRMATION_TEMPLATE. Reply-To is set by the send route
+ * to the company inbox.
  */
 export function buildCustomerConfirmationEmail(input: CustomerConfirmationEmailInput): { html: string; text: string; subject: string } {
-  const rawFullName = cleanText(input.fullName || '', 120);
-  const firstName = cleanText(input.firstName || (rawFullName ? rawFullName.trim().split(/\s+/)[0] : '') || 'there', 60) || 'there';
-  const email = cleanText(input.email || '', 160);
-  const phone = cleanText(input.phone || '', 50);
-  const service = cleanText(input.service || 'Website Design', 120) || 'Website Design';
-  const message = cleanText(input.message || '', 5000);
-  const leadId = cleanText(input.leadId || 'MD-10001', 50) || 'MD-10001';
-  const bookingUrl = input.bookingUrl || 'https://mohsindesigns.com/contact-us/#book';
-  const companyPhone = cleanText(input.companyPhone || '+1 (307) 555-0100', 50) || '+1 (307) 555-0100';
-  const companyTelHref = companyPhone.replace(/[^0-9+]/g, '');
-  const companyEmail = cleanText(input.companyEmail || 'info@mohsindesigns.com', 160) || 'info@mohsindesigns.com';
-  const companyAddress = cleanText(input.companyAddress || 'Mohsin Designs LLC · Sheridan, WY, USA', 200) || 'Mohsin Designs LLC · Sheridan, WY, USA';
-  const logoUrl = input.logoUrl || 'https://mohsindesigns.com/images/logo-navy.png';
+  const rawFullName = cleanText(input.fullName || "", 120);
+  const firstName = cleanText(input.firstName || (rawFullName ? rawFullName.trim().split(/\s+/)[0] : "") || "there", 60) || "there";
+  const email = cleanText(input.email || "", 160);
+  const phone = cleanText(input.phone || "", 50);
+  const service = cleanText(input.service || "Website Design", 120) || "Website Design";
+  const message = cleanText(input.message || "", 5000);
+  const leadId = cleanText(input.leadId || "MD-10001", 50) || "MD-10001";
+  const bookingUrl = input.bookingUrl || "https://mohsindesigns.com/contact-us/#book";
+  const companyPhone = cleanText(input.companyPhone || "+1 (307) 555-0100", 50) || "+1 (307) 555-0100";
+  const companyTelHref = companyPhone.replace(/[^0-9+]/g, "");
+  const companyEmail = cleanText(input.companyEmail || "info@mohsindesigns.com", 160) || "info@mohsindesigns.com";
+  const companyAddress = cleanText(input.companyAddress || "Mohsin Designs LLC · Sheridan, WY, USA", 200) || "Mohsin Designs LLC · Sheridan, WY, USA";
+  const logoUrl = input.logoUrl || "https://mohsindesigns.com/images/logo-navy.png";
 
-  const safeFirstName = escapeHtml(firstName);
-  const safeEmail = escapeHtml(email);
-  const safePhone = escapeHtml(phone);
-  const safeService = escapeHtml(service);
-  const safeLeadId = escapeHtml(leadId);
-  const safeBookingUrl = escapeHtml(bookingUrl);
-  const safeCompanyPhone = escapeHtml(companyPhone);
-  const safeCompanyTelHref = escapeHtml(companyTelHref);
-  const safeCompanyEmail = escapeHtml(companyEmail);
-  const safeCompanyAddress = escapeHtml(companyAddress);
-  const safeLogoUrl = escapeHtml(logoUrl);
-  const safeMessageHtml = message
-    ? escapeHtml(message).replace(/\r\n|\r|\n/g, '<br>')
-    : `<span class="em-muted" style="color:${EM.muted};font-style:italic;">No message included</span>`;
+  const html = fillTemplate(CUSTOMER_CONFIRMATION_TEMPLATE, {
+    first_name: escapeHtml(firstName),
+    service: escapeHtml(service),
+    email: escapeHtml(email),
+    phone: escapeHtml(phone || "Not provided"),
+    message: messageToHtml(message),
+    lead_id: escapeHtml(leadId),
+    booking_url: escapeHtml(bookingUrl),
+    company_phone: escapeHtml(companyPhone),
+    company_phone_tel: escapeHtml(companyTelHref),
+    company_email: escapeHtml(companyEmail),
+    company_address: escapeHtml(companyAddress),
+    logo_url: escapeHtml(logoUrl),
+  });
 
   const subject = `We received your request, ${firstName}`;
-
-  const step = (n: number, title: string, body: string, last = false) => `<tr>
-  <td width="48" valign="top" style="padding:0 0 ${last ? '0' : '20px'} 0;">
-    <div style="width:34px;height:34px;border-radius:17px;background-color:${EM.gold};font-family:${EM_FONT};font-size:14px;line-height:34px;text-align:center;color:${EM.ink};font-weight:800;">${n}</div>
-  </td>
-  <td valign="top" style="padding:4px 0 ${last ? '0' : '22px'} 0;font-family:${EM_FONT};font-size:15px;line-height:22px;">
-    <div class="em-ink" style="font-weight:700;color:${EM.ink};">${title}</div>
-    <div class="em-muted" style="color:${EM.muted};margin-top:2px;">${body}</div>
-  </td>
-</tr>`;
-
-  const inner = `
-  <!-- Logo bar -->
-  <tr><td class="em-px" style="background-color:${EM.white};border-radius:16px 16px 0 0;padding:22px 36px;">
-    <a href="https://mohsindesigns.com" style="text-decoration:none;">
-      <img src="${safeLogoUrl}" alt="Mohsin Designs" width="160" style="display:block;border:0;outline:none;max-width:160px;height:auto;font-family:${EM_FONT};font-size:20px;font-weight:700;color:${EM.blue};">
-    </a>
-  </td></tr>
-
-  <!-- Hero -->
-  <tr><td align="center" class="em-px" style="background-color:${EM.blue};padding:44px 40px 42px 40px;">
-    <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-      <td align="center" width="64" height="64" style="width:64px;height:64px;background-color:${EM.gold};border-radius:32px;font-family:${EM_FONT};font-size:30px;line-height:64px;color:${EM.ink};font-weight:800;">&#10003;</td>
-    </tr></table>
-    <h1 class="em-h1" style="margin:22px 0 10px 0;font-family:${EM_FONT};font-size:28px;line-height:35px;color:#FFFFFF;font-weight:800;">
-      Thanks, ${safeFirstName}. We&#39;ve got it.
-    </h1>
-    <p style="margin:0;font-family:${EM_FONT};font-size:16px;line-height:24px;color:#D7DCF5;">
-      A specialist will reach out within <strong style="color:#FFFFFF;">1 business day</strong>.
-    </p>
-  </td></tr>
-
-  <!-- Body -->
-  <tr><td class="em-card em-px" style="background-color:${EM.white};padding:34px 40px 34px 40px;">
-    <p class="em-body" style="margin:0 0 26px 0;font-family:${EM_FONT};font-size:16px;line-height:25px;color:${EM.body};">
-      Hi ${safeFirstName}, thanks for reaching out. Here&#39;s a copy of what you sent us, so you have it for your records.
-    </p>
-
-    <!-- Summary -->
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="em-line" style="border:1px solid ${EM.line};border-radius:12px;">
-      <tr><td colspan="2" class="em-soft em-rule" style="background-color:${EM.soft};border-bottom:1px solid ${EM.line};border-radius:12px 12px 0 0;padding:13px 20px;font-family:${EM_FONT};font-size:12px;font-weight:700;letter-spacing:1px;color:${EM.muted};">
-        YOUR REQUEST &nbsp;&middot;&nbsp; REF ${safeLeadId}
-      </td></tr>
-      ${emRow('Service', safeService)}
-      ${emRow('Email', safeEmail)}
-      ${emRow('Phone', phone ? safePhone : `<span class="em-muted" style="color:${EM.muted};">Not provided</span>`)}
-      ${emRow('Message', safeMessageHtml, true)}
-    </table>
-
-    <!-- What happens next -->
-    <h2 class="em-ink" style="margin:38px 0 18px 0;font-family:${EM_FONT};font-size:18px;line-height:24px;color:${EM.ink};font-weight:800;">What happens next</h2>
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-      ${step(1, 'We review your request', 'Our team looks at your business and goals before we call.')}
-      ${step(2, 'A specialist contacts you', 'By phone or email within 1 business day.')}
-      ${step(3, 'You get a clear plan', 'A tailored proposal with scope, timeline and pricing.', true)}
-    </table>
-
-    <!-- Actions -->
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:34px 0 0 0;"><tr>
-      <td align="center" style="padding:0;">
-        ${emButton(safeBookingUrl, 'Book a free call', 'primary')}
-      </td>
-    </tr><tr>
-      <td align="center" class="em-muted" style="padding:16px 0 0 0;font-family:${EM_FONT};font-size:14px;line-height:21px;color:${EM.muted};">
-        Prefer to talk now? Call <a href="tel:${safeCompanyTelHref}" class="em-link" style="color:${EM.blue};text-decoration:none;font-weight:700;">${safeCompanyPhone}</a><br>
-        or simply reply to this email.
-      </td>
-    </tr></table>
-
-    <p class="em-body em-rule" style="margin:34px 0 0 0;padding-top:26px;border-top:1px solid ${EM.line};font-family:${EM_FONT};font-size:16px;line-height:25px;color:${EM.body};">
-      Talk soon,<br><strong class="em-ink" style="color:${EM.ink};">The Mohsin Designs Team</strong>
-    </p>
-  </td></tr>
-
-  <!-- Footer -->
-  <tr><td align="center" class="em-soft em-px" style="background-color:${EM.soft};border-radius:0 0 16px 16px;padding:26px 40px;font-family:${EM_FONT};font-size:12px;line-height:19px;color:${EM.muted};">
-    <a href="https://mohsindesigns.com" class="em-link" style="color:${EM.blue};text-decoration:none;font-weight:700;">mohsindesigns.com</a>
-    &nbsp;&middot;&nbsp; <a href="mailto:${safeCompanyEmail}" class="em-muted" style="color:${EM.muted};text-decoration:none;">${safeCompanyEmail}</a><br>
-    ${safeCompanyAddress}<br><br>
-    You&#39;re getting this because you submitted a form on our website. If that wasn&#39;t you, you can safely ignore this email.
-  </td></tr>`;
 
   const text = [
     `Thanks, ${firstName}. We've got your request.`,
     ``,
-    `A specialist will reach out within 1 business day.`,
+    `Hi ${firstName}, thanks for reaching out. A specialist will contact you within 1 business day.`,
     ``,
     `YOUR REQUEST (REF ${leadId})`,
     `Service: ${service}`,
     `Email:   ${email}`,
-    `Phone:   ${phone || 'Not provided'}`,
-    `Message: ${message || 'No message included'}`,
+    `Phone:   ${phone || "Not provided"}`,
+    `Message: ${message || "No message provided."}`,
     ``,
     `WHAT HAPPENS NEXT`,
-    `1. We review your request: our team looks at your business and goals before we call.`,
-    `2. A specialist contacts you: by phone or email within 1 business day.`,
-    `3. You get a clear plan: a tailored proposal with scope, timeline and pricing.`,
+    `1. We review your request. Our team looks at your business and goals before we call.`,
+    `2. A specialist contacts you. By phone or email within 1 business day.`,
+    `3. You get a clear plan. A tailored proposal with scope, timeline and pricing.`,
     ``,
-    `Want to skip the wait? Book a free call:`,
-    bookingUrl,
-    ``,
-    `Prefer to talk now? Call ${companyPhone} or just reply to this email.`,
+    `Book a call now: ${bookingUrl}`,
+    `Can't wait? Reply to this email or call ${companyPhone}.`,
     ``,
     `Talk soon,`,
     `The Mohsin Designs Team`,
     `https://mohsindesigns.com · ${companyEmail}`,
     companyAddress,
-  ].join('\n');
+  ].join("\n");
 
-  return { html: emailDocument({ title: 'We received your request — Mohsin Designs', preheader: `Thanks ${firstName} — a specialist will contact you within 1 business day.`, inner }), text, subject };
+  return { html, text, subject };
 }
