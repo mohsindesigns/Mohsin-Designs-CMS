@@ -2,7 +2,7 @@
  
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowUp } from "lucide-react";
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useRef } from "react";
 import Link from "@/components/ui/Link";
 import { useContent } from "../hooks/useContent";
 import RichTextRenderer from "./ui/RichTextRenderer";
@@ -19,6 +19,8 @@ export default function Footer() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
   const [captchaToken, setCaptchaToken] = useState("");
+  const captchaTokenRef = useRef(captchaToken);
+  captchaTokenRef.current = captchaToken;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const content = useContent();
@@ -34,6 +36,15 @@ export default function Footer() {
 
     setIsSubmitting(true);
     try {
+      let activeToken = captchaTokenRef.current;
+      if (!activeToken) {
+        // Allow background Turnstile a moment to generate token if needed
+        for (let i = 0; i < 10 && !activeToken; i++) {
+          await new Promise((r) => setTimeout(r, 200));
+          activeToken = captchaTokenRef.current;
+        }
+      }
+
       const res = await fetch('/api/send', {
         method: 'POST',
         headers: {
@@ -47,7 +58,7 @@ export default function Footer() {
           phone: '+1 000 000 0000',
           service: 'Content Marketing',
           message: `New subscription from: ${trimmedEmail}`,
-          captchaToken,
+          captchaToken: activeToken || captchaToken,
         })
       });
       const data = await res.json().catch(() => ({}));
@@ -251,7 +262,7 @@ export default function Footer() {
           </div>
 
           {/* Contact Info Column */}
-          <div className="lg:col-span-3 min-w-0 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
+          <div className="lg:col-span-2 min-w-0 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
             <p className="font-mono font-bold text-sm uppercase tracking-widest text-[var(--cta-accent)]">
               {footer?.labelContactInfo || "Contact Info"}
             </p>
@@ -282,7 +293,7 @@ export default function Footer() {
           </div>
 
           {/* Newsletter Column */}
-          <div className="lg:col-span-2 min-w-0 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
+          <div className="lg:col-span-3 min-w-0 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
             <p className="font-mono font-bold text-sm uppercase tracking-widest text-[var(--cta-accent)]">
               {footer?.labelNewsletter || "Newsletter"}
             </p>
@@ -320,13 +331,14 @@ export default function Footer() {
                   </motion.form>
                   <TurnstileCaptcha
                     theme="dark"
-                    size="flexible"
+                    size="compact"
+                    appearance="interaction-only"
                     onVerify={(token) => {
                       setCaptchaToken(token);
                       setErrorMsg("");
                     }}
                     onExpire={() => setCaptchaToken("")}
-                    className="my-1 scale-90 origin-left"
+                    className="max-w-full"
                   />
                   {errorMsg && (
                     <p className="text-[11px] text-red-400 font-medium">{errorMsg}</p>

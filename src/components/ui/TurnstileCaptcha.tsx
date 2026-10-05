@@ -12,6 +12,7 @@ interface TurnstileCaptchaProps {
   siteKey?: string;
   theme?: "light" | "dark" | "auto";
   size?: "normal" | "compact" | "flexible";
+  appearance?: "always" | "execute" | "interaction-only";
   className?: string;
 }
 
@@ -27,6 +28,8 @@ declare global {
 "error-callback"?: (error: any) => void;
           theme?: string;
           size?: string;
+          appearance?: string;
+          "refresh-expired"?: string;
         }
       ) => string;
       reset: (widgetId: string) => void;
@@ -43,6 +46,7 @@ export default function TurnstileCaptcha({
   siteKey,
   theme = "auto",
   size = "flexible",
+  appearance = "always",
   className = "",
 }: TurnstileCaptchaProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -96,6 +100,8 @@ export default function TurnstileCaptcha({
         sitekey: activeSiteKey,
         theme: theme,
         size: size,
+        appearance: appearance,
+        "refresh-expired": "auto",
         callback: (token: string) => {
           onVerify(token);
         },
@@ -119,11 +125,20 @@ export default function TurnstileCaptcha({
         widgetIdRef.current = null;
       }
     };
-  }, [isScriptReady, activeSiteKey, theme, size]);
+  }, [isScriptReady, activeSiteKey, theme, size, appearance]);
 
   return (
-    <div className={`turnstile-container my-2 flex justify-start ${className}`}>
-      <div ref={containerRef} className="min-h-[65px] min-w-[280px]" />
+    <div className={`turnstile-container ${appearance === "interaction-only" ? "" : "my-2"} flex justify-start max-w-full overflow-hidden ${className}`}>
+      <div
+        ref={containerRef}
+        className={
+          appearance === "interaction-only"
+            ? "max-w-full overflow-hidden"
+            : size === "compact"
+            ? "min-h-[140px] w-[150px] max-w-full"
+            : "min-h-[65px] min-w-[280px] max-w-full"
+        }
+      />
     </div>
   );
 }

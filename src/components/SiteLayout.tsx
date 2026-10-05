@@ -3,7 +3,7 @@
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import PageTransition from "./PageTransition";
-import ChatWidget from "./ChatWidget";
+// import ChatWidget from "./ChatWidget";
 import { usePathname } from "next/navigation";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
@@ -35,8 +35,8 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         </div>
       </div>
 
-      {/* Renders nothing of its own accord if ANTHROPIC_API_KEY isn't configured - see ChatWidget.tsx. */}
-      <ChatWidget />
+      {/* AI Chatbot commented out per request */}
+      {/* <ChatWidget /> */}
     </div>
   );
 }
