@@ -128,7 +128,7 @@ export default function TurnstileCaptcha({
   }, [isScriptReady, activeSiteKey, theme, size, appearance]);
 
   return (
-    <div className={`turnstile-container ${appearance === "interaction-only" ? "" : "my-2"} flex justify-start max-w-full overflow-hidden ${className}`}>
+    <div className={`turnstile-container ${appearance === "interaction-only" || className.includes("my-") ? "" : "my-2"} flex justify-start max-w-full overflow-hidden ${className}`}>
       <div
         ref={containerRef}
         className={
@@ -136,7 +136,7 @@ export default function TurnstileCaptcha({
             ? "max-w-full overflow-hidden"
             : size === "compact"
             ? "min-h-[140px] w-[150px] max-w-full"
-            : "min-h-[65px] min-w-[280px] max-w-full"
+            : "min-h-[65px] w-[300px] max-w-full"
         }
       />
     </div>

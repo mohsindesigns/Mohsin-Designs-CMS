@@ -2,7 +2,7 @@
  
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowUp } from "lucide-react";
-import { FormEvent, useState, useRef } from "react";
+import { FormEvent, useState, useRef, useEffect } from "react";
 import Link from "@/components/ui/Link";
 import { useContent } from "../hooks/useContent";
 import RichTextRenderer from "./ui/RichTextRenderer";
@@ -13,6 +13,48 @@ const stripHtml = (html: string) => {
   if (!html) return "";
   return html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, "").trim();
 };
+
+function ResponsiveTurnstile({ children }: { children: React.ReactNode }) {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const el = wrapperRef.current;
+    if (!el) return;
+
+    const updateScale = () => {
+      const containerWidth = el.offsetWidth;
+      if (containerWidth > 0) {
+        // Standard Cloudflare Turnstile width is 300px
+        const newScale = Math.min(1, containerWidth / 300);
+        setScale(newScale);
+      }
+    };
+
+    updateScale();
+    const observer = new ResizeObserver(updateScale);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={wrapperRef}
+      className="w-full overflow-hidden my-2"
+      style={{ height: `${Math.round(65 * scale)}px` }}
+    >
+      <div
+        style={{
+          width: "300px",
+          transform: `scale(${scale})`,
+          transformOrigin: "top left",
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -151,10 +193,10 @@ export default function Footer() {
  
       <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-0 pb-20 border-b border-white/10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[2.5fr_1.5fr_2fr_3fr_3fr] gap-12 lg:gap-0 pb-20 border-b border-white/10">
           
           {/* Logo & Description Column */}
-          <div className="lg:col-span-3 min-w-0 space-y-6 lg:pr-6">
+          <div className="min-w-0 space-y-6 lg:pr-6">
             <div className="flex items-center gap-2.5">
               {footer?.company?.logo || footer?.company?.logoDark ? (
                 <div className="relative flex h-14 w-36 items-center justify-start overflow-hidden">
@@ -230,7 +272,7 @@ export default function Footer() {
           </div>
  
           {/* Quick Links Column */}
-          <div className="lg:col-span-2 min-w-0 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
+          <div className="min-w-0 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
             <p className="font-mono font-bold text-sm uppercase tracking-widest text-[var(--cta-accent)]">
               {quickLinksTitle}
             </p>
@@ -246,7 +288,7 @@ export default function Footer() {
           </div>
 
           {/* Services Column */}
-          <div className="lg:col-span-2 min-w-0 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
+          <div className="min-w-0 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
             <p className="font-mono font-bold text-sm uppercase tracking-widest text-[var(--cta-accent)]">
               {servicesListTitle}
             </p>
@@ -262,7 +304,7 @@ export default function Footer() {
           </div>
 
           {/* Contact Info Column */}
-          <div className="lg:col-span-2 min-w-0 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
+          <div className="min-w-0 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
             <p className="font-mono font-bold text-sm uppercase tracking-widest text-[var(--cta-accent)]">
               {footer?.labelContactInfo || "Contact Info"}
             </p>
@@ -270,7 +312,10 @@ export default function Footer() {
               <li className="flex flex-col gap-1">
                 <span className="text-[8px] font-mono font-black text-slate-400 dark:text-zinc-400 uppercase tracking-widest">{footer?.labelEmail || "Email"}</span>
                 {contact?.email && (
-                  <a href={`mailto:${contact.email}`} className="text-white hover:text-[var(--cta-accent)] transition-colors font-mono break-all xs:break-normal">
+                  <a
+                    href={`mailto:${contact.email}`}
+                    className="text-white hover:text-[var(--cta-accent)] transition-colors font-sans font-medium text-xs sm:text-sm break-all sm:break-normal inline-block max-w-full"
+                  >
                     {contact.email}
                   </a>
                 )}
@@ -293,7 +338,7 @@ export default function Footer() {
           </div>
 
           {/* Newsletter Column */}
-          <div className="lg:col-span-3 min-w-0 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
+          <div className="min-w-0 space-y-4 lg:pl-6 lg:border-l lg:border-white/5">
             <p className="font-mono font-bold text-sm uppercase tracking-widest text-[var(--cta-accent)]">
               {footer?.labelNewsletter || "Newsletter"}
             </p>
@@ -329,17 +374,19 @@ export default function Footer() {
                       <ArrowRight className="h-4 w-4" />
                     </button>
                   </motion.form>
-                  <TurnstileCaptcha
-                    theme="dark"
-                    size="compact"
-                    appearance="interaction-only"
-                    onVerify={(token) => {
-                      setCaptchaToken(token);
-                      setErrorMsg("");
-                    }}
-                    onExpire={() => setCaptchaToken("")}
-                    className="max-w-full"
-                  />
+                  <ResponsiveTurnstile>
+                    <TurnstileCaptcha
+                      theme="dark"
+                      size="normal"
+                      appearance="always"
+                      onVerify={(token) => {
+                        setCaptchaToken(token);
+                        setErrorMsg("");
+                      }}
+                      onExpire={() => setCaptchaToken("")}
+                      className="my-0"
+                    />
+                  </ResponsiveTurnstile>
                   {errorMsg && (
                     <p className="text-[11px] text-red-400 font-medium">{errorMsg}</p>
                   )}
