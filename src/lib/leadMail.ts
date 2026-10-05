@@ -380,6 +380,98 @@ export function buildLeadEmail(input: LeadEmailInput): { html: string; text: str
   return { html, text };
 }
 
+/**
+ * Shared look for both lead e-mails. Table-based and fully inline-styled (Gmail, Outlook and
+ * Apple Mail all strip <style> blocks or ignore flex/grid), with a dark-mode override block that
+ * Apple Mail / iOS / recent Gmail honour. Brand colours match the website: blue #0306AC, gold #E9BD36.
+ */
+const EM = {
+  blue: '#0306AC',
+  blueDeep: '#020478',
+  gold: '#E9BD36',
+  ink: '#14172B',
+  body: '#3A4158',
+  muted: '#6B7280',
+  line: '#E6E9F2',
+  soft: '#F5F6FB',
+  page: '#EEF0F7',
+  white: '#FFFFFF',
+};
+const EM_FONT = `-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif`;
+
+const EM_DARK_CSS = `
+  @media (prefers-color-scheme: dark) {
+    .em-page { background-color:#0B0A16 !important; }
+    .em-card { background-color:#16152A !important; }
+    .em-soft { background-color:#1E1D31 !important; }
+    .em-ink { color:#F3F4F8 !important; }
+    .em-body { color:#C9CDDB !important; }
+    .em-muted { color:#9AA1B5 !important; }
+    .em-line { border-color:#2C2B45 !important; }
+    .em-rule { border-bottom-color:#2C2B45 !important; }
+    .em-link { color:#8FA3FF !important; }
+  }
+`;
+
+const EM_MOBILE_CSS = `
+  @media only screen and (max-width:620px){
+    .em-container { width:100% !important; }
+    .em-px { padding-left:22px !important; padding-right:22px !important; }
+    .em-stack { display:block !important; width:100% !important; box-sizing:border-box; }
+    .em-h1 { font-size:24px !important; line-height:31px !important; }
+  }
+`;
+
+function emailDocument(opts: { title: string; preheader: string; inner: string }): string {
+  return `<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<meta name="x-apple-disable-message-reformatting">
+<title>${opts.title}</title>
+<!--[if mso]><style>table,td,div,p,a{font-family:Arial,sans-serif !important;}</style><![endif]-->
+<style>${EM_DARK_CSS}${EM_MOBILE_CSS}</style>
+</head>
+<body style="margin:0;padding:0;background-color:${EM.page};font-family:${EM_FONT};-webkit-font-smoothing:antialiased;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;mso-hide:all;">${opts.preheader}&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="em-page" style="background-color:${EM.page};">
+<tr><td align="center" style="padding:32px 12px;">
+<table role="presentation" class="em-container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;">
+${opts.inner}
+</table>
+</td></tr>
+</table>
+</body>
+</html>`;
+}
+
+/** A label/value row for the details tables (stacks on phones). */
+function emRow(label: string, valueHtml: string, last = false): string {
+  const border = last ? '' : `border-bottom:1px solid ${EM.line};`;
+  const rule = last ? '' : 'em-rule';
+  return `<tr>
+  <td class="em-stack em-muted ${rule}" width="30%" valign="top" style="padding:14px 20px;${border}font-family:${EM_FONT};font-size:12px;letter-spacing:0.6px;text-transform:uppercase;color:${EM.muted};font-weight:600;">${label}</td>
+  <td class="em-stack em-ink ${rule}" valign="top" style="padding:14px 20px;${border}font-family:${EM_FONT};font-size:15px;line-height:22px;color:${EM.ink};">${valueHtml}</td>
+</tr>`;
+}
+
+/** Full-width or half-width button (half-width ones stack on phones). */
+function emButton(href: string, label: string, kind: 'primary' | 'ghost' | 'gold'): string {
+  const styles = {
+    primary: `background-color:${EM.blue};color:#FFFFFF;border:1px solid ${EM.blue};`,
+    ghost: `background-color:${EM.white};color:${EM.blue};border:1px solid #C9D0E6;`,
+    gold: `background-color:${EM.gold};color:${EM.ink};border:1px solid ${EM.gold};`,
+  }[kind];
+  return `<a href="${href}" style="display:block;${styles}border-radius:10px;padding:14px 22px;font-family:${EM_FONT};font-size:15px;font-weight:700;text-decoration:none;text-align:center;">${label}</a>`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INTERNAL: new-lead alert to the team
+// ─────────────────────────────────────────────────────────────────────────────
+
 export interface AdminLeadEmailInput {
   fullName: string;
   firstName?: string;
@@ -396,9 +488,9 @@ export interface AdminLeadEmailInput {
 }
 
 /**
- * Builds the internal team notification email (admin-new-lead.html).
- * Features high-contrast dark header, status pill, contact details table,
- * message callout, and 1-click CTA buttons (Reply to Lead & View in CRM).
+ * Builds the internal team notification. Blue header with the logo and a gold "New lead" badge,
+ * a headline stating who wants what, one-tap actions (Reply, Call, Open in CRM), the contact
+ * details, and the message as a quoted block.
  */
 export function buildAdminLeadEmail(input: AdminLeadEmailInput): { html: string; text: string; subject: string } {
   const fullName = cleanText(input.fullName || 'Website Lead', 120) || 'Website Lead';
@@ -413,27 +505,14 @@ export function buildAdminLeadEmail(input: AdminLeadEmailInput): { html: string;
   const crmLeadUrl = input.crmLeadUrl || 'https://mohsindesigns.com/admin/submissions';
   const logoWhiteUrl = input.logoWhiteUrl || 'https://mohsindesigns.com/images/logo-white.png';
 
-  const dateObj = typeof input.submittedAt === 'string'
-    ? new Date(input.submittedAt)
-    : (input.submittedAt || new Date());
-  
-  const formattedDate = dateObj.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-  const formattedTime = dateObj.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  });
-  const submittedAtStr = `${formattedDate} at ${formattedTime}`;
+  const dateObj = typeof input.submittedAt === 'string' ? new Date(input.submittedAt) : (input.submittedAt || new Date());
+  const submittedAtStr = `${dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} at ${dateObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`;
 
   const safeFullName = escapeHtml(fullName);
   const safeFirstName = escapeHtml(firstName);
   const safeEmail = escapeHtml(email);
   const safePhone = escapeHtml(phone);
-  const telHref = phone ? escapeHtml(phone.replace(/[^0-9+]/g, '')) : '';
+  const telHref = escapeHtml(phone.replace(/[^0-9+]/g, ''));
   const safeService = escapeHtml(service);
   const safeFormSource = escapeHtml(formSource);
   const safeSubmittedAt = escapeHtml(submittedAtStr);
@@ -443,155 +522,103 @@ export function buildAdminLeadEmail(input: AdminLeadEmailInput): { html: string;
   const safeLogoWhiteUrl = escapeHtml(logoWhiteUrl);
   const safeMessageHtml = message
     ? escapeHtml(message).replace(/\r\n|\r|\n/g, '<br>')
-    : '<span style="color:#7A8296;font-style:italic;">No message provided.</span>';
+    : `<span class="em-muted" style="color:${EM.muted};font-style:italic;">No message was included.</span>`;
+
+  const replyHref = escapeHtml(`mailto:${email}?subject=${encodeURIComponent(`Re: Your ${service} inquiry`)}`);
+  const callHref = `tel:${telHref}`;
+  const priority = message.length > 0 ? 'Message included' : 'No message';
 
   const subject = `New lead: ${fullName} · ${service}`;
 
-  const html = `<!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="x-apple-disable-message-reformatting">
-<title>New Lead — ${safeFullName}</title>
-<!--[if mso]><style>table,td{font-family:Arial,sans-serif !important;}</style><![endif]-->
-<style>
-  @media only screen and (max-width:620px){
-    .container{width:100% !important;}
-    .px{padding-left:24px !important;padding-right:24px !important;}
-    .stack{display:block !important;width:100% !important;}
-    .label-cell{padding-bottom:2px !important;}
-    .btn a{display:block !important;}
-  }
-</style>
-</head>
-<body style="margin:0;padding:0;background-color:#EEF1F6;-webkit-font-smoothing:antialiased;">
-<!-- Preheader (shows in inbox preview, hidden in body) -->
-<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">
-  ${safeFullName} requested ${safeService} — reply within 1 hour for the best close rate.
-</div>
+  // Row 1: reply + CRM side by side (stacked on phones). Row 2: call, only when a phone exists.
+  const actionRows = `<tr>
+      <td class="em-stack" width="50%" style="padding:0 6px 10px 0;">${emButton(replyHref, `Reply to ${safeFirstName}`, 'primary')}</td>
+      <td class="em-stack" width="50%" style="padding:0 0 10px 6px;">${emButton(safeCrmLeadUrl, 'Open in CRM', 'ghost')}</td>
+    </tr>${phone ? `<tr>
+      <td colspan="2" style="padding:0;">${emButton(escapeHtml(callHref), `Call ${safePhone}`, 'gold')}</td>
+    </tr>` : ''}`;
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#EEF1F6;">
-<tr><td align="center" style="padding:32px 12px;">
+  const inner = `
+  <!-- Header -->
+  <tr><td class="em-px" style="background-color:${EM.blue};border-radius:16px 16px 0 0;padding:24px 36px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+      <td valign="middle" align="left">
+        <img src="${safeLogoWhiteUrl}" alt="Mohsin Designs" width="150" style="display:block;border:0;outline:none;max-width:150px;height:auto;color:#FFFFFF;font-family:${EM_FONT};font-size:18px;font-weight:700;">
+      </td>
+      <td valign="middle" align="right">
+        <span style="display:inline-block;background-color:${EM.gold};color:${EM.ink};border-radius:999px;padding:6px 14px;font-family:${EM_FONT};font-size:11px;font-weight:800;letter-spacing:1px;">&#9679;&nbsp;NEW LEAD</span>
+      </td>
+    </tr></table>
+  </td></tr>
 
-  <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;">
+  <!-- Body -->
+  <tr><td class="em-card em-px" style="background-color:${EM.white};padding:34px 36px 30px 36px;">
+    <h1 class="em-h1 em-ink" style="margin:0 0 8px 0;font-family:${EM_FONT};font-size:26px;line-height:33px;font-weight:800;color:${EM.ink};">
+      ${safeFullName} wants ${safeService}
+    </h1>
+    <p class="em-muted" style="margin:0 0 26px 0;font-family:${EM_FONT};font-size:14px;line-height:21px;color:${EM.muted};">
+      ${safeFormSource} &middot; ${safeSubmittedAt} &middot; ${priority}
+    </p>
 
-    <!-- Header bar -->
-    <tr><td style="background-color:#0B1F4B;border-radius:10px 10px 0 0;padding:22px 36px;" class="px">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
-        <td align="left" valign="middle">
-          <img src="${safeLogoWhiteUrl}" alt="Mohsin Designs" width="150" style="display:block;border:0;outline:none;max-width:150px;height:auto;color:#ffffff;font-family:Arial,sans-serif;font-size:18px;font-weight:bold;">
-        </td>
-        <td align="right" valign="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#A9B6D3;letter-spacing:0.5px;">
-          INTERNAL&nbsp;·&nbsp;LEAD&nbsp;ALERT
-        </td>
-      </tr></table>
-    </td></tr>
+    <!-- Actions -->
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 30px 0;">
+      ${actionRows}
+    </table>
 
-    <!-- Body card -->
-    <tr><td style="background-color:#FFFFFF;padding:36px 36px 8px 36px;" class="px">
+    <!-- Contact details -->
+    <p class="em-muted" style="margin:0 0 10px 0;font-family:${EM_FONT};font-size:12px;letter-spacing:1px;font-weight:700;color:${EM.muted};">CONTACT DETAILS</p>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="em-line" style="border:1px solid ${EM.line};border-radius:12px;">
+      ${emRow('Name', safeFullName)}
+      ${emRow('Email', `<a href="mailto:${safeEmail}" class="em-link" style="color:${EM.blue};text-decoration:none;font-weight:700;">${safeEmail}</a>`)}
+      ${emRow('Phone', phone ? `<a href="${escapeHtml(callHref)}" class="em-link" style="color:${EM.blue};text-decoration:none;font-weight:700;">${safePhone}</a>` : `<span class="em-muted" style="color:${EM.muted};">Not provided</span>`)}
+      ${emRow('Service', safeService, true)}
+    </table>
 
-      <!-- Status pill -->
-      <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-        <td style="background-color:#E7F6EC;border-radius:20px;padding:6px 12px;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:bold;color:#1E7A3E;letter-spacing:0.8px;">
-          &#9679;&nbsp;NEW LEAD
-        </td>
-      </tr></table>
+    <!-- Message -->
+    <p class="em-muted" style="margin:28px 0 10px 0;font-family:${EM_FONT};font-size:12px;letter-spacing:1px;font-weight:700;color:${EM.muted};">MESSAGE</p>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+      <td class="em-soft em-body" style="background-color:${EM.soft};border-left:4px solid ${EM.gold};border-radius:0 12px 12px 0;padding:18px 22px;font-family:${EM_FONT};font-size:15px;line-height:24px;color:${EM.body};">
+        ${safeMessageHtml}
+      </td>
+    </tr></table>
 
-      <h1 style="margin:18px 0 6px 0;font-family:Arial,Helvetica,sans-serif;font-size:24px;line-height:32px;color:#0B1F4B;font-weight:bold;">
-        ${safeFullName} is interested in ${safeService}
-      </h1>
-      <p style="margin:0 0 26px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:22px;color:#5B6478;">
-        Submitted via <strong style="color:#2B3245;">${safeFormSource}</strong> on ${safeSubmittedAt}
-      </p>
+    <p class="em-muted" style="margin:26px 0 0 0;font-family:${EM_FONT};font-size:12px;line-height:18px;color:${EM.muted};">
+      Lead ID <strong class="em-body" style="color:${EM.body};">${safeLeadId}</strong> &middot; Page <a href="${safePageUrl}" class="em-link" style="color:${EM.blue};text-decoration:none;">${safePageUrl}</a>
+    </p>
+  </td></tr>
 
-      <!-- Details table -->
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #E3E8F0;border-radius:8px;">
-        <tr><td colspan="2" style="background-color:#F6F8FB;border-bottom:1px solid #E3E8F0;border-radius:8px 8px 0 0;padding:12px 20px;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:bold;color:#5B6478;letter-spacing:1px;">
-          CONTACT DETAILS
-        </td></tr>
-        <tr>
-          <td class="stack label-cell" width="34%" style="padding:14px 20px;border-bottom:1px solid #EEF1F6;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#7A8296;">Full name</td>
-          <td class="stack" style="padding:14px 20px;border-bottom:1px solid #EEF1F6;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1A2033;font-weight:bold;">${safeFullName}</td>
-        </tr>
-        <tr>
-          <td class="stack label-cell" style="padding:14px 20px;border-bottom:1px solid #EEF1F6;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#7A8296;">Email</td>
-          <td class="stack" style="padding:14px 20px;border-bottom:1px solid #EEF1F6;font-family:Arial,Helvetica,sans-serif;font-size:14px;"><a href="mailto:${safeEmail}" style="color:#1F5BD8;text-decoration:none;font-weight:bold;">${safeEmail}</a></td>
-        </tr>
-        <tr>
-          <td class="stack label-cell" style="padding:14px 20px;border-bottom:1px solid #EEF1F6;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#7A8296;">Phone</td>
-          <td class="stack" style="padding:14px 20px;border-bottom:1px solid #EEF1F6;font-family:Arial,Helvetica,sans-serif;font-size:14px;">${phone ? `<a href="tel:${telHref}" style="color:#1F5BD8;text-decoration:none;font-weight:bold;">${safePhone}</a>` : `<span style="color:#7A8296;">Not provided</span>`}</td>
-        </tr>
-        <tr>
-          <td class="stack label-cell" style="padding:14px 20px;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#7A8296;">Service</td>
-          <td class="stack" style="padding:14px 20px;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1A2033;font-weight:bold;">${safeService}</td>
-        </tr>
-      </table>
-
-      <!-- Message -->
-      <p style="margin:26px 0 8px 0;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:bold;color:#5B6478;letter-spacing:1px;">MESSAGE</p>
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
-        <td style="background-color:#F6F8FB;border-left:3px solid #0B1F4B;border-radius:0 6px 6px 0;padding:16px 20px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:22px;color:#2B3245;">
-          ${safeMessageHtml}
-        </td>
-      </tr></table>
-
-      <!-- Actions -->
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:28px;"><tr>
-        <td class="stack btn" style="padding:0 6px 10px 0;" width="50%">
-          <a href="mailto:${safeEmail}?subject=Re:%20Your%20${encodeURIComponent(service)}%20inquiry" style="display:block;background-color:#0B1F4B;border-radius:6px;padding:14px 0;text-align:center;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;color:#FFFFFF;text-decoration:none;">Reply to ${safeFirstName}</a>
-        </td>
-        <td class="stack btn" style="padding:0 0 10px 6px;" width="50%">
-          <a href="${safeCrmLeadUrl}" style="display:block;background-color:#FFFFFF;border:1px solid #C9D1E0;border-radius:6px;padding:13px 0;text-align:center;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;color:#0B1F4B;text-decoration:none;">View in CRM</a>
-        </td>
-      </tr></table>
-
-      <!-- Meta strip -->
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:18px 0 28px 0;border-top:1px solid #EEF1F6;"><tr>
-        <td style="padding-top:16px;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;color:#8A92A6;">
-          Lead ID: <strong style="color:#5B6478;">${safeLeadId}</strong>&nbsp;&nbsp;·&nbsp;&nbsp;Page: <a href="${safePageUrl}" style="color:#5B6478;">${safePageUrl}</a>
-        </td>
-      </tr></table>
-
-    </td></tr>
-
-    <!-- Footer -->
-    <tr><td style="background-color:#F6F8FB;border-radius:0 0 10px 10px;border-top:1px solid #E3E8F0;padding:20px 36px;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;color:#8A92A6;" class="px">
-      Automated internal notification from the Mohsin Designs website. Do not forward outside the team.
-    </td></tr>
-
-  </table>
-</td></tr>
-</table>
-</body>
-</html>`;
+  <!-- Footer -->
+  <tr><td class="em-soft em-px" style="background-color:${EM.soft};border-radius:0 0 16px 16px;padding:18px 36px;font-family:${EM_FONT};font-size:12px;line-height:18px;color:${EM.muted};">
+    Internal notification from the Mohsin Designs website. Please don&#39;t forward outside the team.
+  </td></tr>`;
 
   const text = [
-    `==================================================`,
-    `INTERNAL ALERT · NEW LEAD`,
-    `==================================================`,
-    `Lead ID:      ${leadId}`,
-    `Full Name:    ${fullName}`,
-    `Email:        ${email}`,
-    `Phone:        ${phone || 'Not provided'}`,
-    `Service:      ${service}`,
-    `Origin:       ${formSource}`,
-    `Page URL:     ${pageUrl}`,
-    `Submitted At: ${submittedAtStr}`,
+    `NEW LEAD — ${fullName}`,
+    `Wants: ${service}`,
     ``,
-    `--------------------------------------------------`,
-    `MESSAGE:`,
-    `--------------------------------------------------`,
-    message || 'No message provided',
-    `--------------------------------------------------`,
+    `Lead ID:   ${leadId}`,
+    `Name:      ${fullName}`,
+    `Email:     ${email}`,
+    `Phone:     ${phone || 'Not provided'}`,
+    `Service:   ${service}`,
+    `Source:    ${formSource}`,
+    `Page:      ${pageUrl}`,
+    `Submitted: ${submittedAtStr}`,
     ``,
-    `Reply to Lead: mailto:${email}?subject=Re:%20Your%20${encodeURIComponent(service)}%20inquiry`,
-    `View in CRM:   ${crmLeadUrl}`,
-    `==================================================`,
-  ].join('\n');
+    `MESSAGE`,
+    message || 'No message was included.',
+    ``,
+    `Reply:  mailto:${email}?subject=${encodeURIComponent(`Re: Your ${service} inquiry`)}`,
+    phone ? `Call:   tel:${telHref}` : '',
+    `CRM:    ${crmLeadUrl}`,
+  ].filter((l, i, a) => !(l === '' && a[i - 1] === '')).join('\n');
 
-  return { html, text, subject };
+  return { html: emailDocument({ title: `New lead — ${safeFullName}`, preheader: `${safeFullName} wants ${safeService}. ${priority}.`, inner }), text, subject };
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CUSTOMER: confirmation receipt
+// ─────────────────────────────────────────────────────────────────────────────
 
 export interface CustomerConfirmationEmailInput {
   fullName?: string;
@@ -609,16 +636,13 @@ export interface CustomerConfirmationEmailInput {
 }
 
 /**
- * Builds the customer-facing inquiry confirmation email (customer-confirmation.html).
- * Features a branded checkmark hero card, summary card of their submission,
- * 3-step 'What happens next' timeline, direct booking CTA, and direct reply options.
+ * Builds the customer's confirmation. A white logo bar, a blue hero with a gold check badge,
+ * a summary of what they sent (with their reference number), three "what happens next" steps,
+ * and a clear next action (book a call, or just reply).
  */
 export function buildCustomerConfirmationEmail(input: CustomerConfirmationEmailInput): { html: string; text: string; subject: string } {
   const rawFullName = cleanText(input.fullName || '', 120);
-  const firstName = cleanText(
-    input.firstName || (rawFullName ? rawFullName.trim().split(/\s+/)[0] : '') || 'there',
-    60
-  ) || 'there';
+  const firstName = cleanText(input.firstName || (rawFullName ? rawFullName.trim().split(/\s+/)[0] : '') || 'there', 60) || 'there';
   const email = cleanText(input.email || '', 160);
   const phone = cleanText(input.phone || '', 50);
   const service = cleanText(input.service || 'Website Design', 120) || 'Website Design';
@@ -644,180 +668,117 @@ export function buildCustomerConfirmationEmail(input: CustomerConfirmationEmailI
   const safeLogoUrl = escapeHtml(logoUrl);
   const safeMessageHtml = message
     ? escapeHtml(message).replace(/\r\n|\r|\n/g, '<br>')
-    : '<span style="color:#7A8296;font-style:italic;">No message provided.</span>';
+    : `<span class="em-muted" style="color:${EM.muted};font-style:italic;">No message included</span>`;
 
   const subject = `We received your request, ${firstName}`;
 
-  const html = `<!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="x-apple-disable-message-reformatting">
-<title>We received your request — Mohsin Designs</title>
-<!--[if mso]><style>table,td{font-family:Arial,sans-serif !important;}</style><![endif]-->
-<style>
-  @media only screen and (max-width:620px){
-    .container{width:100% !important;}
-    .px{padding-left:24px !important;padding-right:24px !important;}
-    .stack{display:block !important;width:100% !important;}
-    .step-num{padding-bottom:8px !important;}
-  }
-</style>
-</head>
-<body style="margin:0;padding:0;background-color:#EEF1F6;-webkit-font-smoothing:antialiased;">
-<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">
-  Thanks ${safeFirstName} — a specialist will contact you within 1 business day.
-</div>
+  const step = (n: number, title: string, body: string, last = false) => `<tr>
+  <td width="48" valign="top" style="padding:0 0 ${last ? '0' : '20px'} 0;">
+    <div style="width:34px;height:34px;border-radius:17px;background-color:${EM.gold};font-family:${EM_FONT};font-size:14px;line-height:34px;text-align:center;color:${EM.ink};font-weight:800;">${n}</div>
+  </td>
+  <td valign="top" style="padding:4px 0 ${last ? '0' : '22px'} 0;font-family:${EM_FONT};font-size:15px;line-height:22px;">
+    <div class="em-ink" style="font-weight:700;color:${EM.ink};">${title}</div>
+    <div class="em-muted" style="color:${EM.muted};margin-top:2px;">${body}</div>
+  </td>
+</tr>`;
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#EEF1F6;">
-<tr><td align="center" style="padding:32px 12px;">
+  const inner = `
+  <!-- Logo bar -->
+  <tr><td class="em-px" style="background-color:${EM.white};border-radius:16px 16px 0 0;padding:22px 36px;">
+    <a href="https://mohsindesigns.com" style="text-decoration:none;">
+      <img src="${safeLogoUrl}" alt="Mohsin Designs" width="160" style="display:block;border:0;outline:none;max-width:160px;height:auto;font-family:${EM_FONT};font-size:20px;font-weight:700;color:${EM.blue};">
+    </a>
+  </td></tr>
 
-  <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;">
+  <!-- Hero -->
+  <tr><td align="center" class="em-px" style="background-color:${EM.blue};padding:44px 40px 42px 40px;">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+      <td align="center" width="64" height="64" style="width:64px;height:64px;background-color:${EM.gold};border-radius:32px;font-family:${EM_FONT};font-size:30px;line-height:64px;color:${EM.ink};font-weight:800;">&#10003;</td>
+    </tr></table>
+    <h1 class="em-h1" style="margin:22px 0 10px 0;font-family:${EM_FONT};font-size:28px;line-height:35px;color:#FFFFFF;font-weight:800;">
+      Thanks, ${safeFirstName}. We&#39;ve got it.
+    </h1>
+    <p style="margin:0;font-family:${EM_FONT};font-size:16px;line-height:24px;color:#D7DCF5;">
+      A specialist will reach out within <strong style="color:#FFFFFF;">1 business day</strong>.
+    </p>
+  </td></tr>
 
-    <!-- Logo -->
-    <tr><td align="center" style="padding:0 0 22px 0;">
-      <a href="https://mohsindesigns.com" style="text-decoration:none;">
-        <img src="${safeLogoUrl}" alt="Mohsin Designs" width="170" style="display:block;border:0;outline:none;max-width:170px;height:auto;font-family:Arial,sans-serif;font-size:20px;font-weight:bold;color:#0B1F4B;">
-      </a>
-    </td></tr>
+  <!-- Body -->
+  <tr><td class="em-card em-px" style="background-color:${EM.white};padding:34px 40px 34px 40px;">
+    <p class="em-body" style="margin:0 0 26px 0;font-family:${EM_FONT};font-size:16px;line-height:25px;color:${EM.body};">
+      Hi ${safeFirstName}, thanks for reaching out. Here&#39;s a copy of what you sent us, so you have it for your records.
+    </p>
 
-    <!-- Hero -->
-    <tr><td align="center" style="background-color:#0B1F4B;border-radius:10px 10px 0 0;padding:44px 40px 40px 40px;" class="px">
-      <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-        <td align="center" width="56" height="56" style="width:56px;height:56px;background-color:#1E7A3E;border-radius:28px;font-family:Arial,Helvetica,sans-serif;font-size:28px;line-height:56px;color:#FFFFFF;font-weight:bold;">&#10003;</td>
-      </tr></table>
-      <h1 style="margin:22px 0 10px 0;font-family:Arial,Helvetica,sans-serif;font-size:26px;line-height:34px;color:#FFFFFF;font-weight:bold;">
-        Thanks, ${safeFirstName} — we&#39;ve got your request
-      </h1>
-      <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#C3CDE3;">
-        Our ${safeService} team will reach out within <strong style="color:#FFFFFF;">1 business day</strong>.
-      </p>
-    </td></tr>
+    <!-- Summary -->
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="em-line" style="border:1px solid ${EM.line};border-radius:12px;">
+      <tr><td colspan="2" class="em-soft em-rule" style="background-color:${EM.soft};border-bottom:1px solid ${EM.line};border-radius:12px 12px 0 0;padding:13px 20px;font-family:${EM_FONT};font-size:12px;font-weight:700;letter-spacing:1px;color:${EM.muted};">
+        YOUR REQUEST &nbsp;&middot;&nbsp; REF ${safeLeadId}
+      </td></tr>
+      ${emRow('Service', safeService)}
+      ${emRow('Email', safeEmail)}
+      ${emRow('Phone', phone ? safePhone : `<span class="em-muted" style="color:${EM.muted};">Not provided</span>`)}
+      ${emRow('Message', safeMessageHtml, true)}
+    </table>
 
-    <!-- Body -->
-    <tr><td style="background-color:#FFFFFF;padding:36px 40px 12px 40px;" class="px">
+    <!-- What happens next -->
+    <h2 class="em-ink" style="margin:38px 0 18px 0;font-family:${EM_FONT};font-size:18px;line-height:24px;color:${EM.ink};font-weight:800;">What happens next</h2>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+      ${step(1, 'We review your request', 'Our team looks at your business and goals before we call.')}
+      ${step(2, 'A specialist contacts you', 'By phone or email within 1 business day.')}
+      ${step(3, 'You get a clear plan', 'A tailored proposal with scope, timeline and pricing.', true)}
+    </table>
 
-      <p style="margin:0 0 26px 0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#2B3245;">
-        Hi ${safeFirstName},<br><br>
-        Thank you for contacting Mohsin Designs. We&#39;ve received your inquiry and our team is already reviewing it. Here&#39;s a copy of what you sent us for your records.
-      </p>
+    <!-- Actions -->
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:34px 0 0 0;"><tr>
+      <td align="center" style="padding:0;">
+        ${emButton(safeBookingUrl, 'Book a free call', 'primary')}
+      </td>
+    </tr><tr>
+      <td align="center" class="em-muted" style="padding:16px 0 0 0;font-family:${EM_FONT};font-size:14px;line-height:21px;color:${EM.muted};">
+        Prefer to talk now? Call <a href="tel:${safeCompanyTelHref}" class="em-link" style="color:${EM.blue};text-decoration:none;font-weight:700;">${safeCompanyPhone}</a><br>
+        or simply reply to this email.
+      </td>
+    </tr></table>
 
-      <!-- Summary -->
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #E3E8F0;border-radius:8px;">
-        <tr><td colspan="2" style="background-color:#F6F8FB;border-bottom:1px solid #E3E8F0;border-radius:8px 8px 0 0;padding:12px 20px;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:bold;color:#5B6478;letter-spacing:1px;">
-          YOUR REQUEST &nbsp;·&nbsp; REF ${safeLeadId}
-        </td></tr>
-        <tr>
-          <td class="stack" width="34%" style="padding:13px 20px;border-bottom:1px solid #EEF1F6;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#7A8296;">Service</td>
-          <td class="stack" style="padding:13px 20px;border-bottom:1px solid #EEF1F6;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1A2033;font-weight:bold;">${safeService}</td>
-        </tr>
-        <tr>
-          <td class="stack" style="padding:13px 20px;border-bottom:1px solid #EEF1F6;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#7A8296;">Email</td>
-          <td class="stack" style="padding:13px 20px;border-bottom:1px solid #EEF1F6;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1A2033;">${safeEmail}</td>
-        </tr>
-        <tr>
-          <td class="stack" style="padding:13px 20px;border-bottom:1px solid #EEF1F6;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#7A8296;">Phone</td>
-          <td class="stack" style="padding:13px 20px;border-bottom:1px solid #EEF1F6;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1A2033;">${phone ? safePhone : 'Not provided'}</td>
-        </tr>
-        <tr>
-          <td class="stack" valign="top" style="padding:13px 20px;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#7A8296;">Message</td>
-          <td class="stack" style="padding:13px 20px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:22px;color:#1A2033;">${safeMessageHtml}</td>
-        </tr>
-      </table>
+    <p class="em-body em-rule" style="margin:34px 0 0 0;padding-top:26px;border-top:1px solid ${EM.line};font-family:${EM_FONT};font-size:16px;line-height:25px;color:${EM.body};">
+      Talk soon,<br><strong class="em-ink" style="color:${EM.ink};">The Mohsin Designs Team</strong>
+    </p>
+  </td></tr>
 
-      <!-- What happens next -->
-      <h2 style="margin:34px 0 18px 0;font-family:Arial,Helvetica,sans-serif;font-size:17px;line-height:24px;color:#0B1F4B;font-weight:bold;">What happens next</h2>
-
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td class="step-num" width="44" valign="top" style="padding-bottom:18px;">
-            <div style="width:30px;height:30px;border-radius:15px;background-color:#E8EDF7;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:30px;text-align:center;color:#0B1F4B;font-weight:bold;">1</div>
-          </td>
-          <td valign="top" style="padding-bottom:18px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:21px;color:#5B6478;">
-            <strong style="color:#1A2033;">We review your request</strong><br>Our team looks at your business and goals before we call.
-          </td>
-        </tr>
-        <tr>
-          <td width="44" valign="top" style="padding-bottom:18px;">
-            <div style="width:30px;height:30px;border-radius:15px;background-color:#E8EDF7;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:30px;text-align:center;color:#0B1F4B;font-weight:bold;">2</div>
-          </td>
-          <td valign="top" style="padding-bottom:18px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:21px;color:#5B6478;">
-            <strong style="color:#1A2033;">A specialist contacts you</strong><br>By phone or email within 1 business day.
-          </td>
-        </tr>
-        <tr>
-          <td width="44" valign="top" style="padding-bottom:6px;">
-            <div style="width:30px;height:30px;border-radius:15px;background-color:#E8EDF7;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:30px;text-align:center;color:#0B1F4B;font-weight:bold;">3</div>
-          </td>
-          <td valign="top" style="padding-bottom:6px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:21px;color:#5B6478;">
-            <strong style="color:#1A2033;">You get a clear plan</strong><br>A tailored proposal with scope, timeline and pricing.
-          </td>
-        </tr>
-      </table>
-
-      <!-- CTA -->
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:30px 0 8px 0;"><tr>
-        <td align="center">
-          <a href="${safeBookingUrl}" style="display:inline-block;background-color:#0B1F4B;border-radius:6px;padding:15px 34px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#FFFFFF;text-decoration:none;">Book a call now</a>
-        </td>
-      </tr><tr>
-        <td align="center" style="padding-top:12px;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#8A92A6;">
-          Can&#39;t wait? Reply to this email or call <a href="tel:${safeCompanyTelHref}" style="color:#1F5BD8;text-decoration:none;">${safeCompanyPhone}</a>
-        </td>
-      </tr></table>
-
-      <p style="margin:30px 0 30px 0;padding-top:24px;border-top:1px solid #EEF1F6;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#2B3245;">
-        Talk soon,<br><strong style="color:#0B1F4B;">The Mohsin Designs Team</strong>
-      </p>
-
-    </td></tr>
-
-    <!-- Footer -->
-    <tr><td align="center" style="background-color:#F6F8FB;border-radius:0 0 10px 10px;border-top:1px solid #E3E8F0;padding:24px 40px;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:19px;color:#8A92A6;" class="px">
-      <a href="https://mohsindesigns.com" style="color:#0B1F4B;text-decoration:none;font-weight:bold;">mohsindesigns.com</a>
-      &nbsp;·&nbsp; <a href="mailto:${safeCompanyEmail}" style="color:#5B6478;text-decoration:none;">${safeCompanyEmail}</a><br>
-      ${safeCompanyAddress}<br><br>
-      You&#39;re receiving this because you submitted a form on our website. If this wasn&#39;t you, please ignore this email.
-    </td></tr>
-
-  </table>
-</td></tr>
-</table>
-</body>
-</html>`;
+  <!-- Footer -->
+  <tr><td align="center" class="em-soft em-px" style="background-color:${EM.soft};border-radius:0 0 16px 16px;padding:26px 40px;font-family:${EM_FONT};font-size:12px;line-height:19px;color:${EM.muted};">
+    <a href="https://mohsindesigns.com" class="em-link" style="color:${EM.blue};text-decoration:none;font-weight:700;">mohsindesigns.com</a>
+    &nbsp;&middot;&nbsp; <a href="mailto:${safeCompanyEmail}" class="em-muted" style="color:${EM.muted};text-decoration:none;">${safeCompanyEmail}</a><br>
+    ${safeCompanyAddress}<br><br>
+    You&#39;re getting this because you submitted a form on our website. If that wasn&#39;t you, you can safely ignore this email.
+  </td></tr>`;
 
   const text = [
-    `Hi ${firstName},`,
+    `Thanks, ${firstName}. We've got your request.`,
     ``,
-    `Thank you for contacting Mohsin Designs. We've received your inquiry and our team is already reviewing it. Here's a copy of what you sent us for your records:`,
+    `A specialist will reach out within 1 business day.`,
     ``,
-    `--------------------------------------------------`,
-    `YOUR REQUEST · REF ${leadId}`,
-    `--------------------------------------------------`,
+    `YOUR REQUEST (REF ${leadId})`,
     `Service: ${service}`,
     `Email:   ${email}`,
     `Phone:   ${phone || 'Not provided'}`,
-    `Message: ${message || 'No message provided'}`,
+    `Message: ${message || 'No message included'}`,
     ``,
-    `--------------------------------------------------`,
-    `WHAT HAPPENS NEXT:`,
-    `--------------------------------------------------`,
-    `1. We review your request — Our team looks at your business and goals before we call.`,
-    `2. A specialist contacts you — By phone or email within 1 business day.`,
-    `3. You get a clear plan — A tailored proposal with scope, timeline and pricing.`,
+    `WHAT HAPPENS NEXT`,
+    `1. We review your request: our team looks at your business and goals before we call.`,
+    `2. A specialist contacts you: by phone or email within 1 business day.`,
+    `3. You get a clear plan: a tailored proposal with scope, timeline and pricing.`,
     ``,
-    `Want to fast-track? Book a call directly:`,
-    `${bookingUrl}`,
+    `Want to skip the wait? Book a free call:`,
+    bookingUrl,
     ``,
-    `Can't wait? Reply to this email or call ${companyPhone}.`,
+    `Prefer to talk now? Call ${companyPhone} or just reply to this email.`,
     ``,
     `Talk soon,`,
     `The Mohsin Designs Team`,
     `https://mohsindesigns.com · ${companyEmail}`,
-    `${companyAddress}`,
+    companyAddress,
   ].join('\n');
 
-  return { html, text, subject };
+  return { html: emailDocument({ title: 'We received your request — Mohsin Designs', preheader: `Thanks ${firstName} — a specialist will contact you within 1 business day.`, inner }), text, subject };
 }
-
