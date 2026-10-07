@@ -688,9 +688,6 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
     clientTrust: {
       enabled: dbService?.clientTrust?.enabled,
       heading: dbService?.clientTrust?.heading || "ENTERPRISE PLATFORMS WE INTEGRATE & ACCELERATE",
-      // Optional one-line supporting copy (saved by the services importer / catalog data). It was
-      // stored on the record but never shown anywhere.
-      description: dbService?.clientTrust?.description || "",
       logos: pickList(dbService?.clientTrust?.logos, dbService?.clientTrust) ?? [
             { name: "Google Ads" },
             { name: "Meta Business" },
@@ -1265,15 +1262,10 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
           <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-white to-transparent dark:from-[#080710] z-20 pointer-events-none" />
 
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 flex flex-col md:flex-row items-center gap-6">
-            <div className="text-center md:text-left shrink-0 md:max-w-xs space-y-1">
+            <div className="text-center md:text-left shrink-0 md:max-w-xs">
               <span className="block text-[11px] font-mono font-black text-brand-blue dark:text-brand-yellow uppercase tracking-widest">
                 {service.clientTrust.heading}
               </span>
-              {service.clientTrust.description && (
-                <span className="block text-[11px] font-sans normal-case text-brand-zinc-500 dark:text-zinc-400 leading-snug">
-                  {service.clientTrust.description}
-                </span>
-              )}
             </div>
 
             <div className="flex-1 overflow-hidden relative">
