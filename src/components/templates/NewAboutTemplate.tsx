@@ -23,6 +23,7 @@ import {
   Target
 } from "lucide-react";
 import { useContent } from "@/hooks/useContent";
+import { isServiceVisibleOnPage } from "@/lib/servicesVisibility";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import AccentHighlight from "@/components/ui/AccentHighlight";
 
@@ -182,7 +183,8 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
         (item.title && s.title?.toLowerCase() === item.title?.toLowerCase()) ||
         (item.name && (s.title?.toLowerCase() === item.name?.toLowerCase() || s.name?.toLowerCase() === item.name?.toLowerCase()))
       );
-      if (matchedMaster && (matchedMaster.status === "draft" || matchedMaster.isTrashed)) return;
+      if (matchedMaster && (matchedMaster.status === "draft" || matchedMaster.isTrashed || !isServiceVisibleOnPage(matchedMaster, pageData?.slug || "about"))) return;
+      if (!matchedMaster && !isServiceVisibleOnPage(item, pageData?.slug || "about")) return;
 
       const live: any = matchedMaster || {};
       const full: any = { ...item, ...live };

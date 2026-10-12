@@ -45,11 +45,14 @@ function resolveContactData(contact: any) {
  * _id / id / slug / title) and, when nothing is picked, show every published service instead of
  * an empty carousel / the stale `services.services` mirror saved on the page document.
  */
+import { isServiceVisibleOnPage } from "@/lib/servicesVisibility";
+
 function resolveServicesSection(raw: any, masterCatalog: any) {
-  const catalog: any[] = Array.isArray(masterCatalog)
-    ? masterCatalog.filter((s: any) => s && s.title && s.status !== "draft" && !s.isTrashed)
-    : [];
-  if (!raw || catalog.length === 0) return raw;
+  const allMaster: any[] = Array.isArray(masterCatalog) ? masterCatalog : [];
+  const catalog: any[] = allMaster.filter(
+    (s: any) => s && s.title && s.status !== "draft" && !s.isTrashed && isServiceVisibleOnPage(s, "home")
+  );
+  if (!raw) return raw;
 
   const fresh = (svc: any, base: any = {}) => ({
     ...base,
@@ -68,17 +71,25 @@ function resolveServicesSection(raw: any, masterCatalog: any) {
   const picked: any[] = Array.isArray(raw.list) ? raw.list : [];
   if (picked.length === 0) return { ...raw, list: catalog.map((svc) => fresh(svc)) };
 
-  const list = picked.map((item: any) => {
-    if (!item || typeof item !== "object") return item; // legacy string picks: <Services> resolves these itself
-    const match = catalog.find(
-      (s: any) =>
-        (item._id && s._id === item._id) ||
-        (item.id && (s.id === item.id || s._id === item.id)) ||
-        (item.slug && s.slug === item.slug) ||
-        (item.title && s.title?.toLowerCase() === String(item.title).toLowerCase())
-    );
-    return match ? fresh(match, item) : item;
-  });
+  const list = picked
+    .map((item: any) => {
+      if (!item || typeof item !== "object") return item; // legacy string picks: <Services> resolves these itself
+      const match = allMaster.find(
+        (s: any) =>
+          (item._id && s._id === item._id) ||
+          (item.id && (s.id === item.id || s._id === item.id)) ||
+          (item.slug && s.slug === item.slug) ||
+          (item.title && s.title?.toLowerCase() === String(item.title).toLowerCase())
+      );
+      if (match) {
+        if (!isServiceVisibleOnPage(match, "home")) return null;
+        return fresh(match, item);
+      }
+      if (!isServiceVisibleOnPage(item, "home")) return null;
+      return item;
+    })
+    .filter(Boolean);
+
   return { ...raw, list };
 }
 

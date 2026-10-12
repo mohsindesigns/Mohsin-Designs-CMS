@@ -6,6 +6,7 @@ import React, { useState } from "react";
 import Link from "@/components/ui/Link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
+import { isServiceVisibleOnPage } from "@/lib/servicesVisibility";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -370,7 +371,8 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
         s.status === "draft" ||
         s.isTrashed ||
         typeof s.slug !== "string" || !s.slug.trim() ||
-        typeof s.title !== "string" || !s.title.trim()
+        typeof s.title !== "string" || !s.title.trim() ||
+        !isServiceVisibleOnPage(s, "services")
       ) return false;
       const key = s.slug.trim();
       if (seenSlugs.has(key)) return false;

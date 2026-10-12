@@ -8,8 +8,10 @@ import { Icon } from "../config/icons";
 import { useContent } from "../hooks/useContent";
 import Image from "next/image";
 import Link from "@/components/ui/Link";
+import { usePathname } from "next/navigation";
 import CtaButton from "@/components/ui/CtaButton";
 import { parseMapEmbed } from "@/lib/mapEmbed";
+import { isServiceVisibleOnPage } from "@/lib/servicesVisibility";
 
 // Shared look of the dropdown / mega-menu panels. The nav bar itself is uppercase + bold + wide
 // tracking; panels must reset that or their titles and descriptions become unreadable.
@@ -32,6 +34,7 @@ function resolveLocationMap(menu: any, item?: any): MapSource {
 }
 
 export default function Navbar() {
+  const pathname = usePathname();
   const content = useContent();
   const { navbar, settings, services: servicesData } = content;
   const [isOpen, setIsOpen] = useState(false);
@@ -55,7 +58,7 @@ export default function Navbar() {
     })
     .filter(Boolean);
   const services = (servicesData.services || []).filter((s: any) =>
-    (s.status === 'published' || s.status === undefined) && !s.isTrashed && s.title && String(s.title).trim()
+    (s.status === 'published' || s.status === undefined) && !s.isTrashed && s.title && String(s.title).trim() && isServiceVisibleOnPage(s, pathname)
   );
 
   useEffect(() => {

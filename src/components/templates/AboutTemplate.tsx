@@ -8,6 +8,7 @@ import { useContent } from "../../hooks/useContent";
 import { Icon } from "../../config/icons";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { isServiceVisibleOnPage } from "@/lib/servicesVisibility";
 
 
 
@@ -730,11 +731,12 @@ const ServicesSection = ({ content: passedContent, featuredServices: passedFeatu
     return s;
   }).filter(Boolean);
 
-  const servicesList = resolvedFeatured.length > 0
+  const servicesList = (resolvedFeatured.length > 0
     ? resolvedFeatured
     : (Array.isArray(services) ? services : (services as any)?.services || [])
       .filter((s: any) => s.status === 'published' || s.status === undefined)
-      .slice(0, 6);
+      .slice(0, 6)
+  ).filter((s: any) => isServiceVisibleOnPage(s, "about"));
 
   return (
     <section className="py-16 md:py-24 px-6 lg:px-12 bg-transparent relative z-30">

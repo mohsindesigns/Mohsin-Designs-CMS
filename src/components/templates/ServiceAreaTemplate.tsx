@@ -22,6 +22,7 @@ import { parseMapEmbed } from "@/lib/mapEmbed";
 import { isSafeHref } from "@/lib/utils";
 import { BASE_URL } from "@/lib/constants";
 import { SERVICE_AREA_DEFAULTS as D, SERVICE_AREA_DEFAULT_ICONS, isQuoteAnchor } from "@/lib/serviceAreaDefaults";
+import { isServiceVisibleOnPage } from "@/lib/servicesVisibility";
 
 const QuickQuote = dynamic(() => import("@/components/QuickQuote"), { ssr: false });
 const VideoTestimonials = dynamic(() => import("@/components/sections/VideoTestimonials"), { ssr: false });
@@ -146,8 +147,11 @@ const ServiceCard = ({ service, index }: any) => {
 
 export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
   const { services: dataRaw } = useContent();
+  const currentSlug = pageData?.slug || "service-area";
   // Global service catalogue - only used when the page has no hand-picked service cards.
-  const services = ((dataRaw as any)?.services || []).filter((s: any) => s.status === 'published' || s.status === undefined);
+  const services = ((dataRaw as any)?.services || []).filter((s: any) =>
+    (s.status === 'published' || s.status === undefined) && isServiceVisibleOnPage(s, currentSlug)
+  );
 
   // Safely extract content overrides or fallbacks
   const content = pageData?.content || {};
@@ -193,13 +197,16 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
   const servicesSection = mergeSection(content.servicesSection, D.servicesSection);
   // Hand-picked cards win; a saved section WITHOUT `items` shows the global catalogue instead.
-  const serviceCards: any[] = (
+  const rawServiceCards: any[] = (
     Array.isArray(content.servicesSection?.items)
       ? content.servicesSection.items
       : isRecord(content.servicesSection)
         ? services.slice(0, 6)
         : (D.servicesSection.items as any[])
-  ).filter((s: any) => s && (String(s.title ?? "").trim() || hasRich(s.description) || hasRich(s.tagline)));
+  );
+  const serviceCards: any[] = rawServiceCards
+    .filter((s: any) => s && (String(s.title ?? "").trim() || hasRich(s.description) || hasRich(s.tagline)))
+    .filter((s: any) => isServiceVisibleOnPage(s, currentSlug));
   const servicesVisible = servicesSection.enabled !== false && serviceCards.length > 0;
 
   const regionsSection = mergeSection(content.regionsSection, D.regionsSection);

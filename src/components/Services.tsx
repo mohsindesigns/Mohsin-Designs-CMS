@@ -7,6 +7,8 @@ import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "@/components/ui/Link";
 import { useContent } from "@/hooks/useContent";
+import { usePathname } from "next/navigation";
+import { isServiceVisibleOnPage } from "@/lib/servicesVisibility";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import AccentHighlight from "@/components/ui/AccentHighlight";
 
@@ -20,6 +22,7 @@ const toPlainText = (value: unknown): string => {
 };
 
 export default function Services({ data: propData, masterCatalog: masterCatalogProp }: { data?: any; masterCatalog?: any[] }) {
+  const pathname = usePathname();
   const carouselRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const dragStartPos = useRef({ x: 0, scrollLeft: 0 });
@@ -80,6 +83,40 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
       ...(Array.isArray(anyContent?.services) ? anyContent.services : []),
       ...(Array.isArray(anyContent?.globalServices) ? anyContent.globalServices : [])
     ];
+
+  // If services.list is empty, fallback to masterServices
+  const sourceList = services.list.length > 0 ? services.list : masterServices;
+
+  const validCards = sourceList
+    .map((service: any, index: number) => {
+      const globalService = masterServices.find(
+        (s: any) =>
+          (service?._id && s?._id === service._id) ||
+          (service?.id && (s?.id === service.id || s?._id === service.id)) ||
+          (service?.slug && s?.slug === service.slug) ||
+          (typeof service === 'string' && (s?._id === service || s?.id === service || s?.slug === service || s?.title === service)) ||
+          (service?.title && s?.title?.toLowerCase() === service.title?.toLowerCase())
+      );
+
+      const title = service?.title || globalService?.title || (typeof service === 'string' ? service : "Service");
+      const rawDesc = service?.hero?.description || globalService?.hero?.description || service?.desc || service?.description || service?.shortDescription || service?.tagline || globalService?.desc || globalService?.description || "";
+      const desc = toPlainText(rawDesc);
+      const imgSrc = service?.image || service?.overviewImage || service?.heroImage || service?.featuredImage || globalService?.image || globalService?.overviewImage || globalService?.heroImage || globalService?.featuredImage || globalService?.hero?.bgImage || globalService?.hero?.backgroundImage || "";
+      const category = service?.category || service?.tag || globalService?.category || globalService?.tag || "";
+      const slug = service?.slug || globalService?.slug || "";
+      const num = service?.num || String(index + 1).padStart(2, "0");
+
+      if (!globalService && !imgSrc) return null;
+
+      // Check visibility rules: if service is restricted to specific pages/services, respect it
+      if (globalService && !isServiceVisibleOnPage(globalService, pathname)) return null;
+      if (service && typeof service === 'object' && service.visibility && !isServiceVisibleOnPage(service, pathname)) return null;
+
+      return { service, title, desc, imgSrc, category, slug, num };
+    })
+    .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
+
+  if (validCards.length === 0) return null;
 
   return (
     <section id="services" className="relative overflow-hidden bg-[#F8FAFC] dark:bg-[#0a0a14] border-t border-brand-zinc-200 dark:border-white/10 section-y">
@@ -181,35 +218,7 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
           className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-none w-full -mx-2 px-2 md:mx-0 md:px-0 py-8 carousel-grab select-none"
         >
-          {services.list
-            .map((service: any, index: number) => {
-              const globalService = masterServices.find(
-                (s: any) =>
-                  (service?._id && s?._id === service._id) ||
-                  (service?.id && (s?.id === service.id || s?._id === service.id)) ||
-                  (service?.slug && s?.slug === service.slug) ||
-                  (typeof service === 'string' && (s?._id === service || s?.id === service || s?.slug === service || s?.title === service)) ||
-                  (service?.title && s?.title?.toLowerCase() === service.title?.toLowerCase())
-              );
-
-              const title = service?.title || globalService?.title || (typeof service === 'string' ? service : "Service");
-              const rawDesc = service?.hero?.description || globalService?.hero?.description || service?.desc || service?.description || service?.shortDescription || service?.tagline || globalService?.desc || globalService?.description || "";
-              const desc = toPlainText(rawDesc);
-              const imgSrc = service?.image || service?.overviewImage || service?.heroImage || service?.featuredImage || globalService?.image || globalService?.overviewImage || globalService?.heroImage || globalService?.featuredImage || globalService?.hero?.bgImage || globalService?.hero?.backgroundImage || "";
-              const category = service?.category || service?.tag || globalService?.category || globalService?.tag || "";
-              const slug = service?.slug || globalService?.slug || "";
-              const num = service?.num || String(index + 1).padStart(2, "0");
-
-              // A curated pick that matches no real service and carries no image of its
-              // own is almost always a stale/orphaned reference (e.g. a deleted service or
-              // leftover default) rather than an intentional card — skip it instead of
-              // rendering a blank"No Image" placeholder on the live site.
-              if (!globalService && !imgSrc) return null;
-
-              return { service, title, desc, imgSrc, category, slug, num };
-            })
-            .filter((entry): entry is NonNullable<typeof entry> => entry !== null)
-            .map((entry, index) => {
+          {validCards.map((entry, index) => {
             const { service, title, desc, imgSrc, category, slug, num } = entry;
             return (
               <div key={service?._id || service?.id || index} className="w-[86%] sm:w-[calc(50%-12px)] lg:w-[calc(33.33%-16px)] shrink-0 snap-start">

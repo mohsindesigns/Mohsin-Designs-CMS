@@ -5,6 +5,8 @@ import Link from "@/components/ui/Link";
 import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '../config/icons';
 import { useContent } from '../hooks/useContent';
+import { usePathname } from 'next/navigation';
+import { isServiceVisibleOnPage } from '@/lib/servicesVisibility';
 import RichTextRenderer from './ui/RichTextRenderer';
 import TurnstileCaptcha from './ui/TurnstileCaptcha';
 
@@ -86,6 +88,7 @@ const SMSConsentCheckbox = ({ checked, onChange }: { checked: boolean; onChange:
 };
 
 const QuickQuote = () => {
+    const pathname = usePathname();
     const { quickQuote, services, globalServices } = useContent();
     const [isOpen, setIsOpen] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
@@ -102,15 +105,13 @@ const QuickQuote = () => {
     const [isSuccess, setIsSuccess] = useState(false);
     const [step, setStep] = useState(1);
 
-    // Project types = every PUBLISHED service in the live catalogue. `globalServices` first:
-    // `services.services` is only the homepage's featured subset (see useContent), which is
-    // why this list used to miss services on the home page. Trashed entries are skipped.
+    // Project types = every PUBLISHED service in the live catalogue that is visible on the current page.
     const projectTypes = (() => {
         const fallback = Array.isArray(services) ? services : (services as any)?.services || [];
         const servicesList: any[] = Array.isArray(globalServices) && globalServices.length > 0 ? globalServices : fallback;
         const seen = new Set<string>();
         return servicesList
-            .filter((s: any) => (s?.status === 'published' || s?.status === undefined) && !s?.isTrashed && s?.title)
+            .filter((s: any) => (s?.status === 'published' || s?.status === undefined) && !s?.isTrashed && s?.title && isServiceVisibleOnPage(s, pathname))
             .map((service: any) => ({
                 value: service.slug || String(service.title).toLowerCase().replace(/ /g, '-'),
                 label: String(service.title).trim()

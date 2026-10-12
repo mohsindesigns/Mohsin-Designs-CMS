@@ -4,9 +4,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowUp } from "lucide-react";
 import { FormEvent, useState, useRef, useEffect } from "react";
 import Link from "@/components/ui/Link";
+import { usePathname } from "next/navigation";
 import { useContent } from "../hooks/useContent";
 import RichTextRenderer from "./ui/RichTextRenderer";
 import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
+import { isServiceVisibleOnPage } from "@/lib/servicesVisibility";
 import { Icon } from "../config/icons";
  
 const stripHtml = (html: string) => {
@@ -167,12 +169,13 @@ export default function Footer() {
     (l: any) => l?.label && String(l.label).trim()
   );
 
+  const pathname = usePathname();
   // Trashed services keep status "published" in the catalogue, so `isTrashed` must be excluded
   // explicitly (like the Navbar does) or the footer links to pages that 404. Read the full
   // catalogue (`globalServices`) so a page-level "featured services" subset never shrinks it.
   const catalogue: any[] = (content as any).globalServices?.length ? (content as any).globalServices : (servicesData?.services || []);
   const allPublishedServices = catalogue.filter(
-    (s: any) => (s.status === 'published' || s.status === undefined) && !s.isTrashed && s.title && String(s.title).trim() && s.slug
+    (s: any) => (s.status === 'published' || s.status === undefined) && !s.isTrashed && s.title && String(s.title).trim() && s.slug && isServiceVisibleOnPage(s, pathname)
   );
 
   //"Selected Footer Services" is managed at Admin > Settings > Footer as a

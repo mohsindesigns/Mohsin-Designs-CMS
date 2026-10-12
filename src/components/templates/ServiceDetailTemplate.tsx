@@ -8,6 +8,7 @@ import React, { use, useState, useEffect, useRef, useId } from "react";
 import Link from "@/components/ui/Link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
+import { isServiceVisibleOnPage } from "@/lib/servicesVisibility";
 import { notFound } from "next/navigation";
 import { isSafeHref, getValidHref } from "@/lib/utils";
 import { motion, AnimatePresence, useMotionValue, useInView } from "framer-motion";
@@ -1109,8 +1110,12 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
   // Only live, titled, routable services: rawServices also contains drafts and trashed entries, which
   // must never appear as a recommendation card or as a choice in the public form's service dropdown.
   const publicServices = rawServices.filter((s: any) => s && s.title && s.slug && s.status !== 'draft' && !s.isTrashed);
-  const recommendedServices = publicServices.filter((s: any) => s.slug !== service.slug);
-  const serviceOptions: string[] = Array.from(new Set([service.title, ...publicServices.map((s: any) => String(s.title))]));
+  // Honor visibility rules: only include services that are global OR explicitly targeted to this service/page
+  const recommendedServices = publicServices.filter((s: any) =>
+    s.slug !== service.slug && isServiceVisibleOnPage(s, service.slug)
+  );
+  const dropdownServices = publicServices.filter((s: any) => isServiceVisibleOnPage(s, service.slug));
+  const serviceOptions: string[] = Array.from(new Set([service.title, ...dropdownServices.map((s: any) => String(s.title))]));
 
   // ── Section visibility (single source of truth) ──
   // `enabled !== false` shows a section (undefined = visible); an emptied list hides the section too,

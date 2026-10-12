@@ -27,6 +27,7 @@ import PageInlineFaqs from "@/components/PageInlineFaqs";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import AccentHighlight from "@/components/ui/AccentHighlight";
 import { DEFAULT_INDUSTRY_DOMAINS, DEFAULT_INDUSTRY_FEATURES, padIndex } from "./industryDefaults";
+import { isServiceVisibleOnPage } from "@/lib/servicesVisibility";
 
 // ── Icon Resolver Helper ──────────────────────────────────────────────────────
 // Same namespace the admin IconSelector lists from, so every name it can save resolves here.
@@ -203,6 +204,9 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
     ? pageContent.globalServices
     : Array.isArray(cmsServicesData?.services) ? cmsServicesData.services : [];
   const isLiveService = (s: any) => !!s && s.status !== "draft" && !s.isTrashed;
+  const currentIndustrySlug = pageData?.slug || "industry";
+  const isVisibleHere = (s: any) => isLiveService(s) && isServiceVisibleOnPage(s, currentIndustrySlug);
+  const liveCatalogVisible = catalogAll.filter(isVisibleHere);
   const findLiveService = (sel: any) =>
     catalogAll.find((s: any) => s && ((sel?.slug && s.slug === sel.slug) || (sel?._id && s._id === sel._id) || (sel?.id && s.id === sel.id)));
   // ContentSelector stores a full SNAPSHOT of every ticked service, which goes stale when the
@@ -212,16 +216,16 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
     .filter((sel: any) => sel && typeof sel === "object")
     .map((sel: any) => {
       const live = findLiveService(sel);
-      if (!live) return sel;
-      return isLiveService(live) ? { ...sel, ...live } : null;
+      if (!live) return isServiceVisibleOnPage(sel, currentIndustrySlug) ? sel : null;
+      return isVisibleHere(live) ? { ...sel, ...live } : null;
     })
     .filter(Boolean);
   const rawServices = curatedServices.length > 0
     ? curatedServices
     : (Array.isArray(industryData.servicesSection?.items) && industryData.servicesSection.items.length > 0)
-      ? industryData.servicesSection.items
-      : catalogAll.filter(isLiveService).length > 0
-        ? catalogAll.filter(isLiveService)
+      ? industryData.servicesSection.items.filter((it: any) => isServiceVisibleOnPage(it, currentIndustrySlug))
+      : liveCatalogVisible.length > 0
+        ? liveCatalogVisible
         : [
             {
               title: "Custom Web Application Engineering",

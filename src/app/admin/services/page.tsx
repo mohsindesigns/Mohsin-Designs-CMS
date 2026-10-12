@@ -21,6 +21,8 @@ import IconSelector from "@/components/admin/IconSelector";
 import SeoEditor from "@/components/admin/SeoEditor";
 import SectionToggle from "@/components/admin/SectionToggle";
 import MediaSelector from "@/components/admin/MediaSelector";
+import VisibilityPicker from "@/components/admin/VisibilityPicker";
+import { TEMPLATES_WITH_SERVICES_SECTION } from "@/lib/servicesVisibility";
 import SchemaEditor from "@/components/admin/SchemaEditor";
 import BlogSelector from "@/components/admin/BlogSelector";
 import { BASE_URL } from "@/lib/constants";
@@ -143,6 +145,8 @@ const DEFAULT_SERVICE_TEMPLATE = {
   tag: "Premium Solution",
   icon: "Search",
   status: "published",
+  visibility: "global",
+  targetPages: [],
   createdAt: new Date().toISOString(),
   hero: {
     titleIntro: "Transform Your Business With",
@@ -411,14 +415,30 @@ export default function ServicesAdminPage() {
     title: "",
     slug: "",
     tag: "Premium Solution",
-    status: "published"
+    status: "published",
+    visibility: "global",
+    targetPages: [] as string[]
   });
 
+  const [availablePages, setAvailablePages] = useState<{ id: string; label: string; group?: string; hint?: string }[]>([]);
   const [form, setForm] = useState<any>(DEFAULT_SERVICE_TEMPLATE);
+
+  const availableServicesList = React.useMemo(() => {
+    return services
+      .filter((s: any) => !s.isTrashed && s.slug !== (form?.slug || newService?.slug))
+      .map((s: any) => ({
+        id: s.slug,
+        label: s.title || s.slug,
+        hint: `/services/${s.slug}`
+      }));
+  }, [services, form?.slug, newService?.slug]);
 
   const fetchServices = async () => {
     try {
-      const res = await fetch(`/api/content?t=${Date.now()}`);
+      const [res, pagesRes] = await Promise.all([
+        fetch(`/api/content?t=${Date.now()}`),
+        fetch(`/api/admin/pages?t=${Date.now()}`).catch(() => null)
+      ]);
       const json = await res.json();
       setData(json);
       const list = Array.isArray(json.services?.services) && json.services.services.length > 0
@@ -429,6 +449,30 @@ export default function ServicesAdminPage() {
             ? json.globalServices
             : (Array.isArray(json.services?.list) && json.services.list.length > 0 ? json.services.list : [])));
       setServices(list);
+
+      if (pagesRes && pagesRes.ok) {
+        const pagesList = await pagesRes.json();
+        if (Array.isArray(pagesList)) {
+          const pList = pagesList
+            // Only pages whose template actually renders a services section - otherwise targeting
+            // a service to e.g. a FAQ or Gallery page would do nothing. 'home' is excluded because
+            // it's already the hardcoded "Homepage" core option above; 'service-detail' is excluded
+            // because those pages are services themselves, already listed under "Other Services".
+            .filter((p: any) =>
+              !p.isTrashed &&
+              p.template !== "home" &&
+              p.template !== "service-detail" &&
+              TEMPLATES_WITH_SERVICES_SECTION.includes(p.template)
+            )
+            .map((p: any) => ({
+              id: p.slug,
+              label: p.title || p.slug,
+              group: "Pages",
+              hint: `/${p.slug}`
+            }));
+          setAvailablePages(pList);
+        }
+      }
     } catch (err) {
       console.error("Failed to fetch services:", err);
     } finally {
@@ -638,7 +682,9 @@ export default function ServicesAdminPage() {
       finalCta: {
         ...DEFAULT_SERVICE_TEMPLATE.finalCta,
         ...(service.finalCta || {})
-      }
+      },
+      visibility: service.visibility || "global",
+      targetPages: Array.isArray(service.targetPages) ? service.targetPages : []
     });
     setSeo({
       ...(service.seo || {}),
@@ -662,6 +708,8 @@ export default function ServicesAdminPage() {
       slug: newService.slug,
       tag: newService.tag || "Premium Solution",
       status: newService.status || "published",
+      visibility: newService.visibility || "global",
+      targetPages: Array.isArray(newService.targetPages) ? newService.targetPages : [],
       createdAt: new Date().toISOString()
     };
 
@@ -687,7 +735,9 @@ export default function ServicesAdminPage() {
         title: editingService.title,
         slug: ns,
         tag: editingService.tag,
-        status: editingService.status
+        status: editingService.status,
+        visibility: editingService.visibility || "global",
+        targetPages: Array.isArray(editingService.targetPages) ? editingService.targetPages : []
       };
       saveToDb(newServices);
       setEditingService(null);
@@ -809,7 +859,9 @@ export default function ServicesAdminPage() {
       title: "",
       slug: "",
       tag: "Premium Solution",
-      status: "published"
+      status: "published",
+      visibility: "global",
+      targetPages: []
     });
     setShowAddModal(true);
   };
@@ -3912,6 +3964,33 @@ export default function ServicesAdminPage() {
                 </div>
               </div>
 
+              {/* Display & Section Visibility Box */}
+              <div className="bg-white border border-[#c3c4c7] shadow-sm rounded-sm overflow-hidden">
+                <div className="px-3 py-1.5 border-b border-[#c3c4c7] bg-[#f6f7f7] flex items-center justify-between">
+                  <h2 className="text-[13px] font-semibold text-[#1d2327]">Display Visibility</h2>
+                  <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
+                    form.visibility === 'specific' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                  }`}>
+                    {form.visibility === 'specific' ? `Selective (${(form.targetPages || []).length})` : 'Global'}
+                  </span>
+                </div>
+                <div className="p-3">
+                  <p className="text-[11px] text-[#646970] mb-2 leading-tight">
+                    Choose whether this service appears everywhere in services carousels and lists, or only on selected pages &amp; services.
+                  </p>
+                  <VisibilityPicker
+                    visibility={form.visibility || "global"}
+                    targetPages={form.targetPages || []}
+                    onChangeVisibility={(val) => setForm({ ...form, visibility: val })}
+                    onChangeTargetPages={(targets) => setForm({ ...form, targetPages: targets })}
+                    availablePages={availablePages}
+                    availableServices={availableServicesList}
+                    currentSlug={form.slug}
+                    compact
+                  />
+                </div>
+              </div>
+
               {/* Service Attributes Box */}
               <div className="bg-white border border-[#c3c4c7] shadow-sm rounded-sm overflow-hidden">
                 <div className="px-3 py-1.5 border-b border-[#c3c4c7] bg-[#f6f7f7]">
@@ -4090,12 +4169,13 @@ export default function ServicesAdminPage() {
                   <th className="py-2 px-3 text-[14px] font-semibold">Title</th>
                   <th className="py-2 px-3 text-[14px] font-semibold w-48">Category Tag</th>
                   <th className="py-2 px-3 text-[14px] font-semibold w-40">Status</th>
+                  <th className="py-2 px-3 text-[14px] font-semibold w-36">Visibility</th>
                   <th className="py-2 px-3 text-[14px] font-semibold w-32">Date</th>
                 </tr>
               </thead>
               <tbody className="text-[13px] text-[#2c3338]">
                 {filteredServices.length === 0 ? (
-                  <tr><td colSpan={5} className="py-6 px-4 text-[#50575e]">No services found.</td></tr>
+                  <tr><td colSpan={6} className="py-6 px-4 text-[#50575e]">No services found.</td></tr>
                 ) : (
                   filteredServices.map((service, idx) => (
                     <tr
@@ -4149,6 +4229,17 @@ export default function ServicesAdminPage() {
                         <span className={`font-semibold ${service.status === 'published' ? 'text-[#00a32a]' : 'text-[#d63638]'}`}>
                           {service.status === 'published' ? 'Active' : 'Draft'}
                         </span>
+                      </td>
+                      <td className="py-3 px-3 align-top">
+                        {service.visibility === 'specific' ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200" title={`Visible on: ${(service.targetPages || []).join(', ') || 'No pages selected'}`}>
+                            Selective ({(service.targetPages || []).length})
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-green-50 text-green-700 border border-green-200">
+                            Global
+                          </span>
+                        )}
                       </td>
                       <td className="py-3 px-3 align-top text-[#50575e]">
                         {new Date(service.createdAt || Date.now()).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' })}
@@ -4219,6 +4310,24 @@ export default function ServicesAdminPage() {
                     <option value="draft">Draft</option>
                   </select>
                 </div>
+                <div className="pt-2 border-t border-[#dcdcde]">
+                  <label className="block text-[#1d2327] text-sm font-semibold mb-1">
+                    Display &amp; Section Visibility
+                  </label>
+                  <p className="text-[12px] text-[#646970] mb-2 leading-tight">
+                    Show everywhere in carousels/lists, or only on selected pages &amp; services.
+                  </p>
+                  <VisibilityPicker
+                    visibility={newService.visibility || "global"}
+                    targetPages={newService.targetPages || []}
+                    onChangeVisibility={(val) => setNewService({ ...newService, visibility: val })}
+                    onChangeTargetPages={(targets) => setNewService({ ...newService, targetPages: targets })}
+                    availablePages={availablePages}
+                    availableServices={availableServicesList}
+                    currentSlug={newService.slug}
+                    compact
+                  />
+                </div>
               </div>
               <div className="flex items-center justify-end px-4 py-3 bg-[#f6f7f7] border-t border-[#c3c4c7]">
                 <button
@@ -4248,7 +4357,7 @@ export default function ServicesAdminPage() {
                 <button onClick={() => setEditingService(null)} className="text-[#787c82] hover:text-[#d63638]"><X className="w-5 h-5" /></button>
               </div>
               <form onSubmit={handleQuickEditSave}>
-                <div className="p-6 bg-[#f0f0f1] grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                <div className="p-6 bg-[#f0f0f1] grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 max-h-[80vh] overflow-y-auto">
                   <div className="space-y-4">
                     <div>
                       <label className="block text-[#1d2327] text-[12px] font-bold mb-1">Title</label>
@@ -4290,6 +4399,24 @@ export default function ServicesAdminPage() {
                         <option value="draft">Draft</option>
                       </select>
                     </div>
+                  </div>
+                  <div className="col-span-1 md:col-span-2 pt-2 border-t border-[#dcdcde]">
+                    <label className="block text-[#1d2327] text-[12px] font-bold mb-1">
+                      Display &amp; Section Visibility
+                    </label>
+                    <p className="text-[11px] text-[#646970] mb-2 leading-tight">
+                      Show everywhere in carousels/lists, or only on selected pages &amp; services.
+                    </p>
+                    <VisibilityPicker
+                      visibility={editingService.visibility || "global"}
+                      targetPages={editingService.targetPages || []}
+                      onChangeVisibility={(val) => setEditingService({ ...editingService, visibility: val })}
+                      onChangeTargetPages={(targets) => setEditingService({ ...editingService, targetPages: targets })}
+                      availablePages={availablePages}
+                      availableServices={availableServicesList}
+                      currentSlug={editingService.slug}
+                      compact
+                    />
                   </div>
                 </div>
                 <div className="flex items-center justify-end gap-3 px-4 py-3 bg-[#f6f7f7] border-t border-[#c3c4c7]">

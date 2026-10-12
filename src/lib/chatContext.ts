@@ -19,10 +19,25 @@ const truncate = (s: string, n: number) => {
   return t.length > n ? t.slice(0, n - 1).trimEnd() + "…" : t;
 };
 
-/** Every published, non-trashed service, trimmed to what a sales conversation actually needs. */
+/**
+ * Every published, non-trashed, globally-visible service, trimmed to what a sales conversation
+ * actually needs. This prompt is built once and reused on every page (see buildChatSystemPrompt's
+ * cache), so it has no way to know which page a given visitor is on - a service set to "specific"
+ * (src/lib/servicesVisibility.ts) is only meant to be offered on its targeted pages, so it's left
+ * out here rather than risk the bot pitching it to everyone.
+ */
 function summarizeServices(globalData: any): string {
   const list: any[] = Array.isArray(globalData?.services?.services) ? globalData.services.services : [];
-  const published = list.filter((s) => s && (s.status === "published" || s.status === undefined) && !s.isTrashed && s.title && s.slug);
+  const published = list.filter(
+    (s) =>
+      s &&
+      (s.status === "published" || s.status === undefined) &&
+      !s.isTrashed &&
+      s.title &&
+      s.slug &&
+      s.visibility !== "specific" &&
+      s.visibility !== "selective"
+  );
   if (!published.length) return "(no services are published yet)";
   return published
     .map((s) => {

@@ -5,6 +5,7 @@ import Link from "@/components/ui/Link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, X } from "lucide-react";
 import { BASE_URL } from "@/lib/constants";
+import { TEMPLATES_WITH_SERVICES_SECTION } from "@/lib/servicesVisibility";
 import {
   PAGE_TEMPLATE_OPTIONS,
   canonicalTemplate,
@@ -181,7 +182,7 @@ export default function PagesDashboard() {
     parentLocationId: "",
     parentLocationSlug: "",
     selectedCountrySlug: "usa",
-    selectedStateSlug: ""
+    selectedStateSlug: "",
   });
 
   useEffect(() => {
@@ -609,7 +610,7 @@ export default function PagesDashboard() {
               parentLocationId: "",
               parentLocationSlug: "",
               selectedCountrySlug: "usa",
-              selectedStateSlug: ""
+              selectedStateSlug: "",
             });
             setSlugTouched(false);
             setShowAddModal(true);
@@ -1171,6 +1172,13 @@ export default function PagesDashboard() {
                     <option value="draft">Draft</option>
                   </select>
                 </div>
+
+                {Boolean(newPage.template) && TEMPLATES_WITH_SERVICES_SECTION.includes(newPage.template) && (
+                  <p className="pt-2 border-t border-[#dcdcde] text-[12px] text-[#646970] leading-tight">
+                    Once this page is created, use its editor's "Services Shown Here" box to pick which
+                    Selective services appear in its services section.
+                  </p>
+                )}
               </div>
 
               <div className="flex items-center justify-end px-4 py-3 bg-[#f6f7f7] border-t border-[#c3c4c7]">

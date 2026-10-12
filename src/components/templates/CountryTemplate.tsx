@@ -9,6 +9,7 @@ import PageInlineFaqs from "@/components/PageInlineFaqs";
 import contentDefaults from "@/data/content.json";
 import { useContent } from "@/hooks/useContent";
 import { cleanMojibake } from "@/lib/utils";
+import { isServiceVisibleOnPage } from "@/lib/servicesVisibility";
 
 const Portfolio = dynamic(() => import("@/components/Portfolio"));
 const Testimonials = dynamic(() => import("@/components/Testimonials"), { ssr: false });
@@ -131,8 +132,9 @@ export default function CountryTemplate({ pageData }: { pageData?: any; params?:
   let heroData: any = null;
   if (showHero) {
     const marquee = (Array.isArray(hero.marqueeItems) ? hero.marqueeItems : []).map((s: any) => str(s)).filter(Boolean);
+    const countrySlug = pageData?.slug || "country";
     const liveServices = (Array.isArray(content.globalServices) ? content.globalServices : []).filter(
-      (s: any) => s?.title && isLive(s)
+      (s: any) => s?.title && isLive(s) && isServiceVisibleOnPage(s, countrySlug)
     );
     const line1 = hero.titleLine1 !== undefined ? hero.titleLine1 : hero.headline ?? "";
     const line2 = hero.titleLine2 !== undefined ? hero.titleLine2 : hero.headlineHighlight ?? "";
@@ -179,12 +181,13 @@ export default function CountryTemplate({ pageData }: { pageData?: any; params?:
   const services = content.services;
   const catalog: any[] = Array.isArray(content.globalServices) ? content.globalServices : [];
   const savedCards: any[] = services?.list || services?.services || [];
+  const pageCountrySlug = pageData?.slug || "country";
   const serviceCards =
     catalog.length === 0
-      ? savedCards
+      ? savedCards.filter((c: any) => isServiceVisibleOnPage(c, pageCountrySlug))
       : savedCards.filter((c: any) => {
           const live = catalog.find((s: any) => sameService(c, s));
-          return !!live && live.status !== "draft" && !live.isTrashed;
+          return !!live && live.status !== "draft" && !live.isTrashed && isServiceVisibleOnPage(live, pageCountrySlug);
         });
 
   const industries = pick(content.industries, content.domainExpertise);

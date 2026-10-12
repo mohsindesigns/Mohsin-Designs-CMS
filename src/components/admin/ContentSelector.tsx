@@ -171,9 +171,16 @@ export default function ContentSelector({ type, selectedItems = [], onSelect, la
               </div>
 
               <div className="flex-1 min-w-0">
-                <p className={`text-xs font-bold truncate ${selected ? "text-primary" : "text-slate-700"}`}>
-                  {title}
-                </p>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <p className={`text-xs font-bold truncate ${selected ? "text-primary" : "text-slate-700"}`}>
+                    {title}
+                  </p>
+                  {type === "services" && item.visibility === "specific" && (
+                    <span className="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider bg-amber-500/10 text-amber-600 border border-amber-500/20">
+                      Targeted
+                    </span>
+                  )}
+                </div>
                 <p className="text-[10px] text-slate-400 truncate uppercase tracking-wider mt-0.5">
                   {subtitle}
                 </p>

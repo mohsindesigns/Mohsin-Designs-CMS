@@ -8,6 +8,7 @@ import Services from "@/components/Services";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 import { useContent } from "@/hooks/useContent";
 import contentDefaults from "@/data/content.json";
+import { isServiceVisibleOnPage } from "@/lib/servicesVisibility";
 
 // SEO-relevant, text-heavy sections (about, industries, how-we-work, service area, contact/NAP,
 // testimonials, trusted brands) are rendered on the server too. They used to be `ssr: false`, which
@@ -81,7 +82,7 @@ function resolveSection(content: any, aliases: string[], list?: ListSpec): any |
  * vanished services and overlay the live fields on the saved copy (order is preserved).
  * With no catalog available (e.g. it failed to load) the saved list is used untouched.
  */
-function syncServicesWithCatalog(services: any, catalog: any): any {
+function syncServicesWithCatalog(services: any, catalog: any, currentSlug?: string): any {
   if (!services || typeof services !== "object") return services;
   const saved: any[] = Array.isArray(services.list)
     ? services.list
@@ -110,11 +111,13 @@ function syncServicesWithCatalog(services: any, catalog: any): any {
       const match = findLive(item);
       if (match) {
         if (match.isTrashed || match.status === "draft") continue;
+        if (!isServiceVisibleOnPage(match, currentSlug)) continue;
         list.push({ ...item, ...match });
         continue;
       }
       if (item.slug) continue; // no longer in the catalog -> its page is gone
     }
+    if (!isServiceVisibleOnPage(item, currentSlug)) continue;
     list.push(item);
   }
   return { ...services, list };
@@ -221,8 +224,8 @@ export default function CityTemplate({ pageData, params }: { pageData?: any; par
   const whyChooseUs = resolveSection(content, ["whyChooseUs", "howWeWork"], { keys: ["reasons", "features"], need: ["title"] });
 
   const servicesData = useMemo(
-    () => syncServicesWithCatalog(content.services, content.globalServices),
-    [content.services, content.globalServices]
+    () => syncServicesWithCatalog(content.services, content.globalServices, pageData?.slug || "city"),
+    [content.services, content.globalServices, pageData?.slug]
   );
   const showServices =
     content.services?.enabled !== false && hasContent(content.services) && Array.isArray(servicesData?.list) && servicesData.list.length > 0;

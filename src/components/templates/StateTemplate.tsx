@@ -11,6 +11,7 @@ import { resolveCountryLocation } from "@/lib/countryLocations";
 import { lookupUsCity } from "@/lib/usCityCoords";
 import { pathSegmentsOfUrl } from "@/lib/locationPath";
 import { parseVideoEmbed } from "@/lib/videoEmbed";
+import { isServiceVisibleOnPage } from "@/lib/servicesVisibility";
 
 const Portfolio = dynamic(() => import("@/components/Portfolio"));
 const Testimonials = dynamic(() => import("@/components/Testimonials"), { ssr: false });
@@ -82,9 +83,9 @@ function hasProjects(p: any): boolean {
 }
 
 /** Same precedence as Services.tsx (list -> services). Drafts/trashed never render. */
-function hasServices(s: any): boolean {
+function hasServices(s: any, currentSlug?: string): boolean {
   const arr = firstArray(s?.list, s?.services);
-  return arr.some((x: any) => x && x.status !== "draft" && !x.isTrashed && (typeof x === "string" || text(x.title) || x._id || x.id || x.slug));
+  return arr.some((x: any) => x && x.status !== "draft" && !x.isTrashed && (typeof x === "string" || text(x.title) || x._id || x.id || x.slug) && isServiceVisibleOnPage(x, currentSlug));
 }
 
 /** Reasons (or legacy `features`) - HowWeWork shows generic demo reasons when both are empty. */
@@ -198,7 +199,7 @@ export default function StateTemplate({ pageData, params }: { pageData?: any; pa
   const aboutData = [content.about, content.aboutOwner].find(hasContent);
   const aboutShown = content.about?.enabled !== false && content.aboutOwner?.enabled !== false && !!aboutData;
 
-  const servicesShown = content.services?.enabled !== false && hasContent(content.services) && hasServices(content.services);
+  const servicesShown = content.services?.enabled !== false && hasContent(content.services) && hasServices(content.services, pageData?.slug || "state");
 
   const industriesData = [content.industries, content.domainExpertise].find((i) => hasContent(i) && hasIndustryItems(i));
   const industriesShown = content.industries?.enabled !== false && content.domainExpertise?.enabled !== false && !!industriesData;

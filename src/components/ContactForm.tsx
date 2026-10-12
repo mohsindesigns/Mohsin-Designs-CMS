@@ -7,6 +7,8 @@ import { CheckCircle, Mail, MapPin, Phone, ArrowRight, ChevronDown } from "lucid
 import { useState, FormEvent, MouseEvent } from "react";
 import contentDefaults from "@/data/content.json";
 import { useContent } from "@/hooks/useContent";
+import { usePathname } from "next/navigation";
+import { isServiceVisibleOnPage } from "@/lib/servicesVisibility";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
 import AccentHighlight from "@/components/ui/AccentHighlight";
@@ -33,6 +35,7 @@ export default function ContactForm({ data }: { data?: any }) {
   // that key only held the featured subset (8 of 12 published services were missing).
   // The same fallback order fixes Country/State/City pages, whose isolated context has no
   // `services` block at all.
+  const pathname = usePathname();
   const serviceOptions = (() => {
     const anyContent = dynamicContent as any;
     const candidates: any[][] = [
@@ -43,7 +46,7 @@ export default function ContactForm({ data }: { data?: any }) {
     const servicesList = candidates.find((c) => Array.isArray(c) && c.length > 0) || [];
     const seen = new Set<string>();
     return servicesList
-      .filter((s: any) => (s?.status === "published" || s?.status === undefined) && !s?.isTrashed && s?.title)
+      .filter((s: any) => (s?.status === "published" || s?.status === undefined) && !s?.isTrashed && s?.title && isServiceVisibleOnPage(s, pathname))
       // Same "Order / Position" (`number`, free text) the Services listing sorts by; blanks last.
       .map((s: any, i: number) => ({ s, i, n: parseFloat(String(s?.number ?? "").replace(/[^0-9.\-]/g, "")) }))
       .sort((a: any, b: any) => ((Number.isFinite(a.n) ? a.n : Infinity) - (Number.isFinite(b.n) ? b.n : Infinity)) || a.i - b.i)

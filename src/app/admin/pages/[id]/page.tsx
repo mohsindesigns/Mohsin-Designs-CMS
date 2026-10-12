@@ -15,6 +15,8 @@ import SeoEditor from "@/components/admin/SeoEditor";
 import SchemaEditor from "@/components/admin/SchemaEditor";
 import SectionToggle from "@/components/admin/SectionToggle";
 import MediaSelector from "@/components/admin/MediaSelector";
+import PageServicesPicker from "@/components/admin/PageServicesPicker";
+import { TEMPLATES_WITH_SERVICES_SECTION } from "@/lib/servicesVisibility";
 import { BASE_URL } from "@/lib/constants";
 import { syncFaqSchema } from "@/lib/faqSchema";
 import { TEMPLATES_WITH_OWN_FAQ_SECTION } from "@/components/templates/templateFaqPolicy";
@@ -796,6 +798,22 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
               </button>
             </div>
           </div>
+
+          {/* Services Shown Here Box - the reverse of a service's own Display Visibility picker:
+              instead of picking, from a service, which pages it appears on, this picks, from this
+              page, which Selective services appear in its services section. Both read/write the
+              same service.targetPages field, so the two stay in sync automatically. Only shown for
+              templates that actually render a services section (TEMPLATES_WITH_SERVICES_SECTION). */}
+          {TEMPLATES_WITH_SERVICES_SECTION.includes(page.template) && (
+            <div className="bg-white border border-[#c3c4c7] shadow-sm rounded-sm overflow-hidden">
+              <div className="px-3 py-1.5 border-b border-[#c3c4c7] bg-[#f6f7f7]">
+                <h2 className="text-[13px] font-semibold text-[#1d2327]">Services Shown Here</h2>
+              </div>
+              <div className="p-3">
+                <PageServicesPicker pageSlug={page.slug} compact />
+              </div>
+            </div>
+          )}
 
           {/* Page Attributes Box */}
           <div className="bg-white border border-[#c3c4c7] shadow-sm rounded-sm overflow-hidden">
