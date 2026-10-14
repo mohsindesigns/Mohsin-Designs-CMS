@@ -23,7 +23,14 @@ export interface GalleryCard {
   link: string;
 }
 
-const clean = (v: any): string => (typeof v === "string" ? v.trim() : "");
+const clean = (v: any): string => {
+  if (typeof v === "string") return v.trim();
+  if (v && typeof v === "object") {
+    const s = v.src || v.url || "";
+    if (typeof s === "string") return s.trim();
+  }
+  return "";
+};
 
 /**
  * Accepts an array, or the object-with-numeric-keys shape ({0:{...},1:{...},enabled:false}) that

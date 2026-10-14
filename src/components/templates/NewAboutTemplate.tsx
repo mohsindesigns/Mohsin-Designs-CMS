@@ -278,22 +278,22 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
   // A pillar's image/badge panel is only drawn when it has an image or a badge; otherwise the text
   // uses the full row instead of sitting next to an empty dark box.
   const pillarHasMedia = {
-    mission: !!(philosophy.mission?.imgSrc || philosophy.mission?.badgeLatency || philosophy.mission?.badgePerformance),
-    vision: !!(philosophy.vision?.imgSrc || philosophy.vision?.badgeAccessibility || philosophy.vision?.badgeLighthouse),
-    values: !!(philosophy.values?.imgSrc || philosophy.values?.badgeSync || philosophy.values?.badgeSprint)
+    mission: !!(toImgSrc(philosophy.mission?.imgSrc) || philosophy.mission?.badgeLatency || philosophy.mission?.badgePerformance),
+    vision: !!(toImgSrc(philosophy.vision?.imgSrc) || philosophy.vision?.badgeAccessibility || philosophy.vision?.badgeLighthouse),
+    values: !!(toImgSrc(philosophy.values?.imgSrc) || philosophy.values?.badgeSync || philosophy.values?.badgeSprint)
   };
   const showStats = stats.enabled !== false && (hasText(stats.description) || statMetrics.length > 0 || statDisciplines.length > 0);
-  const showWhoCollage = !!(whoWeAre.imgAbstract || whoWeAre.imgWorkspace || whoWeAre.imgUiDetail || hasText(whoWeAre.parallaxBadge));
-  const showWhoWeAre = whoWeAre.enabled !== false && (hasText(whoWeAre.description) || whoRows.length > 0 || !!(whoWeAre.imgAbstract || whoWeAre.imgWorkspace || whoWeAre.imgUiDetail) || hasText(whoWeAre.parallaxBadge));
+  const showWhoCollage = !!(toImgSrc(whoWeAre.imgAbstract) || toImgSrc(whoWeAre.imgWorkspace) || toImgSrc(whoWeAre.imgUiDetail) || hasText(whoWeAre.parallaxBadge));
+  const showWhoWeAre = whoWeAre.enabled !== false && (hasText(whoWeAre.description) || whoRows.length > 0 || !!(toImgSrc(whoWeAre.imgAbstract) || toImgSrc(whoWeAre.imgWorkspace) || toImgSrc(whoWeAre.imgUiDetail)) || hasText(whoWeAre.parallaxBadge));
   const showPhilosophy = philosophy.enabled !== false && (showPillars.mission || showPillars.vision || showPillars.values);
   const showMethodology = methodology.enabled !== false && (hasText(methodology.description) || listOf(methodology.steps).length > 0);
   const showDomains = domainExpertise.enabled !== false && (hasText(domainExpertise.description) || listOf(domainExpertise.domains).length > 0);
-  const showWhy = whyChooseUs.enabled !== false && (hasText(whyChooseUs.description) || listOf(whyChooseUs.features).length > 0 || !!whyChooseUs.blueCardImage);
-  const showFounder = executiveLeadership.enabled !== false && (hasText(founderBio) || !!executiveLeadership.portraitSrc || listOf(executiveLeadership.metrics).length > 0 || hasText(executiveLeadership.founderName));
+  const showWhy = whyChooseUs.enabled !== false && (hasText(whyChooseUs.description) || listOf(whyChooseUs.features).length > 0 || !!toImgSrc(whyChooseUs.blueCardImage));
+  const showFounder = executiveLeadership.enabled !== false && (hasText(founderBio) || !!toImgSrc(executiveLeadership.portraitSrc) || listOf(executiveLeadership.metrics).length > 0 || hasText(executiveLeadership.founderName));
   const showReviews = reviews.enabled !== false && listOf(reviews.list).length > 0;
   const ctaPrimaryHref = resolveHref(ctaBanner.ctaPrimaryHref, contactHref);
   const ctaSecondaryHref = explicitHref(ctaBanner.ctaSecondaryHref);
-  const showCta = ctaBanner.enabled !== false && (hasText(ctaBanner.description) || hasText(ctaBanner.eyebrow) || hasText(ctaBanner.ctaPrimaryText) || (hasText(ctaBanner.ctaSecondaryText) && !!ctaSecondaryHref) || !!ctaBanner.portraitSrc);
+  const showCta = ctaBanner.enabled !== false && (hasText(ctaBanner.description) || hasText(ctaBanner.eyebrow) || hasText(ctaBanner.ctaPrimaryText) || (hasText(ctaBanner.ctaSecondaryText) && !!ctaSecondaryHref) || !!toImgSrc(ctaBanner.portraitSrc));
   const heroSecondaryHref = explicitHref(hero.ctaSecondaryHref);
 
   // Highlights the stage card nearest the top while scrolling. The stage index travels in a
@@ -349,7 +349,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                 initial={{ opacity: 0, y: 25 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className={`${hero.heroImage ? "lg:col-span-6" : "lg:col-span-12"} min-w-0 space-y-6 text-left`}
+                className={`${toImgSrc(hero.heroImage) ? "lg:col-span-6" : "lg:col-span-12"} min-w-0 space-y-6 text-left`}
               >
                 <PageBreadcrumbs page={pageData} />
                 {hero.badgeText && (
@@ -386,7 +386,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                 </div>
               </motion.div>
 
-              {hero.heroImage && (
+              {toImgSrc(hero.heroImage) && (
               <div className="lg:col-span-6 min-w-0 relative w-full h-[320px] sm:h-[420px] md:h-[480px] lg:h-[520px] flex items-center justify-center pt-8 lg:pt-0">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.98, y: 15 }}
@@ -395,7 +395,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                   className="relative w-full h-full flex items-center justify-center"
                 >
                   <img
-                    src={hero.heroImage}
+                    src={toImgSrc(hero.heroImage)}
                     alt={hero.heroImageAlt || "About Hero"}
                     decoding="async"
                     className="w-full h-full object-contain filter drop-shadow-2xl"
@@ -568,10 +568,10 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
               {showWhoCollage && (
               <div className="lg:col-span-6 min-w-0 relative h-[380px] sm:h-[480px] w-full flex items-center justify-center select-none">
                 <div className="relative w-full h-full max-w-[480px]">
-                  {whoWeAre.imgAbstract && (
+                  {toImgSrc(whoWeAre.imgAbstract) && (
                     <div className="absolute left-4 top-4 w-[60%] aspect-[1.1] rounded-2xl overflow-hidden border border-brand-zinc-200 dark:border-white/5 shadow-md bg-brand-dark -z-10">
                       <img
-                        src={whoWeAre.imgAbstract}
+                        src={toImgSrc(whoWeAre.imgAbstract)}
                         alt={whoWeAre.imgAbstractAlt || "Abstract Design"}
                         className="w-full h-full object-cover opacity-60 dark:opacity-80"
                       />
@@ -1313,7 +1313,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
         <section className="relative overflow-hidden border-b border-brand-zinc-200 dark:border-white/10 bg-white dark:bg-[#080710] section-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
-              {executiveLeadership.portraitSrc && (
+              {toImgSrc(executiveLeadership.portraitSrc) && (
               <div className="lg:col-span-5 min-w-0 flex justify-center">
                   <div className="relative aspect-[4/5] w-full max-w-[440px] rounded-[32px] overflow-hidden shadow-2xl border border-brand-zinc-200/60 dark:border-white/10 group">
                     <FullImage src={executiveLeadership.portraitSrc} alt={executiveLeadership.portraitAlt || executiveLeadership.founderName || "Founder"} className="group-hover:scale-[1.03] transition-transform duration-700 pointer-events-none" />
@@ -1321,7 +1321,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
               </div>
               )}
 
-              <div className={`${executiveLeadership.portraitSrc ? "lg:col-span-7" : "lg:col-span-12 max-w-4xl"} min-w-0 space-y-8 text-left`}>
+              <div className={`${toImgSrc(executiveLeadership.portraitSrc) ? "lg:col-span-7" : "lg:col-span-12 max-w-4xl"} min-w-0 space-y-8 text-left`}>
                 <div className="space-y-4">
                   {executiveLeadership.eyebrow && (
                     <div className="eyebrow-pill">
@@ -1425,9 +1425,9 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
 
               <div className="hidden lg:flex flex-1 items-end justify-center relative pr-8">
                 <div className="absolute bottom-0 w-[320px] h-[320px] bg-gradient-to-t from-[#020485] to-[#0408d9] rounded-full opacity-90 border border-white/20 shadow-2xl" />
-                {ctaBanner.portraitSrc && (
+                {toImgSrc(ctaBanner.portraitSrc) && (
                   <div className="relative z-10 w-[280px] h-[370px] self-end drop-shadow-2xl overflow-hidden rounded-t-[32px] border-t border-l border-r border-white/25 shadow-2xl">
-                    <img src={ctaBanner.portraitSrc} alt={ctaBanner.portraitAlt || ""} loading="lazy" decoding="async" className="w-full h-full object-cover object-top filter contrast-[1.05]" />
+                    <img src={toImgSrc(ctaBanner.portraitSrc)} alt={ctaBanner.portraitAlt || ""} loading="lazy" decoding="async" className="w-full h-full object-cover object-top filter contrast-[1.05]" />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#010356]/80 via-transparent to-transparent pointer-events-none" />
                   </div>
                 )}

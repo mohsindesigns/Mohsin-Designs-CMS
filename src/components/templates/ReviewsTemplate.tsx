@@ -33,7 +33,15 @@ interface Review {
     avatar: string;
 }
 
-const asText = (v: unknown): string => (typeof v === "string" ? v : typeof v === "number" ? String(v) : "").trim();
+const asText = (v: unknown): string => {
+    if (typeof v === "string") return v.trim();
+    if (typeof v === "number") return String(v);
+    if (v && typeof v === "object") {
+        const s = (v as any).src || (v as any).url || "";
+        if (typeof s === "string") return s.trim();
+    }
+    return "";
+};
 const stripTags = (html: string) => html.replace(/<[^>]*>/g, " ").replace(/&nbsp;/gi, " ").replace(/\s+/g, " ").trim();
 
 // The managed inventory holds two shapes: Admin > Reviews writes { text, position, ... } while the

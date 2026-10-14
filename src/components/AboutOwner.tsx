@@ -87,14 +87,20 @@ export default function AboutOwner() {
   const bioContent = description || legacyBio || "<p><strong>I help brands scale dynamically using advanced design and tech systems.</strong></p><p>With over a decade of design experience, we specialize in high-end design systems, custom development, and comprehensive marketing architectures.</p>";
   
   // Support all image formats: string, {src}, {url}, avatar, teamImage, etc.
+  const extractImgString = (val: any): string => {
+    if (!val) return "";
+    if (typeof val === "string") return val.trim();
+    if (typeof val === "object") return String(val.src || val.url || "").trim();
+    return "";
+  };
+
   const rawPortraitSrc =
-    (typeof about?.image === "string" ? about.image : (about?.image?.src || about?.image?.url)) ||
-    about?.avatar ||
-    about?.teamImage ||
-    about?.portraitSrc ||
-    about?.portrait ||
-    about?.src ||
-    "";
+    extractImgString(about?.image) ||
+    extractImgString(about?.avatar) ||
+    extractImgString(about?.teamImage) ||
+    extractImgString(about?.portraitSrc) ||
+    extractImgString(about?.portrait) ||
+    extractImgString(about?.src);
   const portraitSrc =
     rawPortraitSrc.startsWith("/") || rawPortraitSrc.startsWith("http") || rawPortraitSrc.startsWith("data:")
       ? rawPortraitSrc
