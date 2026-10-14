@@ -105,6 +105,11 @@ const Avatar = ({ name, src }: { name: string; src?: any }) => {
     const resolvedSrc = typeof src === "object" && src !== null
         ? String((src as any).src || (src as any).url || "")
         : (typeof src === "string" ? src.trim() : "");
+
+    useEffect(() => {
+        setFailed(false);
+    }, [resolvedSrc]);
+
     if (resolvedSrc && !failed) {
         return (
             <img
@@ -204,11 +209,14 @@ export default function ReviewsTemplate({ pageData, params }: { pageData?: any, 
             : content;
     const section = block.section && typeof block.section === "object" ? block.section : {};
     const stats = block.stats && typeof block.stats === "object" ? block.stats : {};
-    const rawList: any[] = Array.isArray(block.testimonials)
-        ? block.testimonials
-        : Array.isArray(content.testimonials)
-            ? content.testimonials
-            : [];
+    const rawList: any[] = [
+        block.testimonials,
+        block.list,
+        block.items,
+        content.testimonials,
+        content.list,
+        content.items
+    ].find((a) => Array.isArray(a) && a.length > 0) || [];
     const reviews = rawList.map(normalizeReview).filter((r): r is Review => !!r);
 
     const headerVisible = section.enabled !== false;
