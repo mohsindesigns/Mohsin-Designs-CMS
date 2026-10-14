@@ -191,22 +191,26 @@ const Hero = ({ content: passedContent }: { content?: any }) => {
   const textY = useTransform(scrollY, [0, 500], [0, -50]);
   const { aboutPage } = useContent();
   const hero = passedContent || aboutPage?.hero || { headline: {}, stats: [], phone: "" };
+  const bgImageSrc = typeof hero.bgImage === "object" && hero.bgImage !== null
+    ? String(hero.bgImage.src || hero.bgImage.url || "")
+    : (typeof hero.bgImage === "string" ? hero.bgImage.trim() : "");
 
   return (
     <section className="relative min-h-[85vh] sm:min-h-screen w-full bg-background overflow-hidden flex items-center justify-center py-16 sm:py-12">
       <div className="absolute inset-0 z-0">
         <motion.div style={{ y: y1 }} className="absolute inset-0">
-          {hero.bgImage && (hero.bgImage.startsWith('http') || hero.bgImage.startsWith('/uploads') || hero.bgImage.startsWith('/cdn-images')) ? (
+          {bgImageSrc && (bgImageSrc.startsWith('http') || bgImageSrc.startsWith('/uploads') || bgImageSrc.startsWith('/cdn-images') || bgImageSrc.startsWith('/')) ? (
             <img
-              src={hero.bgImage}
+              src={bgImageSrc}
               alt={hero.bgImageAlt || "Mohsin Designs Interior"}
               className="object-cover w-full h-full opacity-20 sm:opacity-30 scale-110 grayscale-[0.5]"
             />
           ) : (
             <Image
-              src={hero.bgImage || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070"}
+              src={bgImageSrc || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070"}
               alt={hero.bgImageAlt || "Mohsin Designs Interior"}
               fill
+              unoptimized
               quality={100}
               className="object-cover opacity-20 sm:opacity-30 scale-110 grayscale-[0.5]"
             />
@@ -337,15 +341,21 @@ const FounderPortrait = ({ content }: { content?: any }) => {
         <div className="absolute -inset-1 bg-gradient-to-r from-brand-blue/20 dark:from-brand-yellow/20 via-brand-blue/20 dark:via-brand-yellow/20 to-brand-blue/20 dark:to-brand-yellow/20 rounded-2xl sm:rounded-3xl blur-lg group-hover:blur-xl transition-all duration-700" />
 
         <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl shadow-gray-300/50 h-[350px] xs:h-[400px] sm:h-[450px] md:h-[500px] lg:h-[600px]">
-          {story.portrait?.image && (story.portrait.image.startsWith('http') || story.portrait.image.startsWith('/')) ? (
-            <img
-              src={story.portrait.image}
-              alt={story.portrait?.alt || story.founder?.name || "Founder"}
-              className="object-cover w-full h-full"
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-brand-blue/30 dark:from-brand-yellow/30 via-brand-blue/20 dark:via-brand-yellow/20 to-slate-200" />
-          )}
+          {(() => {
+            const rawPortrait = story.portrait?.image;
+            const portraitImg = typeof rawPortrait === "object" && rawPortrait !== null
+              ? String(rawPortrait.src || rawPortrait.url || "").trim()
+              : (typeof rawPortrait === "string" ? rawPortrait.trim() : "");
+            return portraitImg && (portraitImg.startsWith('http') || portraitImg.startsWith('/')) ? (
+              <img
+                src={portraitImg}
+                alt={story.portrait?.alt || story.founder?.name || "Founder"}
+                className="object-cover w-full h-full"
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-brand-blue/30 dark:from-brand-yellow/30 via-brand-blue/20 dark:via-brand-yellow/20 to-slate-200" />
+            );
+          })()}
 
           <div className="absolute inset-0 bg-gradient-to-t from-secondary/80 via-secondary/20 to-transparent" />
 
@@ -665,10 +675,10 @@ const ServiceCard = ({ service, index }: { service: any; index: number }) => {
   if (!service) return null;
 
   // Get the image - prioritize overviewImage, then image field
-  const serviceImage: string =
-    (typeof service.overviewImage === 'string' && service.overviewImage.trim()) ? service.overviewImage :
-    (typeof service.image === 'string' && service.image.trim()) ? service.image :
-"";
+  const rawServiceImg = service.overviewImage || service.image || "";
+  const serviceImage: string = typeof rawServiceImg === "object" && rawServiceImg !== null
+    ? String(rawServiceImg.src || rawServiceImg.url || "").trim()
+    : (typeof rawServiceImg === "string" ? rawServiceImg.trim() : "");
 
   const isValidImage = serviceImage.startsWith("/") || serviceImage.startsWith("http");
 

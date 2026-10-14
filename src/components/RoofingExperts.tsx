@@ -176,9 +176,14 @@ export default function AboutSection() {
         coreValues = []
     } = about || {};
 
-    const isDynamicImage = !!(image?.src && (image.src.startsWith('/') || image.src.startsWith('http')));
-    const isCloudinaryOrUnsplash = !!(image?.src && (image.src.includes('res.cloudinary.com') || image.src.includes('images.unsplash.com')));
-    const shouldBeUnoptimized = isDynamicImage && image.src.startsWith('http') && !isCloudinaryOrUnsplash;
+    const rawImg = (about as any)?.image ?? image;
+    const resolvedImgSrc = typeof rawImg === "object" && rawImg !== null
+      ? String(rawImg.src || rawImg.url || "").trim()
+      : (typeof rawImg === "string" ? rawImg.trim() : "");
+    const resolvedImgAlt = typeof rawImg === "object" && rawImg !== null
+      ? (rawImg.alt || rawImg.altText || "About Mohsin Designs")
+      : "About Mohsin Designs";
+    const isDynamicImage = !!(resolvedImgSrc && (resolvedImgSrc.startsWith('/') || resolvedImgSrc.startsWith('http')));
 
     const variants = useMemo(
         () => ({
@@ -281,10 +286,10 @@ export default function AboutSection() {
 
                         <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-gray-300/50">
                             <div className="relative aspect-[4/5] lg:aspect-[3/4]">
-                                {isDynamicImage && (image.src.startsWith('http') || image.src.startsWith('/')) ? (
+                                {isDynamicImage ? (
                                     <img
-                                        src={image.src}
-                                        alt={image.alt || "About Mohsin Designs"}
+                                        src={resolvedImgSrc}
+                                        alt={resolvedImgAlt}
                                         className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
                                     />
                                 ) : (
