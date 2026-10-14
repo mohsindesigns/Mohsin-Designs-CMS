@@ -32,7 +32,7 @@ const CONFIG_KEYS = new Set([
 // Rich-text editors save an emptied field as "<p><br></p>" / "<p>&nbsp;</p>" - not real content.
 const isBlankText = (s: string) => {
   if (/<img\b/i.test(s)) return false;
-  return !s.replace(/<[^>]*>/g, " ").replace(/&nbsp;|&#160;| /gi, " ").trim();
+  return !s.replace(/<[^>]*>/g, " ").replace(/&nbsp;|&#160;|\u00a0/gi, " ").trim();
 };
 const str = (v: any): string => {
   if (typeof v === "string") return v.trim();

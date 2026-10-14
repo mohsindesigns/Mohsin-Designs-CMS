@@ -651,7 +651,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
                     // Matched case-insensitively: "google ads" / "Ebay" used to miss their vector logo.
                     const LogoComponent =
                       /google/.test(lname) ? GoogleAdsLogo :
-                      /meta|facebook/.test(lname) ? MetaLogo :
+                      /\bmeta\b|facebook/.test(lname) ? MetaLogo :
                       /amazon/.test(lname) ? AmazonLogo :
                       /bing|microsoft/.test(lname) ? BingLogo :
                       /apple/.test(lname) ? AppleLogo :

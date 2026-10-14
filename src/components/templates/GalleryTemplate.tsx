@@ -76,7 +76,6 @@ function SafeImage({
       setFailed(true);
       onFail?.();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [src]);
 
   if (!src || failed) return <>{fallback ?? null}</>;

@@ -99,7 +99,6 @@ const Avatar = ({ name, src }: { name: string; src?: any }) => {
         : (typeof src === "string" ? src.trim() : "");
     if (resolvedSrc && !failed) {
         return (
-            // eslint-disable-next-line @next/next/no-img-element
             <img
                 src={resolvedSrc}
                 alt=""

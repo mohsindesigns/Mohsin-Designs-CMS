@@ -221,14 +221,14 @@ export default function BlogSection({
 
   // Normalize post fields
   const posts = activePosts.map((p, idx) => {
-    let cat = getPostCategory(p, idx);
-    let formattedDate = p.date || (p.publishedAt ? new Date(p.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Recent");
-    let reading = getPostReadingTime(p);
-    let rawFallback = defaultPosts[idx % defaultPosts.length]?.image || "";
-    let rawImg = p.featuredImage || p.image || (idx === 0 && rawBlog.featuredImage ? rawBlog.featuredImage : null) || rawFallback;
-    let resolvedImg = extractImgUrl(rawImg, rawFallback);
-    let href = p.link || (p.slug ? `/blogs/${p.slug}` : `/blogs/${p._id || idx}`);
-    let extractedExcerpt = getPostExcerpt(p);
+    const cat = getPostCategory(p, idx);
+    const formattedDate = p.date || (p.publishedAt ? new Date(p.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Recent");
+    const reading = getPostReadingTime(p);
+    const rawFallback = defaultPosts[idx % defaultPosts.length]?.image || "";
+    const rawImg = p.featuredImage || p.image || (idx === 0 && rawBlog.featuredImage ? rawBlog.featuredImage : null) || rawFallback;
+    const resolvedImg = extractImgUrl(rawImg, rawFallback);
+    const href = p.link || (p.slug ? `/blogs/${p.slug}` : `/blogs/${p._id || idx}`);
+    const extractedExcerpt = getPostExcerpt(p);
 
     return {
       id: p._id || p.id || `post-${idx}`,
