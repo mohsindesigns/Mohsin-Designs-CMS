@@ -33,7 +33,8 @@ function resolveSource(item: TestimonialItem): { mode: "embed" | "file" | "inval
 }
 
 function cardThumbnail(item: TestimonialItem): { kind: "image" | "video" | "none"; src: string } {
-  if (item.thumbnail) return { kind: "image", src: item.thumbnail };
+  const thumbUrl = typeof item.thumbnail === "object" ? ((item.thumbnail as any)?.src || (item.thumbnail as any)?.url || "") : (typeof item.thumbnail === "string" ? item.thumbnail.trim() : "");
+  if (thumbUrl) return { kind: "image", src: thumbUrl };
   const source = resolveSource(item);
   if (source.mode === "embed") {
     const yt = youtubeThumbnail(item.videoUrl);

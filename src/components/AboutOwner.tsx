@@ -86,10 +86,23 @@ export default function AboutOwner() {
     : "";
   const bioContent = description || legacyBio || "<p><strong>I help brands scale dynamically using advanced design and tech systems.</strong></p><p>With over a decade of design experience, we specialize in high-end design systems, custom development, and comprehensive marketing architectures.</p>";
   
-  // Only use image if it looks like a real path/URL
-  const rawPortraitSrc = about?.image?.src || "";
-  const portraitSrc = rawPortraitSrc.startsWith("/") || rawPortraitSrc.startsWith("http") ? rawPortraitSrc : "";
-  const portraitAlt = about?.image?.alt || "Mohsin Designs Biography";
+  // Support all image formats: string, {src}, {url}, avatar, teamImage, etc.
+  const rawPortraitSrc =
+    (typeof about?.image === "string" ? about.image : (about?.image?.src || about?.image?.url)) ||
+    about?.avatar ||
+    about?.teamImage ||
+    about?.portraitSrc ||
+    about?.portrait ||
+    about?.src ||
+    "";
+  const portraitSrc =
+    rawPortraitSrc.startsWith("/") || rawPortraitSrc.startsWith("http") || rawPortraitSrc.startsWith("data:")
+      ? rawPortraitSrc
+      : (rawPortraitSrc.trim() ? `/${rawPortraitSrc.trim()}` : "");
+  const portraitAlt =
+    (typeof about?.image === "object" && about?.image !== null ? (about.image.alt || about.image.altText) : "") ||
+    about?.imageAlt ||
+    "Mohsin Designs Biography";
   
   const circleText = about?.circleText || "CREATIVE POWER • MOHSIN DESIGNS •";
   const circleLetter = about?.circleLetter || "M";
@@ -217,6 +230,7 @@ export default function AboutOwner() {
                   alt={portraitAlt}
                   fill
                   priority
+                  unoptimized
                   className="object-cover grayscale group-hover:grayscale-0 scale-[1.01] group-hover:scale-103 transition-all duration-700 ease-out"
                   sizes="(max-width: 768px) 100vw, 420px"
                 />

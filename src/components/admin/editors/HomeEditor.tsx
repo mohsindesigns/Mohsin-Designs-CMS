@@ -422,17 +422,38 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                         <h3 className={UI.sectionHeader}>5. Showcase / Hero Image</h3>
                         <ImageField
                            label="Hero Showcase Image"
-                           value={data.hero?.image || data.hero?.imageSrc || data.hero?.images?.[0] || data.hero?.bgImage || ""}
+                           value={
+                              (typeof data.hero?.image === "object" && data.hero?.image !== null
+                                 ? data.hero.image.src || data.hero.image.url
+                                 : data.hero?.image) ||
+                              data.hero?.imageSrc ||
+                              (Array.isArray(data.hero?.images) ? data.hero.images[0] : "") ||
+                              data.hero?.bgImage ||
+                              ""
+                           }
                            onChange={(url) => {
-                              updateSection("hero", "image", url);
-                              updateSection("hero", "imageSrc", url);
-                              updateSection("hero", "bgImage", url);
-                              updateSection("hero", "images", [url]);
+                              updateSection("hero", null, (prevHero: any) => ({
+                                 ...(prevHero || {}),
+                                 image: url,
+                                 imageSrc: url,
+                                 bgImage: url,
+                                 images: [url],
+                              }));
                            }}
-                           altValue={data.hero?.imageAlt || data.hero?.bgImageAlt || ""}
+                           altValue={
+                              data.hero?.imageAlt ||
+                              data.hero?.bgImageAlt ||
+                              (typeof data.hero?.image === "object" && data.hero?.image !== null
+                                 ? data.hero.image.alt || data.hero.image.altText
+                                 : "") ||
+                              ""
+                           }
                            onAltChange={(alt) => {
-                              updateSection("hero", "imageAlt", alt);
-                              updateSection("hero", "bgImageAlt", alt);
+                              updateSection("hero", null, (prevHero: any) => ({
+                                 ...(prevHero || {}),
+                                 imageAlt: alt,
+                                 bgImageAlt: alt,
+                              }));
                            }}
                         />
                      </div>
@@ -605,7 +626,11 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
 
                                  <ImageField
                                     label="Custom Logo Image (Optional — if blank, matches recognized SVG)"
-                                    value={brand.image || ""}
+                                    value={
+                                       typeof brand.image === "object" && brand.image !== null
+                                          ? (brand.image.src || brand.image.url || "")
+                                          : (brand.image || "")
+                                    }
                                     onChange={(url) => {
                                        const list = [...trustedLogos];
                                        list[bIdx] = { ...list[bIdx], image: url };
@@ -713,10 +738,46 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                         <h3 className={UI.sectionHeader}>5. Media</h3>
                         <ImageField
                            label="Section Image"
-                           value={data.about?.image?.src || ""}
-                           onChange={(url) => updateSection("about", "image", { ...(data.about?.image || {}), src: url })}
-                           altValue={data.about?.image?.alt || ""}
-                           onAltChange={(alt) => updateSection("about", "image", { ...(data.about?.image || {}), alt: alt })}
+                           value={
+                              (typeof data.about?.image === "string"
+                                 ? data.about.image
+                                 : (data.about?.image?.src || data.about?.image?.url)) ||
+                              data.about?.avatar ||
+                              data.about?.teamImage ||
+                              ""
+                           }
+                           onChange={(url) => {
+                              updateSection("about", null, (prevAbout: any) => {
+                                 const currentAbout = prevAbout && typeof prevAbout === "object" ? prevAbout : {};
+                                 const prevImg = currentAbout.image;
+                                 const currentImgObj = typeof prevImg === "object" && prevImg !== null ? prevImg : {};
+                                 return {
+                                    ...currentAbout,
+                                    image: { ...currentImgObj, src: url, url: url },
+                                    avatar: url,
+                                    teamImage: url,
+                                 };
+                              });
+                           }}
+                           altValue={
+                              (typeof data.about?.image === "object" && data.about?.image !== null
+                                 ? (data.about.image.alt || data.about.image.altText)
+                                 : "") ||
+                              data.about?.imageAlt ||
+                              ""
+                           }
+                           onAltChange={(alt) => {
+                              updateSection("about", null, (prevAbout: any) => {
+                                 const currentAbout = prevAbout && typeof prevAbout === "object" ? prevAbout : {};
+                                 const prevImg = currentAbout.image;
+                                 const currentImgObj = typeof prevImg === "object" && prevImg !== null ? prevImg : {};
+                                 return {
+                                    ...currentAbout,
+                                    image: { ...currentImgObj, alt: alt },
+                                    imageAlt: alt,
+                                 };
+                              });
+                           }}
                         />
                         <div className="space-y-1.5"><label className={UI.label}>Rotating Circle Text</label><input type="text" value={data.about?.circleText || ""} onChange={(e) => updateSection("about", "circleText", e.target.value)} className={UI.input} placeholder="CREATIVE POWER • MOHSIN DESIGNS •" /></div>
                         <div className="space-y-1.5"><label className={UI.label}>Rotating Circle Center Letter</label><input type="text" value={data.about?.circleLetter || ""} onChange={(e) => updateSection("about", "circleLetter", e.target.value)} className={UI.input} placeholder="M" /></div>
@@ -1116,7 +1177,11 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                                     <div className="space-y-1 pt-2 border-t border-[#f0f0f1]">
                                        <ImageField
                                           label="Step Image (Replaces SVG)"
-                                          value={r.image || ""}
+                                          value={
+                                             typeof r.image === "object" && r.image !== null
+                                                ? (r.image.src || r.image.url || "")
+                                                : (r.image || "")
+                                          }
                                           onChange={(url) => {
                                              const newR = [...currentReasons];
                                              newR[i] = { ...newR[i], image: url };

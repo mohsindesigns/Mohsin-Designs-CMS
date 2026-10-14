@@ -35,6 +35,15 @@ const VideoTestimonials = dynamic(() => import("@/components/sections/VideoTesti
 const safeHref = (href: any, fallback: string): string =>
   typeof href === "string" && isSafeHref(href) ? href.trim() : fallback;
 
+const extractImg = (val: any, fallback: string = ""): string => {
+  if (!val) return fallback;
+  if (typeof val === "string") return val.trim();
+  if (typeof val === "object") {
+    return (val.src || val.url || fallback || "").trim?.() || fallback;
+  }
+  return fallback;
+};
+
 // Heading intros are stored with or without a trailing space ("Engineered for Growth Across"
 // vs "Scale Your Organic Revenue in Your "). The highlight that follows is a separate inline
 // element, so always put exactly one space between the two - otherwise the default hero
@@ -277,8 +286,8 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
     ctaPrimaryHref: safeHref(locationData.hero?.ctaPrimaryHref, "/gallery"),
     ctaSecondaryText: locationData.hero?.ctaSecondaryText || "GET FREE STRATEGY",
     ctaSecondaryHref: safeHref(locationData.hero?.ctaSecondaryHref, "/contact-us"),
-    bgLight: locationData.hero?.bgLight || "/locationhero.png",
-    bgDark: locationData.hero?.bgDark || "/locationherodark.png"
+    bgLight: extractImg(locationData.hero?.bgLight, "/locationhero.png"),
+    bgDark: extractImg(locationData.hero?.bgDark, "/locationherodark.png")
   };
 
   // ── 2. STATS SECTION DATA ──
@@ -323,7 +332,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
     // Items are {name, image} objects (or plain strings in old documents). Drop rows that have
     // neither a name nor an image so the strip never shows a lone placeholder sparkle.
     logos: (Array.isArray(rawLogos) ? rawLogos : defaultLogos)
-      .map((l: any) => (typeof l === "string" ? { name: l } : l))
+      .map((l: any) => (typeof l === "string" ? { name: l, image: "" } : { ...l, image: extractImg(l?.image, "") }))
       .filter((l: any) => l && ((typeof l.name === "string" && l.name.trim()) || l.image)) as Array<{ name?: string; image?: string }>
   };
   // The marquee scrolls one "set" (1/3 of the track) then loops, so each set must be wide
@@ -447,7 +456,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
     ctaPrimaryHref: safeHref(locationData.ctaBanner?.ctaPrimaryHref, "/contact-us"),
     ctaSecondaryText: locationData.ctaBanner?.ctaSecondaryText || "EXPLORE SHOWREEL",
     ctaSecondaryHref: safeHref(locationData.ctaBanner?.ctaSecondaryHref, "/gallery"),
-    portraitSrc: locationData.ctaBanner?.portraitSrc || "/founder_portrait_nobg.png",
+    portraitSrc: extractImg(locationData.ctaBanner?.portraitSrc, "/founder_portrait_nobg.png"),
     portraitAlt: locationData.ctaBanner?.portraitAlt || "Founder & Lead Architect"
   };
 
@@ -742,8 +751,8 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
               // and no link at all when the card has no linked page yet.
               const countryUrl = resolveCountryUrl(country);
 
-              const flagSrc = country.flag || (country.id === "NZ" ? "/flag_nz.png" : country.id === "AU" ? "/flag_au.png" : "/flag_usa.png");
-              const coverImg = country.image || "/country_usa.png";
+              const flagSrc = extractImg(country.flag, (country.id === "NZ" ? "/flag_nz.png" : country.id === "AU" ? "/flag_au.png" : "/flag_usa.png"));
+              const coverImg = extractImg(country.image, "/country_usa.png");
               const countryName = String(country.name || "").trim() || "Location";
 
               // Normalize states: array of {name, pageSlug} objects or plain strings.

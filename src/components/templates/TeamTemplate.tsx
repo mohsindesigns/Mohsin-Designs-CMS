@@ -103,12 +103,16 @@ const initialsOf = (name: string): string =>
     .map((w) => w.charAt(0).toUpperCase())
     .join("");
 
-const TeamPortrait = ({ image, alt, initials, badge1, badge2, alignRight = false, priority = false }: any) => {
+const TeamPortrait = ({ image: rawImage, alt, initials, badge1, badge2, alignRight = false, priority = false }: any) => {
   const [isHovered, setIsHovered] = useState(false);
   const [imageError, setImageError] = useState(false);
   const ref = useRef<any>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
   const inView = useInView(ref, { once: true, margin: "-50px" });
+
+  const image = typeof rawImage === "object" && rawImage !== null
+    ? String(rawImage.src || rawImage.url || "")
+    : (typeof rawImage === "string" ? rawImage.trim() : "");
 
   // The <img> is server-rendered, so a broken URL can fail BEFORE React hydrates and attaches
   // onError - the error event is then lost and the browser's broken-image icon stays. Check the

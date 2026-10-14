@@ -210,12 +210,23 @@ export default function BlogSection({
     return defaultPosts[idx % defaultPosts.length].category || "Article";
   };
 
+  const extractImgUrl = (val: any, fallback: string = ""): string => {
+    if (!val) return fallback;
+    if (typeof val === "string") return val.trim();
+    if (typeof val === "object") {
+      return (val.src || val.url || fallback || "").trim?.() || fallback;
+    }
+    return fallback;
+  };
+
   // Normalize post fields
   const posts = activePosts.map((p, idx) => {
     let cat = getPostCategory(p, idx);
     let formattedDate = p.date || (p.publishedAt ? new Date(p.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Recent");
     let reading = getPostReadingTime(p);
-    let img = p.featuredImage || p.image || defaultPosts[idx % defaultPosts.length].image!;
+    let rawFallback = defaultPosts[idx % defaultPosts.length]?.image || "";
+    let rawImg = p.featuredImage || p.image || (idx === 0 && rawBlog.featuredImage ? rawBlog.featuredImage : null) || rawFallback;
+    let resolvedImg = extractImgUrl(rawImg, rawFallback);
     let href = p.link || (p.slug ? `/blogs/${p.slug}` : `/blogs/${p._id || idx}`);
     let extractedExcerpt = getPostExcerpt(p);
 
@@ -223,7 +234,7 @@ export default function BlogSection({
       id: p._id || p.id || `post-${idx}`,
       title: p.title || (idx === 0 && rawBlog.featuredTitle ? rawBlog.featuredTitle : "Untitled Post"),
       link: href,
-      image: p.featuredImage || p.image || (idx === 0 && rawBlog.featuredImage ? rawBlog.featuredImage : img),
+      image: resolvedImg,
       excerpt: extractedExcerpt,
       category: cat || (idx === 0 && rawBlog.featuredCategory ? rawBlog.featuredCategory : "Article"),
       date: formattedDate,
@@ -337,7 +348,7 @@ export default function BlogSection({
                     src={posts[0].image}
                     alt={posts[0].title}
                     fill
-                    unoptimized={posts[0].image?.startsWith('http') || posts[0].image?.startsWith('/uploads') || posts[0].image?.startsWith('/cdn-images')}
+                    unoptimized
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                     sizes="(max-width: 1024px) 100vw, 680px"
                     priority
@@ -398,7 +409,7 @@ export default function BlogSection({
                       src={post.image}
                       alt={post.title}
                       fill
-                      unoptimized={post.image?.startsWith('http') || post.image?.startsWith('/uploads') || post.image?.startsWith('/cdn-images')}
+                      unoptimized
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                       sizes="(max-width: 640px) 100vw, 160px"
                     />

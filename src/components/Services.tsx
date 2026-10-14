@@ -250,14 +250,6 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
                   <div className="relative z-10 flex flex-col h-full justify-between">
                     <div className="flex flex-col">
 
-                      {/* Category pill */}
-                      {category && (
-                        <div className="inline-flex items-center self-start gap-1.5 mb-5 px-3 py-1 rounded-full bg-brand-blue/8 border border-brand-blue/15 text-brand-blue dark:text-brand-yellow group-hover:bg-white/15 group-hover:border-white/20 group-hover:text-white dark:group-hover:text-brand-yellow transition-all duration-300">
-                          <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                          <span className="font-mono text-[8px] font-black uppercase tracking-widest">{category}</span>
-                        </div>
-                      )}
-
                       {/* Service image */}
                       <div className="relative w-full aspect-[16/9] mb-5 rounded-2xl border border-brand-blue/10 group-hover:border-white/15 transition-all duration-500 overflow-hidden bg-brand-blue/3">
                         {imgSrc ? (

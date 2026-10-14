@@ -692,11 +692,6 @@ const ServiceCard = ({ service, index }: { service: any; index: number }) => {
 
 
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="absolute top-6 left-6 z-10">
-              <div className="px-5 py-2.5 bg-white/95 backdrop-blur-md rounded-xl border border-white/30 shadow-lg">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-blue dark:text-brand-yellow">{service.tag}</span>
-              </div>
-            </div>
             <motion.div className="absolute bottom-6 right-6 z-10" initial={{ opacity: 0, scale: 0.8 }} animate={isHovered ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }} transition={{ duration: 0.3 }}>
               <div className="w-12 h-12 rounded-xl bg-brand-blue dark:bg-brand-yellow text-white dark:text-[#080710] flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow">
                 <ArrowUpRight className="w-6 h-6" />

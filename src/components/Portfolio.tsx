@@ -38,6 +38,13 @@ const iconMap: Record<string, any> = {
   Award
 };
 
+const extractImageUrl = (img: any): string => {
+  if (!img) return "";
+  if (typeof img === "string") return img.trim();
+  if (typeof img === "object") return (img.src || img.url || img.secure_url || "").trim();
+  return "";
+};
+
 const DEFAULT_PORTFOLIO = {
   sectionTag: "CASE STUDIES",
   titleIntro: "Our Recent",
@@ -288,8 +295,8 @@ const getPortfolioScreenshot = (num: string, study: any) => {
     default:
       return (
         <div className="w-full h-full bg-[#080710] relative overflow-hidden flex items-center justify-center">
-          {study.image ? (
-            <img src={study.image} className="w-full h-full object-cover" alt="" />
+          {extractImageUrl(study.image) ? (
+            <img src={extractImageUrl(study.image)} className="w-full h-full object-cover" alt="" />
           ) : (
             <div className="text-[7px] text-white/40 uppercase tracking-widest font-mono">No Preview</div>
           )}
@@ -407,7 +414,7 @@ export default function Portfolio({ data }: { data?: any }) {
             ...s,
             icon: iconMap[s.iconName] || Award
           })) : [],
-          image: p.image || ""
+          image: extractImageUrl(p.image || p.featuredImage || p.thumbnail || p.coverImage)
         };
       })
     : DEFAULT_PORTFOLIO.caseStudies.map((cs: any) => ({
@@ -576,8 +583,12 @@ export default function Portfolio({ data }: { data?: any }) {
                       {/* Laptop Screen with glare overlay */}
                       <div className="w-[85%] aspect-[16/10] bg-neutral-900 rounded-t-xl p-1.5 border border-neutral-800 shadow-[0_20px_40px_rgba(8,7,16,0.3)] relative z-10">
                         <div className="w-full h-full rounded-md overflow-hidden bg-[#080710] relative">
-                          {activeSlide.image ? (
-                            <img src={activeSlide.image.startsWith('/') || activeSlide.image.startsWith('http') || activeSlide.image.startsWith('data:') ? activeSlide.image : `/${activeSlide.image}`} className="w-full h-full object-cover" alt="" />
+                          {extractImageUrl(activeSlide?.image) ? (
+                            (() => {
+                              const img = extractImageUrl(activeSlide.image);
+                              const fullSrc = img.startsWith('/') || img.startsWith('http') || img.startsWith('data:') ? img : `/${img}`;
+                              return <img src={fullSrc} className="w-full h-full object-cover" alt={activeSlide?.brand || ""} />;
+                            })()
                           ) : (
                             getPortfolioScreenshot(activeSlide.num, activeSlide)
                           )}

@@ -113,15 +113,26 @@ const DigitTicker = ({ value }: { value: number }) => {
   );
 };
 
+const toImgSrc = (v: any): string => {
+  if (!v) return "";
+  if (typeof v === "string") return v.trim();
+  if (typeof v === "object") return String(v.src || v.url || "").trim();
+  return "";
+};
+
 // Shows the WHOLE image whatever its shape: the sharp image is contained (never cropped)
 // on top of a blurred copy of itself, so there are no empty bars either.
 // Parent must be `relative` + `overflow-hidden` with a fixed height/aspect.
-const FullImage = ({ src, alt, className = "" }: { src: string; alt?: string; className?: string }) => (
-  <>
-    <img src={src} alt="" aria-hidden="true" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-70 blur-2xl pointer-events-none" />
-    <img src={src} alt={alt || ""} loading="lazy" decoding="async" className={`relative h-full w-full object-contain ${className}`} />
-  </>
-);
+const FullImage = ({ src: rawSrc, alt, className = "" }: { src: any; alt?: string; className?: string }) => {
+  const src = toImgSrc(rawSrc);
+  if (!src) return null;
+  return (
+    <>
+      <img src={src} alt="" aria-hidden="true" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-70 blur-2xl pointer-events-none" />
+      <img src={src} alt={alt || ""} loading="lazy" decoding="async" className={`relative h-full w-full object-contain ${className}`} />
+    </>
+  );
+};
 
 export default function NewAboutTemplate({ pageData }: { pageData?: any; params?: any }) {
   const content = useContent();
@@ -161,7 +172,13 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
   // trashed services are skipped: their /services/<slug>/ page 404s.
   const stagesList = useMemo(() => {
     const firstText = (...vals: any[]): string => {
-      for (const v of vals) if (typeof v === "string" && v.trim()) return v;
+      for (const v of vals) {
+        if (typeof v === "string" && v.trim()) return v.trim();
+        if (v && typeof v === "object") {
+          const s = v.src || v.url || "";
+          if (typeof s === "string" && s.trim()) return s.trim();
+        }
+      }
       return "";
     };
     const pickImage = (o: any) => firstText(o?.image, o?.hero?.bgImage, o?.hero?.backgroundImage, o?.deepDive?.image, o?.overviewImage, o?.caseStudy?.image);
@@ -958,13 +975,7 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
- <span className="font-cursive text-2xl font-black text-[#0306AC] dark:text-[#E9BD36]">{stage.id}</span>
-                            {stage.category ? (
-                              <>
-                                <div className="h-[1px] w-6 bg-brand-zinc-300 dark:bg-white/20" />
-                                <span className="text-[9px] font-mono font-bold text-brand-zinc-500 dark:text-zinc-300 uppercase tracking-widest">// {stage.category}</span>
-                              </>
-                            ) : null}
+                            <span className="font-cursive text-2xl font-black text-[#0306AC] dark:text-[#E9BD36]">{stage.id}</span>
                           </div>
                           {stage.badge ? (
                             <div className="bg-white dark:bg-white/10 border border-brand-zinc-200 dark:border-white/15 px-3 py-1.5 rounded-xl text-[8.5px] font-mono font-bold text-brand-dark dark:text-white uppercase tracking-wider shadow-sm">{stage.badge}</div>
@@ -974,14 +985,6 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                         {stage.image ? (
                           <div className="aspect-[1.65] w-full rounded-2xl overflow-hidden border border-brand-zinc-200/80 dark:border-white/10 relative bg-[#090812]">
                             <FullImage src={stage.image} alt={stage.title} className="group-hover:scale-[1.04] transition-transform duration-700 pointer-events-none" />
-                            {stage.category ? (
-                              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white select-none">
-                                <div className="flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/15">
-                                  <StageIcon className="h-4 w-4 text-[#E9BD36]" />
-                                  <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider">{stage.category}</span>
-                                </div>
-                              </div>
-                            ) : null}
                           </div>
                         ) : null}
 

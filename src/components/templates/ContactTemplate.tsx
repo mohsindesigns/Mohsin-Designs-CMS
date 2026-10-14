@@ -88,7 +88,13 @@ const DEFAULT_MAP_EMBED =
 // First string wins. An admin-cleared field ("") is respected (element is hidden) instead of
 // silently snapping back to demo text; only a field that was never saved (undefined) falls back.
 const pick = (...vals: any[]): string => {
-  for (const v of vals) if (typeof v ==="string") return v;
+  for (const v of vals) {
+    if (typeof v === "string") return v;
+    if (v && typeof v === "object") {
+      const s = v.src || v.url || "";
+      if (typeof s === "string" && s.trim()) return s.trim();
+    }
+  }
   return "";
 };
 
@@ -838,6 +844,7 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
                         alt={ctaBanner.portraitAlt}
                         width={320}
                         height={420}
+                        unoptimized
                         onError={() => setPortraitFailed(true)}
                         className="w-full h-full object-cover object-top filter contrast-[1.05]"
                       />

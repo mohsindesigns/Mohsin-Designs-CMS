@@ -37,7 +37,14 @@ function hasContent(obj: any): boolean {
   return false;
 }
 
-const text = (v: any) => (typeof v === "string" ? v.trim() : "");
+const text = (v: any) => {
+  if (typeof v === "string") return v.trim();
+  if (v && typeof v === "object") {
+    const s = v.src || v.url || "";
+    if (typeof s === "string") return s.trim();
+  }
+  return "";
+};
 
 // ---------------------------------------------------------------------------------------------
 // Several shared section components silently substitute built-in DEMO content when their list is

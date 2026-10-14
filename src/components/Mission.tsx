@@ -9,7 +9,10 @@ gsap.registerPlugin(ScrollTrigger);
 const Mission = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const content = useContent();
-  const missionImage = content?.about?.teamImage || content?.about?.image?.src || "";
+  const rawImg = content?.about?.teamImage || content?.about?.image;
+  const missionImage = typeof rawImg === "object" && rawImg !== null
+    ? String(rawImg.src || rawImg.url || "")
+    : (typeof rawImg === "string" ? rawImg.trim() : "");
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -25,7 +28,7 @@ const Mission = () => {
         <div className="md:col-span-5 order-2 md:order-1">
           <div className="mission-image overflow-hidden aspect-[3/4] relative">
             {missionImage && (missionImage.startsWith("/") || missionImage.startsWith("http")) ? (
-              <Image src={missionImage} alt="Mohsin Designs team at work" className="object-cover" fill quality={100} />
+              <Image src={missionImage} alt="Mohsin Designs team at work" className="object-cover" fill unoptimized quality={100} />
             ) : (
               <div className="absolute inset-0 bg-gradient-to-br from-primary/80 via-primary/60 to-primary/40" />
             )}

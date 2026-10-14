@@ -42,8 +42,9 @@ export default function Hero({ data, content: overrideContent, breadcrumb }: { d
   
   const circleText = hero?.circleText || "VETERAN OWNED • VETERAN OPERATED •";
   const circleLetter = hero?.circleLetter || "M";
-  const imageSrc = hero?.image || hero?.imageSrc || (Array.isArray(hero?.images) ? hero.images[0] : hero?.images) || hero?.bgImage || hero?.backgroundImage || hero?.heroImage || "";
-  const imageAlt = hero?.imageAlt || hero?.bgImageAlt || "Mohsin Designs Showcase";
+  const rawImage = hero?.image || hero?.imageSrc || (Array.isArray(hero?.images) ? hero.images[0] : hero?.images) || hero?.bgImage || hero?.backgroundImage || hero?.heroImage || "";
+  const imageSrc = typeof rawImage === "object" && rawImage !== null ? (rawImage.src || rawImage.url || "") : (typeof rawImage === "string" ? rawImage : "");
+  const imageAlt = hero?.imageAlt || hero?.bgImageAlt || (typeof rawImage === "object" && rawImage !== null ? (rawImage.alt || rawImage.altText || "") : "") || "Mohsin Designs Showcase";
   const marqueeItems = (hero?.marqueeItems || ["Roofing", "Siding", "Windows", "Decks"]) as string[];
 
   const { scrollY } = useScroll();
@@ -267,7 +268,7 @@ export default function Hero({ data, content: overrideContent, breadcrumb }: { d
                   alt={imageAlt}
                   fill
                   priority
-                  unoptimized={imageSrc.startsWith('http') || imageSrc.startsWith('/uploads') || imageSrc.startsWith('/cdn-images')}
+                  unoptimized
                   className="object-contain object-bottom"
                   sizes="(max-width: 768px) 100vw, 600px"
                 />

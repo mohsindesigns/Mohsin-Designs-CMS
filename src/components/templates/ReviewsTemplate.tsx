@@ -91,14 +91,17 @@ const Stars = ({ value, className = "w-4 h-4" }: { value: number; className?: st
     );
 };
 
-const Avatar = ({ name, src }: { name: string; src: string }) => {
+const Avatar = ({ name, src }: { name: string; src?: any }) => {
     const [failed, setFailed] = useState(false);
     const initials = initialsOf(name);
-    if (src && !failed) {
+    const resolvedSrc = typeof src === "object" && src !== null
+        ? String((src as any).src || (src as any).url || "")
+        : (typeof src === "string" ? src.trim() : "");
+    if (resolvedSrc && !failed) {
         return (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-                src={src}
+                src={resolvedSrc}
                 alt=""
                 loading="lazy"
                 onError={() => setFailed(true)}

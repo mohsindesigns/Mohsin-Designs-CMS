@@ -39,8 +39,14 @@ function hasContent(obj: any): boolean {
   return false;
 }
 
-const plain = (v: unknown): string =>
-  typeof v === "string" ? v.replace(/<[^>]*>/g, " ").replace(/&nbsp;/gi, " ").trim() : "";
+const plain = (v: unknown): string => {
+  if (typeof v === "string") return v.replace(/<[^>]*>/g, " ").replace(/&nbsp;/gi, " ").trim();
+  if (v && typeof v === "object") {
+    const s = (v as any).src || (v as any).url || "";
+    if (typeof s === "string") return s.trim();
+  }
+  return "";
+};
 
 /** True when `list` is an array with at least one item that has real text in one of `need`. */
 const hasRealItem = (list: unknown, need: string[]): boolean =>

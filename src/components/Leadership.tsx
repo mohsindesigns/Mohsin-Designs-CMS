@@ -115,22 +115,22 @@ export default function Leadership() {
               <div className="relative">
                 <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-primary/20 to-primary/20 rounded-2xl sm:rounded-3xl blur-lg group-hover:blur-xl transition-all duration-700" />
                 <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl shadow-gray-300/50 h-[350px] xs:h-[400px] sm:h-[450px] md:h-[500px] lg:h-[600px]">
-                  {ceo.image?.src && (ceo.image.src.startsWith('http') || ceo.image.src.startsWith('/uploads') || ceo.image.src.startsWith('/cdn-images')) ? (
-                    <img
-                      src={ceo.image.src}
-                      alt={ceo.alt || ceo.name || "CEO"}
-                      className="object-cover w-full h-full"
-                    />
-                  ) : (
-                    <Image
-                      src={ceo.image?.src || "/founder.png"}
-                      alt={ceo.alt || ceo.name || "CEO"}
-                      className="object-cover"
-                      fill
-                      quality={100}
-                      sizes="(max-width: 640px) 100vw, (max-width: 768px) 80vw, 50vw"
-                    />
-                  )}
+                  {(() => {
+                    const ceoImageSrc = typeof ceo.image === "object" && ceo.image !== null
+                      ? String(ceo.image.src || ceo.image.url || "")
+                      : (typeof ceo.image === "string" ? ceo.image.trim() : "");
+                    const fallbackSrc = ceoImageSrc || "/founder.png";
+                    return (
+                      <Image
+                        src={fallbackSrc}
+                        alt={ceo.alt || ceo.name || "CEO"}
+                        className="object-cover"
+                        fill
+                        unoptimized
+                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 80vw, 50vw"
+                      />
+                    );
+                  })()}
                   <div className="absolute inset-0 bg-gradient-to-t from-secondary/80 via-secondary/20 to-transparent" />
                 </div>
 

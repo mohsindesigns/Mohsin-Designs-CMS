@@ -305,18 +305,21 @@ export default function HowWeWork({ data: overrideData }: { data?: any }) {
 
                     {/* RIGHT: Dynamic Image Managed from Dashboard */}
                     <div className="hidden md:block shrink-0 w-[140px] h-[95px] rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 overflow-hidden group-hover:border-brand-blue/30 dark:group-hover:border-brand-yellow/30 group-hover:shadow-md transition-all duration-300">
-                      {reason.image ? (
-                        <img
-                          src={reason.image}
-                          alt={reason.title || "Step Image"}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 dark:text-zinc-600 bg-slate-50 dark:bg-white/[0.02] p-2 text-center">
-                          <IconComp className="w-6 h-6 text-brand-blue/40 dark:text-brand-yellow/40 mb-1" />
-                          <span className="text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{reason.num || `0${index+1}`}</span>
-                        </div>
-                      )}
+                      {(() => {
+                        const rImg = typeof reason.image === "object" && reason.image !== null ? (reason.image.src || reason.image.url || "") : (typeof reason.image === "string" ? reason.image : "");
+                        return rImg ? (
+                          <img
+                            src={rImg}
+                            alt={reason.title || "Step Image"}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 dark:text-zinc-600 bg-slate-50 dark:bg-white/[0.02] p-2 text-center">
+                            <IconComp className="w-6 h-6 text-brand-blue/40 dark:text-brand-yellow/40 mb-1" />
+                            <span className="text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{reason.num || `0${index+1}`}</span>
+                          </div>
+                        );
+                      })()}
                     </div>
 
                   </div>

@@ -43,7 +43,7 @@ function DynamicIcon({ name, className }: { name?: string; className?: string })
  *    before React hydrates (SSR'd <img>), so the ref check on mount catches that case too.
  */
 function SafeImage({
-  src,
+  src: rawSrc,
   alt,
   className,
   sizes,
@@ -51,7 +51,7 @@ function SafeImage({
   fallback,
   onFail
 }: {
-  src?: string;
+  src?: any;
   alt: string;
   className?: string;
   sizes: string;
@@ -61,6 +61,10 @@ function SafeImage({
 }) {
   const [failed, setFailed] = useState(false);
   const ref = useRef<HTMLImageElement>(null);
+
+  const src = typeof rawSrc === "object" && rawSrc !== null
+    ? String((rawSrc as any).src || (rawSrc as any).url || "")
+    : (typeof rawSrc === "string" ? rawSrc.trim() : "");
 
   useEffect(() => {
     setFailed(false);
@@ -77,10 +81,6 @@ function SafeImage({
 
   if (!src || failed) return <>{fallback ?? null}</>;
 
-  // Only plain rooted paths (/images/x.jpg) go through the optimizer; anything else (absolute URLs, uploads, the
-  // /cdn-images proxy, data: URIs, paths with a ?query - which next/image rejects unless configured) is used as-is.
-  const unoptimized = !/^\/[^?#]*$/.test(src) || src.startsWith("//") || /^\/(uploads|cdn-images)\//.test(src);
-
   return (
     <Image
       ref={ref}
@@ -89,7 +89,7 @@ function SafeImage({
       fill
       sizes={sizes}
       priority={priority}
-      unoptimized={unoptimized}
+      unoptimized
       className={className}
       onError={() => {
         setFailed(true);

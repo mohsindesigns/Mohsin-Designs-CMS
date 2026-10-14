@@ -691,11 +691,6 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
                       <div className="h-12 w-12 rounded-2xl bg-[#0306AC]/10 dark:bg-white/10 border border-[#0306AC]/15 dark:border-white/15 flex items-center justify-center text-[#0306AC] dark:text-[#E9BD36] group-hover:scale-110 group-hover:bg-[#0306AC] group-hover:text-white dark:group-hover:bg-[#E9BD36] dark:group-hover:text-brand-dark transition-all duration-300">
                         <ServiceIcon className="h-5 w-5" />
                       </div>
-                      {service.tag && (
-                        <span className="bg-zinc-100 dark:bg-white/10 text-brand-dark dark:text-white text-[8.5px] font-mono font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border border-brand-zinc-200 dark:border-white/10">
-                          {service.tag}
-                        </span>
-                      )}
                     </div>
 
                     <div className="space-y-2">

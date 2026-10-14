@@ -238,11 +238,6 @@ function ServiceCard({
 
         {/* Content wrapper */}
         <div className="relative z-10 flex flex-col gap-3.5 flex-1">
-          {card.tag && (
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#0306ac] dark:text-[#e9bd36] bg-[#0306ac]/5 dark:bg-[#e9bd36]/10 px-2.5 py-1 rounded-full w-fit">
-              {card.tag}
-            </span>
-          )}
           <h3 className="font-heading text-[18px] font-extrabold leading-snug text-gray-900 dark:text-white transition-colors duration-300 group-hover:text-[#0306ac] dark:group-hover:text-[#e9bd36]">
             {card.title}
           </h3>

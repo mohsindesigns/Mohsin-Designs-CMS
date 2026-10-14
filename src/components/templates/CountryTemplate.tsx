@@ -34,8 +34,22 @@ const isBlankText = (s: string) => {
   if (/<img\b/i.test(s)) return false;
   return !s.replace(/<[^>]*>/g, " ").replace(/&nbsp;|&#160;| /gi, " ").trim();
 };
-const str = (v: any): string => (typeof v === "string" ? v.trim() : "");
-const plain = (v: any): string => (typeof v === "string" && !isBlankText(v) ? v.trim() : "");
+const str = (v: any): string => {
+  if (typeof v === "string") return v.trim();
+  if (v && typeof v === "object") {
+    const s = v.src || v.url || "";
+    if (typeof s === "string") return s.trim();
+  }
+  return "";
+};
+const plain = (v: any): string => {
+  if (typeof v === "string" && !isBlankText(v)) return v.trim();
+  if (v && typeof v === "object") {
+    const s = v.src || v.url || "";
+    if (typeof s === "string" && !isBlankText(s)) return s.trim();
+  }
+  return "";
+};
 
 // True when a section holds at least one real, human-written value. Whitespace-only strings,
 // empty rich text, bare numbers/booleans and pure settings (CONFIG_KEYS) do not count, so a

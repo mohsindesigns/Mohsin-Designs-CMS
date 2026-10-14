@@ -86,10 +86,11 @@ export default function TrustedBrandsSection({ data }: { data?: any }) {
   const speed = Number(data?.speed) || 28;
 
   const renderLogoIcon = (item: any) => {
-    if (item.image) {
+    const imgSrc = typeof item?.image === "object" && item?.image !== null ? (item.image.src || item.image.url || "") : (typeof item?.image === "string" ? item.image : "");
+    if (imgSrc) {
       return (
         <img
-          src={item.image}
+          src={imgSrc}
           alt={item.name || "Brand Logo"}
           className="h-6 w-auto max-w-8 object-contain shrink-0 filter drop-shadow-sm transition-all duration-300"
         />

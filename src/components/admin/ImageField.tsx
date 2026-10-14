@@ -24,6 +24,14 @@ export default function ImageField({
 }: ImageFieldProps) {
   const [showSelector, setShowSelector] = useState(false);
 
+  const resolvedValue = typeof value === "object" && value !== null
+    ? String((value as any).src || (value as any).url || "")
+    : (typeof value === "string" ? value.trim() : "");
+
+  const resolvedAlt = altValue !== undefined
+    ? altValue
+    : (typeof value === "object" && value !== null ? String((value as any).alt || "") : "");
+
   const handleSelect = (item: any) => {
     onChange(item.url);
     if (onAltChange && item.alt) {
@@ -40,10 +48,10 @@ export default function ImageField({
       </div>
 
       <div className="border border-[#c3c4c7] bg-[#f0f0f1] min-h-[150px] relative flex flex-col items-center justify-center p-4">
-        {value ? (
+        {resolvedValue ? (
           <div className="w-full space-y-4">
             <div className="relative border border-[#c3c4c7] bg-white p-2 shadow-sm inline-block mx-auto max-w-full">
-              <img src={value} alt={altValue} className="max-h-[200px] object-contain block mx-auto" />
+              <img src={resolvedValue} alt={resolvedAlt} className="max-h-[200px] object-contain block mx-auto" />
             </div>
             
             <div className="flex flex-wrap gap-2 justify-center">
