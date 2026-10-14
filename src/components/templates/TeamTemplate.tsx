@@ -77,6 +77,10 @@ const hasRichText = (v: any): boolean => {
 
 /** Portrait URL: real URL/path as-is, legacy stock keys mapped, anything else -> "" (initials placeholder). */
 const resolveImage = (raw: any): string => {
+  if (typeof raw === "object" && raw !== null) {
+    const s = raw.src || raw.url || "";
+    if (typeof s === "string") return s.trim();
+  }
   const v = asText(raw);
   if (!v) return "";
   if (v.startsWith("/") || v.startsWith("http")) return v;
