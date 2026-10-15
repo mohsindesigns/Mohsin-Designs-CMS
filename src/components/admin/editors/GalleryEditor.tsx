@@ -16,6 +16,7 @@ import SectionToggle from "@/components/admin/SectionToggle";
 import SchemaEditor from "@/components/admin/SchemaEditor";
 import VideoTestimonialsEditor from "./VideoTestimonialsEditor";
 import { resolveSelectedProjects, toProjectList } from "@/lib/galleryProjects";
+import { adminApiUrl } from "@/lib/adminApi";
 
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), { ssr: false });
 
@@ -95,7 +96,7 @@ function StaleSelectionNotice({ selected, onCleanUp }: { selected: any[]; onClea
 
   useEffect(() => {
     let alive = true;
-    fetch("/api/content", { cache: "no-store" })
+    fetch(adminApiUrl("/api/content"), { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
         if (alive) setCatalog(toProjectList(d?.portfolio?.projects));

@@ -5,6 +5,7 @@ import { Plus, Pencil, Trash2, Loader2, Folder, Image as ImageIcon, ChevronRight
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "@/components/ui/Link";
 import ImageField from "@/components/admin/ImageField";
+import { adminApiUrl } from "@/lib/adminApi";
 import dynamic from "next/dynamic";
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), { 
   ssr: false,
@@ -46,7 +47,7 @@ export default function ProjectsAdminPage() {
         let cats: any[] = [];
         // 1. Fetch from Pages collection (where Home editor saves)
         try {
-          const pagesRes = await fetch(`/api/admin/pages?t=${Date.now()}`);
+          const pagesRes = await fetch(adminApiUrl(`/api/admin/pages?t=${Date.now()}`));
           if (pagesRes.ok) {
             const pages = await pagesRes.json();
             const homePage = Array.isArray(pages) ? pages.find((p: any) => p.slug === 'home' || p.template === 'home' || p.slug === '/') : null;
@@ -57,7 +58,7 @@ export default function ProjectsAdminPage() {
         } catch (e) {}
 
         // 2. Fetch from /api/content
-        const contentRes = await fetch(`/api/content?t=${Date.now()}`);
+        const contentRes = await fetch(adminApiUrl(`/api/content?t=${Date.now()}`));
         const json = await contentRes.json();
         
         const finalCats = (cats && cats.length > 0) ? cats : (json.portfolio?.categories || []);
@@ -84,8 +85,8 @@ export default function ProjectsAdminPage() {
     };
     const payload = { section: "portfolio", portfolio: updatedPortfolio };
     try {
-      const res = await fetch("/api/content", { 
-        method: "PUT", 
+      const res = await fetch(adminApiUrl("/api/content"), {
+        method: "PUT",
         headers: { "Content-Type": "application/json" }, 
         body: JSON.stringify(payload) 
       });

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { adminApiUrl } from '@/lib/adminApi';
 const ContentContext = createContext<any>({});
 
 const deepMerge = (target: any, source: any) => {
@@ -46,7 +47,7 @@ export const ContentProvider = ({ children, initialData, initialBlogs }: { child
       setContent(initialData);
       setIsLoading(false);
       if (!initialBlogs || initialBlogs.length === 0) {
-        fetch('/api/blogs')
+        fetch(adminApiUrl('/api/blogs'))
           .then(res => res.ok ? res.json() : [])
           .then(data => {
             if (Array.isArray(data) && data.length > 0) setBlogs(data);
@@ -59,8 +60,8 @@ export const ContentProvider = ({ children, initialData, initialBlogs }: { child
     const fetchContent = async () => {
       try {
         const [contentRes, blogRes] = await Promise.all([
-          fetch('/api/content'),
-          fetch('/api/blogs')
+          fetch(adminApiUrl('/api/content')),
+          fetch(adminApiUrl('/api/blogs'))
         ]);
 
         if (contentRes.ok) {

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Loader2, Globe } from "lucide-react";
 import { isServiceVisibleOnPage } from "@/lib/servicesVisibility";
+import { adminApiUrl } from "@/lib/adminApi";
 
 interface PageServicesPickerProps {
   /** This page's own slug - the identifier every service's targetPages is matched against. */
@@ -24,7 +25,7 @@ export default function PageServicesPicker({ pageSlug, compact = false }: PageSe
 
   useEffect(() => {
     let cancelled = false;
-    fetch(`/api/content?t=${Date.now()}`, { cache: "no-store" })
+    fetch(adminApiUrl(`/api/content?t=${Date.now()}`), { cache: "no-store" })
       .then((r) => r.json())
       .then((json) => {
         if (cancelled) return;
@@ -54,7 +55,7 @@ export default function PageServicesPicker({ pageSlug, compact = false }: PageSe
       // (or the service's own editor) may have changed something else in the meantime, and
       // writing back our stale copy of the whole list would silently discard that change (the
       // same stale-save failure admin/services/page.tsx's saveToDb guards against).
-      const liveRes = await fetch(`/api/content?t=${Date.now()}`, { cache: "no-store" });
+      const liveRes = await fetch(adminApiUrl(`/api/content?t=${Date.now()}`), { cache: "no-store" });
       if (!liveRes.ok) throw new Error("couldn't read live catalog");
       const liveJson = await liveRes.json();
       const liveList: any[] = Array.isArray(liveJson?.services?.services) ? liveJson.services.services : [];
@@ -70,7 +71,7 @@ export default function PageServicesPicker({ pageSlug, compact = false }: PageSe
         : [...currentTargets, pageSlug];
 
       const newList = liveList.map((s: any) => (s.slug === slug ? { ...s, targetPages: nextTargets } : s));
-      const res = await fetch("/api/content", {
+      const res = await fetch(adminApiUrl("/api/content"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

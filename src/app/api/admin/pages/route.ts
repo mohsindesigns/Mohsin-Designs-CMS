@@ -16,6 +16,11 @@ import {
   validationMessage,
 } from './pageRules';
 
+// Every handler reads the session cookie off `req`, so Next already treats this route as dynamic -
+// this is just explicit insurance against it ever being static-optimized/cached (see /api/content,
+// which needed this for real because its GET doesn't touch `req` at all).
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   if (!(await hasPermission(req, 'pages', 'read'))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });

@@ -5,6 +5,7 @@ import { Plus, Pencil, Trash2, Loader2, Star, Image as ImageIcon, ChevronRight, 
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "@/components/ui/Link";
 import ImageField from "@/components/admin/ImageField";
+import { adminApiUrl } from "@/lib/adminApi";
 import dynamic from "next/dynamic";
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), { 
   ssr: false,
@@ -31,7 +32,7 @@ export default function ReviewsAdminPage() {
 
   useEffect(() => {
     let active = true;
-    fetch("/api/content")
+    fetch(adminApiUrl("/api/content"))
       .then((res) => {
         if (!res.ok) throw new Error("Network response not ok");
         return res.json();
@@ -59,7 +60,7 @@ export default function ReviewsAdminPage() {
     const updatedTestimonials = { ...(data?.testimonials || {}), testimonials: newTestimonials };
     const payload = { section: "testimonials", testimonials: updatedTestimonials };
     try {
-      const res = await fetch("/api/content", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      const res = await fetch(adminApiUrl("/api/content"), { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       if (res.ok) {
         setData((prev: any) => ({ ...prev, testimonials: updatedTestimonials }));
         setTestimonials(newTestimonials);

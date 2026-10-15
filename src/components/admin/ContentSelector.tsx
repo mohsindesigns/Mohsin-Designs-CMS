@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Search, Check, Loader2, Image as ImageIcon, ChevronUp, ChevronDown, X } from "lucide-react";
 import { motion } from "framer-motion";
+import { adminApiUrl } from "@/lib/adminApi";
 
 interface ContentSelectorProps {
   type: "services" | "projects" | "reviews" | "faq";
@@ -21,7 +22,7 @@ export default function ContentSelector({ type, selectedItems = [], onSelect, la
     let isMounted = true;
     const fetchMasterList = async () => {
       try {
-        const res = await fetch("/api/content", { cache: "no-store" });
+        const res = await fetch(adminApiUrl("/api/content"), { cache: "no-store" });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
 

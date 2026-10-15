@@ -19,6 +19,8 @@ import {
   validationMessage,
 } from '../pageRules';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * Keys that describe ONE page's own body and must never be copied into the site-wide
  * `complete_data` document when the homepage is saved. They are read from the page's own content

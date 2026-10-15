@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 import HomeEditor from "./HomeEditor";
 import SectionToggle from "@/components/admin/SectionToggle";
+import { adminApiUrl } from "@/lib/adminApi";
 
 // Sections StateTemplate actually renders. A brand-new state page (empty content) is pre-filled
 // from the site's home content as a starting point - HomeEditor does this itself but copies
@@ -42,7 +43,7 @@ export default function StateEditor({ pageId, data, setData }: { pageId: string;
     if (!needsSeed || seededOnce.current) return;
     seededOnce.current = true;
     setSeeding(true);
-    fetch("/api/content?key=complete_data")
+    fetch(adminApiUrl("/api/content?key=complete_data"))
       .then((res) => (res.ok ? res.json() : Promise.reject(new Error(String(res.status)))))
       .then((resData) => {
         const source = resData?.data || resData || {};

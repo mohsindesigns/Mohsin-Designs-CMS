@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { X, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
+import { adminApiUrl } from "@/lib/adminApi";
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
   ssr: false,
   loading: () => <div className="h-64 bg-[#f6f7f7] animate-pulse border border-[#c3c4c7] rounded-sm flex items-center justify-center text-[#8c8f94] text-xs">Loading Rich Text Editor...</div>
@@ -76,9 +77,9 @@ export default function FAQAdminPage() {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/content", { cache: "no-store" }).then(res => { if (!res.ok) throw new Error(String(res.status)); return res.json(); }),
+      fetch(adminApiUrl("/api/content"), { cache: "no-store" }).then(res => { if (!res.ok) throw new Error(String(res.status)); return res.json(); }),
       // 403 for users without page access returns { error } (not an array) - handled below.
-      fetch("/api/admin/pages").then(res => res.json()).catch(() => [])
+      fetch(adminApiUrl("/api/admin/pages")).then(res => res.json()).catch(() => [])
     ]).then(([contentJson, pagesJson]) => {
         setData(contentJson);
         setFaqs(Array.isArray(contentJson.faq?.items) ? contentJson.faq.items : []);
@@ -126,7 +127,7 @@ export default function FAQAdminPage() {
       // since this screen loaded are not overwritten by a stale copy; only items + categories are ours.
       let base = data?.faq || {};
       try {
-        const latest = await fetch("/api/content", { cache: "no-store" });
+        const latest = await fetch(adminApiUrl("/api/content"), { cache: "no-store" });
         if (latest.ok) {
           const latestJson = await latest.json();
           if (latestJson?.faq && typeof latestJson.faq === "object") base = latestJson.faq;
@@ -134,7 +135,7 @@ export default function FAQAdminPage() {
       } catch {}
       const updatedFaq = { ...base, items: updatedFaqs, categories: updatedCategories };
       const payload = { section: "faq", faq: updatedFaq };
-      const res = await fetch("/api/content", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      const res = await fetch(adminApiUrl("/api/content"), { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       if (res.ok) {
         setData((prev: any) => ({ ...prev, faq: updatedFaq }));
         setFaqs(updatedFaqs);

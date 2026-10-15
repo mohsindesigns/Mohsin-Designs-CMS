@@ -14,6 +14,7 @@ import IconSelector from "@/components/admin/IconSelector";
 import ImageField from "@/components/admin/ImageField";
 import BlogSelector from "@/components/admin/BlogSelector";
 import { AVAILABLE_COUNTRIES, resolveCountryLocation, COUNTRIES_DATABASE } from "@/lib/countryLocations";
+import { adminApiUrl } from "@/lib/adminApi";
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
    ssr: false,
    loading: () => <div className="h-64 bg-[#f6f7f7] animate-pulse border border-[#c3c4c7] rounded-sm flex items-center justify-center text-[#8c8f94] text-xs">Loading Rich Text Editor...</div>
@@ -176,7 +177,7 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
       if (prefilled.current) return;
       if (data && (!data.hero || Object.keys(data).length === 0)) {
          prefilled.current = true;
-         fetch("/api/content?key=complete_data")
+         fetch(adminApiUrl("/api/content?key=complete_data"))
             .then(res => res.json())
             .then(resData => {
                const source = resData?.data || resData || {};

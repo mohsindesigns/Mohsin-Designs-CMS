@@ -7,6 +7,7 @@ import Link from "@/components/ui/Link";
 import * as LucideIcons from "lucide-react";
 import ImageField from "@/components/admin/ImageField";
 import LocationsMenuEditor from "@/components/admin/LocationsMenuEditor";
+import { adminApiUrl } from "@/lib/adminApi";
 import dynamic from "next/dynamic";
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), { 
   ssr: false,
@@ -127,7 +128,7 @@ export default function SettingsEditor() {
       params.set("page", redirectsPage.toString());
       params.set("limit", "10");
 
-      const res = await fetch(`/api/admin/redirects?${params.toString()}`);
+      const res = await fetch(adminApiUrl(`/api/admin/redirects?${params.toString()}`));
       if (res.ok) {
         const data = await res.json();
         setRedirects(data.items || []);
@@ -146,7 +147,7 @@ export default function SettingsEditor() {
     setRedirectError("");
     try {
       const isEdit = !!redirectForm._id;
-      const url = "/api/admin/redirects";
+      const url = adminApiUrl("/api/admin/redirects");
       const method = isEdit ? "PUT" : "POST";
 
       const res = await fetch(url, {
@@ -185,7 +186,7 @@ export default function SettingsEditor() {
   const handleDeleteRedirect = async (id: string) => {
     if (!confirm("Are you sure you want to delete this redirect?")) return;
     try {
-      const res = await fetch("/api/admin/redirects", {
+      const res = await fetch(adminApiUrl("/api/admin/redirects"), {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ids: [id] })
@@ -206,7 +207,7 @@ export default function SettingsEditor() {
         ...item,
         status: item.status === "active" ? "disabled" : "active"
       };
-      const res = await fetch("/api/admin/redirects", {
+      const res = await fetch(adminApiUrl("/api/admin/redirects"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updated)
@@ -223,8 +224,8 @@ export default function SettingsEditor() {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/content").then(res => res.json()),
-      fetch("/api/admin/pages").then(res => res.json())
+      fetch(adminApiUrl("/api/content")).then(res => res.json()),
+      fetch(adminApiUrl("/api/admin/pages")).then(res => res.json())
     ]).then(([contentJson, pagesJson]) => {
       const d = { ...(contentJson || {}) };
       if (!d.settings) d.settings = { siteTitle: "Mohsin Designs", siteTemplate: "%s | Mohsin Designs", favicon: "/portfolio_hero_bg.png", globalNoIndex: false };
@@ -264,8 +265,8 @@ export default function SettingsEditor() {
         loader: data.loader,
         hours: data.hours
       };
-      const res = await fetch("/api/content", { 
-        method: "PUT", 
+      const res = await fetch(adminApiUrl("/api/content"), {
+        method: "PUT",
         headers: { "Content-Type": "application/json" }, 
         body: JSON.stringify(payload) 
       });

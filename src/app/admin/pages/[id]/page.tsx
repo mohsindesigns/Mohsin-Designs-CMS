@@ -17,6 +17,7 @@ import SectionToggle from "@/components/admin/SectionToggle";
 import MediaSelector from "@/components/admin/MediaSelector";
 import PageServicesPicker from "@/components/admin/PageServicesPicker";
 import { TEMPLATES_WITH_SERVICES_SECTION } from "@/lib/servicesVisibility";
+import { adminApiUrl } from "@/lib/adminApi";
 import { BASE_URL } from "@/lib/constants";
 import { syncFaqSchema } from "@/lib/faqSchema";
 import { TEMPLATES_WITH_OWN_FAQ_SECTION } from "@/components/templates/templateFaqPolicy";
@@ -73,8 +74,8 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
   const fetchPage = async () => {
     try {
       const [res, pagesRes] = await Promise.all([
-        fetch(`/api/admin/pages/${id}`),
-        fetch(`/api/admin/pages?t=${Date.now()}`)
+        fetch(adminApiUrl(`/api/admin/pages/${id}`)),
+        fetch(adminApiUrl(`/api/admin/pages?t=${Date.now()}`))
       ]);
       if (pagesRes.ok) {
         const pList = await pagesRes.json();
@@ -131,7 +132,7 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
 
     setSaving(true);
     try {
-      const res = await fetch(`/api/admin/pages/${id}`, {
+      const res = await fetch(adminApiUrl(`/api/admin/pages/${id}`), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -182,7 +183,7 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to move this page to Trash?")) return;
     try {
-      const res = await fetch(`/api/admin/pages/${id}`, {
+      const res = await fetch(adminApiUrl(`/api/admin/pages/${id}`), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isTrashed: true }),
@@ -363,7 +364,7 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
                 // 404 after "changing" the slug here.
                 setSaving(true);
                 try {
-                  const res = await fetch(`/api/admin/pages/${id}`, {
+                  const res = await fetch(adminApiUrl(`/api/admin/pages/${id}`), {
                     method: "PATCH",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ slug: ns }),

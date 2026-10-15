@@ -16,6 +16,7 @@ import { UI } from "./styles";
 import SectionToggle from "@/components/admin/SectionToggle";
 import SchemaEditor from "@/components/admin/SchemaEditor";
 import VideoTestimonialsEditor from "./VideoTestimonialsEditor";
+import { adminApiUrl } from "@/lib/adminApi";
 
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
   ssr: false,
@@ -193,7 +194,7 @@ export default function LocationEditor({
 
   // Fetch available CMS pages for dynamic dropdown selection
   useEffect(() => {
-    fetch("/api/admin/pages")
+    fetch(adminApiUrl("/api/admin/pages"))
       .then((res) => res.json())
       .then((pages) => {
         if (Array.isArray(pages)) {

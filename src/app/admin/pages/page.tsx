@@ -5,6 +5,7 @@ import Link from "@/components/ui/Link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, X } from "lucide-react";
 import { BASE_URL } from "@/lib/constants";
+import { adminApiUrl } from "@/lib/adminApi";
 import { TEMPLATES_WITH_SERVICES_SECTION } from "@/lib/servicesVisibility";
 import {
   PAGE_TEMPLATE_OPTIONS,
@@ -208,7 +209,7 @@ export default function PagesDashboard() {
 
   const fetchPages = async () => {
     try {
-      const res = await fetch(`/api/admin/pages?t=${Date.now()}`);
+      const res = await fetch(adminApiUrl(`/api/admin/pages?t=${Date.now()}`));
       const data = await res.json();
       setPages(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -339,7 +340,7 @@ export default function PagesDashboard() {
         }
       };
 
-      const res = await fetch("/api/admin/pages", {
+      const res = await fetch(adminApiUrl("/api/admin/pages"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -380,7 +381,7 @@ export default function PagesDashboard() {
       if (!confirm(`Permanently delete ${selectedIds.length} pages? This cannot be undone.`)) return;
       setActionLoading(true);
       try {
-        const res = await fetch("/api/admin/pages", {
+        const res = await fetch(adminApiUrl("/api/admin/pages"), {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ids: selectedIds })
@@ -400,7 +401,7 @@ export default function PagesDashboard() {
       if (action === "trash" && !confirm(`Move ${selectedIds.length} page${selectedIds.length === 1 ? "" : "s"} to the Trash?`)) return;
       setActionLoading(true);
       try {
-        const res = await fetch("/api/admin/pages", {
+        const res = await fetch(adminApiUrl("/api/admin/pages"), {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ action, ids: selectedIds })
@@ -420,7 +421,7 @@ export default function PagesDashboard() {
       const status = action === "publish" ? "published" : "draft";
       setActionLoading(true);
       try {
-        const res = await fetch("/api/admin/pages", {
+        const res = await fetch(adminApiUrl("/api/admin/pages"), {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ action: "status", ids: selectedIds, status })
@@ -444,7 +445,7 @@ export default function PagesDashboard() {
     if (action === "trash" || action === "restore") {
       if (action === "trash" && !confirm("Move this page to the Trash?")) return;
       try {
-        const res = await fetch(`/api/admin/pages/${id}`, {
+        const res = await fetch(adminApiUrl(`/api/admin/pages/${id}`), {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ isTrashed: action === "trash" })
@@ -461,7 +462,7 @@ export default function PagesDashboard() {
     if (action === "delete") {
       if (!confirm("Permanently delete this page? This cannot be undone.")) return;
       try {
-        const res = await fetch(`/api/admin/pages/${id}`, { method: "DELETE" });
+        const res = await fetch(adminApiUrl(`/api/admin/pages/${id}`), { method: "DELETE" });
         if (res.ok) fetchPages();
         else alert("Delete failed: " + (await apiError(res, "Unknown error")));
       } catch (err) {
@@ -471,7 +472,7 @@ export default function PagesDashboard() {
 
     if (action === "duplicate") {
       try {
-        const res = await fetch("/api/admin/pages", {
+        const res = await fetch(adminApiUrl("/api/admin/pages"), {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ action: "duplicate", ids: [id] })
@@ -494,7 +495,7 @@ export default function PagesDashboard() {
       if (!page) return;
       const newStatus = page.status === "published" ? "draft" : "published";
       try {
-        const res = await fetch(`/api/admin/pages/${id}`, {
+        const res = await fetch(adminApiUrl(`/api/admin/pages/${id}`), {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ status: newStatus })
@@ -522,7 +523,7 @@ export default function PagesDashboard() {
 
     setSavingQuickEdit(true);
     try {
-      const res = await fetch(`/api/admin/pages/${editingPage._id}`, {
+      const res = await fetch(adminApiUrl(`/api/admin/pages/${editingPage._id}`), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -5,6 +5,8 @@ import { hasPermission, getSessionUser } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
 import { applyPublishRules, dbErrorResponse, pickPostFields, revalidateBlog, slugify } from '@/lib/blog-admin';
 
+export const dynamic = 'force-dynamic';
+
 // The ONE admin single-post route (src/app/api/admin/blog/posts/[id] re-exports it).
 
 export async function GET(

@@ -23,6 +23,7 @@ import SectionToggle from "@/components/admin/SectionToggle";
 import MediaSelector from "@/components/admin/MediaSelector";
 import VisibilityPicker from "@/components/admin/VisibilityPicker";
 import { TEMPLATES_WITH_SERVICES_SECTION } from "@/lib/servicesVisibility";
+import { adminApiUrl } from "@/lib/adminApi";
 import SchemaEditor from "@/components/admin/SchemaEditor";
 import BlogSelector from "@/components/admin/BlogSelector";
 import { BASE_URL } from "@/lib/constants";
@@ -436,7 +437,7 @@ export default function ServicesAdminPage() {
   const fetchServices = async () => {
     try {
       const [res, pagesRes] = await Promise.all([
-        fetch(`/api/content?t=${Date.now()}`),
+        fetch(adminApiUrl(`/api/content?t=${Date.now()}`)),
         fetch(`/api/admin/pages?t=${Date.now()}`).catch(() => null)
       ]);
       const json = await res.json();
@@ -498,7 +499,7 @@ export default function ServicesAdminPage() {
     // script saved meanwhile) and the API replaces the whole array. Re-read the live list and 3-way
     // merge per service: entries this tab did not change keep the live version; entries it changed win.
     try {
-      const liveRes = await fetch(`/api/content?t=${Date.now()}`, { cache: "no-store" });
+      const liveRes = await fetch(adminApiUrl(`/api/content?t=${Date.now()}`), { cache: "no-store" });
       if (liveRes.ok) {
         const liveJson = await liveRes.json();
         const live: any[] = Array.isArray(liveJson?.services?.services) ? liveJson.services.services : [];
@@ -528,7 +529,7 @@ export default function ServicesAdminPage() {
       globalServices: newServices
     };
     try {
-      const res = await fetch("/api/content", {
+      const res = await fetch(adminApiUrl("/api/content"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedData)

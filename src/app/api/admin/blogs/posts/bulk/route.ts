@@ -5,6 +5,8 @@ import { getSessionUser, hasPermission } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
 import { revalidateBlog, toIdList } from '@/lib/blog-admin';
 
+export const dynamic = 'force-dynamic';
+
 // The ONE bulk route (src/app/api/admin/blog/posts/bulk re-exports it).
 
 export async function POST(req: NextRequest) {
