@@ -16,6 +16,7 @@ import SchemaEditor from "@/components/admin/SchemaEditor";
 import SectionToggle from "@/components/admin/SectionToggle";
 import MediaSelector from "@/components/admin/MediaSelector";
 import PageServicesPicker from "@/components/admin/PageServicesPicker";
+import BreadcrumbEditor from "@/components/admin/BreadcrumbEditor";
 import { TEMPLATES_WITH_SERVICES_SECTION } from "@/lib/servicesVisibility";
 import { adminApiUrl } from "@/lib/adminApi";
 import { BASE_URL } from "@/lib/constants";
@@ -201,6 +202,11 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
   // Location Hierarchy helpers
   const countryPages = allPages.filter(p => p.template === 'country' && !p.isTrashed);
   const statePages = allPages.filter(p => p.template === 'state' && !p.isTrashed);
+
+  // Every published page except this one, for the Breadcrumb Trail box's "pick an existing page" list.
+  const breadcrumbPageOptions = allPages
+    .filter((p: any) => !p.isTrashed && p.slug !== page?.slug)
+    .map((p: any) => ({ id: p.slug, label: p.title || p.slug, url: `/${p.slug}/` }));
 
   // Extract current location segments
   const slugSegments = (page?.slug || '').split('/').filter(Boolean);
@@ -812,6 +818,35 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
               </div>
               <div className="p-3">
                 <PageServicesPicker pageSlug={page.slug} compact />
+              </div>
+            </div>
+          )}
+
+          {/* Breadcrumb Trail Box - only for individual service pages authored directly as a Page
+              document (template "service-detail"; most services are authored in Admin > Services
+              instead, which has its own copy of this same box). Writes to content.breadcrumb, which
+              ServiceDetailTemplate already reads via its `dbService` resolution - no template change
+              needed, that component treats a Page's own content the same as a catalog entry. */}
+          {page.template === 'service-detail' && (
+            <div className="bg-white border border-[#c3c4c7] shadow-sm rounded-sm overflow-hidden">
+              <div className="px-3 py-1.5 border-b border-[#c3c4c7] bg-[#f6f7f7] flex items-center justify-between">
+                <h2 className="text-[13px] font-semibold text-[#1d2327]">Breadcrumb Trail</h2>
+                <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
+                  content?.breadcrumb?.mode === 'custom' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                }`}>
+                  {content?.breadcrumb?.mode === 'custom' ? 'Custom' : 'Default'}
+                </span>
+              </div>
+              <div className="p-3">
+                <BreadcrumbEditor
+                  mode={content?.breadcrumb?.mode === 'custom' ? 'custom' : 'default'}
+                  items={content?.breadcrumb?.items || []}
+                  onChangeMode={(mode) => setContent({ ...content, breadcrumb: { mode, items: content?.breadcrumb?.items || [] } })}
+                  onChangeItems={(items) => setContent({ ...content, breadcrumb: { mode: content?.breadcrumb?.mode === 'custom' ? 'custom' : 'default', items } })}
+                  serviceTitle={content?.title || page.title}
+                  availablePages={breadcrumbPageOptions}
+                  compact
+                />
               </div>
             </div>
           )}

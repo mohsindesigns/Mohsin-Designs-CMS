@@ -7,6 +7,7 @@ import { Loader2, X } from "lucide-react";
 import { BASE_URL } from "@/lib/constants";
 import { adminApiUrl } from "@/lib/adminApi";
 import { TEMPLATES_WITH_SERVICES_SECTION } from "@/lib/servicesVisibility";
+import BreadcrumbEditor from "@/components/admin/BreadcrumbEditor";
 import {
   PAGE_TEMPLATE_OPTIONS,
   canonicalTemplate,
@@ -185,6 +186,10 @@ export default function PagesDashboard() {
     selectedCountrySlug: "usa",
     selectedStateSlug: "",
   });
+  const [newPageBreadcrumb, setNewPageBreadcrumb] = useState<{ mode: "default" | "custom"; items: { name: string; url: string }[] }>({
+    mode: "default",
+    items: [],
+  });
 
   useEffect(() => {
     fetchPages();
@@ -328,6 +333,10 @@ export default function PagesDashboard() {
       }
 
       const canonicalUrl = `${BASE_URL}/${finalSlug}/`;
+
+      if (newPage.template === "service-detail") {
+        contentPayload.breadcrumb = newPageBreadcrumb;
+      }
 
       const payload = {
         title: newPage.title.trim(),
@@ -613,6 +622,7 @@ export default function PagesDashboard() {
               selectedCountrySlug: "usa",
               selectedStateSlug: "",
             });
+            setNewPageBreadcrumb({ mode: "default", items: [] });
             setSlugTouched(false);
             setShowAddModal(true);
           }}
@@ -1179,6 +1189,23 @@ export default function PagesDashboard() {
                     Once this page is created, use its editor's "Services Shown Here" box to pick which
                     Selective services appear in its services section.
                   </p>
+                )}
+
+                {newPage.template === "service-detail" && (
+                  <div className="pt-2 border-t border-[#dcdcde]">
+                    <label className="block text-[#1d2327] text-sm font-semibold mb-1">Breadcrumb Trail</label>
+                    <BreadcrumbEditor
+                      mode={newPageBreadcrumb.mode}
+                      items={newPageBreadcrumb.items}
+                      onChangeMode={(mode) => setNewPageBreadcrumb((prev) => ({ ...prev, mode }))}
+                      onChangeItems={(items) => setNewPageBreadcrumb((prev) => ({ ...prev, items }))}
+                      serviceTitle={newPage.title}
+                      availablePages={pages
+                        .filter((p: any) => !p.isTrashed && p.slug !== newPage.slug)
+                        .map((p: any) => ({ id: p.slug, label: p.title || p.slug, url: `/${p.slug}/` }))}
+                      compact
+                    />
+                  </div>
                 )}
               </div>
 
