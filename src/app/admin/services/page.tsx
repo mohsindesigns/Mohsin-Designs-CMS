@@ -22,6 +22,7 @@ import SeoEditor from "@/components/admin/SeoEditor";
 import SectionToggle from "@/components/admin/SectionToggle";
 import MediaSelector from "@/components/admin/MediaSelector";
 import VisibilityPicker from "@/components/admin/VisibilityPicker";
+import BreadcrumbEditor from "@/components/admin/BreadcrumbEditor";
 import { TEMPLATES_WITH_SERVICES_SECTION } from "@/lib/servicesVisibility";
 import { adminApiUrl } from "@/lib/adminApi";
 import SchemaEditor from "@/components/admin/SchemaEditor";
@@ -148,6 +149,9 @@ const DEFAULT_SERVICE_TEMPLATE = {
   status: "published",
   visibility: "global",
   targetPages: [],
+  // "default" = Home / Services / {title}. "custom" = Home / <items> / {title} - the last crumb
+  // (this service's own title) is always auto-appended, only the middle of the trail is editable.
+  breadcrumb: { mode: "default", items: [] as { name: string; url: string }[] },
   createdAt: new Date().toISOString(),
   hero: {
     titleIntro: "Transform Your Business With",
@@ -422,6 +426,10 @@ export default function ServicesAdminPage() {
   });
 
   const [availablePages, setAvailablePages] = useState<{ id: string; label: string; group?: string; hint?: string }[]>([]);
+  // Unfiltered (every published, non-trashed page, any template) - unlike `availablePages` above,
+  // a breadcrumb crumb can link to ANY page (About, Gallery, Team ...), not just ones with a
+  // services section, so it isn't run through TEMPLATES_WITH_SERVICES_SECTION.
+  const [allPublishedPages, setAllPublishedPages] = useState<{ id: string; label: string; url: string }[]>([]);
   const [form, setForm] = useState<any>(DEFAULT_SERVICE_TEMPLATE);
 
   const availableServicesList = React.useMemo(() => {
@@ -438,7 +446,7 @@ export default function ServicesAdminPage() {
     try {
       const [res, pagesRes] = await Promise.all([
         fetch(adminApiUrl(`/api/content?t=${Date.now()}`)),
-        fetch(`/api/admin/pages?t=${Date.now()}`).catch(() => null)
+        fetch(adminApiUrl(`/api/admin/pages?t=${Date.now()}`)).catch(() => null)
       ]);
       const json = await res.json();
       setData(json);
@@ -472,6 +480,12 @@ export default function ServicesAdminPage() {
               hint: `/${p.slug}`
             }));
           setAvailablePages(pList);
+
+          setAllPublishedPages(
+            pagesList
+              .filter((p: any) => !p.isTrashed && p.template !== "home")
+              .map((p: any) => ({ id: p.slug, label: p.title || p.slug, url: `/${p.slug}/` }))
+          );
         }
       }
     } catch (err) {
@@ -685,7 +699,11 @@ export default function ServicesAdminPage() {
         ...(service.finalCta || {})
       },
       visibility: service.visibility || "global",
-      targetPages: Array.isArray(service.targetPages) ? service.targetPages : []
+      targetPages: Array.isArray(service.targetPages) ? service.targetPages : [],
+      breadcrumb: {
+        mode: service.breadcrumb?.mode === "custom" ? "custom" : "default",
+        items: Array.isArray(service.breadcrumb?.items) ? service.breadcrumb.items : []
+      }
     });
     setSeo({
       ...(service.seo || {}),
@@ -3987,6 +4005,29 @@ export default function ServicesAdminPage() {
                     availablePages={availablePages}
                     availableServices={availableServicesList}
                     currentSlug={form.slug}
+                    compact
+                  />
+                </div>
+              </div>
+
+              {/* Breadcrumb Trail Box */}
+              <div className="bg-white border border-[#c3c4c7] shadow-sm rounded-sm overflow-hidden">
+                <div className="px-3 py-1.5 border-b border-[#c3c4c7] bg-[#f6f7f7] flex items-center justify-between">
+                  <h2 className="text-[13px] font-semibold text-[#1d2327]">Breadcrumb Trail</h2>
+                  <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
+                    form.breadcrumb?.mode === 'custom' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                  }`}>
+                    {form.breadcrumb?.mode === 'custom' ? 'Custom' : 'Default'}
+                  </span>
+                </div>
+                <div className="p-3">
+                  <BreadcrumbEditor
+                    mode={form.breadcrumb?.mode === 'custom' ? 'custom' : 'default'}
+                    items={form.breadcrumb?.items || []}
+                    onChangeMode={(mode) => setForm({ ...form, breadcrumb: { mode, items: form.breadcrumb?.items || [] } })}
+                    onChangeItems={(items) => setForm({ ...form, breadcrumb: { mode: form.breadcrumb?.mode === 'custom' ? 'custom' : 'default', items } })}
+                    serviceTitle={form.title}
+                    availablePages={allPublishedPages}
                     compact
                   />
                 </div>

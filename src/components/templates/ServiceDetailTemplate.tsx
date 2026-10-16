@@ -656,6 +656,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
     // seeded ("custom-web-development"), which would break "exclude myself from recommendations".
     slug: resolvedSlug || dbService?.slug || "",
     tag: dbService?.tag || "Premium Solution",
+    breadcrumb: dbService?.breadcrumb && typeof dbService.breadcrumb === "object" ? dbService.breadcrumb : { mode: "default", items: [] },
     hero: {
       enabled: dbService?.hero?.enabled,
       titleIntro: dbService?.hero?.titleIntro || dbService?.heroTitleIntro || dbService?.title || "Transform Your Business With",
@@ -1117,6 +1118,16 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
   const dropdownServices = publicServices.filter((s: any) => isServiceVisibleOnPage(s, service.slug));
   const serviceOptions: string[] = Array.from(new Set([service.title, ...dropdownServices.map((s: any) => String(s.title))]));
 
+  // Breadcrumb trail: default is Home / Services / {title}. An admin can replace the middle
+  // crumb(s) from the service's own editor (e.g. Home / Saudi Arabia / {title} for a service
+  // built for one location) - the last crumb (this service's own title) is always auto-appended.
+  const customCrumbs = (service as any).breadcrumb?.mode === "custom"
+    ? ((service as any).breadcrumb?.items || []).filter((c: any) => c && String(c.name || "").trim())
+    : null;
+  const breadcrumbItems = customCrumbs && customCrumbs.length > 0
+    ? [{ name: "Home", url: "/" }, ...customCrumbs, { name: service.title, url: "#" }]
+    : [{ name: "Home", url: "/" }, { name: "Services", url: "/services/" }, { name: service.title, url: "#" }];
+
   // ── Section visibility (single source of truth) ──
   // `enabled !== false` shows a section (undefined = visible); an emptied list hides the section too,
   // instead of rendering an empty shell. Pricing is the one opt-IN section (must be === true).
@@ -1200,13 +1211,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                 className="lg:col-span-7 min-w-0 space-y-6 text-left"
               >
                 {/* Breadcrumbs */}
-                <PageBreadcrumbs
-                  items={[
-                    { name: "Home", url: "/" },
-                    { name: "Services", url: "/services/" },
-                    { name: service.title, url: "#" },
-                  ]}
-                />
+                <PageBreadcrumbs items={breadcrumbItems} />
 
                 <h1 className="font-heading text-3xl xs:text-3xl sm:text-4xl lg:text-[40px] font-black tracking-tight leading-[1.18] text-brand-dark dark:text-white max-w-2xl">
                   {service.hero.titleIntro}{" "}
