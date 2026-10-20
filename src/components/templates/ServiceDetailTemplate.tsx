@@ -2366,14 +2366,6 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
           </div>
         </section>
       )}
-
-      <style dangerouslySetInnerHTML={{
-        __html: `
-        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
-        .font-cursive {
-          font-family: 'Dancing Script', cursive;
-        }
-      `}} />
     </div>
   );
 }

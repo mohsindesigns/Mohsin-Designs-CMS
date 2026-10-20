@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Lora, Poppins } from "next/font/google";
+import { Lora, Poppins, Dancing_Script } from "next/font/google";
 import"./globals.css";
 import { Providers } from "@/components/Providers";
 import SiteLayout from "@/components/SiteLayout";
@@ -21,6 +21,18 @@ const poppins = Poppins({
   variable: "--font-body",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
+});
+
+// Self-hosted (Next.js downloads and serves this at build time) instead of the old
+// `@import url('fonts.googleapis.com/...')` in globals.css - that import depended on every
+// visitor's browser being able to reach Google's CDN at runtime, which Brave, several ad/privacy
+// blockers, and some corporate networks block by default, silently falling back to a generic
+// "cursive" font (usually Comic Sans or a serif italic) with no error. Every accent heading
+// phrase (.accent-text in globals.css) uses this.
+const dancingScript = Dancing_Script({
+  variable: "--font-cursive",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 
@@ -143,7 +155,7 @@ export default async function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${lora.variable} ${poppins.variable} h-full antialiased scroll-smooth`}
+      className={`${lora.variable} ${poppins.variable} ${dancingScript.variable} h-full antialiased scroll-smooth`}
     >
       <head>
         <script

@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
 @import 'leaflet/dist/leaflet.css';
 @tailwind base;
 @tailwind components;
@@ -1213,7 +1212,7 @@
 
   /* ── BLOG & CONTACT CONSOLIDATED STYLES ────────────────────────────── */
   .font-cursive {
-    font-family: 'Dancing Script', cursive;
+    font-family: var(--font-cursive), cursive;
   }
 
   @keyframes floatDoodle {
@@ -1493,7 +1492,7 @@
 /* Every accent phrase uses the curly script face (Dancing Script), whatever font class the call
    site adds (font-heading, font-black, none ...). !important so those classes can't override it. */
 .accent-text {
-  font-family: 'Dancing Script', cursive !important;
+  font-family: var(--font-cursive), cursive !important;
 }
 :is(.on-dark-surface, .cta-banner-card, .cta-on-dark) .accent-text {
   /* !important: the call sites colour the phrase with utility classes (text-[var(--cta-accent)],
