@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { adminApiUrl } from "@/lib/adminApi";
 
 type Kind = "categories" | "tags";
 
@@ -48,7 +49,7 @@ export default function BlogTaxonomyManager({ kind }: { kind: Kind }) {
 
   const load = useCallback(async () => {
     try {
-      const res = await fetch(endpoint);
+      const res = await fetch(adminApiUrl(endpoint));
       const data = await res.json();
       if (res.ok && Array.isArray(data)) {
         setTerms(data);
@@ -81,7 +82,7 @@ export default function BlogTaxonomyManager({ kind }: { kind: Kind }) {
     }
     setSaving(true);
     try {
-      const res = await fetch(endpoint, {
+      const res = await fetch(adminApiUrl(endpoint), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: form.name, slug: form.slug || form.name, description: form.description }),
@@ -114,7 +115,7 @@ export default function BlogTaxonomyManager({ kind }: { kind: Kind }) {
     }
     setBusyId(id);
     try {
-      const res = await fetch(`${endpoint}/${id}`, {
+      const res = await fetch(adminApiUrl(`${endpoint}/${id}`), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(isCat ? editForm : { name: editForm.name, slug: editForm.slug }),
@@ -142,7 +143,7 @@ export default function BlogTaxonomyManager({ kind }: { kind: Kind }) {
     if (!confirm(warning)) return;
     setBusyId(t._id);
     try {
-      const res = await fetch(`${endpoint}/${t._id}`, { method: "DELETE" });
+      const res = await fetch(adminApiUrl(`${endpoint}/${t._id}`), { method: "DELETE" });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
         flash("ok", `${Singular} deleted.`);

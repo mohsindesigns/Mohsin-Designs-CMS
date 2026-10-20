@@ -3,6 +3,7 @@
 import ThemedSelect from "@/components/ui/ThemedSelect";
 import CtaButton from "@/components/ui/CtaButton";
 import { withTrailingSlash } from "@/lib/url";
+import { adminApiUrl } from "@/lib/adminApi";
 import { getValidHref } from "@/lib/utils";
 import { parseMapEmbed } from "@/lib/mapEmbed";
 import PageBreadcrumbs from "@/components/PageBreadcrumbs";
@@ -293,7 +294,7 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
     const service = formData.service.trim();
 
     try {
-      const response = await fetch('/api/send', {
+      const response = await fetch(adminApiUrl('/api/send'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

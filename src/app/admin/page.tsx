@@ -10,6 +10,7 @@ import {
   Activity, Clock, CheckCircle, XCircle, RefreshCw,
   ArrowRight, Inbox, TrendingUp, Zap, Eye, User, Copy, Check
 } from "lucide-react";
+import { adminApiUrl } from "@/lib/adminApi";
 
 const ACTION_LABELS: Record<string, { label: string; color: string; bg: string }> = {
   LOGIN_SUCCESS:    { label: "Logged in",           color: "text-green-700",  bg: "bg-green-100" },
@@ -74,7 +75,7 @@ export default function AdminDashboard() {
   const fetchDashboard = async (isManual = false) => {
     if (isManual || !memoryDashboardCache) setLoading(true);
     try {
-      const res = await fetch("/api/admin/dashboard");
+      const res = await fetch(adminApiUrl("/api/admin/dashboard"));
       if (res.ok) {
         const json = await res.json();
         memoryDashboardCache = json;

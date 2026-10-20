@@ -13,6 +13,7 @@ import Link from "@/components/ui/Link";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import MediaSelector from "./MediaSelector";
+import { adminApiUrl } from "@/lib/adminApi";
 import SeoEditor from "./SeoEditor";
 import { BASE_URL } from "@/lib/constants";
 import { syncFaqSchema } from "@/lib/faqSchema";
@@ -154,7 +155,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
     setLoading(true);
     setLoadError("");
     try {
-      const res = await fetch(`/api/admin/blogs/posts/${id}`);
+      const res = await fetch(adminApiUrl(`/api/admin/blogs/posts/${id}`));
       const data = await res.json();
       if (res.ok) {
         originalSlug.current = data.slug || "";
@@ -173,7 +174,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch('/api/admin/blogs/categories');
+      const res = await fetch(adminApiUrl('/api/admin/blogs/categories'));
       const data = await res.json();
       if (res.ok && Array.isArray(data)) setCategories(data);
     } catch (err) {
@@ -183,7 +184,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
 
   const fetchTags = async () => {
     try {
-      const res = await fetch('/api/admin/blogs/tags');
+      const res = await fetch(adminApiUrl('/api/admin/blogs/tags'));
       const data = await res.json();
       if (res.ok && Array.isArray(data)) setTags(data);
     } catch (err) {
@@ -196,7 +197,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
     const clean = name.trim();
     if (!clean) return;
     try {
-      const res = await fetch(`/api/admin/blogs/${kind}`, {
+      const res = await fetch(adminApiUrl(`/api/admin/blogs/${kind}`), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: clean })
@@ -321,7 +322,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
     if (!id) return;
     if (!confirm("Are you sure you want to move this post to Trash?")) return;
     try {
-      const res = await fetch(`/api/admin/blogs/posts/${id}`, {
+      const res = await fetch(adminApiUrl(`/api/admin/blogs/posts/${id}`), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isTrashed: true }),

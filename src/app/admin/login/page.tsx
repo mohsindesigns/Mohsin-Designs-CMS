@@ -7,6 +7,7 @@ import { Eye, EyeOff, Shield, Lock, User, AlertCircle, Loader2, ChevronRight } f
 import Image from "next/image";
 import Link from "@/components/ui/Link";
 import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
+import { adminApiUrl } from "@/lib/adminApi";
 
 function LoginForm() {
   const router = useRouter();
@@ -32,7 +33,7 @@ function LoginForm() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/admin/login", {
+      const res = await fetch(adminApiUrl("/api/admin/login"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password, captchaToken }),

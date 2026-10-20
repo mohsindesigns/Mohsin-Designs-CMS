@@ -6,6 +6,7 @@ import {
   Code2, Plus, Pencil, Trash2, ToggleLeft, ToggleRight,
   Loader2, CheckCircle2, AlertCircle, X, Save, ChevronDown
 } from "lucide-react";
+import { adminApiUrl } from "@/lib/adminApi";
 
 // ── Types ────────────────────────────────────────────────────────────
 interface Script {
@@ -156,7 +157,7 @@ export default function AdminScriptsPage() {
 
   const load = async () => {
     try {
-      const res = await fetch("/api/admin/scripts");
+      const res = await fetch(adminApiUrl("/api/admin/scripts"));
       setScripts(await res.json());
     } catch {
       showToast("err", "Failed to load scripts");
@@ -175,7 +176,7 @@ export default function AdminScriptsPage() {
     setSaving(true);
     try {
       const method = form.id ? "PUT" : "POST";
-      const res = await fetch("/api/admin/scripts", {
+      const res = await fetch(adminApiUrl("/api/admin/scripts"), {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -194,7 +195,7 @@ export default function AdminScriptsPage() {
   const handleToggle = async (s: Script) => {
     try {
       const toggled = { ...s, active: !s.active };
-      const res = await fetch("/api/admin/scripts", {
+      const res = await fetch(adminApiUrl("/api/admin/scripts"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(toggled),
@@ -210,7 +211,7 @@ export default function AdminScriptsPage() {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this script?")) return;
     try {
-      await fetch(`/api/admin/scripts?id=${id}`, { method: "DELETE" });
+      await fetch(adminApiUrl(`/api/admin/scripts?id=${id}`), { method: "DELETE" });
       setScripts((prev) => prev.filter((s) => s.id !== id));
       showToast("ok", "Script deleted.");
     } catch {
@@ -221,7 +222,7 @@ export default function AdminScriptsPage() {
   const handleDuplicate = async (s: Script) => {
     try {
       const duplicated = { ...s, id: undefined, name: s.name + " (Copy)", active: false };
-      const res = await fetch("/api/admin/scripts", {
+      const res = await fetch(adminApiUrl("/api/admin/scripts"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(duplicated),
@@ -239,7 +240,7 @@ export default function AdminScriptsPage() {
       if (!confirm(`Are you sure you want to delete ${selectedIds.size} script(s)?`)) return;
       try {
         for (const id of Array.from(selectedIds)) {
-          await fetch(`/api/admin/scripts?id=${id}`, { method: "DELETE" });
+          await fetch(adminApiUrl(`/api/admin/scripts?id=${id}`), { method: "DELETE" });
         }
         setScripts((prev) => prev.filter((s) => !selectedIds.has(s.id)));
         setSelectedIds(new Set());

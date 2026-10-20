@@ -8,6 +8,7 @@ import Link from "@/components/ui/Link";
 import { useContent } from "@/hooks/useContent";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import AccentHighlight from "@/components/ui/AccentHighlight";
+import { adminApiUrl } from "@/lib/adminApi";
 
 interface BlogPost {
   _id?: string;
@@ -121,7 +122,7 @@ export default function BlogSection({
   useEffect(() => {
     // If allBlogs is empty in context, fetch fresh from /api/blogs
     if (!content.allBlogs || content.allBlogs.length === 0) {
-      fetch('/api/blogs')
+      fetch(adminApiUrl('/api/blogs'))
         .then(res => res.ok ? res.json() : [])
         .then(data => {
           if (Array.isArray(data) && data.length > 0) {

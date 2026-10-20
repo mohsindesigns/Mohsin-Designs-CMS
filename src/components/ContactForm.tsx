@@ -2,6 +2,7 @@
 
 import CtaButton from "@/components/ui/CtaButton";
 import { withTrailingSlash } from "@/lib/url";
+import { adminApiUrl } from "@/lib/adminApi";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, Mail, MapPin, Phone, ArrowRight, ChevronDown } from "lucide-react";
 import { useState, FormEvent, MouseEvent } from "react";
@@ -104,7 +105,7 @@ export default function ContactForm({ data }: { data?: any }) {
     setIsSubmitting(true);
 
     try {
-      const res = await fetch("/api/send", {
+      const res = await fetch(adminApiUrl("/api/send"), {
         method: "POST",
         headers: {"Content-Type": "application/json" },
         body: JSON.stringify({

@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UI } from "@/components/admin/editors/styles";
+import { adminApiUrl } from "@/lib/adminApi";
 
 export default function UsersPage() {
   const [users, setUsers] = useState<any[]>([]);
@@ -27,8 +28,8 @@ export default function UsersPage() {
   const fetchData = async () => {
     try {
       const [uRes, rRes] = await Promise.all([
-        fetch("/api/admin/users"),
-        fetch("/api/admin/roles")
+        fetch(adminApiUrl("/api/admin/users")),
+        fetch(adminApiUrl("/api/admin/roles"))
       ]);
       const uData = await uRes.json();
       const rData = await rRes.json();
@@ -44,7 +45,7 @@ export default function UsersPage() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    const url = editingUser ? `/api/admin/users/${editingUser._id}` : "/api/admin/users";
+    const url = adminApiUrl(editingUser ? `/api/admin/users/${editingUser._id}` : "/api/admin/users");
     const method = editingUser ? "PATCH" : "POST";
     
     try {
@@ -77,7 +78,7 @@ export default function UsersPage() {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this user?")) return;
     try {
-      const res = await fetch(`/api/admin/users/${id}`, { method: "DELETE" });
+      const res = await fetch(adminApiUrl(`/api/admin/users/${id}`), { method: "DELETE" });
       if (res.ok) fetchData();
       else alert("Delete failed");
     } catch (err) { alert("Network error"); }
@@ -88,7 +89,7 @@ export default function UsersPage() {
     if (bulkAction === 'delete' && !confirm(`Are you sure you want to delete ${selectedIds.length} users?`)) return;
 
     try {
-      const res = await fetch("/api/admin/users/bulk", {
+      const res = await fetch(adminApiUrl("/api/admin/users/bulk"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ids: selectedIds, action: bulkAction })

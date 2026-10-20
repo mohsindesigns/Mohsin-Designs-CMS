@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  X, Search, Upload, Check, Loader2, 
+import {
+  X, Search, Upload, Check, Loader2,
   Image as ImageIcon, Plus, Info
 } from "lucide-react";
+import { adminApiUrl } from "@/lib/adminApi";
 
 interface MediaSelectorProps {
   onSelect: (item: any) => void;
@@ -34,7 +35,7 @@ export default function MediaSelector({ onSelect, onClose, title = "Select Asset
 
   const fetchMedia = async () => {
     try {
-      const res = await fetch("/api/admin/media");
+      const res = await fetch(adminApiUrl("/api/admin/media"));
       const data = await res.json();
       setMedia(data);
     } catch (err) {
@@ -53,7 +54,11 @@ export default function MediaSelector({ onSelect, onClose, title = "Select Asset
     formData.append('file', file);
     
     try {
-      const res = await fetch("/api/admin/media", {
+      // adminApiUrl is critical here, not just hygiene: a slash-less URL 308-redirects
+      // (trailingSlash:true, see src/lib/adminApi.ts), and a redirected POST whose body is a
+      // FormData file stream can silently fail to replay on some clients/proxies - unlike a small
+      // JSON body, a multipart file upload is exactly the request shape most likely to break.
+      const res = await fetch(adminApiUrl("/api/admin/media"), {
         method: "POST",
         body: formData
       });
@@ -272,7 +277,7 @@ export default function MediaSelector({ onSelect, onClose, title = "Select Asset
                               if ((window as any).mediaDebounce) clearTimeout((window as any).mediaDebounce);
                               (window as any).mediaDebounce = setTimeout(async () => {
                                 try {
-                                  await fetch("/api/admin/media", {
+                                  await fetch(adminApiUrl("/api/admin/media"), {
                                     method: "PATCH",
                                     headers: { "Content-Type": "application/json" },
                                     body: JSON.stringify({ id: selectedItem._id, alt: newAlt })

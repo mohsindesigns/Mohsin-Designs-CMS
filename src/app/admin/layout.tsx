@@ -9,6 +9,7 @@ import {
   CircleHelp, ImageIcon, Phone, Settings, LogOut,
   Shield, Menu, X, Globe, Folder, Code2, ExternalLink, User, Plus, ChevronDown, Loader2
 } from "lucide-react";
+import { adminApiUrl } from "@/lib/adminApi";
 
 const navItems = [
   { label: "Dashboard",   href: "/admin",           icon: LayoutDashboard, module: 'dashboard' },
@@ -83,7 +84,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     let isMounted = true;
 
-    fetch("/api/admin/me", { credentials: "include", cache: "no-store" })
+    fetch(adminApiUrl("/api/admin/me"), { credentials: "include", cache: "no-store" })
       .then(async res => {
         if (res.status === 401) {
           if (isMounted && !cleanPath.startsWith("/admin/login")) {
@@ -188,7 +189,7 @@ function Sidebar({ user, navItems, onClose, isMobile }: { user: any, navItems: a
 
   const handleLogout = async () => {
     try {
-      await fetch("/api/admin/logout", { method: "POST" });
+      await fetch(adminApiUrl("/api/admin/logout"), { method: "POST" });
     } finally {
       window.location.href = "/admin/login/";
     }

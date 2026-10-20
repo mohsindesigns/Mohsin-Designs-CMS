@@ -9,6 +9,7 @@ import { useContent } from "../hooks/useContent";
 import RichTextRenderer from "./ui/RichTextRenderer";
 import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
 import { isServiceVisibleOnPage } from "@/lib/servicesVisibility";
+import { adminApiUrl } from "@/lib/adminApi";
 import { Icon } from "../config/icons";
  
 const stripHtml = (html: string) => {
@@ -89,7 +90,7 @@ export default function Footer() {
         }
       }
 
-      const res = await fetch('/api/send', {
+      const res = await fetch(adminApiUrl('/api/send'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

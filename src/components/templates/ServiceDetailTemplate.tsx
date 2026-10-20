@@ -9,6 +9,7 @@ import Link from "@/components/ui/Link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { isServiceVisibleOnPage } from "@/lib/servicesVisibility";
+import { adminApiUrl } from "@/lib/adminApi";
 import { notFound } from "next/navigation";
 import { isSafeHref, getValidHref } from "@/lib/utils";
 import { motion, AnimatePresence, useMotionValue, useInView } from "framer-motion";
@@ -508,7 +509,7 @@ function ConsultationForm({
     setStatus("submitting");
     setErrorMsg("");
     try {
-      const res = await fetch("/api/send", {
+      const res = await fetch(adminApiUrl("/api/send"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

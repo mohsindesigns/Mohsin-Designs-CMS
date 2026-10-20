@@ -10,6 +10,7 @@ import {
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Icon } from "../config/icons";
+import { adminApiUrl } from "@/lib/adminApi";
 import { useContent } from "../hooks/useContent";
 import Image from "next/image";
 import Link from "@/components/ui/Link";
@@ -629,7 +630,7 @@ ${formData.message}
 
       console.log('Sending submission:', payload);
 
-      const response = await fetch('/api/send', {
+      const response = await fetch(adminApiUrl('/api/send'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

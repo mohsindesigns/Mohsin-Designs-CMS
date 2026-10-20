@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, FileDown, Download, Trash2, RefreshCw, MessageSquare, Copy, Check } from "lucide-react";
+import { adminApiUrl } from "@/lib/adminApi";
 
 // Lead "types" are whatever the form that posted to /api/send called itself. Group the known ones
 // into the tabs an admin thinks in; anything new/unknown lands in "Other" so no lead is ever
@@ -148,7 +149,7 @@ export default function SubmissionsPage() {
     setLoading(true);
     setLoadError(null);
     try {
-      const res = await fetch("/api/admin/submissions");
+      const res = await fetch(adminApiUrl("/api/admin/submissions"));
       if (res.ok) {
         const data = await res.json();
         setSubmissions(Array.isArray(data) ? data : []);
@@ -207,7 +208,7 @@ export default function SubmissionsPage() {
     if (!confirm("Are you sure you want to delete this lead?")) return;
 
     try {
-      const res = await fetch("/api/admin/submissions", {
+      const res = await fetch(adminApiUrl("/api/admin/submissions"), {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id })
@@ -230,7 +231,7 @@ export default function SubmissionsPage() {
     if (!confirm(`Are you sure you want to delete ${selectedIds.length} selected lead(s)?`)) return;
 
     try {
-      const res = await fetch("/api/admin/submissions", {
+      const res = await fetch(adminApiUrl("/api/admin/submissions"), {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ids: selectedIds })

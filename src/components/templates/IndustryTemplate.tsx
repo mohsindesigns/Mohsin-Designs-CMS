@@ -7,6 +7,7 @@ import React, { useEffect, useId, useRef, useState } from "react";
 import Link from "@/components/ui/Link";
 import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
 import { getValidHref } from "@/lib/utils";
+import { adminApiUrl } from "@/lib/adminApi";
 import {
   ArrowRight,
   Play,
@@ -160,7 +161,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
     setFormError("");
 
     try {
-      const res = await fetch("/api/send", {
+      const res = await fetch(adminApiUrl("/api/send"), {
         method: "POST",
         headers: {"Content-Type": "application/json" },
         body: JSON.stringify({

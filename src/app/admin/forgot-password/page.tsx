@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Shield, Mail, ArrowLeft, Loader2, CheckCircle2 } from "lucide-react";
 import Link from "@/components/ui/Link";
 import Image from "next/image";
+import { adminApiUrl } from "@/lib/adminApi";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -19,7 +20,7 @@ export default function ForgotPasswordPage() {
     setMessage("");
 
     try {
-      const res = await fetch("/api/admin/forgot-password", {
+      const res = await fetch(adminApiUrl("/api/admin/forgot-password"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

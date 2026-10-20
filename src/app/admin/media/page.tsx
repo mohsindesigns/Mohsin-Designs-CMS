@@ -8,6 +8,7 @@ import {
   Image as ImageIcon, Grid, List, Check, Edit3,
   Download, ExternalLink, Info, FileText, Calendar, HardDrive, Plus, RefreshCw, Filter
 } from "lucide-react";
+import { adminApiUrl } from "@/lib/adminApi";
 
 export default function MediaDashboard() {
   const [media, setMedia] = useState<any[]>([]);
@@ -25,7 +26,7 @@ export default function MediaDashboard() {
 
   const fetchMedia = async () => {
     try {
-      const res = await fetch("/api/admin/media");
+      const res = await fetch(adminApiUrl("/api/admin/media"));
       const data = await res.json();
       setMedia(data);
     } catch (err) {
@@ -43,7 +44,7 @@ export default function MediaDashboard() {
       const formData = new FormData();
       formData.append('file', files[i]);
       try {
-        const res = await fetch("/api/admin/media", { method: "POST", body: formData });
+        const res = await fetch(adminApiUrl("/api/admin/media"), { method: "POST", body: formData });
         if (res.ok) {
           const newItem = await res.json();
           setMedia(prev => [newItem, ...prev]);
@@ -63,7 +64,7 @@ export default function MediaDashboard() {
   const handleUpdateMetadata = async () => {
     if (!editingItem) return;
     try {
-      const res = await fetch(`/api/admin/media/${editingItem._id}`, {
+      const res = await fetch(adminApiUrl(`/api/admin/media/${editingItem._id}`), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ alt: editingItem.alt, title: editingItem.title, description: editingItem.description })
@@ -79,7 +80,7 @@ export default function MediaDashboard() {
   const handleDelete = async (ids: string[]) => {
     if (!confirm(`Permanently delete ${ids.length} items?`)) return;
     try {
-      const res = await fetch("/api/admin/media", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ids }) });
+      const res = await fetch(adminApiUrl("/api/admin/media"), { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ids }) });
       if (res.ok) {
         setMedia(prev => prev.filter(m => !ids.includes(m._id)));
         setSelectedIds([]);

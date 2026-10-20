@@ -6,6 +6,7 @@ import {
   Check, AlertCircle, Loader2, Lock, Unlock 
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { adminApiUrl } from "@/lib/adminApi";
 
 const MODULES = [
   { id: 'pages', label: 'Pages', actions: ['create', 'read', 'update', 'delete', 'publish'] },
@@ -43,7 +44,7 @@ export default function RolesPage() {
 
   const fetchRoles = async () => {
     try {
-      const res = await fetch("/api/admin/roles");
+      const res = await fetch(adminApiUrl("/api/admin/roles"));
       const data = await res.json();
       setRoles(data);
     } catch (err) {
@@ -69,7 +70,7 @@ export default function RolesPage() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    const url = editingRole ? `/api/admin/roles/${editingRole._id}` : "/api/admin/roles";
+    const url = adminApiUrl(editingRole ? `/api/admin/roles/${editingRole._id}` : "/api/admin/roles");
     const method = editingRole ? "PATCH" : "POST";
 
     try {
@@ -95,7 +96,7 @@ export default function RolesPage() {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this role? Users assigned to this role will lose access.")) return;
     try {
-      const res = await fetch(`/api/admin/roles/${id}`, { method: "DELETE" });
+      const res = await fetch(adminApiUrl(`/api/admin/roles/${id}`), { method: "DELETE" });
       if (res.ok) fetchRoles();
       else {
         const err = await res.json();

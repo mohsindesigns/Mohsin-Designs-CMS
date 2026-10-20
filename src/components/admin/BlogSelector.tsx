@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { Search, Check, BookOpen, Calendar, Loader2, Filter } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { adminApiUrl } from "@/lib/adminApi";
 
 interface BlogPost {
     _id: string;
@@ -35,7 +36,7 @@ export default function BlogSelector({
     const fetchPosts = async () => {
         setLoading(true);
         try {
-            const res = await fetch('/api/blogs');
+            const res = await fetch(adminApiUrl('/api/blogs'));
             if (res.ok) {
                 const data = await res.json();
                 setAllPosts(data);

@@ -6,6 +6,7 @@ import {
   ArrowRight, Download, RefreshCw, X, ChevronLeft, ChevronRight 
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { adminApiUrl } from "@/lib/adminApi";
 
 export default function LogsPage() {
   const [logs, setLogs] = useState<any[]>([]);
@@ -26,7 +27,7 @@ export default function LogsPage() {
         action: filters.action,
         status: filters.status
       });
-      const res = await fetch(`/api/admin/activity-logs?${query}`);
+      const res = await fetch(adminApiUrl(`/api/admin/activity-logs?${query}`));
       const data = await res.json();
       setLogs(data.logs);
       setPagination({ page: data.page, totalPages: data.totalPages });

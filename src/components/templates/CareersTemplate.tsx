@@ -9,6 +9,7 @@ import { Upload, Briefcase, FileText, User, Mail, Phone, CheckCircle, AlertCircl
 import { useContent } from "../../hooks/useContent";
 import RichTextRenderer from '../ui/RichTextRenderer';
 import TurnstileCaptcha from "@/components/ui/TurnstileCaptcha";
+import { adminApiUrl } from "@/lib/adminApi";
 import {
   CAREERS_DEFAULTS,
   CAREERS_RESUME_EXTENSIONS,
@@ -165,7 +166,10 @@ export default function CareersTemplate({ pageData, params }: { pageData?: any, 
     }
 
     try {
-      const response = await fetch("/api/send", {
+      // adminApiUrl matters here specifically: this body is a FormData resume attachment, the
+      // request shape most likely to silently fail to replay across a 308 redirect (unlike a small
+      // JSON body) - see src/lib/adminApi.ts.
+      const response = await fetch(adminApiUrl("/api/send"), {
         method: "POST",
         body: formData,
       });

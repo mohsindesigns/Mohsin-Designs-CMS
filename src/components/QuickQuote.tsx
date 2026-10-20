@@ -7,6 +7,7 @@ import { Icon } from '../config/icons';
 import { useContent } from '../hooks/useContent';
 import { usePathname } from 'next/navigation';
 import { isServiceVisibleOnPage } from '@/lib/servicesVisibility';
+import { adminApiUrl } from '@/lib/adminApi';
 import RichTextRenderer from './ui/RichTextRenderer';
 import TurnstileCaptcha from './ui/TurnstileCaptcha';
 
@@ -163,7 +164,7 @@ ${formData.message}
 
         try {
             try {
-                const response = await fetch('/api/send', {
+                const response = await fetch(adminApiUrl('/api/send'), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
