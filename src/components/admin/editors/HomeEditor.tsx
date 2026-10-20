@@ -75,7 +75,10 @@ const DEFAULT_ABOUT_STATS = [
 // reference is stored: the homepage always resolves title / description / image from the LIVE catalog,
 // so a renamed service or a new image in Admin > Services shows up without re-picking it here.
 const slimService = (s: any) => {
-   const out: any = { _id: s._id, id: s.id, slug: s.slug, title: s.title, tagline: s.tagline, category: s.category || s.tag, icon: s.icon };
+   // `url` is set only for a service authored as its own Page (template "service-detail") - its
+   // real route is /<slug>/, not /services/<slug>/. Kept here so a hand-picked card still links
+   // correctly even if the live-catalog lookup that normally recovers it ever misses.
+   const out: any = { _id: s._id, id: s.id, slug: s.slug, title: s.title, tagline: s.tagline, category: s.category || s.tag, icon: s.icon, url: s.url };
    Object.keys(out).forEach((k) => out[k] === undefined && delete out[k]);
    return out;
 };

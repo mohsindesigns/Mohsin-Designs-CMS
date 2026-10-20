@@ -36,7 +36,34 @@ export default function ContentSelector({ type, selectedItems = [], onSelect, la
             masterList = data.globalServices;
           } else if (Array.isArray(data?.services?.list) && data.services.list.length > 0) {
             masterList = data.services.list;
-          } else {
+          }
+
+          // A service can also be authored as its own Page (template "service-detail", Admin >
+          // Pages) instead of a catalog entry - its real URL is /<slug>/, not /services/<slug>/.
+          // Without this, a page-authored service could never be hand-picked here at all, even
+          // though its own Display Visibility picker can already target it to show on this page.
+          try {
+            const pagesRes = await fetch(adminApiUrl("/api/admin/pages"), { cache: "no-store" });
+            if (pagesRes.ok) {
+              const pages = await pagesRes.json();
+              const pageServices = (Array.isArray(pages) ? pages : [])
+                .filter((p: any) => p && p.template === "service-detail" && !p.isTrashed && p.status === "published")
+                .map((p: any) => ({
+                  id: String(p._id),
+                  _id: String(p._id),
+                  slug: p.slug,
+                  title: p.content?.title || p.title,
+                  tagline: p.content?.hero?.description || "",
+                  category: p.content?.tag || "",
+                  url: `/${p.slug}/`,
+                }));
+              masterList = [...masterList, ...pageServices];
+            }
+          } catch {
+            // Non-fatal: the catalog list above still loads on its own.
+          }
+
+          if (masterList.length === 0) {
             masterList = [
               { id: "srv-1", title: "Custom Web Applications", slug: "custom-web-applications", tagline: "Scalable Full-Stack Engineering", category: "DEVELOPMENT", icon: "Code" },
               { id: "srv-2", title: "UI/UX & Product Design", slug: "ui-ux-design-architecture", tagline: "Modern High-Converting Interfaces", category: "DESIGN", icon: "Palette" },
