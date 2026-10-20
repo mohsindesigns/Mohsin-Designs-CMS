@@ -8,7 +8,7 @@ import Services from "@/components/Services";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 import { useContent } from "@/hooks/useContent";
 import contentDefaults from "@/data/content.json";
-import { isServiceVisibleOnPage } from "@/lib/servicesVisibility";
+import { isServiceVisibleOnPage, withTargetedServices } from "@/lib/servicesVisibility";
 
 // SEO-relevant, text-heavy sections (about, industries, how-we-work, service area, contact/NAP,
 // testimonials, trusted brands) are rendered on the server too. They used to be `ssr: false`, which
@@ -89,11 +89,15 @@ function resolveSection(content: any, aliases: string[], list?: ListSpec): any |
  * With no catalog available (e.g. it failed to load) the saved list is used untouched.
  */
 function syncServicesWithCatalog(services: any, catalog: any, currentSlug?: string): any {
-  if (!services || typeof services !== "object") return services;
-  const saved: any[] = Array.isArray(services.list)
-    ? services.list
-    : Array.isArray(services.services)
-      ? services.services
+  // A page whose Services tab was never opened has no `content.services` at all - treat that as an
+  // empty-but-present section instead of passing `undefined` straight through, so a catalog service
+  // specifically targeted to this page can still populate it below (see withTargetedServices).
+  if (services !== null && services !== undefined && typeof services !== "object") return services;
+  const base = services || {};
+  const saved: any[] = Array.isArray(base.list)
+    ? base.list
+    : Array.isArray(base.services)
+      ? base.services
       : [];
   const live: any[] = Array.isArray(catalog) ? catalog.filter((s: any) => s && typeof s === "object") : [];
 
@@ -126,7 +130,9 @@ function syncServicesWithCatalog(services: any, catalog: any, currentSlug?: stri
     if (!isServiceVisibleOnPage(item, currentSlug)) continue;
     list.push(item);
   }
-  return { ...services, list };
+  // A catalog service specifically targeted to this page, but never hand-picked into `saved`,
+  // still belongs here - targeting alone should be enough to make it show on this page.
+  return { ...base, list: withTargetedServices(list, live, currentSlug) };
 }
 
 // Coordinates for the cities this site publishes pages/hubs for. <ServiceArea>'s map only geocodes
@@ -233,8 +239,12 @@ export default function CityTemplate({ pageData, params }: { pageData?: any; par
     () => syncServicesWithCatalog(content.services, content.globalServices, pageData?.slug || "city"),
     [content.services, content.globalServices, pageData?.slug]
   );
+  // `servicesData.list.length > 0` is already the authoritative signal (it includes both hand-picked
+  // AND page-targeted catalog services); a separate hasContent(content.services) check used to also
+  // gate this, which blocked the section entirely on a page whose Services tab was never opened
+  // (content.services === undefined) even once a targeted service should have populated it.
   const showServices =
-    content.services?.enabled !== false && hasContent(content.services) && Array.isArray(servicesData?.list) && servicesData.list.length > 0;
+    content.services?.enabled !== false && Array.isArray(servicesData?.list) && servicesData.list.length > 0;
 
   const serviceArea = useMemo(() => {
     const sa = content.serviceArea;

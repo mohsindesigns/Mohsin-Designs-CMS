@@ -22,7 +22,7 @@ import { parseMapEmbed } from "@/lib/mapEmbed";
 import { isSafeHref } from "@/lib/utils";
 import { BASE_URL } from "@/lib/constants";
 import { SERVICE_AREA_DEFAULTS as D, SERVICE_AREA_DEFAULT_ICONS, isQuoteAnchor } from "@/lib/serviceAreaDefaults";
-import { isServiceVisibleOnPage } from "@/lib/servicesVisibility";
+import { isServiceVisibleOnPage, withTargetedServices } from "@/lib/servicesVisibility";
 
 const QuickQuote = dynamic(() => import("@/components/QuickQuote"), { ssr: false });
 const VideoTestimonials = dynamic(() => import("@/components/sections/VideoTestimonials"), { ssr: false });
@@ -204,9 +204,12 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
         ? services.slice(0, 6)
         : (D.servicesSection.items as any[])
   );
-  const serviceCards: any[] = rawServiceCards
+  const liveServiceCards: any[] = rawServiceCards
     .filter((s: any) => s && (String(s.title ?? "").trim() || hasRich(s.description) || hasRich(s.tagline)))
     .filter((s: any) => isServiceVisibleOnPage(s, currentSlug));
+  // A catalog service specifically targeted to this page, but not among the hand-picked items
+  // above, still belongs here - targeting alone should be enough to make it show on this page.
+  const serviceCards: any[] = withTargetedServices(liveServiceCards, services, currentSlug);
   const servicesVisible = servicesSection.enabled !== false && serviceCards.length > 0;
 
   const regionsSection = mergeSection(content.regionsSection, D.regionsSection);

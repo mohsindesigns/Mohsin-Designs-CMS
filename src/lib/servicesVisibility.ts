@@ -124,3 +124,36 @@ export function filterVisibleServices(
   if (!Array.isArray(services)) return [];
   return services.filter((s) => isServiceVisibleOnPage(s, currentIdentifier));
 }
+
+const keyOfService = (s: any): string => String(s?._id || s?.id || s?.slug || "");
+
+/**
+ * A location page's (Country/State/City/Service Area) services section was historically built
+ * ONLY from that page's own hand-picked "saved" cards - visibility filtering only ever PRUNED that
+ * list, it never ADDED to it. That defeats the whole point of targeting a service to a specific
+ * page: an admin sets a service to Selective and ticks "Saudi Arabia", expecting it to show there,
+ * but if it was never also manually hand-picked into the Saudi Arabia page's own card list, nothing
+ * shows - the section just disappears instead of displaying the one targeted service.
+ *
+ * This appends any catalog service that is specifically (not globally) targeted to this page and
+ * isn't already present in the (already visibility-filtered) saved cards, so targeting alone is
+ * enough - no redundant hand-pick required. Global services are intentionally left out here: they
+ * already reach this page through the saved-cards/catalog-fallback path each template already has.
+ */
+export function withTargetedServices(
+  savedLive: any[],
+  catalog: any[],
+  pageIdentifier: string | undefined | null
+): any[] {
+  const saved = Array.isArray(savedLive) ? savedLive : [];
+  const pool = Array.isArray(catalog) ? catalog : [];
+  const savedKeys = new Set(saved.map(keyOfService).filter(Boolean));
+  const targeted = pool.filter(
+    (c: any) =>
+      c &&
+      (c.visibility === "specific" || c.visibility === "selective") &&
+      !savedKeys.has(keyOfService(c)) &&
+      isServiceVisibleOnPage(c, pageIdentifier)
+  );
+  return targeted.length > 0 ? [...saved, ...targeted] : saved;
+}

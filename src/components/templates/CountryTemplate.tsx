@@ -9,7 +9,7 @@ import PageInlineFaqs from "@/components/PageInlineFaqs";
 import contentDefaults from "@/data/content.json";
 import { useContent } from "@/hooks/useContent";
 import { cleanMojibake } from "@/lib/utils";
-import { isServiceVisibleOnPage } from "@/lib/servicesVisibility";
+import { isServiceVisibleOnPage, withTargetedServices } from "@/lib/servicesVisibility";
 
 const Portfolio = dynamic(() => import("@/components/Portfolio"));
 const Testimonials = dynamic(() => import("@/components/Testimonials"), { ssr: false });
@@ -196,13 +196,16 @@ export default function CountryTemplate({ pageData }: { pageData?: any; params?:
   const catalog: any[] = Array.isArray(content.globalServices) ? content.globalServices : [];
   const savedCards: any[] = services?.list || services?.services || [];
   const pageCountrySlug = pageData?.slug || "country";
-  const serviceCards =
+  const liveSavedCards =
     catalog.length === 0
       ? savedCards.filter((c: any) => isServiceVisibleOnPage(c, pageCountrySlug))
       : savedCards.filter((c: any) => {
           const live = catalog.find((s: any) => sameService(c, s));
           return !!live && live.status !== "draft" && !live.isTrashed && isServiceVisibleOnPage(live, pageCountrySlug);
         });
+  // Add any catalog service specifically targeted to this page that wasn't already hand-picked
+  // above - targeting a service to a page should be enough on its own to make it show here.
+  const serviceCards = withTargetedServices(liveSavedCards, catalog, pageCountrySlug);
 
   const industries = pick(content.industries, content.domainExpertise);
 
@@ -284,8 +287,11 @@ export default function CountryTemplate({ pageData }: { pageData?: any; params?:
       {/* 2. About The Owner (Clean - No stats, No CTA button) */}
       {about?.enabled !== false && hasContent(about) && <AboutOwnerClean data={aboutData} />}
 
-      {/* 3. Services Section - needs at least one selected, still-live service, otherwise it is an empty carousel */}
-      {services?.enabled !== false && hasContent(services) && serviceCards.length > 0 && (
+      {/* 3. Services Section - needs at least one selected, still-live service, otherwise it is an empty
+          carousel. serviceCards.length is already the authoritative check (it includes both hand-picked
+          AND page-targeted catalog services), so hasContent(services) is deliberately NOT also required -
+          that used to block this section on a page whose Services tab was never opened. */}
+      {services?.enabled !== false && serviceCards.length > 0 && (
         <Services data={{ ...services, list: serviceCards }} masterCatalog={content.globalServices} />
       )}
 
