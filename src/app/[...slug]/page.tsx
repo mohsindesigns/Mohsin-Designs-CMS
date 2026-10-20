@@ -10,7 +10,7 @@ import { Metadata } from 'next';
 import CustomSchemaMarkup from '@/components/CustomSchemaMarkup';
 import { BASE_URL } from '@/lib/constants';
 import { resolveRobotsMetadata } from '@/lib/seo';
-import { getCachedPage, getCachedSiteContent } from '@/lib/content';
+import { getCachedPage, getCachedPageServices, getCachedSiteContent } from '@/lib/content';
 import { getResolvedSchemaBlocks } from '@/lib/dynamicSchema';
 import {
   validateLocationHierarchy,
@@ -242,7 +242,21 @@ export default async function DynamicPage({ params }: PageProps) {
   if (resolved.check) applyLocationHierarchy(page, resolved.check);
   const schemaSlug: string = resolved.check?.canonicalPath || slug;
 
-  const globalData = globalDataRaw || {};
+  // A service can also be authored as its own Page (template "service-detail") instead of a
+  // catalog entry in Admin > Services - merge those in here, scoped to just this one page's own
+  // render (not the shared getCachedSiteContent() object), so the Navbar/Footer/lead-form service
+  // lists - which read the outer, layout-level copy of this same data - never advertise a service
+  // that was built for one specific page. See getCachedPageServices for the full rationale.
+  const pageAuthoredServices = await getCachedPageServices();
+  const baseGlobalData = globalDataRaw || {};
+  const catalogServices: any[] = Array.isArray(baseGlobalData.services?.services) ? baseGlobalData.services.services : [];
+  const globalData = pageAuthoredServices.length > 0
+    ? {
+        ...baseGlobalData,
+        services: { ...(baseGlobalData.services || {}), services: [...catalogServices, ...pageAuthoredServices] },
+        globalServices: [...catalogServices, ...pageAuthoredServices],
+      }
+    : baseGlobalData;
   const settings = globalData.settings || {};
 
   // The page that is the site homepage lives at "/", never at its own slug. That is either the page

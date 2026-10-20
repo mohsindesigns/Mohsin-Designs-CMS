@@ -79,7 +79,10 @@ const ServiceCard = ({ service, index }: any) => {
   const title = String(service?.title ?? "");
   const slug = service.slug || title.toLowerCase().replace(/ & /g, '-').replace(/, /g, '-').replace(/ /g, '-');
   const Icon = iconMap[service.icon] || ShieldCheck;
-  const href = service.buttonHref ? safeLink(service.buttonHref, `/services/${slug}`) : `/services/${slug}`;
+  // A service authored as its own Page (template "service-detail") lives at /<slug>/, not
+  // /services/<slug>/ - see getCachedPageServices.
+  const defaultHref = service.url || `/services/${slug}`;
+  const href = service.buttonHref ? safeLink(service.buttonHref, defaultHref) : defaultHref;
 
   // Alternating highlight accent bars for visual diversity
   const borderColors = [

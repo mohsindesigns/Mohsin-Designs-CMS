@@ -162,6 +162,8 @@ function ServiceCard({
     desc: string;
     features: string[];
     slug: string;
+    /** Set for a service authored as its own Page (template "service-detail"): /<slug>/, not /services/<slug>/. */
+    url?: string;
   };
   index: number;
   ctaText?: string;
@@ -181,7 +183,7 @@ function ServiceCard({
   const formattedNum = (index + 1).toString().padStart(2, "0");
 
   return (
-    <Link href={`/services/${card.slug}`} className="w-full flex">
+    <Link href={card.url || `/services/${card.slug}`} className="w-full flex">
       <motion.div
         initial={{ opacity: 0, y: 32 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -387,6 +389,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
       // No invented bullet points either: only what the service really lists.
       features: toFeatureList(s.hero?.benefits, s.features, s.whatIncluded?.pillars),
       slug: String(s.slug).trim(),
+      url: s.url,
     }));
 
   // ── Featured blog posts ──────────────────────────────────────────────────────

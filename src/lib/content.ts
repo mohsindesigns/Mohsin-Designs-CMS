@@ -74,6 +74,57 @@ export const getCachedPage = cache(async (slug: string) => {
 });
 
 /**
+ * Services can be authored two ways: as a catalog entry in Admin > Services (site_contents), or as
+ * a standalone Page document with template "service-detail" (Admin > Pages) - its own detail page
+ * lives at /<slug>/, not /services/<slug>/. The visibility/targeting system (servicesVisibility.ts)
+ * only ever read the catalog, so a service built the second way could never be targeted to show on
+ * a specific location page - it just had no visibility mechanism at all.
+ *
+ * This fetches every published service-detail Page and reshapes each into the same {title, slug,
+ * status, isTrashed, visibility, targetPages, hero, url} shape a catalog entry has, so the location
+ * templates' existing withTargetedServices() resolution treats both kinds identically. `url` is the
+ * one real difference - its card must link to /<slug>/, not /services/<slug>/ - callers that render
+ * these as clickable cards must prefer `service.url` over building a /services/ link themselves.
+ *
+ * Deliberately NOT merged into getCachedSiteContent()'s catalog: that object is shared, via the
+ * layout-level ContentProvider, with the Navbar mega-menu, Footer links, and the lead-capture forms'
+ * service dropdowns - none of which should advertise a service built for one specific location page.
+ * Call sites merge this in locally (e.g. [...slug]/page.tsx, scoped to the one page being rendered).
+ */
+export const getCachedPageServices = cache(async () => {
+  try {
+    await connectToDatabase();
+    const pages = await Page.find({
+      template: 'service-detail',
+      status: 'published',
+      isTrashed: { $ne: true },
+    })
+      .select('title slug content.title content.visibility content.targetPages content.hero content.tag updatedAt')
+      .lean();
+    return (pages as any[]).map((p) => ({
+      _id: String(p._id),
+      id: String(p._id),
+      title: p.content?.title || p.title,
+      slug: p.slug,
+      url: `/${p.slug}/`,
+      status: 'published',
+      isTrashed: false,
+      // Same flat shape a catalog service uses (src/lib/servicesVisibility.ts): visibility is
+      // 'global' (default, shown everywhere a global service would be) or 'specific' (only the
+      // pages/services listed in targetPages).
+      visibility: p.content?.visibility === 'specific' ? 'specific' : 'global',
+      targetPages: Array.isArray(p.content?.targetPages) ? p.content.targetPages : [],
+      tag: p.content?.tag,
+      hero: { description: p.content?.hero?.description || '' },
+      updatedAt: p.updatedAt,
+    }));
+  } catch (error) {
+    console.error('Error in getCachedPageServices:', error);
+    return [];
+  }
+});
+
+/**
  * Deduplicated React Server Component fetcher for published blog posts.
  */
 export const getCachedPost = cache(async (slug: string) => {

@@ -269,7 +269,9 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
       desc: stripHtml(srv.desc || srv.tagline || srv.description) || excerpt(srv.hero?.description) || "Tailored industry digital engineering solution.",
       iconName: srv.iconName || srv.icon || "Code",
       tag: srv.tag || srv.category || "Service",
-      href: safeLink(srv.href || (srv.slug ? `/services/${srv.slug}` : ""), "/services")
+      // A service authored as its own Page (template "service-detail") lives at /<slug>/, not
+      // /services/<slug>/ - see getCachedPageServices.
+      href: safeLink(srv.href || srv.url || (srv.slug ? `/services/${srv.slug}` : ""), "/services")
     }))
   };
 

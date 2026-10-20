@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
     // Deliberately a slim projection: the full `content` of every page is several MB. Consumers
     // (page manager, location pickers, settings homepage picker, FAQ page picker) only need these.
     const pages = await Page.find({})
-      .select('_id title slug template status isTrashed createdAt updatedAt content.parentLocationId content.parentLocationSlug content.countrySlug content.stateSlug content.citySlug content.country content.state content.city')
+      .select('_id title slug template status isTrashed createdAt updatedAt content.parentLocationId content.parentLocationSlug content.countrySlug content.stateSlug content.citySlug content.country content.state content.city content.title content.visibility content.targetPages')
       .sort({ createdAt: -1 })
       .lean();
     return NextResponse.json(pages);

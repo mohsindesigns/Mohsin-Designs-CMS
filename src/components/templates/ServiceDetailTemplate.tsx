@@ -2229,7 +2229,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
               {recommendedServices.map((recSrv: any, idx: number) => (
                 <Link
                   key={idx}
-                  href={`/services/${recSrv.slug}`}
+                  href={recSrv.url || `/services/${recSrv.slug}`}
                   className="snap-start shrink-0 w-[290px] xs:w-[325px] sm:w-[360px] flex flex-col group/rec cursor-pointer no-underline"
                 >
                   <SpotlightCard className="bg-white/45 dark:bg-[#0c0b18]/45 border border-brand-zinc-200/90 dark:border-white/5 p-6 xs:p-7 rounded-[28px] hover:shadow-[0_20px_40px_-15px_rgba(3,6,172,0.06)] dark:hover:shadow-[0_20px_40px_-15px_rgba(233,189,54,0.04)] group-hover/rec:-translate-y-1.5 transition-all duration-500 flex flex-col justify-between h-full min-h-[220px] relative overflow-hidden">

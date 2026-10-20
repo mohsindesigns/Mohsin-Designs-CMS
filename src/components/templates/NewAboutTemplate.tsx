@@ -1007,9 +1007,11 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
                             </div>
                           )}
 
-                          {/* A service links to its own page; a stage without a slug uses the optional fallback link, then the contact page. */}
+                          {/* A service links to its own page; a stage without a slug uses the optional fallback link, then
+                              the contact page. `stage.url` wins when set - a service authored as its own Page (template
+                              "service-detail") lives at /<slug>/, not /services/<slug>/ (see getCachedPageServices). */}
                           <Link
-                            href={stage.slug ? `/services/${stage.slug}` : resolveHref(servicesDirectory.getStartedHref, contactHref)}
+                            href={stage.url || (stage.slug ? `/services/${stage.slug}` : resolveHref(servicesDirectory.getStartedHref, contactHref))}
                             aria-label={`${servicesDirectory.getStartedText || "Explore Service"}: ${stage.title}`}
                             className="inline-flex items-center gap-2 text-xs font-mono font-black text-brand-dark dark:text-white group-hover:text-[#0306AC] dark:group-hover:text-[#E9BD36] transition-colors"
                           >

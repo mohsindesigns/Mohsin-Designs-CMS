@@ -17,6 +17,7 @@ import SectionToggle from "@/components/admin/SectionToggle";
 import MediaSelector from "@/components/admin/MediaSelector";
 import PageServicesPicker from "@/components/admin/PageServicesPicker";
 import BreadcrumbEditor from "@/components/admin/BreadcrumbEditor";
+import VisibilityPicker from "@/components/admin/VisibilityPicker";
 import { TEMPLATES_WITH_SERVICES_SECTION } from "@/lib/servicesVisibility";
 import { adminApiUrl } from "@/lib/adminApi";
 import { BASE_URL } from "@/lib/constants";
@@ -207,6 +208,19 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
   const breadcrumbPageOptions = allPages
     .filter((p: any) => !p.isTrashed && p.slug !== page?.slug)
     .map((p: any) => ({ id: p.slug, label: p.title || p.slug, url: `/${p.slug}/` }));
+
+  // Same list, but restricted to pages whose template actually renders a services section (matches
+  // the "target this page" picker on a catalog service, admin/services/page.tsx) - for the Display
+  // Visibility box, so a service can't be pointed at a page it could never show on.
+  const visibilityTargetPageOptions = allPages
+    .filter((p: any) =>
+      !p.isTrashed &&
+      p.slug !== page?.slug &&
+      p.template !== 'home' &&
+      p.template !== 'service-detail' &&
+      TEMPLATES_WITH_SERVICES_SECTION.includes(p.template)
+    )
+    .map((p: any) => ({ id: p.slug, label: p.title || p.slug, group: 'Pages', hint: `/${p.slug}` }));
 
   // Extract current location segments
   const slugSegments = (page?.slug || '').split('/').filter(Boolean);
@@ -818,6 +832,42 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
               </div>
               <div className="p-3">
                 <PageServicesPicker pageSlug={page.slug} compact />
+              </div>
+            </div>
+          )}
+
+          {/* Display Visibility Box - only for individual service pages authored directly as a Page
+              document (template "service-detail"). A service built this way has no entry in the
+              Admin > Services catalog at all, so it had no way to be targeted to a specific page -
+              this writes content.visibility/content.targetPages in the same flat shape a catalog
+              service uses, and getCachedPageServices (src/lib/content.ts) reshapes this Page into a
+              catalog-service-like object before every location page's own render, so the exact same
+              isServiceVisibleOnPage()/withTargetedServices() matching already used everywhere else
+              also applies here - no separate matching logic to keep in sync. */}
+          {page.template === 'service-detail' && (
+            <div className="bg-white border border-[#c3c4c7] shadow-sm rounded-sm overflow-hidden">
+              <div className="px-3 py-1.5 border-b border-[#c3c4c7] bg-[#f6f7f7] flex items-center justify-between">
+                <h2 className="text-[13px] font-semibold text-[#1d2327]">Display Visibility</h2>
+                <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
+                  content?.visibility === 'specific' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                }`}>
+                  {content?.visibility === 'specific' ? `Selective (${(content?.targetPages || []).length})` : 'Global'}
+                </span>
+              </div>
+              <div className="p-3">
+                <p className="text-[11px] text-[#646970] mb-2 leading-tight">
+                  Choose whether this service appears everywhere a global service would, or only on the
+                  specific pages &amp; services selected below.
+                </p>
+                <VisibilityPicker
+                  visibility={content?.visibility || "global"}
+                  targetPages={content?.targetPages || []}
+                  onChangeVisibility={(val) => setContent({ ...content, visibility: val })}
+                  onChangeTargetPages={(targets) => setContent({ ...content, targetPages: targets })}
+                  availablePages={visibilityTargetPageOptions}
+                  currentSlug={page.slug}
+                  compact
+                />
               </div>
             </div>
           )}

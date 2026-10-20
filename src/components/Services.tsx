@@ -104,6 +104,9 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
       const imgSrc = service?.image || service?.overviewImage || service?.heroImage || service?.featuredImage || globalService?.image || globalService?.overviewImage || globalService?.heroImage || globalService?.featuredImage || globalService?.hero?.bgImage || globalService?.hero?.backgroundImage || "";
       const category = service?.category || service?.tag || globalService?.category || globalService?.tag || "";
       const slug = service?.slug || globalService?.slug || "";
+      // A service authored as its own Page (template "service-detail") lives at /<slug>/, not
+      // /services/<slug>/ - getCachedPageServices sets this `url` for exactly that case.
+      const url = service?.url || globalService?.url || "";
       const num = service?.num || String(index + 1).padStart(2, "0");
 
       if (!globalService && !imgSrc) return null;
@@ -112,7 +115,7 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
       if (globalService && !isServiceVisibleOnPage(globalService, pathname)) return null;
       if (service && typeof service === 'object' && service.visibility && !isServiceVisibleOnPage(service, pathname)) return null;
 
-      return { service, title, desc, imgSrc, category, slug, num };
+      return { service, title, desc, imgSrc, category, slug, url, num };
     })
     .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
 
@@ -219,11 +222,11 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
           className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-none w-full -mx-2 px-2 md:mx-0 md:px-0 py-8 carousel-grab select-none"
         >
           {validCards.map((entry, index) => {
-            const { service, title, desc, imgSrc, category, slug, num } = entry;
+            const { service, title, desc, imgSrc, category, slug, url, num } = entry;
             return (
               <div key={service?._id || service?.id || index} className="w-[86%] sm:w-[calc(50%-12px)] lg:w-[calc(33.33%-16px)] shrink-0 snap-start">
                 <Link
-                  href={slug ? `/services/${slug}` : "/services"}
+                  href={url || (slug ? `/services/${slug}` : "/services")}
                   className="group relative flex flex-col justify-between rounded-[2rem] border border-brand-blue/20 dark:border-white/10 hover:border-transparent bg-white dark:bg-zinc-900 p-6 xs:p-7 md:p-8 transition-all duration-500 hover:-translate-y-3 h-full min-h-[490px] sm:min-h-[520px] md:min-h-[540px] shadow-[0_2px_20px_rgba(3,6,172,0.04)] hover:shadow-[0_32px_64px_rgba(3,6,172,0.28)] dark:hover:shadow-[0_32px_64px_rgba(233,189,54,0.08)] cursor-pointer card-sweep block no-underline"
                 >
 
