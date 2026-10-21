@@ -84,6 +84,19 @@ export function isServiceVisibleOnPage(
         return true;
       }
 
+      // A State/City page's `slug` gets rewritten at render time to its canonical nested path
+      // (applyLocationHierarchy: "usa/<state-slug>" or "usa/<state-slug>/<city-slug>"), but every
+      // admin targeting UI (VisibilityPicker, PageServicesPicker, ContentSelector) lists and saves
+      // the page's flat, originally-stored slug - a Country page has no parent so this never comes
+      // up there, which is why this only breaks State/City. Page.slug is unique across the whole
+      // site (Page.ts: `unique: true`), so the final path segment always traces back to exactly one
+      // page - safe to compare as a fallback once every more specific match above has failed.
+      const currentLastSegment = normalizedCurrent.split("/").filter(Boolean).pop() || "";
+      const targetLastSegment = normalizedTarget.split("/").filter(Boolean).pop() || "";
+      if (currentLastSegment && currentLastSegment === targetLastSegment) {
+        return true;
+      }
+
       return false;
     });
   }

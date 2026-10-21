@@ -38,33 +38,52 @@ export default function PageServicesPicker({ pageSlug, compact = false }: PageSe
   const [error, setError] = useState("");
 
   const load = () => {
-    Promise.all([
-      fetch(adminApiUrl(`/api/content?t=${Date.now()}`), { cache: "no-store" }).then((r) => r.json()),
-      fetch(adminApiUrl(`/api/admin/pages?t=${Date.now()}`), { cache: "no-store" }).then((r) => r.json()),
-    ])
-      .then(([contentJson, pagesJson]) => {
-        const catalog: MergedService[] = (Array.isArray(contentJson?.services?.services) ? contentJson.services.services : [])
-          .filter((s: any) => s && s.title && s.slug && s.status !== "draft" && !s.isTrashed)
-          .map((s: any) => ({
-            title: s.title,
-            slug: s.slug,
-            visibility: s.visibility || "global",
-            targetPages: Array.isArray(s.targetPages) ? s.targetPages : [],
-            source: "catalog" as const,
-          }));
-        const pageServices: MergedService[] = (Array.isArray(pagesJson) ? pagesJson : [])
-          .filter((p: any) => p && p.template === "service-detail" && !p.isTrashed && p.status === "published")
-          .map((p: any) => ({
-            title: p.content?.title || p.title,
-            slug: p.slug,
-            visibility: p.content?.visibility === "specific" ? "specific" : "global",
-            targetPages: Array.isArray(p.content?.targetPages) ? p.content.targetPages : [],
-            source: "page" as const,
-            pageId: String(p._id),
-          }));
-        setMerged([...catalog, ...pageServices]);
-      })
-      .catch(() => setError("Couldn't load the services list."));
+    // Each source is fetched/parsed independently - a failure in one (e.g. a transient 5xx on
+    // /api/admin/pages) must not block the other, or stop the list from ever leaving its loading
+    // state. A combined Promise.all here previously meant one failed fetch left `merged` stuck at
+    // null forever - the picker just spun, with no error shown and no catalog data either.
+    const loadCatalog = fetch(adminApiUrl(`/api/content?t=${Date.now()}`), { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
+      .then(
+        (json): MergedService[] =>
+          (Array.isArray(json?.services?.services) ? json.services.services : [])
+            .filter((s: any) => s && s.title && s.slug && s.status !== "draft" && !s.isTrashed)
+            .map((s: any) => ({
+              title: s.title,
+              slug: s.slug,
+              visibility: s.visibility || "global",
+              targetPages: Array.isArray(s.targetPages) ? s.targetPages : [],
+              source: "catalog" as const,
+            }))
+      )
+      .catch(() => {
+        setError((prev) => prev || "Couldn't load the services catalog - showing what's available.");
+        return [] as MergedService[];
+      });
+
+    const loadPages = fetch(adminApiUrl(`/api/admin/pages?t=${Date.now()}`), { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
+      .then(
+        (json): MergedService[] =>
+          (Array.isArray(json) ? json : [])
+            .filter((p: any) => p && p.template === "service-detail" && !p.isTrashed && p.status === "published")
+            .map((p: any) => ({
+              title: p.content?.title || p.title,
+              slug: p.slug,
+              visibility: p.content?.visibility === "specific" ? "specific" : "global",
+              targetPages: Array.isArray(p.content?.targetPages) ? p.content.targetPages : [],
+              source: "page" as const,
+              pageId: String(p._id),
+            }))
+      )
+      .catch(() => {
+        setError((prev) => prev || "Couldn't load page-authored services - showing catalog services only.");
+        return [] as MergedService[];
+      });
+
+    Promise.all([loadCatalog, loadPages]).then(([catalog, pageServices]) => {
+      setMerged([...catalog, ...pageServices]);
+    });
   };
 
   useEffect(() => {

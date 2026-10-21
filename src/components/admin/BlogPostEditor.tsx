@@ -282,7 +282,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
 
     setSaving(true);
     try {
-      const url = id ? `/api/admin/blogs/posts/${id}` : '/api/admin/blogs/posts';
+      const url = adminApiUrl(id ? `/api/admin/blogs/posts/${id}` : '/api/admin/blogs/posts');
       const method = id ? 'PATCH' : 'POST';
       const res = await fetch(url, {
         method,
