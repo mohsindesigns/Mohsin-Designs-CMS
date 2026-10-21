@@ -115,7 +115,16 @@ export const getCachedPageServices = cache(async () => {
       visibility: p.content?.visibility === 'specific' ? 'specific' : 'global',
       targetPages: Array.isArray(p.content?.targetPages) ? p.content.targetPages : [],
       tag: p.content?.tag,
-      hero: { description: p.content?.hero?.description || '' },
+      // Services.tsx's image fallback chain reads hero.bgImage/hero.backgroundImage off the
+      // matched catalog entry - both ServicesEditor and ServiceDetailEditor save the photo under
+      // those same two keys, so they must be passed through here too (previously only `description`
+      // was kept, so a Page-authored service's image rendered fine on its own page but came up
+      // blank everywhere it was pulled into another page's services list).
+      hero: {
+        description: p.content?.hero?.description || '',
+        backgroundImage: p.content?.hero?.backgroundImage || p.content?.hero?.bgImage || '',
+        bgImage: p.content?.hero?.backgroundImage || p.content?.hero?.bgImage || '',
+      },
       updatedAt: p.updatedAt,
     }));
   } catch (error) {
