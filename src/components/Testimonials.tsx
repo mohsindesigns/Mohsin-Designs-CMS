@@ -2,10 +2,34 @@
 
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { Star, Quote } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useContent } from "@/hooks/useContent";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import AccentHighlight from "@/components/ui/AccentHighlight";
+
+// Reviewer's real photo (e.g. a Google profile photo) when one is on file, falling back to the
+// initial-letter badge on a missing URL or a failed load (hotlinked Google photos can 404/expire).
+function ReviewAvatar({ name, avatarBg, src }: { name: string; avatarBg: string; src?: string }) {
+  const [failed, setFailed] = useState(false);
+  useEffect(() => setFailed(false), [src]);
+
+  if (src && !failed) {
+    return (
+      <img
+        src={src}
+        alt=""
+        loading="lazy"
+        onError={() => setFailed(true)}
+        className="relative h-9 w-9 rounded-full object-cover border border-white/20 shadow-sm shrink-0"
+      />
+    );
+  }
+  return (
+    <div className={`relative h-9 w-9 rounded-full ${avatarBg} flex items-center justify-center text-white font-heading font-black text-xs border border-white/20 shadow-sm shrink-0`}>
+      {name.charAt(0)}
+    </div>
+  );
+}
 
 export default function Testimonials({ data: overrideData }: { data?: any }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -154,7 +178,8 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
     quote: t.quote || t.text || "Exceptional service and outstanding deliverables.",
     rating: typeof t.rating ==="number" ? t.rating : 5,
     column: t.column || (idx % 3) + 1,
-    avatarBg: t.avatarBg || "bg-[#0306AC]"
+    avatarBg: t.avatarBg || "bg-[#0306AC]",
+    avatar: t.avatar || t.image || ""
   }));
 
   // Scroll tracking for parallax offset
@@ -343,9 +368,7 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
                     />
                   </div>
                   <div className="flex items-center gap-3 border-t border-slate-100 dark:border-white/10 pt-3 mt-2">
-                    <div className={`relative h-9 w-9 rounded-full ${item.avatarBg} flex items-center justify-center text-white font-heading font-black text-xs border border-white/20 shadow-sm shrink-0`}>
-                      {item.name.charAt(0)}
-                    </div>
+                    <ReviewAvatar name={item.name} avatarBg={item.avatarBg} src={item.avatar} />
                     <div className="min-w-0 flex-1">
                       <span className="block text-[11px] font-black text-slate-900 dark:text-white leading-none truncate">{item.name}</span>
                       <span className="block text-[9px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest mt-1 truncate">
@@ -382,9 +405,7 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
                     />
                   </div>
                   <div className="flex items-center gap-3 border-t border-slate-100 dark:border-white/10 pt-3 mt-2">
-                    <div className={`relative h-9 w-9 rounded-full ${item.avatarBg} flex items-center justify-center text-white font-heading font-black text-xs border border-white/20 shadow-sm shrink-0`}>
-                      {item.name.charAt(0)}
-                    </div>
+                    <ReviewAvatar name={item.name} avatarBg={item.avatarBg} src={item.avatar} />
                     <div className="min-w-0 flex-1">
                       <span className="block text-[11px] font-black text-slate-900 dark:text-white leading-none truncate">{item.name}</span>
                       <span className="block text-[9px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest mt-1 truncate">
@@ -421,9 +442,7 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
                     />
                   </div>
                   <div className="flex items-center gap-3 border-t border-slate-100 dark:border-white/10 pt-3 mt-2">
-                    <div className={`relative h-9 w-9 rounded-full ${item.avatarBg} flex items-center justify-center text-white font-heading font-black text-xs border border-white/20 shadow-sm shrink-0`}>
-                      {item.name.charAt(0)}
-                    </div>
+                    <ReviewAvatar name={item.name} avatarBg={item.avatarBg} src={item.avatar} />
                     <div className="min-w-0 flex-1">
                       <span className="block text-[11px] font-black text-slate-900 dark:text-white leading-none truncate">{item.name}</span>
                       <span className="block text-[9px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest mt-1 truncate">
