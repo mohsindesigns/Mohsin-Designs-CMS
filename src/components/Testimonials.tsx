@@ -56,7 +56,8 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
       quote: "Mohsin's team revamped our core web application in record time. Performance increased by 300% and user engagement reached all-time highs.",
       rating: 5,
       column: 1,
-      avatarBg: "bg-[#0306AC]"
+      avatarBg: "bg-[#0306AC]",
+      avatar: ""
     },
     {
       id: "rev-2",
@@ -66,7 +67,8 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
       quote: "The attention to typography, micro-interactions, and responsive layout is world-class. Our design system was delivered ahead of schedule.",
       rating: 5,
       column: 1,
-      avatarBg: "bg-purple-600"
+      avatarBg: "bg-purple-600",
+      avatar: ""
     },
     {
       id: "rev-3",
@@ -76,7 +78,8 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
       quote: "From discovery to deployment, the execution was flawless. Their architectural decisions saved us months of rework down the line.",
       rating: 5,
       column: 1,
-      avatarBg: "bg-emerald-600"
+      avatarBg: "bg-emerald-600",
+      avatar: ""
     },
     {
       id: "rev-4",
@@ -86,7 +89,8 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
       quote: "Super intuitive CMS and stunning frontend animations. Our non-technical marketing team can now update high-converting pages effortlessly.",
       rating: 5,
       column: 2,
-      avatarBg: "bg-amber-600"
+      avatarBg: "bg-amber-600",
+      avatar: ""
     },
     {
       id: "rev-5",
@@ -96,7 +100,8 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
       quote: "Incredible speed, clean code, and zero bugs on launch day. Mohsin Designs is our go-to engineering partner for every enterprise build.",
       rating: 5,
       column: 2,
-      avatarBg: "bg-indigo-600"
+      avatarBg: "bg-indigo-600",
+      avatar: ""
     },
     {
       id: "rev-6",
@@ -106,7 +111,8 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
       quote: "They understood our complex requirements instantly and delivered a modern portal that exceeds international enterprise standards.",
       rating: 5,
       column: 2,
-      avatarBg: "bg-rose-600"
+      avatarBg: "bg-rose-600",
+      avatar: ""
     },
     {
       id: "rev-7",
@@ -116,7 +122,8 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
       quote: "The speed and polish of the final product blew our investors away. Truly state-of-the-art UI with rock-solid Next.js architecture.",
       rating: 5,
       column: 3,
-      avatarBg: "bg-cyan-600"
+      avatarBg: "bg-cyan-600",
+      avatar: ""
     },
     {
       id: "rev-8",
@@ -126,7 +133,8 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
       quote: "Conversion rates jumped by 42% in the first 30 days after re-platforming. The ROI speaks for itself.",
       rating: 5,
       column: 3,
-      avatarBg: "bg-teal-600"
+      avatarBg: "bg-teal-600",
+      avatar: ""
     },
     {
       id: "rev-9",
@@ -136,7 +144,8 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
       quote: "Best agency collaboration we've had in 8 years. Highly responsive, deep technical chops, and unmatched creative execution.",
       rating: 5,
       column: 3,
-      avatarBg: "bg-[#0306AC]"
+      avatarBg: "bg-[#0306AC]",
+      avatar: ""
     }
   ];
 
