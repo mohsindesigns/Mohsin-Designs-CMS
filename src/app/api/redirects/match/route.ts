@@ -93,13 +93,12 @@ export async function GET(req: NextRequest) {
         const redirectUrlObj = new URL(redirect.sourceUrl, 'http://localhost');
         const redirectParams = redirectUrlObj.searchParams;
 
-        let normReqPath = requestPath;
-        let normRedPath = redirectPath;
-
-        if (redirect.ignoreSlash) {
-          normReqPath = normReqPath === '/' ? normReqPath : normReqPath.replace(/\/$/, '');
-          normRedPath = normRedPath === '/' ? normRedPath : normRedPath.replace(/\/$/, '');
-        }
+        // Trailing slashes are normalized unconditionally - see the matching comment in
+        // src/middleware.ts (this site is trailingSlash:true, so exact slash matching gated behind
+        // the easy-to-miss "Ignore Slash" checkbox meant a rule typed without a trailing slash would
+        // never match any real request path).
+        let normReqPath = requestPath === '/' ? requestPath : requestPath.replace(/\/$/, '');
+        let normRedPath = redirectPath === '/' ? redirectPath : redirectPath.replace(/\/$/, '');
 
         if (redirect.ignoreCase) {
           normReqPath = normReqPath.toLowerCase();

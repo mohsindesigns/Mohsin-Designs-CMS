@@ -20,7 +20,11 @@ interface RedirectRule {
 }
 
 let cachedRules: { rules: RedirectRule[]; expiresAt: number } | null = null;
-const RULES_CACHE_TTL_MS = 60000; // 60 seconds
+// Middleware runs in its own execution context, separate from the /api/admin/redirects route that
+// saves a rule and invalidates match/route.ts's own (10s) cache - that invalidation can't reach
+// this module's cache, so a freshly saved or edited rule could otherwise sit inert for up to the
+// old 60s window. Kept short so a save takes effect in roughly the time it takes to re-test it.
+const RULES_CACHE_TTL_MS = 10000; // 10 seconds
 
 function matchRedirectRule(rule: RedirectRule, pathname: string, search: string): string | null {
   const fullUrl = pathname + search;
@@ -46,13 +50,13 @@ function matchRedirectRule(rule: RedirectRule, pathname: string, search: string)
   const qIdx = redirectPath.indexOf('?');
   if (qIdx !== -1) redirectPath = redirectPath.substring(0, qIdx);
 
-  let normReq = requestPath;
-  let normRed = redirectPath;
-
-  if (rule.ignoreSlash) {
-    normReq = normReq === '/' ? normReq : normReq.replace(/\/$/, '');
-    normRed = normRed === '/' ? normRed : normRed.replace(/\/$/, '');
-  }
+  // Trailing slashes are normalized unconditionally (not gated behind rule.ignoreSlash): this site
+  // has trailingSlash:true in next.config.ts, so every real request path carries one. A rule saved
+  // with its Source URL typed exactly as the admin form's own placeholder suggests ("/old-page", no
+  // trailing slash - see ignoreSlash's unrelated checkbox in admin/settings) would otherwise never
+  // match a single real request and silently never fire.
+  let normReq = requestPath === '/' ? requestPath : requestPath.replace(/\/$/, '');
+  let normRed = redirectPath === '/' ? redirectPath : redirectPath.replace(/\/$/, '');
 
   if (rule.ignoreCase) {
     normReq = normReq.toLowerCase();
