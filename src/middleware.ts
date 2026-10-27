@@ -49,6 +49,9 @@ function matchRedirectRule(rule: RedirectRule, pathname: string, search: string)
   let redirectPath = rule.sourceUrl;
   const qIdx = redirectPath.indexOf('?');
   if (qIdx !== -1) redirectPath = redirectPath.substring(0, qIdx);
+  // A rule saved without a leading slash (possible for data written before the admin API started
+  // enforcing one) can never equal pathname, which always has one - restore it before comparing.
+  if (redirectPath && !redirectPath.startsWith('/')) redirectPath = '/' + redirectPath;
 
   // Trailing slashes are normalized unconditionally (not gated behind rule.ignoreSlash): this site
   // has trailingSlash:true in next.config.ts, so every real request path carries one. A rule saved
@@ -124,10 +127,21 @@ export async function middleware(req: NextRequest) {
         const matched = matchRedirectRule(rule, pathname, req.nextUrl.search);
         if (matched) {
           let target = matched;
+          // A targetUrl saved without a leading slash (same stale-data case as sourceUrl above) is
+          // neither a valid absolute URL nor recognized as relative - NextResponse.redirect() then
+          // throws "URL is malformed", taking the whole page render down with it. Restore the slash
+          // before the relative-URL check below, and never let a bad rule 500 a real page.
+          if (!/^https?:\/\//i.test(target) && !target.startsWith('/')) {
+            target = '/' + target;
+          }
           if (target.startsWith('/')) {
             target = new URL(target, req.url).toString();
           }
-          return NextResponse.redirect(target, rule.statusCode || 301);
+          try {
+            return NextResponse.redirect(target, rule.statusCode || 301);
+          } catch {
+            continue;
+          }
         }
       }
     }

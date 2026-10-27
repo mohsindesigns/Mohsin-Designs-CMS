@@ -5,6 +5,18 @@ import { hasPermission, getSessionUser } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
 import { invalidateRedirectCache } from '@/app/api/redirects/match/route';
 
+// A relative path saved without a leading slash can never match a real request: middleware.ts
+// compares it directly against req.nextUrl.pathname, which always starts with "/" - so
+// "old-page" (missing its "/") silently never fires, with no error anywhere to flag it. Applied
+// only to non-regex sourceUrl (a regex pattern's literal text matters) and to a relative
+// (non-absolute-URL, non-anchor) targetUrl.
+function withLeadingSlash(path: string): string {
+  const trimmed = (path || "").trim();
+  if (!trimmed) return trimmed;
+  if (/^https?:\/\//i.test(trimmed) || trimmed.startsWith("#")) return trimmed;
+  return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+}
+
 // Helper to normalize path for loop checking
 function normalizePathForLoopCheck(urlStr: string) {
   if (!urlStr) return '';
@@ -133,19 +145,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Source URL and Target URL are required' }, { status: 400 });
     }
 
+    const normSourceUrl = isRegex ? sourceUrl : withLeadingSlash(sourceUrl);
+    const normTargetUrl = withLeadingSlash(targetUrl);
+
     // Loop checks
-    if (normalizePathForLoopCheck(sourceUrl) === normalizePathForLoopCheck(targetUrl)) {
+    if (normalizePathForLoopCheck(normSourceUrl) === normalizePathForLoopCheck(normTargetUrl)) {
       return NextResponse.json({ error: 'A URL cannot redirect to itself.' }, { status: 400 });
     }
 
-    const hasLoop = await isRedirectLoop(sourceUrl, targetUrl);
+    const hasLoop = await isRedirectLoop(normSourceUrl, normTargetUrl);
     if (hasLoop) {
       return NextResponse.json({ error: 'Redirect loop detected. This redirection would create a circular loop.' }, { status: 400 });
     }
 
     const newRedirect = await Redirect.create({
-      sourceUrl,
-      targetUrl,
+      sourceUrl: normSourceUrl,
+      targetUrl: normTargetUrl,
       statusCode: statusCode ? parseInt(statusCode, 10) : 301,
       queryParamMode: queryParamMode || 'exact',
       ignoreCase: !!ignoreCase,
@@ -193,20 +208,23 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: 'Redirect not found' }, { status: 404 });
     }
 
+    const normSourceUrl = isRegex ? sourceUrl : withLeadingSlash(sourceUrl);
+    const normTargetUrl = withLeadingSlash(targetUrl);
+
     // Loop checks
-    if (normalizePathForLoopCheck(sourceUrl) === normalizePathForLoopCheck(targetUrl)) {
+    if (normalizePathForLoopCheck(normSourceUrl) === normalizePathForLoopCheck(normTargetUrl)) {
       return NextResponse.json({ error: 'A URL cannot redirect to itself.' }, { status: 400 });
     }
 
-    const hasLoop = await isRedirectLoop(sourceUrl, targetUrl, _id);
+    const hasLoop = await isRedirectLoop(normSourceUrl, normTargetUrl, _id);
     if (hasLoop) {
       return NextResponse.json({ error: 'Redirect loop detected. This redirection would create a circular loop.' }, { status: 400 });
     }
 
     const beforeState = existingRedirect.toObject();
 
-    existingRedirect.sourceUrl = sourceUrl;
-    existingRedirect.targetUrl = targetUrl;
+    existingRedirect.sourceUrl = normSourceUrl;
+    existingRedirect.targetUrl = normTargetUrl;
     existingRedirect.statusCode = statusCode ? parseInt(statusCode, 10) : 301;
     existingRedirect.queryParamMode = queryParamMode || 'exact';
     existingRedirect.ignoreCase = !!ignoreCase;
