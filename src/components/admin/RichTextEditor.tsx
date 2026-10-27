@@ -6,10 +6,15 @@ import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
 import Underline from "@tiptap/extension-underline";
+import { Table } from "@tiptap/extension-table";
+import TableRow from "@tiptap/extension-table-row";
+import TableHeader from "@tiptap/extension-table-header";
+import TableCell from "@tiptap/extension-table-cell";
 import {
   Bold, Italic, Underline as UnderlineIcon, List, ListOrdered,
   Link as LinkIcon, Image as ImageIcon, Heading1, Heading2,
-  Heading3, Heading4, RemoveFormatting, Info
+  Heading3, Heading4, RemoveFormatting, Info, Table as TableIcon,
+  Trash2, Rows3, Columns3
 } from "lucide-react";
 import MediaSelector from "./MediaSelector";
 
@@ -107,6 +112,10 @@ export default function RichTextEditor({
       Image.configure({
         HTMLAttributes: { class: "max-w-full h-auto rounded-lg my-4" },
       }),
+      Table.configure({ resizable: true }),
+      TableRow,
+      TableHeader,
+      TableCell,
     ],
     content: initialContent.current,
     immediatelyRender: false,
@@ -272,6 +281,31 @@ export default function RichTextEditor({
             </MenuButton>
           </div>
 
+          <div className="flex items-center gap-0.5 pr-2 mr-2 border-r border-[#dcdcde]">
+            <MenuButton
+              title="Insert Table"
+              onClick={() =>
+                editor.chain().focus().insertTable({ rows: 3, cols: 2, withHeaderRow: true }).run()
+              }
+              isActive={editor.isActive("table")}
+            >
+              <TableIcon className="w-4 h-4" />
+            </MenuButton>
+            {editor.isActive("table") && (
+              <>
+                <MenuButton title="Add Row" onClick={() => editor.chain().focus().addRowAfter().run()}>
+                  <Rows3 className="w-4 h-4" />
+                </MenuButton>
+                <MenuButton title="Add Column" onClick={() => editor.chain().focus().addColumnAfter().run()}>
+                  <Columns3 className="w-4 h-4" />
+                </MenuButton>
+                <MenuButton title="Delete Table" onClick={() => editor.chain().focus().deleteTable().run()}>
+                  <Trash2 className="w-4 h-4" />
+                </MenuButton>
+              </>
+            )}
+          </div>
+
           <div className="flex items-center gap-0.5">
             <MenuButton
               title="Clear Formatting"
@@ -388,6 +422,11 @@ export default function RichTextEditor({
         .ProseMirror a:hover { text-decoration: none !important; opacity: 0.8; }
         .ProseMirror blockquote { border-left: 3px solid #dcdcde; padding-left: 1em; font-style: italic; margin-bottom: 1em; }
         .ProseMirror p { margin-bottom: 0.75em; }
+        .ProseMirror table { border-collapse: collapse; width: 100%; margin-bottom: 1em; table-layout: fixed; }
+        .ProseMirror th, .ProseMirror td { border: 1px solid #c3c4c7; padding: 0.5em 0.75em; text-align: left; vertical-align: top; position: relative; }
+        .ProseMirror th { background: #f6f7f7; font-weight: bold; }
+        .ProseMirror .selectedCell { background: rgba(34, 113, 177, 0.1); }
+        .ProseMirror .column-resize-handle { position: absolute; right: -2px; top: 0; bottom: 0; width: 4px; background-color: #2271b1; pointer-events: none; }
       `}</style>
     </div>
   );

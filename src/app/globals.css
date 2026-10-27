@@ -1326,6 +1326,23 @@
   .rich-text-content p {
     @apply mb-2 last:mb-0;
   }
+
+  /* Tables pasted/inserted via the TipTap table extension. Wrapped in a
+     scrollable block on narrow screens so a wide table never breaks mobile
+     layout instead of being clipped. */
+  .rich-text-content table {
+    @apply w-full border-collapse mb-4 block overflow-x-auto sm:table;
+  }
+  .rich-text-content th,
+  .rich-text-content td {
+    @apply border border-border px-3 py-2 text-left align-top text-foreground;
+  }
+  .rich-text-content th {
+    @apply bg-foreground/5 font-bold;
+  }
+  .dark .rich-text-content th {
+    @apply bg-white/10;
+  }
   .rich-text-content a,
   .rich-text-link {
     @apply text-primary dark:text-brand-yellow font-medium transition-colors cursor-pointer;
