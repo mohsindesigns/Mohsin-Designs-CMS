@@ -10,6 +10,45 @@ import InteractiveBackground from "@/components/InteractiveBackground";
 import { resolveRobotsMetadata } from "@/lib/seo";
 import { getCachedSiteContent, getCachedSiteScripts } from "@/lib/content";
 
+interface ParsedScriptTag {
+  src?: string;
+  async?: boolean;
+  defer?: boolean;
+  inner?: string;
+}
+
+// An admin-pasted <head> snippet (GA/GTM/Meta Pixel/etc.) is almost always TWO sibling <script>
+// tags: one with only a `src` (loads the real tracking library) and one with only inline config
+// code. The previous approach stripped every <script>/</script> marker from the whole blob with a
+// single regex, then re-wrapped whatever text was left in ONE new <script> - which silently threw
+// away the `src` attribute (there's no inner text on a src-only tag for the strip to preserve),
+// so the actual tracking library was never loaded. gtag()/dataLayer.push() still "worked" as a
+// local no-op stub, so nothing ever errored - it just never sent a single real hit to Google.
+// Parsing each <script> tag individually and rendering each as its own element (keeping src/async/
+// defer, or the inline body) fixes this for any snippet shape, not just this one.
+function parseScriptTags(raw: string): ParsedScriptTag[] {
+  const tags: ParsedScriptTag[] = [];
+  const re = /<script([^>]*)>([\s\S]*?)<\/script>/gi;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(raw)) !== null) {
+    const attrs = match[1] || "";
+    const inner = (match[2] || "").trim();
+    const srcMatch = attrs.match(/\bsrc\s*=\s*["']([^"']+)["']/i);
+    tags.push({
+      src: srcMatch ? srcMatch[1] : undefined,
+      async: /(^|\s)async(\s|=|$)/i.test(attrs),
+      defer: /(^|\s)defer(\s|=|$)/i.test(attrs),
+      inner: inner || undefined,
+    });
+  }
+  // No <script> tags found at all (admin pasted bare JS with no wrapper) - preserve that as a
+  // single inline script, matching the one case the old strip-and-wrap logic actually handled.
+  if (tags.length === 0 && raw.trim()) {
+    tags.push({ inner: raw.trim() });
+  }
+  return tags;
+}
+
 
 const lora = Lora({
   variable: "--font-heading",
@@ -196,13 +235,18 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://images.unsplash.com" />
         {/* ── CMS-managed <head> scripts ── */}
-        {headScripts.map((s) => (
-          <script
-            key={s.id}
-            suppressHydrationWarning
-            dangerouslySetInnerHTML={{ __html: s.code.replace(/<script[^>]*>|<\/script>/gi, '').trim() }}
-          />
-        ))}
+        {headScripts.flatMap((s) =>
+          parseScriptTags(s.code).map((tag, i) => (
+            <script
+              key={`${s.id}-${i}`}
+              src={tag.src}
+              async={tag.async || undefined}
+              defer={tag.defer || undefined}
+              suppressHydrationWarning
+              {...(tag.inner ? { dangerouslySetInnerHTML: { __html: tag.inner } } : {})}
+            />
+          ))
+        )}
       </head>
       <body className="min-h-full flex flex-col bg-white dark:bg-[#080710] text-black dark:text-white font-sans relative transition-colors duration-300">
         {/* ── CMS-managed body_start scripts ── */}
