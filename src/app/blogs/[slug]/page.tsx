@@ -209,9 +209,11 @@ export default async function BlogPostPage({ params }: Props) {
   const { html: anchoredHtml, toc: tableOfContents } = addHeadingAnchors(cleanHtml);
   const processedContent = makeLinksDoFollow(anchoredHtml);
 
-  // 5. Custom schema. Auto-generated schema is intentionally not injected site-wide (see lib/dynamicSchema);
-  // only what the editor entered in the post's Schema tab (seo.schemaData) + the synced FAQ schema is
-  // rendered, with {{tokens}} resolved and the FAQ block de-duplicated.
+  // 5. Custom schema: whatever the editor entered in the post's Schema tab (seo.schemaData), with
+  // {{tokens}} resolved, plus the synced FAQ schema. When the Schema tab is empty, falls back to
+  // an auto-generated BlogPosting (+ BreadcrumbList) - publishedAt/updatedAt/featuredImage/
+  // authorName are passed through here since generateAutoSchemaForPage's "blog" branch needs them
+  // and the synthetic page object below otherwise only carries title/slug/seo.
   const schemaBlocks = getResolvedSchemaBlocks({
     page: {
       title: post.title,
@@ -220,7 +222,12 @@ export default async function BlogPostPage({ params }: Props) {
       content: {},
       seo: post.seo || {},
       schemaMarkup: post.schemaMarkup,
-      faqSchemaMarkup: post.faqSchemaMarkup
+      faqSchemaMarkup: post.faqSchemaMarkup,
+      publishedAt: publishedIso,
+      updatedAt: modifiedIso,
+      featuredImage: post.featuredImage,
+      excerpt: post.excerpt,
+      authorName: authorInfo.name
     },
     globalData: globalContentData || {},
     slug: `blogs/${post.slug}`
