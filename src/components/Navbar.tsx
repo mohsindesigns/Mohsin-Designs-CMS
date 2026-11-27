@@ -492,12 +492,20 @@ export default function Navbar() {
                                 <span className="text-[13px] font-medium">Add a map in Admin &gt; Settings &gt; Header</span>
                               </div>
                             )}
-                            {/* No caption/badge drawn over the flag image anymore - it used to overlay
-                                white text directly on the photo, and contrast depended on what colors
-                                happened to be under it (fine on USA's navy canton, much worse on flags
-                                with lighter regions in that spot). The location's name is already shown
-                                clearly in the list to the left, so removing the overlay here removes the
-                                whole class of bug instead of chasing per-image contrast. */}
+                            {/* Country name badge - a solid, opaque chip instead of transparent text
+                                floating directly on the photo. The old version was white text with only
+                                a gradient behind it, so its contrast depended on whatever colors happened
+                                to be in that part of the flag (fine on USA's navy canton, broken on
+                                flags with lighter regions in that same spot). A solid background behind
+                                the text makes contrast fixed and guaranteed, regardless of the image. */}
+                            {map.kind === "image" && (
+                              <div className="pointer-events-none absolute left-4 top-4 flex items-center gap-2 rounded-full bg-[#0c0c16] px-4 py-2 shadow-lg">
+                                <MapPin className="h-4 w-4 text-brand-yellow shrink-0" />
+                                <span className="font-heading text-base font-black leading-none text-white">
+                                  {caption}
+                                </span>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </motion.div>
