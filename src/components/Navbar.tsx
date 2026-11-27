@@ -492,41 +492,12 @@ export default function Navbar() {
                                 <span className="text-[13px] font-medium">Add a map in Admin &gt; Settings &gt; Header</span>
                               </div>
                             )}
-                            {/* Text overlay only makes sense over a static photo we control. A live Google
-                                Maps embed draws its own place card / rating / attribution chrome wherever
-                                it wants, inside a cross-origin iframe we can't reposition or suppress - any
-                                overlay here WILL eventually collide with it. So: image gets the full
-                                editorial treatment, embed gets left alone to just be an interactive map. */}
-                            {map.kind === "image" && (
-                              <>
-                                {/* Was `via-transparent`, which left the middle of the photo fully
-                                    unshaded - fine over a dark patch, but any lighter midtone in the
-                                    photo (sky, siding, concrete) fought the white text on top of it.
-                                    A shallower, unbroken gradient keeps every stop dark enough for
-                                    white text regardless of what's actually in the photo. */}
-                                <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/80 via-black/25 to-black/80" />
-                                <div className="pointer-events-none absolute inset-x-0 top-0 p-6">
-                                  <span className="text-[11px] font-mono font-bold uppercase tracking-[0.18em] text-white/80">
-                                    Featured Location
-                                  </span>
-                                  <h4 className="mt-1 font-heading text-3xl font-black leading-none text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.45)]">
-                                    {caption}
-                                  </h4>
-                                  {activeItem?.subtitle && (
-                                    <p className="mt-1.5 text-[13px] font-medium text-white/85">
-                                      {activeItem.subtitle}
-                                    </p>
-                                  )}
-                                  <span className="mt-2.5 block h-[3px] w-9 rounded-full bg-brand-yellow" />
-                                </div>
-                                <div className="pointer-events-none absolute inset-x-0 bottom-0 px-5 pb-4 pt-10">
-                                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-[13px] font-semibold text-brand-dark shadow-md">
-                                    <MapPin className="h-3.5 w-3.5 text-brand-blue" />
-                                    {caption}
-                                  </span>
-                                </div>
-                              </>
-                            )}
+                            {/* No caption/badge drawn over the flag image anymore - it used to overlay
+                                white text directly on the photo, and contrast depended on what colors
+                                happened to be under it (fine on USA's navy canton, much worse on flags
+                                with lighter regions in that spot). The location's name is already shown
+                                clearly in the list to the left, so removing the overlay here removes the
+                                whole class of bug instead of chasing per-image contrast. */}
                           </div>
                         </div>
                       </motion.div>
