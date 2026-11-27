@@ -60,6 +60,19 @@
   font-family: inherit !important;
 }
 
+/* Leaflet's own stylesheet gives every divIcon (leaflet-div-icon) a hardcoded white
+   background + grey border, meant for its default plain pin. RealWorldMap.tsx builds its
+   own fully custom marker + hover tooltip on top of that base class (customIcon's
+   className is "custom-hub-marker", but L.divIcon always prefixes "leaflet-div-icon" onto
+   it), so every hub pin was silently rendering with Leaflet's opaque white box underneath -
+   invisible in light mode (whites on near-white UI), but a glaring white square clashing
+   with the CARTO dark map tiles in dark mode, fighting for attention right next to the
+   pin's own hover tooltip with the location name. */
+.custom-hub-marker {
+  background: transparent;
+  border: none;
+}
+
 .leaflet-bar {
   border-radius: 12px !important;
   overflow: hidden;

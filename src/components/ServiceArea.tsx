@@ -128,7 +128,15 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
                       }`}
                       strokeWidth={3}
                     />
-                    <span>{hub.name}</span>
+                    <span
+                      className={
+                        isActive
+                          ? "text-[#0306AC] dark:text-[#E9BD36]"
+                          : "text-slate-700 dark:text-zinc-300"
+                      }
+                    >
+                      {hub.name}
+                    </span>
                     {hub.link && (
                       <ArrowUpRight className={`h-2.5 w-2.5 opacity-60 ${isActive ? 'opacity-100 text-[#0306AC] dark:text-[#E9BD36]' : ''}`} />
                     )}

@@ -450,7 +450,19 @@ export default function Navbar() {
                                 loading="lazy"
                                 referrerPolicy="no-referrer-when-downgrade"
                                 sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
-                                className="absolute inset-0 h-full w-full border-0 dark:[filter:invert(0.92)_hue-rotate(180deg)_contrast(0.9)]"
+                                // No dark-mode filter here on purpose. This used to apply
+                                // dark:[filter:invert(0.92)_hue-rotate(180deg)_contrast(0.9)] to
+                                // fake a dark map, but a blanket CSS invert on a live, cross-origin
+                                // Google Maps embed also inverts its own baked-in place-name label
+                                // (rendered inside the iframe's own canvas/tiles, which we can't
+                                // restyle). Depending on the source colors Google picked for that
+                                // label at a given location/zoom, invert+hue-rotate can shift the
+                                // label's text and its background toward the same hue, which is
+                                // exactly the "location name not showing in dark mode" bug - the
+                                // name is still there, just unreadable. Leaving the embed in its
+                                // native colors keeps the label legible in both themes; the
+                                // "image" map option above remains the one that gets full dark
+                                // theming because its caption is text we render ourselves.
                               />
                             ) : map.kind === "image" ? (
                               // Crossfade instead of an abrupt swap when hovering between locations -
