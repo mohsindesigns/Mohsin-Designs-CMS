@@ -58,8 +58,9 @@ export async function PATCH(
       updateData.slug = slugify(updateData.title ?? oldPost.title);
       if (!updateData.slug) return NextResponse.json({ error: 'Slug is required (use letters or numbers).' }, { status: 400 });
     }
-    if ('content' in updateData && (updateData.status ?? oldPost.status) !== 'draft') {
-      const html = String(updateData.content || '');
+    const finalStatus = updateData.status ?? oldPost.status;
+    if (finalStatus !== 'draft' && ('content' in updateData || finalStatus !== oldPost.status)) {
+      const html = String(('content' in updateData ? updateData.content : oldPost.content) || '');
       if (!html.replace(/<[^>]*>/g, '').trim() && !/<img\b/i.test(html)) {
         return NextResponse.json({ error: 'Content cannot be empty.' }, { status: 400 });
       }

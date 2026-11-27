@@ -10,7 +10,7 @@ import { recordActivity } from '@/lib/logger';
 // Matches the limit the Media Library UI advertises (MediaSelector).
 const MAX_UPLOAD_SIZE = 64 * 1024 * 1024;
 // SVG/HTML are deliberately excluded: served from our own origin they are stored XSS.
-const ALLOWED_MIME_RE = /^(image\/(jpeg|png|webp|gif|avif)|video\/(mp4|webm|quicktime))$/i;
+const ALLOWED_MIME_RE = /^(image\/(jpeg|png|webp|gif|avif|x-icon|vnd\.microsoft\.icon)|video\/(mp4|webm|quicktime))$/i;
 
 export async function GET(req: NextRequest) {
   if (!(await hasPermission(req, 'media', 'read'))) {
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
 
     if (!ALLOWED_MIME_RE.test(file.type || '')) {
       return NextResponse.json(
-        { error: 'Invalid file type. Only JPEG, PNG, WebP, GIF, AVIF images and MP4, WebM, MOV videos are allowed.' },
+        { error: 'Invalid file type. Only JPEG, PNG, WebP, GIF, AVIF, ICO images and MP4, WebM, MOV videos are allowed.' },
         { status: 400 }
       );
     }

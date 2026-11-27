@@ -76,7 +76,7 @@ function parseScriptTags(raw: string): ParsedScriptTag[] {
     }
   }
   // Bare JS with no markup at all - preserve it as a single inline script.
-  if (tags.length === 0 && raw.trim() && !/<[a-z!\/]/i.test(raw)) {
+  if (tags.length === 0 && raw.trim() && !/^\s*</.test(raw)) {
     tags.push({ tag: "script", props: {}, inner: raw.trim() });
   }
   return tags;

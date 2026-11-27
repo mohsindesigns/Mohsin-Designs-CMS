@@ -522,11 +522,13 @@ export default function ServicesAdminPage() {
         const base = new Map(services.map((x: any) => [keyOf(x), j(x)]));
         const liveMap = new Map(live.map((x: any) => [keyOf(x), x]));
         const mine = new Set(newServicesIn.map(keyOf));
+        const changed = new Set<string>();
         const merged = newServicesIn.flatMap((x: any) => {
           const k = keyOf(x);
           const unchangedHere = base.has(k) && base.get(k) === j(x);
           // unchanged here but gone from live = deleted elsewhere; the length guard avoids a mass drop on an empty read
           if (unchangedHere) return liveMap.has(k) ? [liveMap.get(k)] : (live.length > 0 ? [] : [x]);
+          changed.add(k);
           return [x];
         });
         // services added elsewhere since this tab loaded must survive
@@ -535,13 +537,23 @@ export default function ServicesAdminPage() {
         for (const s of merged) {
           if (s?.isTrashed || !s?.slug) continue;
           if (seen.has(s.slug)) {
-            setSaving(false);
-            alert(`Slug "${s.slug}" is now used by both "${seen.get(s.slug).title}" and "${s.title}" (another tab saved meanwhile). Reload and pick a different slug.`);
-            return;
+            const other = seen.get(s.slug);
+            // pre-existing duplicates this save did not touch must not block unrelated saves
+            if (changed.has(keyOf(s)) || changed.has(keyOf(other))) {
+              setSaving(false);
+              alert(`Slug "${s.slug}" is now used by both "${other.title}" and "${s.title}" (another tab saved meanwhile). Reload and pick a different slug.`);
+              return;
+            }
+            continue;
           }
           seen.set(s.slug, s);
         }
         newServices = merged;
+        if (keepEditingIdx !== undefined && updatedForm) {
+          const fk = keyOf(updatedForm);
+          const i = merged.findIndex((s: any) => keyOf(s) === fk);
+          if (i !== -1) keepEditingIdx = i;
+        }
       }
     } catch { /* offline/DB hiccup: fall back to saving what we have */ }
     const prevServicesObj = (typeof data?.services === 'object' && !Array.isArray(data?.services)) ? data.services : {};

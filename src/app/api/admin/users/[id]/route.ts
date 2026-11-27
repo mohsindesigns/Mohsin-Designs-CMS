@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import User from '@/models/User';
+import Role from '@/models/Role';
 import { hasPermission, getSessionUser } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
+import { signToken } from '@/lib/auth';
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getSessionUser(req);
@@ -29,11 +31,27 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     user.role = roleId || user.role;
     user.status = status || user.status;
     if (password) user.password = password;
-    if (password || user.status !== before.status || user.role.toString() !== before.roleId) {
+    const bumped = !!(password || user.status !== before.status || user.role.toString() !== before.roleId);
+    if (bumped) {
       user.tokenVersion = (user.tokenVersion || 0) + 1;
     }
 
     await user.save();
+
+    let selfToken: string | null = null;
+    if (bumped && id === (session as any)?.userId && user.status === 'active') {
+      const role: any = await Role.findById(user.role).lean();
+      const permissions = user.customPermissions || role?.permissions;
+      if (permissions) {
+        selfToken = await signToken({
+          userId: user._id.toString(),
+          username: user.username,
+          roleName: role?.name || 'Custom',
+          permissions,
+          tokenVersion: user.tokenVersion || 0
+        });
+      }
+    }
 
     await recordActivity({
       user: (session as any).userId,
@@ -48,7 +66,17 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const userResponse = user.toObject();
     delete userResponse.password;
 
-    return NextResponse.json(userResponse);
+    const res = NextResponse.json(userResponse);
+    if (selfToken) {
+      res.cookies.set('mohsin_admin_session', selfToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 60 * 60 * 8,
+      });
+    }
+    return res;
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

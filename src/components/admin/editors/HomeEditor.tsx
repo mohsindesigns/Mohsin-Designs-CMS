@@ -1107,39 +1107,8 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                            </button>
                         </div>
                         <div className="space-y-4">
-                           {((data.whyChooseUs?.reasons && data.whyChooseUs.reasons.length > 0)
-                              ? data.whyChooseUs.reasons
-                              : (data.whyChooseUs?.features && data.whyChooseUs.features.length > 0
-                                 ? data.whyChooseUs.features.map((f: any, idx: number) => ({
-                                    num: String(idx + 1).padStart(2, "0"),
-                                    title: f.title,
-                                    desc: f.description,
-                                    iconName: f.icon || "Sparkles"
-                                 }))
-                                 : [
-                                    { num: "01", title: "Strategy & Discovery", desc: "Deep analysis of your market, competitors, and audience to lay the foundation for high-conversion outcomes.", iconName: "Sparkles" },
-                                    { num: "02", title: "Custom UX/UI & Prototyping", desc: "Bespoke, brand-aligned interfaces crafted with pixel precision and optimized for seamless user journeys.", iconName: "Terminal" },
-                                    { num: "03", title: "High-Speed Clean Development", desc: "Modern, performant code built on scalable architectures with ultra-fast page speeds and airtight security.", iconName: "Zap" },
-                                    { num: "04", title: "Conversion Optimization & SEO", desc: "Built-in technical SEO, structured data markup, and high-impact conversion funnels that drive revenue.", iconName: "TrendingUp" },
-                                    { num: "05", title: "Ongoing Partnership & Support", desc: "Continuous proactive monitoring, performance audits, and rapid updates to keep you ahead of the competition.", iconName: "HeartHandshake" }
-                                 ])
-                           ).map((r: any, i: number) => {
-                              const currentReasons = (data.whyChooseUs?.reasons && data.whyChooseUs.reasons.length > 0)
-                                 ? data.whyChooseUs.reasons
-                                 : (data.whyChooseUs?.features && data.whyChooseUs.features.length > 0
-                                    ? data.whyChooseUs.features.map((f: any, idx: number) => ({
-                                       num: String(idx + 1).padStart(2, "0"),
-                                       title: f.title,
-                                       desc: f.description,
-                                       iconName: f.icon || "Sparkles"
-                                    }))
-                                    : [
-                                       { num: "01", title: "Strategy & Discovery", desc: "Deep analysis of your market, competitors, and audience to lay the foundation for high-conversion outcomes.", iconName: "Sparkles" },
-                                       { num: "02", title: "Custom UX/UI & Prototyping", desc: "Bespoke, brand-aligned interfaces crafted with pixel precision and optimized for seamless user journeys.", iconName: "Terminal" },
-                                       { num: "03", title: "High-Speed Clean Development", desc: "Modern, performant code built on scalable architectures with ultra-fast page speeds and airtight security.", iconName: "Zap" },
-                                       { num: "04", title: "Conversion Optimization & SEO", desc: "Built-in technical SEO, structured data markup, and high-impact conversion funnels that drive revenue.", iconName: "TrendingUp" },
-                                       { num: "05", title: "Ongoing Partnership & Support", desc: "Continuous proactive monitoring, performance audits, and rapid updates to keep you ahead of the competition.", iconName: "HeartHandshake" }
-                                    ]);
+                           {getEffectiveReasons(data.whyChooseUs).map((r: any, i: number) => {
+                              const currentReasons = getEffectiveReasons(data.whyChooseUs);
                               return (
                                  <div key={i} className={UI.card + " space-y-4"}>
                                     <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">

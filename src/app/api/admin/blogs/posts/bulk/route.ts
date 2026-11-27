@@ -54,6 +54,17 @@ export async function POST(req: NextRequest) {
       });
     } else if (action === 'status') {
       if (value === 'published') {
+        const toPublish = await Post.find({ _id: { $in: ids }, status: { $ne: 'published' } }, 'title content').lean();
+        const empty = toPublish.filter((p: any) => {
+          const html = String(p.content || '');
+          return !html.replace(/<[^>]*>/g, '').trim() && !/<img\b/i.test(html);
+        });
+        if (empty.length) {
+          return NextResponse.json(
+            { error: `Cannot publish posts with no content: ${empty.map((p: any) => p.title || 'Untitled').join(', ')}` },
+            { status: 400 }
+          );
+        }
         // Posts that were not live yet get "now" as their publish date (aggregation-pipeline update).
         await Post.updateMany(
           { _id: { $in: ids }, status: { $ne: 'published' } },

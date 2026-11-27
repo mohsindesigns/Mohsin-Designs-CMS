@@ -2292,7 +2292,11 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
 
       {/* ── 13. SERVICE AREA SECTION ── */}
       {showServiceArea && (
-        <ServiceArea data={service.serviceArea || content?.serviceArea} />
+        (() => {
+          // Service editors treat empty hubs as "use the defaults"; only the homepage honours an emptied list.
+          const sa = service.serviceArea || content?.serviceArea;
+          return <ServiceArea data={sa ? { ...sa, hubs: Array.isArray(sa.hubs) && sa.hubs.length > 0 ? sa.hubs : undefined } : sa} />;
+        })()
       )}
 
       {/* ── 14. FAQ SECTION ── */}

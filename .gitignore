@@ -18,6 +18,7 @@ build/
 # misc
 .DS_Store
 *.pem
+private-uploads/
 
 # Editor directories and files
 .vscode/*
