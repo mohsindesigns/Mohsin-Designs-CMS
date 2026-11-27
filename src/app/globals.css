@@ -52,6 +52,11 @@
 }
 
 .map-tiles-dark {
+  /* RealWorldMap.tsx now loads CartoDB's "dark_nolabels" tileset instead of "dark_all" -
+     its baked-in place labels were too close in luminance to the land fill for any CSS
+     filter to separate (confirmed: brightness/contrast move label and land together, not
+     apart). This filter is purely cosmetic brand tinting now, nothing depends on it for
+     legibility. */
   filter: brightness(0.9) contrast(1.15) hue-rotate(220deg) saturate(1.2);
 }
 
