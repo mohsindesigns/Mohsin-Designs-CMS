@@ -41,13 +41,15 @@ const DEDICATED_SLUG_TEMPLATES: Record<string, string[]> = {
   locations: ['location', 'locations'],
   blog: ['blog'],
   blogs: ['blog'],
+  portfolio: ['portfolio'],
 };
 
-/** Sub-paths of these are owned by other systems (services catalog / blog posts). */
+/** Sub-paths of these are owned by other systems (services catalog / blog posts / portfolio items). */
 const OWNED_PREFIXES: Record<string, string> = {
   services: 'the Services catalog (Admin > Services)',
   blogs: 'the Blog posts',
   blog: 'the Blog posts',
+  portfolio: 'the Portfolio case studies (Admin > Portfolio)',
 };
 
 /** Reason why `template` cannot be used with the (dedicated-route) `slug`, else null. */
@@ -303,6 +305,9 @@ export function revalidatePageCaches(opts: {
     if (slug === 'blog' || slug === 'blogs') {
       paths.add('/blogs');
       paths.add('/blog');
+    }
+    if (slug === 'portfolio') {
+      paths.add('/portfolio');
     }
   }
 

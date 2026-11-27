@@ -20,6 +20,10 @@ const navItems = [
     {label: "Categories", href: "/admin/blogs/categories"},
     {label: "Tags", href: "/admin/blogs/tags"}
   ] },
+  { label: "Portfolio",   href: "/admin/portfolio",  icon: Briefcase, module: 'blog', sub: [
+    {label: "All Case Studies", href: "/admin/portfolio"},
+    {label: "Add New", href: "/admin/portfolio/new"}
+  ] },
   { label: "Media",       href: "/admin/media",      icon: ImageIcon, module: 'media', sub: [{label: "Library", href: "/admin/media"}, {label: "Add New", href: "/admin/media"}] },
   { label: "Reviews",     href: "/admin/reviews",    icon: Star, module: 'pages' }, 
   { label: "Projects",    href: "/admin/projects",   icon: Folder, module: 'pages' },

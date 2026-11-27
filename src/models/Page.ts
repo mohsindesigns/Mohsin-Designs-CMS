@@ -23,6 +23,7 @@ const PageSchema = new mongoose.Schema({
       'location',
       'locations',
       'blog',
+      'portfolio',
       'country',
       'state',
       'city',

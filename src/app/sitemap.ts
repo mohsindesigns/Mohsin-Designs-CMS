@@ -3,6 +3,7 @@ import connectToDatabase from '@/lib/mongodb';
 import SiteContent from '@/models/Content';
 import Page from '@/models/Page';
 import Post from '@/models/Post';
+import Portfolio from '@/models/Portfolio';
 import { BASE_URL } from '@/lib/constants';
 import { resolveLocationPaths } from '@/lib/locationPath';
 export const revalidate = 0;
@@ -14,6 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let dynamicServices: any[] = [];
   let dynamicPages: any[] = [];
   let dynamicBlogPosts: any[] = [];
+  let dynamicPortfolioItems: any[] = [];
   try {
     await connectToDatabase();
 
@@ -40,6 +42,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }).lean();
 
     dynamicBlogPosts = posts;
+
+    // Fetch published portfolio case studies
+    const portfolioItems = await Portfolio.find({
+      status: 'published',
+      isTrashed: { $ne: true }
+    }).lean();
+
+    dynamicPortfolioItems = portfolioItems;
   } catch (e) {
     console.error("Sitemap: Failed to fetch dynamic data", e);
   }
@@ -70,6 +80,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 0.7,
     },
+    {
+      url: `${BASE_URL}/portfolio/`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
   ];
 
   // Dynamic service detail pages
@@ -94,6 +110,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: post.updatedAt ? new Date(post.updatedAt).toISOString() : now,
       changeFrequency: 'weekly' as const,
       priority: 0.75,
+    };
+  });
+
+  const portfolioRoutes: MetadataRoute.Sitemap = dynamicPortfolioItems.map((item: any) => {
+    const slug = String(item.slug || '').replace(/^\/+/, '').replace(/\/+$/, '');
+
+    return {
+      url: `${BASE_URL}/portfolio/${slug}/`,
+      lastModified: item.updatedAt ? new Date(item.updatedAt).toISOString() : now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
     };
   });
 
@@ -126,5 +153,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     }));
 
-  return [...staticRoutes, ...serviceRoutes, ...blogRoutes, ...customPageRoutes];
+  return [...staticRoutes, ...serviceRoutes, ...blogRoutes, ...portfolioRoutes, ...customPageRoutes];
 }

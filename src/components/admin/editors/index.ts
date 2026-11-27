@@ -35,6 +35,7 @@ export const TemplateEditors: Record<string, any> = {
   contact: dynamic(() => import('./ContactEditor'), { loading }),
   reviews: dynamic(() => import('./ReviewsEditor'), { loading }),
   blog: dynamic(() => import('./BlogEditor'), { loading }),
+  portfolio: dynamic(() => import('./PortfolioEditor'), { loading }),
   'service-area': dynamic(() => import('./ServiceAreaEditor'), { loading }),
   location: dynamic(() => import('./LocationEditor'), { loading }),
   locations: dynamic(() => import('./LocationEditor'), { loading }),

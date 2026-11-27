@@ -12,6 +12,7 @@ import ServicesTemplate from './ServicesTemplate';
 import ServiceAreaTemplate from './ServiceAreaTemplate';
 import LocationTemplate from './LocationTemplate';
 import BlogTemplate from './BlogTemplate';
+import PortfolioTemplate from './PortfolioTemplate';
 import CountryTemplate from './CountryTemplate';
 import StateTemplate from './StateTemplate';
 import CityTemplate from './CityTemplate';
@@ -39,6 +40,7 @@ export const TEMPLATE_MAP: Record<string, React.ComponentType<any>> = {
   'locations': LocationTemplate,
   'blogs': BlogTemplate,
   'blog': BlogTemplate,
+  'portfolio': PortfolioTemplate,
   'country': CountryTemplate,
   'state': StateTemplate,
   'city': CityTemplate,

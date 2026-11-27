@@ -409,6 +409,35 @@ export function generateAutoSchemaForPage(
         "logo": { "@type": "ImageObject", "url": `${BASE_URL}/logo.png` }
       }
     });
+  } else if (template === "portfolio" && page.publishedAt) {
+    // An individual portfolio case-study item's synthetic page object (built in
+    // portfolio/[slug]/page.tsx) carries publishedAt, the same way an individual blog post does -
+    // the hub listing Page document (template "portfolio" too) never does, so it falls through to
+    // the CollectionPage branch below instead of being mistagged as a single CreativeWork.
+    const publishedIso = page.publishedAt ? new Date(page.publishedAt).toISOString() : undefined;
+    const modifiedIso = page.updatedAt ? new Date(page.updatedAt).toISOString() : publishedIso;
+    schemas.push({
+      "@context": "https://schema.org",
+      "@type": "CreativeWork",
+      "name": pageTitle,
+      "description": pageDesc,
+      "image": pageImg,
+      "url": pageUrl,
+      ...(publishedIso ? { "datePublished": publishedIso } : {}),
+      ...(modifiedIso ? { "dateModified": modifiedIso } : {}),
+      "creator": organization,
+      "about": page.client ? { "@type": "Organization", "name": page.client } : undefined,
+    });
+  } else if (template === "portfolio") {
+    // The Portfolio hub/listing page.
+    schemas.push({
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": pageTitle,
+      "description": pageDesc,
+      "url": pageUrl,
+      "isPartOf": { "@type": "WebSite", "name": companyName, "url": `${BASE_URL}/` }
+    });
   } else {
     // Catch-all for every other template (team, careers, gallery, reviews, FAQ, etc.) so no page
     // type is ever left with zero structured data when nothing was manually entered.

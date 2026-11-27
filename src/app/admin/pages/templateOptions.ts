@@ -30,6 +30,7 @@ export const PAGE_TEMPLATE_OPTIONS: TemplateOption[] = [
   { id: 'location', label: 'Locations Hub Template' },
   { id: 'service-area', label: 'Service Area Template' },
   { id: 'blog', label: 'Blog Template' },
+  { id: 'portfolio', label: 'Portfolio (Case Studies) Hub Template', hint: 'Listing page hero/CTA chrome. Individual case studies are managed under Admin > Portfolio.' },
   { id: 'country', label: 'Country Template', hint: 'Top of the Country > State > City hierarchy.' },
   { id: 'state', label: 'State Template', hint: 'Lives under a Country page: /country/state/.' },
   { id: 'city', label: 'City Template', hint: 'Lives under a State page: /country/state/city/.' },
