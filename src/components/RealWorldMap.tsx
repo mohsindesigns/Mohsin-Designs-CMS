@@ -153,9 +153,13 @@ export default function RealWorldMap({
       const pinDotColor = isDarkMode
         ? isActive ? "bg-[#0306AC]" : "bg-[#E9BD36]"
         : "bg-white";
+      // Kept tight to the pin and fairly faint - at the old 32px base size, Tailwind's
+      // animate-ping keyframes scale it up to 2x (64px) mid-pulse, which was big enough to
+      // blot out the base map's own place-name labels right next to a pin (worse in dark
+      // mode, where the ring's color sits closer in luminance to the white tile labels).
       const pingRingColor = isDarkMode
-        ? isActive ? "bg-[#E9BD36]/50" : "bg-[#0306AC]/30"
-        : isActive ? "bg-[#0306AC]/40" : "bg-[#0306AC]/20";
+        ? isActive ? "bg-[#E9BD36]/35" : "bg-[#0306AC]/20"
+        : isActive ? "bg-[#0306AC]/30" : "bg-[#0306AC]/15";
 
       const tooltipBg = isDarkMode
         ? "bg-[#0c0c16] text-white border border-white/10"
@@ -168,8 +172,9 @@ export default function RealWorldMap({
         className: "custom-hub-marker",
         html: `
           <div class="relative flex items-center justify-center cursor-pointer group" style="width: 34px; height: 34px; transform: translate(-50%, -50%);">
-            <!-- Ping animation ring -->
-            <div class="absolute w-8 h-8 rounded-full ${pingRingColor} animate-ping"></div>
+            <!-- Ping animation ring - sized close to the pin itself (not the old 32px,
+                 which doubled to 64px mid-pulse and covered nearby map labels) -->
+            <div class="absolute w-5 h-5 rounded-full ${pingRingColor} animate-ping"></div>
             <!-- Outer border circle -->
             <div class="relative flex items-center justify-center w-5 h-5 rounded-full border-2 ${pinOuterColor} shadow-md transition-all duration-300 ${isActive ? `scale-125 ring-2 ${activeRing}` : 'hover:scale-110'}">
               <div class="w-1.5 h-1.5 rounded-full ${pinDotColor}"></div>
