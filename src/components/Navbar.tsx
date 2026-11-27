@@ -118,6 +118,12 @@ export default function Navbar() {
 
   const toggleTheme = () => {
     const html = document.documentElement;
+    // Close any open mega-menu/dropdown first. Its own exit animation (framer-motion
+    // AnimatePresence) and the sitewide light/dark color transition below used to fire at
+    // the same time, double-exposing overlapping text and images for a few hundred ms -
+    // genuinely unreadable, not just a color issue. Closing it immediately keeps the two
+    // transitions from ever overlapping.
+    setActiveMegaMenu(null);
     // Briefly flag the whole page so every element's color/background/border animates
     // together instead of snapping instantly, then drop the flag once the transition
     // finishes so it never lingers and fights other animations.
