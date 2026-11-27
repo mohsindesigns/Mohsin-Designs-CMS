@@ -179,8 +179,10 @@ export default function RealWorldMap({
             <div class="relative flex items-center justify-center w-5 h-5 rounded-full border-2 ${pinOuterColor} shadow-md transition-all duration-300 ${isActive ? `scale-125 ring-2 ${activeRing}` : 'hover:scale-110'}">
               <div class="w-1.5 h-1.5 rounded-full ${pinDotColor}"></div>
             </div>
-            <!-- Hover Tooltip -->
-            <div class="absolute bottom-full mb-2 hidden group-hover:flex flex-col items-center pointer-events-none z-50 whitespace-nowrap">
+            <!-- Country name label - always shown, not hover-only. A hover-only tooltip never
+                 shows at all on touch devices (no hover state), so the name was simply never
+                 visible there regardless of theme. -->
+            <div class="absolute bottom-full mb-2 flex flex-col items-center pointer-events-none z-50 whitespace-nowrap">
               <div class="${tooltipBg} text-[11px] font-bold px-2.5 py-1 rounded-lg shadow-lg flex items-center gap-1.5">
                 <span class="w-1.5 h-1.5 rounded-full ${tooltipDot}"></span>
                 <span>${hub.name}</span>
