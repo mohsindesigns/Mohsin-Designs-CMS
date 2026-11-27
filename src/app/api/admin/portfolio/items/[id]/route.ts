@@ -3,6 +3,7 @@ import connectToDatabase from '@/lib/mongodb';
 import Portfolio from '@/models/Portfolio';
 import { hasPermission, getSessionUser } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
+import { BASE_URL } from '@/lib/constants';
 import {
   applyPortfolioPublishRules,
   dbErrorResponse,
@@ -51,6 +52,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if ('slug' in updateData && !updateData.slug) {
       updateData.slug = slugify(updateData.title ?? oldItem.title);
       if (!updateData.slug) return NextResponse.json({ error: 'Slug is required (use letters or numbers).' }, { status: 400 });
+    }
+    if (updateData.slug && updateData.slug !== oldItem.slug) {
+      const seo = updateData.seo ?? oldItem.toObject().seo ?? {};
+      const cur = String(seo.canonicalUrl || '').trim().replace(/\/+$/, '');
+      // An auto-filled canonical for the old slug would point at a dead URL; clearing it falls back to the current slug.
+      if (!cur || cur === `${BASE_URL}/portfolio/${oldItem.slug}`) {
+        updateData.seo = { ...seo, canonicalUrl: '' };
+      }
     }
     updateData = applyPortfolioPublishRules(updateData, { status: oldItem.status, publishedAt: oldItem.publishedAt });
 

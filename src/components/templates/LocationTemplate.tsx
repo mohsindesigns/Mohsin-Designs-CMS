@@ -456,7 +456,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
     ctaPrimaryHref: safeHref(locationData.ctaBanner?.ctaPrimaryHref, "/contact-us"),
     ctaSecondaryText: locationData.ctaBanner?.ctaSecondaryText || "EXPLORE SHOWREEL",
     ctaSecondaryHref: safeHref(locationData.ctaBanner?.ctaSecondaryHref, "/gallery"),
-    portraitSrc: extractImg(locationData.ctaBanner?.portraitSrc, "/founder_portrait_nobg.png"),
+    portraitSrc: extractImg(locationData.ctaBanner?.portraitSrc, ""),
     portraitAlt: locationData.ctaBanner?.portraitAlt || "Founder & Lead Architect"
   };
 
@@ -918,8 +918,9 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
 
             <div className="hidden lg:flex flex-1 items-end justify-center relative pr-8">
               <div className="absolute bottom-0 w-[320px] h-[320px] bg-gradient-to-t from-[#020485] to-[#0408d9] rounded-full opacity-90 border border-white/20 shadow-2xl" />
+              {ctaBanner.portraitSrc && (
               <div className="relative z-10 w-[280px] h-[370px] self-end drop-shadow-2xl overflow-hidden rounded-t-[32px] border-t border-l border-r border-white/25 shadow-2xl">
-                <img
+                <SafeImg
                   src={ctaBanner.portraitSrc}
                   alt={ctaBanner.portraitAlt}
                   loading="lazy"
@@ -927,6 +928,7 @@ export default function LocationTemplate({ pageData }: { pageData?: any; params?
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#010356]/80 via-transparent to-transparent pointer-events-none" />
               </div>
+              )}
               <div className="absolute top-16 right-28 h-3.5 w-3.5 rounded-full bg-[var(--cta-accent)] shadow-[0_0_15px_var(--cta-accent)] z-20" />
             </div>
           </div>

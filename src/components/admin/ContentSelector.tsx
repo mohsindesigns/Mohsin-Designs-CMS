@@ -76,7 +76,11 @@ export default function ContentSelector({ type, selectedItems = [], onSelect, la
         } else if (type === "projects") {
           masterList = data?.portfolio?.projects || data?.galleryPage?.projects || [];
         } else if (type === "reviews") {
-          masterList = data?.testimonials?.list || data?.testimonials?.testimonials || [];
+          const t = data?.testimonials;
+          masterList = [
+            ...(Array.isArray(t?.testimonials) ? t.testimonials : []),
+            ...(Array.isArray(t?.list) ? t.list : []),
+          ];
         } else if (type === "faq") {
           masterList = data?.faq?.list || data?.faq?.items || [];
         }
@@ -112,7 +116,7 @@ export default function ContentSelector({ type, selectedItems = [], onSelect, la
   const getItemKey = (item: any) => {
     // For reviews/testimonials, build a composite key since they lack stable IDs
     if (type === 'reviews') {
-      return `${item.name || ''}::${(item.text || '').slice(0, 30)}`;
+      return `${item.name || ''}::${(item.text || item.quote || '').slice(0, 30)}`;
     }
     return item._id || item.id || item.slug || item.title || item.name || item.question || '';
   };

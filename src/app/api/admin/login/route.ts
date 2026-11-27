@@ -29,10 +29,11 @@ export async function POST(req: NextRequest) {
     await connectToDatabase();
 
     // Find user by username or email and populate role
+    const escapedEmail = String(username || '').trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const user = await User.findOne({
       $or: [
         { username },
-        { email: username }
+        { email: new RegExp(`^${escapedEmail}$`, 'i') }
       ]
     }).populate('role');
 
@@ -84,23 +85,18 @@ export async function POST(req: NextRequest) {
       console.warn("Notice: Could not persist lastLogin timestamp (storage quota or read-only mode):", saveErr?.message || saveErr);
     }
 
-    const roleName = user.role?.name || (typeof user.role === 'string' ? user.role : 'Admin');
-    const permissions = user.customPermissions || user.role?.permissions || {
-      pages: { create: true, read: true, update: true, delete: true, publish: true },
-      media: { create: true, read: true, update: true, delete: true },
-      seo: { read: true, update: true },
-      blog: { create: true, read: true, update: true, delete: true, publish: true },
-      submissions: { read: true, delete: true },
-      settings: { read: true, update: true },
-      users: { read: true, create: true, update: true, delete: true },
-      logs: { read: true }
-    };
+    if (!user.customPermissions && (!user.role || typeof user.role !== 'object' || !user.role.permissions)) {
+      return NextResponse.json({ error: 'Your role no longer exists. Ask an administrator to assign one.' }, { status: 403 });
+    }
+    const roleName = user.role?.name || 'Custom';
+    const permissions = user.customPermissions || user.role.permissions;
 
     const token = await signToken({
       userId: user._id.toString(),
       username: user.username,
       roleName,
-      permissions
+      permissions,
+      tokenVersion: user.tokenVersion || 0
     });
 
     await recordActivity({

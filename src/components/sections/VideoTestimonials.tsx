@@ -374,7 +374,7 @@ function VideoLightbox({
                   <div className="relative aspect-video w-full">
                     <iframe
                       key={openIndex}
-                      src={`${source.embedUrl}?autoplay=1&rel=0`}
+                      src={`${source.embedUrl}${source.embedUrl.includes("?") ? "&" : "?"}autoplay=1&rel=0`}
                       className="absolute inset-0 h-full w-full"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
                       allowFullScreen

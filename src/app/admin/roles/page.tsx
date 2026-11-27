@@ -46,7 +46,7 @@ export default function RolesPage() {
     try {
       const res = await fetch(adminApiUrl("/api/admin/roles"));
       const data = await res.json();
-      setRoles(data);
+      setRoles(res.ok && Array.isArray(data) ? data : []);
     } catch (err) {
       console.error(err);
     } finally {

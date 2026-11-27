@@ -31,11 +31,13 @@ function ScriptModal({
   initial,
   onSave,
   onClose,
+  onDelete,
   saving,
 }: {
   initial: Partial<Script>;
   onSave: (data: Partial<Script>) => void;
   onClose: () => void;
+  onDelete: (id: string) => void;
   saving: boolean;
 }) {
   const [form, setForm] = useState({ ...EMPTY_FORM, ...initial });
@@ -121,9 +123,15 @@ function ScriptModal({
 
         {/* WP-Style Footer */}
         <div className="flex items-center justify-between px-4 py-3 bg-[#f6f7f7] border-t border-[#c3c4c7]">
-          <button onClick={onClose} className="text-[#d63638] text-[13px] hover:underline px-2 py-1">
-            Move to Trash
-          </button>
+          {initial.id ? (
+            <button onClick={() => onDelete(initial.id!)} className="text-[#d63638] text-[13px] hover:underline px-2 py-1">
+              Move to Trash
+            </button>
+          ) : (
+            <button onClick={onClose} className="text-[#646970] text-[13px] hover:underline px-2 py-1">
+              Cancel
+            </button>
+          )}
           <button
             onClick={() => onSave(form)}
             disabled={saving || !form.name.trim() || !form.code.trim()}
@@ -158,7 +166,9 @@ export default function AdminScriptsPage() {
   const load = async () => {
     try {
       const res = await fetch(adminApiUrl("/api/admin/scripts"));
-      setScripts(await res.json());
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !Array.isArray(data)) throw new Error();
+      setScripts(data);
     } catch {
       showToast("err", "Failed to load scripts");
     } finally {
@@ -209,13 +219,16 @@ export default function AdminScriptsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this script?")) return;
+    if (!confirm("Are you sure you want to delete this script?")) return false;
     try {
-      await fetch(adminApiUrl(`/api/admin/scripts?id=${id}`), { method: "DELETE" });
+      const res = await fetch(adminApiUrl(`/api/admin/scripts?id=${encodeURIComponent(id)}`), { method: "DELETE" });
+      if (!res.ok) throw new Error();
       setScripts((prev) => prev.filter((s) => s.id !== id));
       showToast("ok", "Script deleted.");
+      return true;
     } catch {
       showToast("err", "Delete failed.");
+      return false;
     }
   };
 
@@ -239,12 +252,15 @@ export default function AdminScriptsPage() {
     if (bulkAction === "delete" && selectedIds.size > 0) {
       if (!confirm(`Are you sure you want to delete ${selectedIds.size} script(s)?`)) return;
       try {
+        const deleted = new Set<string>();
         for (const id of Array.from(selectedIds)) {
-          await fetch(adminApiUrl(`/api/admin/scripts?id=${id}`), { method: "DELETE" });
+          const res = await fetch(adminApiUrl(`/api/admin/scripts?id=${encodeURIComponent(id)}`), { method: "DELETE" }).catch(() => null);
+          if (res?.ok) deleted.add(id);
         }
-        setScripts((prev) => prev.filter((s) => !selectedIds.has(s.id)));
-        setSelectedIds(new Set());
-        showToast("ok", "Scripts deleted.");
+        setScripts((prev) => prev.filter((s) => !deleted.has(s.id)));
+        setSelectedIds(new Set(Array.from(selectedIds).filter((id) => !deleted.has(id))));
+        if (deleted.size === selectedIds.size) showToast("ok", "Scripts deleted.");
+        else showToast("err", `${selectedIds.size - deleted.size} script(s) could not be deleted.`);
       } catch {
         showToast("err", "Bulk delete encountered an error.");
       }
@@ -404,6 +420,7 @@ export default function AdminScriptsPage() {
             initial={modal.data}
             onSave={handleSave}
             onClose={closeModal}
+            onDelete={async (id) => { if (await handleDelete(id)) closeModal(); }}
             saving={saving}
           />
         )}

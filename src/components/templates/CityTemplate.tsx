@@ -9,6 +9,8 @@ import PageInlineFaqs from "@/components/PageInlineFaqs";
 import { useContent } from "@/hooks/useContent";
 import contentDefaults from "@/data/content.json";
 import { isServiceVisibleOnPage, withTargetedServices } from "@/lib/servicesVisibility";
+import { lookupUsCity } from "@/lib/usCityCoords";
+import { pathSegmentsOfUrl } from "@/lib/locationPath";
 
 // SEO-relevant, text-heavy sections (about, industries, how-we-work, service area, contact/NAP,
 // testimonials, trusted brands) are rendered on the server too. They used to be `ssr: false`, which
@@ -77,6 +79,23 @@ function resolveSection(content: any, aliases: string[], list?: ListSpec): any |
     return section;
   }
   return null;
+}
+
+// Same as CountryTemplate: Testimonials.tsx fills any empty marquee row with invented demo reviews,
+// so keep only real reviews and spread them across all 3 rows.
+function resolveReviews(t: any) {
+  if (!t) return null;
+  const source = [t.list, t.items, t.testimonials].find((a) => Array.isArray(a) && a.length > 0) || [];
+  const real = source
+    .filter((r: any) => r && (plain(r.name) || plain(r.quote ?? r.text)))
+    .map((r: any) => ({ ...r, quote: r.quote ?? r.text, role: r.role ?? r.position }));
+  if (real.length === 0) return null;
+  const rowsCovered = [1, 2, 3].every((c) => real.some((r: any) => Number(r.column) === c));
+  const list =
+    real.length >= 3
+      ? real.map((r: any, i: number) => ({ ...r, column: rowsCovered ? Number(r.column) : (i % 3) + 1 }))
+      : [0, 1, 2].map((i) => ({ ...real[i % real.length], column: i + 1 }));
+  return { ...t, list, items: undefined, testimonials: undefined };
 }
 
 /**
@@ -162,9 +181,16 @@ const cityKey = (name: unknown) =>
     .trim();
 
 /** Gives every hub that has no coordinates of its own the real position of its city (if known). */
-function withHubCoordinates(hubs: any[]): any[] {
+function withHubCoordinates(hubs: any[], pageStateSlug: string): any[] {
   return hubs.map((hub: any) => {
     if (!hub || (Number.isFinite(hub.lat) && Number.isFinite(hub.lng))) return hub;
+    const segs = pathSegmentsOfUrl(hub.link || hub.href || hub.url);
+    const hubState = segs.length >= 3 ? segs[segs.length - 2] : pageStateSlug;
+    if (hubState) {
+      const known = lookupUsCity(hubState, segs.length >= 3 ? segs[segs.length - 1] : undefined, hub.name);
+      // CITY_COORDS is name-only ("Jackson" = Wyoming), so it must not pin a hub in another state.
+      return known ? { ...hub, lat: known[0], lng: known[1] } : hub;
+    }
     const c = CITY_COORDS[cityKey(hub.name)];
     return c ? { ...hub, lat: c[0], lng: c[1] } : hub;
   });
@@ -181,7 +207,7 @@ function fixLegacyLocationLink(link: unknown, countrySlug: string): unknown {
   return m ? `${m[1] || ""}/${countrySlug}/${m[2]}/${m[3]}/${m[4] || ""}` : link;
 }
 
-function prepareServiceArea(serviceArea: any, countrySlug: string): any {
+function prepareServiceArea(serviceArea: any, countrySlug: string, stateSlug: string): any {
   if (!serviceArea || typeof serviceArea !== "object") return serviceArea;
   const hubs = withHubCoordinates(
     (serviceArea.hubs as any[]).map((hub: any) => {
@@ -189,7 +215,8 @@ function prepareServiceArea(serviceArea: any, countrySlug: string): any {
       const raw = hub.link || hub.href || hub.url;
       const fixed = fixLegacyLocationLink(raw, countrySlug);
       return fixed === raw ? hub : { ...hub, link: fixed };
-    })
+    }),
+    stateSlug
   );
   return {
     ...serviceArea,
@@ -227,12 +254,16 @@ export default function CityTemplate({ pageData, params }: { pageData?: any; par
   const { allBlogs } = useContent();
   const content = pageData?.content || {};
   const countrySlug: string = content.countrySlug || "usa";
+  const routeSegs: string[] = Array.isArray(params?.slug) ? params.slug.filter(Boolean) : [];
+  const cityStateSlug: string =
+    String(content.stateSlug || "").split("/").filter(Boolean).pop() ||
+    (routeSegs.length >= 3 ? routeSegs[routeSegs.length - 2] : "");
 
   const trustedBrands = resolveSection(content, ["trustedBrands", "clientTrust", "trustedBy"], { keys: ["logos", "items"], need: ["name", "image"] });
   const about = resolveSection(content, ["about", "aboutOwner"]);
   const industries = resolveSection(content, ["industries", "domainExpertise"], { keys: ["list", "items", "domains"], need: ["title"] });
   const portfolio = resolveSection(content, ["portfolio"], { keys: ["projects", "caseStudies"], need: ["title", "brand"] });
-  const testimonials = resolveSection(content, ["testimonials", "reviews"], { keys: ["list", "items", "testimonials"], need: ["quote", "text"] });
+  const testimonials = resolveReviews(resolveSection(content, ["testimonials", "reviews"], { keys: ["list", "items", "testimonials"], need: ["quote", "text"] }));
   const whyChooseUs = resolveSection(content, ["whyChooseUs", "howWeWork"], { keys: ["reasons", "features"], need: ["title"] });
 
   const servicesData = useMemo(
@@ -249,8 +280,8 @@ export default function CityTemplate({ pageData, params }: { pageData?: any; par
   const serviceArea = useMemo(() => {
     const sa = content.serviceArea;
     if (!sa || sa.enabled === false || !hasContent(sa) || !hasRealItem(sa.hubs, ["name"])) return null;
-    return prepareServiceArea(sa, countrySlug);
-  }, [content.serviceArea, countrySlug]);
+    return prepareServiceArea(sa, countrySlug, cityStateSlug);
+  }, [content.serviceArea, countrySlug, cityStateSlug]);
 
   const videoTestimonials = content.videoTestimonials;
   const showVideos =
@@ -258,8 +289,11 @@ export default function CityTemplate({ pageData, params }: { pageData?: any; par
     Array.isArray(videoTestimonials?.items) &&
     videoTestimonials.items.some((it: any) => it && typeof it.videoUrl === "string" && it.videoUrl.trim());
 
+  const faqItems: any[] = (Array.isArray(content.faqs) ? content.faqs : []).filter(
+    (f: any) => f && plain(f.question) && plain(f.answer)
+  );
   const faqsVisible =
-    content.faqs?.enabled !== false && content.faqSection?.enabled !== false && hasContent(content.faqs);
+    content.faqs?.enabled !== false && content.faqSection?.enabled !== false && faqItems.length > 0;
 
   // The Blog tab writes both keys; either one being switched off hides the section.
   const blogConfig = content.blogSection || content.blog;
@@ -337,7 +371,7 @@ export default function CityTemplate({ pageData, params }: { pageData?: any; par
       {/* 8. FAQ Section */}
       {faqsVisible && (
         <PageInlineFaqs
-          faqs={content.faqs}
+          faqs={faqItems}
           faqSchemaMarkup={content.faqSchemaMarkup}
           badge={content.faqBadge}
           title={content.faqTitleHighlight || content.faqTitle}

@@ -186,7 +186,7 @@ export default function Footer() {
   const matchedSelectedServices = selectedServiceIds.length > 0
     ? allPublishedServices.filter((s: any) => selectedServiceIds.includes(s._id) || selectedServiceIds.includes(s.id) || selectedServiceIds.includes(s.slug))
     : [];
-  const servicesListTitle = footer?.services?.title || footer?.labelServices || "Services";
+  const servicesListTitle = footer?.services?.title || footer?.labelServices || "Our Services";
   const servicesList = (matchedSelectedServices.length > 0 ? matchedSelectedServices : allPublishedServices)
     .map((s: any) => ({ label: s.title, href: `/services/${s.slug}` }));
  
@@ -232,11 +232,13 @@ export default function Footer() {
                   </div>
                   <div className="flex flex-col">
                     <span className="font-sans font-black text-2xl leading-none tracking-tight text-white uppercase">
-                      {footer?.logoText || "MOHSIN"}
+                      {footer?.logoText || footer?.company?.name || "MOHSIN"}
                     </span>
-                    <span className="font-sans font-bold text-xs tracking-widest text-[var(--cta-accent)] uppercase leading-none mt-1.5">
-                      {footer?.logoSub || "DESIGNS"}
-                    </span>
+                    {(footer?.logoText || !footer?.company?.name) && (
+                      <span className="font-sans font-bold text-xs tracking-widest text-[var(--cta-accent)] uppercase leading-none mt-1.5">
+                        {footer?.logoSub || "DESIGNS"}
+                      </span>
+                    )}
                   </div>
                 </>
               )}

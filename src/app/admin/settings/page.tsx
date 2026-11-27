@@ -182,6 +182,10 @@ export default function SettingsEditor() {
         const data = await res.json();
         setRedirects(data.items || []);
         setTotalRedirects(data.total || 0);
+      } else {
+        setRedirects([]);
+        setTotalRedirects(0);
+        setToast({ type: "err", msg: `Could not load redirects (${res.status})` });
       }
     } catch (err) {
       console.error("Error fetching redirects:", err);
@@ -312,7 +316,8 @@ export default function SettingsEditor() {
         navbar: data.navbar,
         footer: data.footer,
         loader: data.loader,
-        hours: data.hours
+        hours: data.hours,
+        contact: data.contact
       };
       const res = await fetch(adminApiUrl("/api/content"), {
         method: "PUT",
@@ -322,6 +327,9 @@ export default function SettingsEditor() {
       if (res.ok) {
         setToast({ type: "ok", msg: "Settings saved." });
         setTimeout(() => setToast(null), 3000);
+      } else {
+        const j = await res.json().catch(() => ({}));
+        setToast({ type: "err", msg: j.error || `Save failed (${res.status})` });
       }
     } catch {
       setToast({ type: "err", msg: "Error saving settings." });
@@ -576,6 +584,7 @@ export default function SettingsEditor() {
                            )}
 
                            {/* SUBMENU EDITOR */}
+                           {!link.useMegaMenu && !link.useLocationsMenu && (
                            <div className="pl-6 border-l-2 border-[#c3c4c7] space-y-4">
                               <div className="flex items-center justify-between">
                                  <span className="text-[11px] font-bold text-[#646970] uppercase tracking-wider">Submenu Items</span>
@@ -628,6 +637,7 @@ export default function SettingsEditor() {
                                  ))}
                               </div>
                            </div>
+                           )}
                         </div>
                      ))}
                   </div>
@@ -652,24 +662,6 @@ export default function SettingsEditor() {
                     content={data.footer?.company?.description || ""} 
                     onChange={(v) => updateData("footer", "company", { ...data.footer.company, description: v })} 
                   />
-               </SettingsRow>
-               <SettingsRow label="Marquee Text" description="Add messages for the scrolling bottom bar.">
-                  <div className="space-y-2">
-                     {(data.footer?.marquee?.texts || []).map((t: string, i: number) => (
-                        <div key={i} className="flex gap-2">
-                           <input type="text" value={t} onChange={(e) => {
-                              const nt = [...data.footer.marquee.texts];
-                              nt[i] = e.target.value;
-                              updateData("footer", "marquee", { ...data.footer.marquee, texts: nt });
-                           }} className="flex-1 border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]" />
-                           <button onClick={() => {
-                              const nt = data.footer.marquee.texts.filter((_:any, idx:number) => idx !== i);
-                              updateData("footer", "marquee", { ...data.footer.marquee, texts: nt });
-                           }} className="text-[#d63638] text-xs">Remove</button>
-                        </div>
-                     ))}
-                     <button onClick={() => updateData("footer", "marquee", { ...data.footer.marquee, texts: [...(data.footer.marquee?.texts || []), "New Announcement"] })} className="text-[#2271b1] text-xs underline">+ Add Item</button>
-                  </div>
                </SettingsRow>
                <SettingsRow label="Services Menu Title" description="The title for the dynamic services list in the footer.">
                   <input type="text" value={data.footer?.services?.title || "Our Services"} onChange={(e) => updateData("footer", "services", { ...data.footer.services, title: e.target.value })} className="w-full max-w-md border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
@@ -772,7 +764,7 @@ export default function SettingsEditor() {
                                   </optgroup>
                                   <optgroup label="Services">
                                      {pages.filter(p => p.type === 'service').map((p: any) => (
-                                        <option key={p._id} value={`/services/${p.slug}`}>{p.title}</option>
+                                        <option key={p._id} value={`/${p.slug}`}>{p.title}</option>
                                      ))}
                                   </optgroup>
                                </select>
@@ -806,43 +798,6 @@ export default function SettingsEditor() {
                       </button>
                    </div>
                 </SettingsRow>
-               <SettingsRow label="Certifications">
-                  <div className="space-y-4">
-                     {(data.footer?.certifications || []).map((cert: any, i: number) => (
-                        <div key={i} className="flex gap-4 items-end bg-[#f6f7f7] p-4 border border-[#c3c4c7] rounded-sm">
-                           <div className="flex-1 space-y-1">
-                              <label className="text-[11px] font-bold">Certification Name</label>
-                              <input type="text" value={cert.cert || ""} onChange={(e) => {
-                                 const nc = [...data.footer.certifications];
-                                 nc[i].cert = e.target.value;
-                                 updateData("footer", "certifications", nc);
-                              }} className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]" />
-                           </div>
-                           <div className="flex-1 space-y-1">
-                              <label className="text-[11px] font-bold">License / Number</label>
-                              <input type="text" value={cert.number || ""} onChange={(e) => {
-                                 const nc = [...data.footer.certifications];
-                                 nc[i].number = e.target.value;
-                                 updateData("footer", "certifications", nc);
-                              }} className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]" />
-                           </div>
-                           <div className="space-y-1 w-24">
-                              <label className="text-[11px] font-bold">Icon</label>
-                              <IconPicker value={cert.icon || "ShieldCheck"} onChange={(v) => {
-                                 const nc = [...data.footer.certifications];
-                                 nc[i].icon = v;
-                                 updateData("footer", "certifications", nc);
-                              }} />
-                           </div>
-                           <button onClick={() => {
-                              const nc = data.footer.certifications.filter((_:any, idx:number) => idx !== i);
-                              updateData("footer", "certifications", nc);
-                           }} className="text-[#d63638] text-[13px] mb-1 hover:underline">Remove</button>
-                        </div>
-                     ))}
-                     <button onClick={() => updateData("footer", "certifications", [...(data.footer.certifications || []), { cert: "New Cert", number: "#123456", icon: "ShieldCheck" }])} className="text-[#2271b1] text-[13px] hover:underline">+ Add Certification</button>
-                  </div>
-               </SettingsRow>
             </motion.div>
           )}
 
@@ -1316,15 +1271,7 @@ export default function SettingsEditor() {
                         />
                         Ignore Case
                      </label>
-                     <label className="flex items-center gap-2 text-[13px] text-[#2c3338] cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={redirectForm.ignoreSlash}
-                          onChange={(e) => setRedirectForm({ ...redirectForm, ignoreSlash: e.target.checked })}
-                          className="rounded-sm border-[#8c8f94]"
-                        />
-                        Ignore Slash
-                     </label>
+                     <span className="text-[12px] text-[#646970]">Trailing slashes are always ignored</span>
                      <label className="flex items-center gap-2 text-[13px] text-[#2c3338] cursor-pointer">
                         <input
                           type="checkbox"
@@ -1561,9 +1508,6 @@ export default function SettingsEditor() {
                                     )}
                                     {item.ignoreCase && (
                                       <span className="ml-1 bg-blue-100 text-blue-800 text-[10px] px-1 rounded font-sans">case</span>
-                                    )}
-                                    {item.ignoreSlash && (
-                                      <span className="ml-1 bg-green-100 text-green-800 text-[10px] px-1 rounded font-sans">slash</span>
                                     )}
                                  </td>
                                  <td className="py-3 px-3 align-top font-mono break-all text-[12px] max-w-[200px]">

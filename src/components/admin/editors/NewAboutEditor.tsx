@@ -620,7 +620,8 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                           navTitle,
                           navTag,
                           iconName,
-                          slug
+                          slug,
+                          url: srv.url || ""
                         };
                       });
 
@@ -630,7 +631,7 @@ export default function NewAboutEditor({ pageId, data, setData }: { pageId: stri
                           ...((prev || {}).servicesDirectory || {}),
                           // Keep only what the picker needs to recognise a service (the full catalog
                           // objects used to be copied into the page document, tens of KB each).
-                          selectedServices: items.map((srv: any) => ({ id: srv.id, _id: srv._id, slug: srv.slug, title: srv.title || srv.name })),
+                          selectedServices: items.map((srv: any) => ({ id: srv.id, _id: srv._id, slug: srv.slug, title: srv.title || srv.name, url: srv.url })),
                           stages: stages
                         }
                       }));

@@ -214,6 +214,14 @@ export default async function BlogPostPage({ params }: Props) {
   // an auto-generated BlogPosting (+ BreadcrumbList) - publishedAt/updatedAt/featuredImage/
   // authorName are passed through here since generateAutoSchemaForPage's "blog" branch needs them
   // and the synthetic page object below otherwise only carries title/slug/seo.
+  // Resolve FAQs (Post-specific first, falling back to Blog Page FAQs, then Global FAQs)
+  const isFilledFaq = (f: any) =>
+    f && typeof (f.question ?? f.q ?? f.title) === "string" && (f.question ?? f.q ?? f.title).trim() &&
+    typeof (f.answer ?? f.a ?? f.description) === "string" && (f.answer ?? f.a ?? f.description).trim();
+
+  const postFaqs = (Array.isArray(post.faq) ? post.faq : []).filter(isFilledFaq);
+  const hasPostFaqs = postFaqs.length > 0;
+
   const schemaBlocks = getResolvedSchemaBlocks({
     page: {
       title: post.title,
@@ -222,7 +230,7 @@ export default async function BlogPostPage({ params }: Props) {
       content: {},
       seo: post.seo || {},
       schemaMarkup: post.schemaMarkup,
-      faqSchemaMarkup: post.faqSchemaMarkup,
+      faqSchemaMarkup: hasPostFaqs ? post.faqSchemaMarkup : undefined,
       publishedAt: publishedIso,
       updatedAt: modifiedIso,
       featuredImage: post.featuredImage,
@@ -233,12 +241,6 @@ export default async function BlogPostPage({ params }: Props) {
     slug: `blogs/${post.slug}`
   });
 
-  // Resolve FAQs (Post-specific first, falling back to Blog Page FAQs, then Global FAQs)
-  const isFilledFaq = (f: any) =>
-    f && typeof (f.question ?? f.q ?? f.title) === "string" && (f.question ?? f.q ?? f.title).trim() &&
-    typeof (f.answer ?? f.a ?? f.description) === "string" && (f.answer ?? f.a ?? f.description).trim();
-
-  const postFaqs = (Array.isArray(post.faq) ? post.faq : []).filter(isFilledFaq);
   const blogPageFaqs = (
     Array.isArray(blogPageData?.faqs)
       ? blogPageData.faqs
@@ -267,7 +269,6 @@ export default async function BlogPostPage({ params }: Props) {
     strategyAudit: resolvedStrategyAudit,
   };
 
-  const hasPostFaqs = postFaqs.length > 0;
   const faqBadge = hasPostFaqs ? (post.faqBadge || "ARTICLE FAQ") : (blogPageData?.faqBadge || (blogPageDoc as any)?.content?.faqBadge || "FREQUENTLY ASKED QUESTIONS");
   const faqTitle = hasPostFaqs ? (post.faqTitle || "Frequently Asked Questions") : (blogPageData?.faqTitleHighlight || blogPageData?.faqTitle || (blogPageDoc as any)?.content?.faqTitleHighlight || (blogPageDoc as any)?.content?.faqTitle || "Frequently Asked Questions");
   const faqTitleIntro = hasPostFaqs ? "" : (blogPageData?.faqTitleIntro !== undefined ? blogPageData.faqTitleIntro : (blogPageDoc as any)?.content?.faqTitleIntro);

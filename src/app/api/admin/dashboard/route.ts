@@ -4,7 +4,7 @@ import Page from '@/models/Page';
 import User from '@/models/User';
 import ActivityLog from '@/models/ActivityLog';
 import Submission from '@/models/Submission';
-import { getSessionUser } from '@/lib/rbac';
+import { getSessionUser, hasPermission } from '@/lib/rbac';
 
 // Short in-memory cache to avoid hammering MongoDB on repeated rapid navigation
 let cachedDashboard: { data: any; expiresAt: number } | null = null;
@@ -16,9 +16,22 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  const canSubs = await hasPermission(req, 'submissions', 'read');
+  const canLogs = await hasPermission(req, 'logs', 'read');
+  const filterForRole = (data: any) => ({
+    stats: {
+      pages: data.stats.pages,
+      users: data.stats.users,
+      submissions: canSubs ? data.stats.submissions : 0,
+      newSubmissions: canSubs ? data.stats.newSubmissions : 0,
+    },
+    recentLogs: canLogs ? data.recentLogs : [],
+    recentSubmissions: canSubs ? data.recentSubmissions : [],
+  });
+
   const now = Date.now();
   if (cachedDashboard && cachedDashboard.expiresAt > now) {
-    return NextResponse.json(cachedDashboard.data);
+    return NextResponse.json(filterForRole(cachedDashboard.data));
   }
 
   try {
@@ -67,7 +80,7 @@ export async function GET(req: NextRequest) {
       expiresAt: now + CACHE_TTL_MS,
     };
 
-    return NextResponse.json(result);
+    return NextResponse.json(filterForRole(result));
   } catch (err) {
     console.error('Dashboard API error:', err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

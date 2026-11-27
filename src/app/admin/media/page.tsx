@@ -27,8 +27,9 @@ export default function MediaDashboard() {
   const fetchMedia = async () => {
     try {
       const res = await fetch(adminApiUrl("/api/admin/media"));
-      const data = await res.json();
-      setMedia(data);
+      const data = await res.json().catch(() => null);
+      setMedia(Array.isArray(data) ? data : []);
+      if (!res.ok) alert(data?.error || "Failed to load media");
     } catch (err) {
       console.error("Failed to fetch media");
     } finally {
@@ -73,7 +74,7 @@ export default function MediaDashboard() {
         const updated = await res.json();
         setMedia(prev => prev.map(m => m._id === updated._id ? updated : m));
         setEditingItem(null);
-      }
+      } else alert((await res.json().catch(() => ({}))).error || "Update failed");
     } catch (err) { alert("Update failed"); }
   };
 
@@ -85,7 +86,7 @@ export default function MediaDashboard() {
         setMedia(prev => prev.filter(m => !ids.includes(m._id)));
         setSelectedIds([]);
         if (editingItem && ids.includes(editingItem._id)) setEditingItem(null);
-      }
+      } else alert((await res.json().catch(() => ({}))).error || "Delete failed");
     } catch (err) { alert("Delete failed"); }
   };
 
@@ -171,7 +172,11 @@ export default function MediaDashboard() {
                   onClick={() => setEditingItem(item)}
                   className={`relative aspect-square border-2 cursor-pointer group bg-[#f0f0f1] ${selectedIds.includes(item._id) ? 'border-[#2271b1]' : 'border-transparent hover:border-[#2271b1]'}`}
                 >
-                   <img src={item.url} className="w-full h-full object-cover" alt={item.alt} />
+                   {item.type?.startsWith('video/') ? (
+                     <video src={item.url} muted playsInline preload="metadata" className="w-full h-full object-cover" />
+                   ) : (
+                     <img src={item.url} className="w-full h-full object-cover" alt={item.alt} />
+                   )}
                    {selectedIds.includes(item._id) && (
                      <div className="absolute top-1 right-1 bg-[#2271b1] text-white p-0.5 rounded-sm">
                         <Check className="w-3 h-3" />
@@ -198,7 +203,11 @@ export default function MediaDashboard() {
                           <td className="py-2 px-3 align-top"><input type="checkbox" className="w-4 h-4" /></td>
                           <td className="py-2 px-3 align-top flex gap-3">
                              <div className="w-12 h-12 bg-[#f0f0f1] border border-[#c3c4c7] shrink-0">
-                                <img src={item.url} className="w-full h-full object-cover" />
+                                {item.type?.startsWith('video/') ? (
+                                  <video src={item.url} muted playsInline preload="metadata" className="w-full h-full object-cover" />
+                                ) : (
+                                  <img src={item.url} className="w-full h-full object-cover" />
+                                )}
                              </div>
                              <div>
                                 <strong className="text-[#2271b1] block">{item.name}</strong>
@@ -238,7 +247,11 @@ export default function MediaDashboard() {
 
                  {/* Left: Preview */}
                  <div className="flex-1 bg-[#f0f0f1] flex items-center justify-center p-8 overflow-hidden">
-                    <img src={editingItem.url} className="max-w-full max-h-full object-contain shadow-md" />
+                    {editingItem.type?.startsWith('video/') ? (
+                      <video src={editingItem.url} controls preload="metadata" className="max-w-full max-h-full object-contain shadow-md" />
+                    ) : (
+                      <img src={editingItem.url} className="max-w-full max-h-full object-contain shadow-md" />
+                    )}
                  </div>
 
                  {/* Right: Metadata Panel */}
@@ -262,7 +275,7 @@ export default function MediaDashboard() {
                              className="w-full border border-[#c3c4c7] bg-white px-3 py-2 text-sm rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none shadow-sm transition-all"
                              rows={2}
                            />
-                          <p className="text-[11px] text-[#646970]">Describe the purpose of the image. Leave empty if decorative.</p>
+                          <p className="text-[11px] text-[#646970]">Describe the purpose of the image. Leave empty if decorative. Applies when the image is next selected in an editor; pages already using it keep their current alt text.</p>
                        </div>
 
                        <div className="space-y-1">
@@ -272,14 +285,6 @@ export default function MediaDashboard() {
                              value={editingItem.title || ""}
                              onChange={(e) => setEditingItem({ ...editingItem, title: e.target.value })}
                              className="w-full border border-[#c3c4c7] bg-white px-3 py-2 text-sm rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none shadow-sm transition-all"
-                           />
-                       </div>
-
-                       <div className="space-y-1">
-                          <label className="font-semibold block">Caption</label>
-                           <textarea
-                             className="w-full border border-[#c3c4c7] bg-white px-3 py-2 text-sm rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none shadow-sm transition-all"
-                             rows={2}
                            />
                        </div>
 

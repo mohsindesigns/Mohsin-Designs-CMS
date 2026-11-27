@@ -29,13 +29,10 @@ export default function QuillEditor({ content, onChange, label, placeholder }: Q
     if (isHtmlMode) {
       // Switching from HTML to Visual
       if (quillRef.current) {
-        isUpdating.current = true;
-        const normalized = normalizeContent(content);
-        const editorEl = editorRef.current?.querySelector(".ql-editor");
-        if (editorEl) {
-          editorEl.innerHTML = normalized;
-        }
-        isUpdating.current = false;
+        quillRef.current.setContents(
+          quillRef.current.clipboard.convert(normalizeContent(content)),
+          "silent"
+        );
       }
     }
     setIsHtmlMode(!isHtmlMode);

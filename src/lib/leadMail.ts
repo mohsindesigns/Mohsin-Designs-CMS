@@ -502,6 +502,8 @@ export interface AdminLeadEmailInput {
   pageUrl?: string;
   crmLeadUrl?: string;
   logoWhiteUrl?: string;
+  extraData?: Record<string, unknown>;
+  attachmentUrl?: string;
 }
 
 /**
@@ -513,7 +515,7 @@ export function buildAdminLeadEmail(input: AdminLeadEmailInput): { html: string;
   const firstName = cleanText(input.firstName || fullName.trim().split(/\s+/)[0] || "there", 60) || "there";
   const email = cleanText(input.email || "", 160);
   const phone = cleanText(input.phone || "", 50);
-  const service = cleanText(input.service || "Website Design", 120) || "Website Design";
+  const service = cleanText(input.service || "General inquiry", 120) || "General inquiry";
   const message = cleanText(input.message || "", 5000);
   const formSource = cleanText(input.formSource || "Mohsin Designs Website Form", 160) || "Mohsin Designs Website Form";
   const leadId = cleanText(input.leadId || "MD-10001", 50) || "MD-10001";
@@ -529,6 +531,30 @@ export function buildAdminLeadEmail(input: AdminLeadEmailInput): { html: string;
     ? `<a href="tel:${escapeHtml(phoneTel)}" style="color:#1F5BD8;text-decoration:none;font-weight:bold;">${escapeHtml(phone)}</a>`
     : `<span style="color:#7A8296;">Not provided</span>`;
 
+  const excludedKeys = new Set(["service", "services", "project_type", "projecttype", "crm_synced", "crm_status"]);
+  const extraRows: [string, string][] = Object.entries(input.extraData || {})
+    .filter(([k]) => !excludedKeys.has(k.toLowerCase()))
+    .map(([k, v]) => [humanizeKey(k), displayValue(v)] as [string, string])
+    .filter(([, v]) => v !== "");
+  const attachmentUrl = input.attachmentUrl || "";
+  if (attachmentUrl) extraRows.push(["Attachment", attachmentUrl]);
+
+  const extraDetailsHtml = extraRows.length
+    ? `
+      <p style="margin:26px 0 8px 0;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:bold;color:#5B6478;letter-spacing:1px;">ADDITIONAL DETAILS</p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #E3E8F0;border-radius:8px;">
+        ${extraRows
+          .map(
+            ([label, val], i) => `<tr>
+          <td class="stack label-cell" width="34%" style="padding:12px 20px;${i < extraRows.length - 1 ? "border-bottom:1px solid #EEF1F6;" : ""}font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#7A8296;vertical-align:top;">${escapeHtml(label)}</td>
+          <td class="stack" style="padding:12px 20px;${i < extraRows.length - 1 ? "border-bottom:1px solid #EEF1F6;" : ""}font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1A2033;word-break:break-word;">${escapeHtml(val)}</td>
+        </tr>`
+          )
+          .join("")}
+      </table>
+`
+    : "";
+
   const html = fillTemplate(ADMIN_LEAD_TEMPLATE, {
     full_name: escapeHtml(fullName),
     first_name: escapeHtml(firstName),
@@ -543,6 +569,7 @@ export function buildAdminLeadEmail(input: AdminLeadEmailInput): { html: string;
     page_url: escapeHtml(pageUrl),
     crm_lead_url: escapeHtml(crmLeadUrl),
     logo_white_url: escapeHtml(logoWhiteUrl),
+    extra_details_html: extraDetailsHtml,
   });
 
   const subject = `New lead: ${fullName} · ${service}`;
@@ -563,6 +590,7 @@ export function buildAdminLeadEmail(input: AdminLeadEmailInput): { html: string;
     `MESSAGE`,
     message || "No message provided.",
     ``,
+    ...(extraRows.length ? [`ADDITIONAL DETAILS`, ...extraRows.map(([k, v]) => `${k}: ${v}`), ``] : []),
     `Reply: mailto:${email}?subject=Re:%20Your%20${encodeURIComponent(service)}%20inquiry`,
     phone ? `Call:  tel:${phoneTel}` : "",
     `CRM:   ${crmLeadUrl}`,

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import Role from '@/models/Role';
+import User from '@/models/User';
 import { getAuthSession } from '@/lib/auth';
 import { hasPermission } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
@@ -66,6 +67,10 @@ export async function DELETE(
 
     if (!role.isCustom) {
       return NextResponse.json({ error: 'System roles cannot be deleted' }, { status: 400 });
+    }
+
+    if (await User.countDocuments({ role: id }) > 0) {
+      return NextResponse.json({ error: 'Role is still assigned to users. Reassign them first.' }, { status: 400 });
     }
 
     await Role.findByIdAndDelete(id);

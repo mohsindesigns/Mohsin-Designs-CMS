@@ -70,6 +70,7 @@ export default function ContactForm({ data }: { data?: any }) {
   const [isSuccess, setIsSuccess] = useState(false);
   const [serverError, setServerError] = useState("");
   const [captchaToken, setCaptchaToken] = useState("");
+  const [captchaKey, setCaptchaKey] = useState(0);
 
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -132,6 +133,9 @@ export default function ContactForm({ data }: { data?: any }) {
       setServerError(err.message || "Failed to send message. Please try again.");
     } finally {
       setIsSubmitting(false);
+      // Turnstile tokens are single-use: remount the widget so a retry gets a fresh one.
+      setCaptchaToken("");
+      setCaptchaKey((k) => k + 1);
     }
   };
 
@@ -416,6 +420,7 @@ export default function ContactForm({ data }: { data?: any }) {
                   </div>
 
                   <TurnstileCaptcha
+                    key={captchaKey}
                     onVerify={(token) => setCaptchaToken(token)}
                     onExpire={() => setCaptchaToken("")}
                     theme="auto"

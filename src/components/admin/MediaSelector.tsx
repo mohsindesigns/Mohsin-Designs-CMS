@@ -20,7 +20,8 @@ interface MediaSelectorProps {
 export default function MediaSelector({ onSelect, onClose, title = "Select Asset", accept = "image/*" }: MediaSelectorProps) {
   const isVideoItem = (item: any) => typeof item?.type === "string" && item.type.startsWith("video/");
   // When the caller only wants video, don't show images already in the library either.
-  const isSelectable = (item: any) => (accept === "video/*" ? isVideoItem(item) : true);
+  const isSelectable = (item: any) =>
+    accept === "video/*" ? isVideoItem(item) : accept.includes("video/") ? true : !isVideoItem(item);
   const [media, setMedia] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -28,6 +29,7 @@ export default function MediaSelector({ onSelect, onClose, title = "Select Asset
   const [uploading, setUploading] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const altSaveTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
   useEffect(() => {
     fetchMedia();
@@ -36,8 +38,9 @@ export default function MediaSelector({ onSelect, onClose, title = "Select Asset
   const fetchMedia = async () => {
     try {
       const res = await fetch(adminApiUrl("/api/admin/media"));
-      const data = await res.json();
-      setMedia(data);
+      const data = await res.json().catch(() => null);
+      setMedia(Array.isArray(data) ? data : []);
+      if (!res.ok) alert(data?.error || "Failed to load media");
     } catch (err) {
       console.error("Failed to fetch media");
     } finally {
@@ -274,16 +277,19 @@ export default function MediaSelector({ onSelect, onClose, title = "Select Asset
                               setMedia(prev => prev.map(m => m._id === selectedItem._id ? { ...m, alt: newAlt } : m));
                               
                               // Debounced save
-                              if ((window as any).mediaDebounce) clearTimeout((window as any).mediaDebounce);
-                              (window as any).mediaDebounce = setTimeout(async () => {
+                              const itemId = String(selectedItem._id);
+                              if (altSaveTimers.current[itemId]) clearTimeout(altSaveTimers.current[itemId]);
+                              altSaveTimers.current[itemId] = setTimeout(async () => {
+                                delete altSaveTimers.current[itemId];
                                 try {
-                                  await fetch(adminApiUrl("/api/admin/media"), {
+                                  const res = await fetch(adminApiUrl("/api/admin/media"), {
                                     method: "PATCH",
                                     headers: { "Content-Type": "application/json" },
                                     body: JSON.stringify({ id: selectedItem._id, alt: newAlt })
                                   });
+                                  if (!res.ok) alert((await res.json().catch(() => ({}))).error || "Failed to save alt text");
                                 } catch (err) {
-                                  console.error("Failed to save alt text");
+                                  alert("Failed to save alt text");
                                 }
                               }, 500);
                             }}

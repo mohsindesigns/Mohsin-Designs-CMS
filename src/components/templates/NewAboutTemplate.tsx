@@ -23,7 +23,7 @@ import {
   Target
 } from "lucide-react";
 import { useContent } from "@/hooks/useContent";
-import { isServiceVisibleOnPage } from "@/lib/servicesVisibility";
+import { isServiceVisibleOnPage, withTargetedServices } from "@/lib/servicesVisibility";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import AccentHighlight from "@/components/ui/AccentHighlight";
 
@@ -153,13 +153,17 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
   const reviews = rawAbout.reviews || {};
   const ctaBanner = rawAbout.ctaBanner || {};
 
-  const allMasterServices = Array.isArray(content?.services?.services)
-    ? content.services.services
-    : (Array.isArray(content?.services)
-      ? content.services
-      : (Array.isArray((content as any)?.globalServices)
-        ? (content as any).globalServices
-        : (Array.isArray(content?.services?.list) ? content.services.list : [])));
+  // The route-injected list wins: a legacy AboutEditor saved its own `content.services` array, which
+  // TemplateWrapper spreads over the live catalog in useContent().
+  const allMasterServices = Array.isArray(rawAbout.globalServices) && rawAbout.globalServices.length > 0
+    ? rawAbout.globalServices
+    : Array.isArray((content as any)?.globalServices) && (content as any).globalServices.length > 0
+      ? (content as any).globalServices
+      : Array.isArray(content?.services?.services)
+        ? content.services.services
+        : (Array.isArray(content?.services)
+          ? content.services
+          : (Array.isArray(content?.services?.list) ? content.services.list : []));
 
   const rawStages = Array.isArray(servicesDirectory.stages) && servicesDirectory.stages.length > 0
     ? servicesDirectory.stages
@@ -192,7 +196,8 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
     };
 
     const out: any[] = [];
-    rawStages.forEach((item: any) => {
+    const seenSlugs = new Set<string>();
+    withTargetedServices(rawStages, allMasterServices, pageData?.slug || "about").forEach((item: any) => {
       if (!item || typeof item !== "object") return;
       const matchedMaster = allMasterServices.find((s: any) =>
         (item.serviceId && (s.id === item.serviceId || s._id === item.serviceId)) ||
@@ -201,13 +206,20 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
         (item.name && (s.title?.toLowerCase() === item.name?.toLowerCase() || s.name?.toLowerCase() === item.name?.toLowerCase()))
       );
       if (matchedMaster && (matchedMaster.status === "draft" || matchedMaster.isTrashed || !isServiceVisibleOnPage(matchedMaster, pageData?.slug || "about"))) return;
-      if (!matchedMaster && !isServiceVisibleOnPage(item, pageData?.slug || "about")) return;
+      // The snapshot fallback is only for when the catalog failed to load; otherwise a stage with no
+      // live match is a deleted service whose link would 404.
+      if (!matchedMaster && (allMasterServices.length > 0 || !isServiceVisibleOnPage(item, pageData?.slug || "about"))) return;
 
       const live: any = matchedMaster || {};
       const full: any = { ...item, ...live };
 
       const title = firstText(live.title, live.name, item.title, item.name);
       if (!title) return; // nothing meaningful to show for this stage
+      const slugKey = firstText(live.slug, item.slug);
+      if (slugKey) {
+        if (seenSlugs.has(slugKey)) return;
+        seenSlugs.add(slugKey);
+      }
       const category = (full.category && full.category !== "DIGITAL ENGINEERING")
         ? full.category
         : (full.tag || (full.badge && full.badge !== "CORE CAPABILITY" ? full.badge : "") || "");
@@ -232,11 +244,12 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
         navTitle: firstText(live.navTitle, live.title, live.name, item.navTitle, title),
         navTag: firstText(live.navTag, /^STAGE \d+$/i.test(item.navTag || "") ? "" : item.navTag) || (category ? String(category).toUpperCase() : `STAGE ${pos}`),
         iconName: firstText(live.iconName, live.icon, item.iconName, item.icon) || "Code",
-        slug: firstText(live.slug, item.slug)
+        slug: firstText(live.slug, item.slug),
+        url: firstText(live.url, item.url)
       });
     });
     return out;
-  }, [rawStages, allMasterServices]);
+  }, [rawStages, allMasterServices, pageData?.slug]);
 
   const [activeService, setActiveService] = useState(0);
 
@@ -264,16 +277,17 @@ export default function NewAboutTemplate({ pageData }: { pageData?: any; params?
   const hasText = (v: any) => typeof v === "string" && v.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim().length > 0;
   const listOf = (v: any): any[] => (Array.isArray(v) ? v : []);
   const founderBio: string =
-    executiveLeadership.bioContent ||
-    executiveLeadership.bio ||
+    executiveLeadership.bioContent !== undefined ? executiveLeadership.bioContent :
+    executiveLeadership.bio !== undefined ? executiveLeadership.bio :
     [executiveLeadership.bioParagraph1, executiveLeadership.bioParagraph2].filter(Boolean).map((p: string) => `<p>${p}</p>`).join("");
   const whoRows = listOf(whoWeAre.rows).filter((r: any) => r && (hasText(r.title) || hasText(r.desc)));
   const statMetrics = listOf(stats.metrics).filter((m: any) => m && hasText(m.label));
   const statDisciplines = listOf(stats.expertiseList).filter((e: any) => e && hasText(e.label));
+  const pillarHasContent = (p: any) => !!p && (hasText(p.titleIntro) || hasText(p.titleHighlight) || hasText(p.desc) || hasText(p.quote) || hasText(p.label) || (Array.isArray(p.tags) && p.tags.length > 0) || !!toImgSrc(p.imgSrc) || Object.keys(p).some((k) => k.startsWith("badge") && hasText(p[k])));
   const showPillars = {
-    mission: !!philosophy.mission && philosophy.mission.enabled !== false,
-    vision: !!philosophy.vision && philosophy.vision.enabled !== false,
-    values: !!philosophy.values && philosophy.values.enabled !== false
+    mission: philosophy.mission?.enabled !== false && pillarHasContent(philosophy.mission),
+    vision: philosophy.vision?.enabled !== false && pillarHasContent(philosophy.vision),
+    values: philosophy.values?.enabled !== false && pillarHasContent(philosophy.values)
   };
   // A pillar's image/badge panel is only drawn when it has an image or a badge; otherwise the text
   // uses the full row instead of sitting next to an empty dark box.

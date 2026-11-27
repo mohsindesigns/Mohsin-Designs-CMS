@@ -149,11 +149,11 @@ const ServiceCard = ({ service, index }: any) => {
 };
 
 export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
-  const { services: dataRaw } = useContent();
+  const { services: dataRaw, faq } = useContent() as any;
   const currentSlug = pageData?.slug || "service-area";
   // Global service catalogue - only used when the page has no hand-picked service cards.
   const services = ((dataRaw as any)?.services || []).filter((s: any) =>
-    (s.status === 'published' || s.status === undefined) && isServiceVisibleOnPage(s, currentSlug)
+    (s.status === 'published' || s.status === undefined) && !s.isTrashed && isServiceVisibleOnPage(s, currentSlug)
   );
 
   // Safely extract content overrides or fallbacks
@@ -244,6 +244,12 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
   // faqDescription / strategyAudit / faqSchemaMarkup); the section toggle is faqSection.enabled.
   const pageFaqs: any[] = (Array.isArray(content.faqs) ? content.faqs : [])
     .filter((f: any) => f && (String(f.question ?? "").trim() || String(f.answer ?? "").trim()));
+  const globalFaqs: any[] = (Array.isArray(faq?.items) ? faq.items : []).filter(
+    (i: any) =>
+      i && String(i.question ?? "").trim() && String(i.answer ?? "").trim() &&
+      (!i.visibility || i.visibility === "global" ||
+        (i.visibility === "specific" && Array.isArray(i.targetPages) && i.targetPages.includes(currentSlug)))
+  );
 
   // Every "#contact"-style link on the page (hero/overview/CTA buttons, service cards, the FAQ
   // strategy box, links inside rich text) opens the Quick Quote modal. QuickQuote only exposes
@@ -840,7 +846,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
             falling back to the global FAQ list when the page has none of its own. */}
         <PageInlineFaqs
           data={{ ...content, faqs: pageFaqs }}
-          faqs={pageFaqs.length > 0 ? pageFaqs : undefined}
+          faqs={pageFaqs.length > 0 ? pageFaqs : (globalFaqs.length > 0 ? globalFaqs : undefined)}
           faqSchemaMarkup={content.faqSchemaMarkup}
           badge={content.faqBadge}
           title={content.faqTitleHighlight || content.faqTitle}

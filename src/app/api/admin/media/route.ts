@@ -7,6 +7,11 @@ import sizeOf from 'image-size';
 import { hasPermission, getSessionUser } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
 
+// Matches the limit the Media Library UI advertises (MediaSelector).
+const MAX_UPLOAD_SIZE = 64 * 1024 * 1024;
+// SVG/HTML are deliberately excluded: served from our own origin they are stored XSS.
+const ALLOWED_MIME_RE = /^(image\/(jpeg|png|webp|gif|avif)|video\/(mp4|webm|quicktime))$/i;
+
 export async function GET(req: NextRequest) {
   if (!(await hasPermission(req, 'media', 'read'))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
@@ -33,6 +38,17 @@ export async function POST(req: NextRequest) {
 
     if (!file) {
       return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
+    }
+
+    if (file.size > MAX_UPLOAD_SIZE) {
+      return NextResponse.json({ error: 'File size exceeds 64MB limit.' }, { status: 400 });
+    }
+
+    if (!ALLOWED_MIME_RE.test(file.type || '')) {
+      return NextResponse.json(
+        { error: 'Invalid file type. Only JPEG, PNG, WebP, GIF, AVIF images and MP4, WebM, MOV videos are allowed.' },
+        { status: 400 }
+      );
     }
 
     const bytes = await file.arrayBuffer();

@@ -36,6 +36,7 @@ const PageSchema = new mongoose.Schema({
     metaTitle: { type: String },
     metaDescription: { type: String },
     focusKeyword: { type: String },
+    secondaryKeywords: { type: String },
     canonicalUrl: { type: String },
     metaRobotsIndex: { type: String, enum: ['index', 'noindex'], default: 'index' },
     metaRobotsFollow: { type: String, enum: ['follow', 'nofollow'], default: 'follow' },

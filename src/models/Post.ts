@@ -6,7 +6,7 @@ import './Tag';
 const PostSchema = new Schema({
   title: { type: String, required: true, trim: true },
   slug: { type: String, required: true, unique: true, trim: true },
-  content: { type: String, required: true }, // HTML from Tiptap
+  content: { type: String, default: '' }, // HTML from Tiptap
   excerpt: { type: String },
   featuredImage: { type: String },
   author: { type: Schema.Types.Mixed, ref: 'User' },

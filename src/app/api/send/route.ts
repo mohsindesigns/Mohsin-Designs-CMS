@@ -8,7 +8,7 @@ import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";
 import { verifyTurnstileToken } from '@/lib/turnstile';
-import { buildAdminLeadEmail, buildCustomerConfirmationEmail, buildLeadEmail, cleanExtra, cleanSubject, cleanText, isValidEmail } from '@/lib/leadMail';
+import { buildAdminLeadEmail, buildCustomerConfirmationEmail, cleanExtra, cleanSubject, cleanText, isValidEmail } from '@/lib/leadMail';
 import { submitLeadToCrm, mapToCrmServices } from '@/lib/crmLead';
 
 export const dynamic = 'force-dynamic';
@@ -18,7 +18,7 @@ export const dynamic = 'force-dynamic';
 //
 // Callers (keep them all working): ContactForm, ContactTemplate, QAForm, QuickQuote,
 // ServiceDetailTemplate, IndustryTemplate (JSON) and CareersTemplate (multipart + resume),
-// plus the Footer newsletter box (JSON, no captcha).
+// plus the Footer newsletter box (JSON).
 //
 // Contract:
 //   accepts   name | fullName, email (required), phone, message, subject | _subject, type,
@@ -233,15 +233,19 @@ export async function POST(request: Request) {
       extraRaw.project_type ||
       extraRaw.projectType ||
       extraRaw.industry ||
-      (type === 'Newsletter' ? 'Content Marketing' : undefined) ||
-      (rawSubject.includes('-') ? rawSubject.split('-').pop() : undefined);
+      (rawSubject.match(/ - ([^-]+)$/)?.[1]?.trim() || undefined);
+    const crmService = rawService || (type === 'Newsletter' ? 'Content Marketing' : undefined);
+
+    // The site widget always has a site key in production (TurnstileCaptcha's built-in default), so a
+    // missing token there is never a real visitor - even when the server secret env var is unset.
+    const captchaRequired = !!process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY || process.env.NODE_ENV === 'production';
 
     if (captchaToken) {
       const crmResult = await submitLeadToCrm({
         name: name || (type === 'Newsletter' ? 'Newsletter Subscriber' : 'Website Lead'),
         email,
         phone: phone || (typeof extraRaw.phone === 'string' ? extraRaw.phone : '') || '+1 000 000 0000',
-        service: rawService,
+        service: crmService,
         message: message || (type === 'Newsletter' ? `Newsletter subscription from ${email}` : subject || 'Website consultation inquiry'),
         captchaToken,
       });
@@ -249,23 +253,26 @@ export async function POST(request: Request) {
       if (crmResult.success) {
         crmSynced = true;
         crmMessage = crmResult.message || 'Synced to CRM';
-      } else if (crmResult.status === 400) {
-        // Cloudflare challenge verification failure from Turnstile or validation error on CRM
-        return NextResponse.json({
-          error: crmResult.message || crmResult.error || 'Verification challenge failed. Please try again.'
-        }, { status: 400 });
       } else {
-        // Non-fatal upstream error (e.g. timeout or 500): log and run local verification fallback
-        console.warn('CRM lead submission non-fatal upstream status:', crmResult.error || crmResult.status);
-        crmMessage = `Upstream error: ${crmResult.error || crmResult.status}`;
+        // The CRM is best-effort: a CRM failure must not lose the lead. Only a bad captcha rejects it.
+        console.warn('CRM lead submission failed:', crmResult.status, crmResult.error);
+        crmMessage = `CRM error (${crmResult.status || 'network'}): ${crmResult.message || crmResult.error || 'unknown'}`.slice(0, 300);
+        const crmRejectedCaptcha =
+          crmResult.status === 400 &&
+          /captcha|turnstile|challenge|verif|token/i.test(`${crmResult.message || ''} ${crmResult.error || ''}`);
+        let tokenOk = !crmRejectedCaptcha;
+        let tokenError = crmResult.message || crmResult.error || '';
         if (process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY) {
           const fallbackResult = await verifyTurnstileToken(captchaToken, clientIp);
-          if (!fallbackResult.success) {
-            return NextResponse.json({ error: fallbackResult.error || 'Security challenge verification failed. Please try again.' }, { status: 400 });
-          }
+          // Tokens are single-use: "timeout-or-duplicate" here usually means the CRM already redeemed it.
+          tokenOk = fallbackResult.success || (!crmRejectedCaptcha && /timeout-or-duplicate/.test(fallbackResult.error || ''));
+          if (!tokenOk) tokenError = fallbackResult.error || tokenError;
+        }
+        if (!tokenOk) {
+          return NextResponse.json({ error: tokenError || 'Security challenge verification failed. Please try again.' }, { status: 400 });
         }
       }
-    } else if (process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY) {
+    } else if (captchaRequired) {
       return NextResponse.json({ error: 'Please complete the security check and try again.' }, { status: 400 });
     }
 
@@ -278,7 +285,7 @@ export async function POST(request: Request) {
     extraData.crm_synced = crmSynced ? 'Yes' : 'No';
     if (crmMessage) extraData.crm_status = crmMessage;
 
-    // ── 3. Persist the attachment (public/uploads; silently skipped on read-only hosts) ──
+    // ── 3. Persist the attachment (private dir served by the admin-only attachment route; skipped on read-only hosts) ──
     let attachmentUrl: string | undefined;
     const attachments: { filename: string; content: string }[] = [];
     if (pendingFile) {
@@ -287,12 +294,12 @@ export async function POST(request: Request) {
       const cleanBase = rawBase.replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 50);
       const filename = `${Date.now()}_${cleanBase}${pendingFile.ext}`;
       try {
-        const uploadDir = path.join(process.cwd(), "public", "uploads");
+        const uploadDir = path.join(process.cwd(), "private-uploads", "submissions");
         if (!existsSync(uploadDir)) {
           await mkdir(uploadDir, { recursive: true });
         }
         await writeFile(path.join(uploadDir, filename), pendingFile.buffer);
-        attachmentUrl = `/uploads/${filename}`;
+        attachmentUrl = `/api/admin/submissions/attachment/${filename}/`;
       } catch (fsErr: any) {
         console.warn('Filesystem write not available or failed:', fsErr.message);
       }
@@ -347,10 +354,13 @@ export async function POST(request: Request) {
       // non-fatal, uses env/defaults
     }
 
+    const isNewsletter = type === 'Newsletter';
     const mappedServices = mapToCrmServices(rawService);
-    const serviceDisplay = mappedServices.length > 0
-      ? mappedServices.join(', ')
-      : (cleanText(rawService, 120) || 'Website Design');
+    const serviceDisplay = isNewsletter
+      ? 'Newsletter subscription'
+      : mappedServices.length > 0
+        ? mappedServices.join(', ')
+        : (cleanText(rawService, 120) || 'General inquiry');
 
     const leadId = submission?._id
       ? `MD-${submission._id.toString().slice(-5).toUpperCase()}`
@@ -375,7 +385,10 @@ export async function POST(request: Request) {
       pageUrl,
       crmLeadUrl,
       logoWhiteUrl,
+      extraData,
+      attachmentUrl: attachmentUrl ? `${origin}${attachmentUrl}` : undefined,
     });
+    if (isNewsletter) adminEmailData.subject = `New newsletter subscriber: ${email}`;
 
     // 2. Customer Confirmation Receipt (customer-confirmation.html)
     const customerEmailData = buildCustomerConfirmationEmail({
@@ -413,8 +426,9 @@ export async function POST(request: Request) {
         console.error('ADMIN SMTP SEND FAILED:', { message: mailErr?.message, receiver: receiverEmail });
       }
 
-      // Dispatch Customer Auto-Reply (Reply-To points to company email; non-fatal if recipient rejects)
-      try {
+      // Dispatch Customer Auto-Reply (Reply-To points to company email; non-fatal if recipient rejects).
+      // The confirmation promises a specialist call-back, which is wrong for a newsletter signup.
+      if (!isNewsletter) try {
         await sendMail({
           to: email,
           replyTo: companyEmail,

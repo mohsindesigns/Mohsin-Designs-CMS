@@ -29,7 +29,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const seo = service.seo || {};
   const title = seo.metaTitle || seo.title || `${service.title} | Mohsin Designs`;
   const description = seo.metaDescription || service.description || service.tagline || `Professional ${service.title} architecture and digital solutions by Mohsin Designs.`;
-  const canonicalUrl = seo.canonicalUrl || `${BASE_URL}/services/${slug}/`;
+  const selfUrl = `${BASE_URL}/services/${slug}/`;
+  let canonicalUrl = seo.canonicalUrl || selfUrl;
+  // SeoEditor used to auto-fill BASE_URL/<slug> (no /services/ prefix, no trailing slash)
+  if (canonicalUrl.startsWith(BASE_URL)) {
+    const path = canonicalUrl.slice(BASE_URL.length).split(/[?#]/)[0].replace(/^\/+|\/+$/g, "");
+    if (path === slug || path === `services/${slug}`) canonicalUrl = selfUrl;
+    else if (!/[?#]/.test(canonicalUrl) && !canonicalUrl.endsWith("/")) canonicalUrl = `${canonicalUrl}/`;
+  }
+  const ogImg = getAbsoluteUrl(seo.ogImage || seo.featuredImage || service.heroImage) || `${BASE_URL}/portfolio_hero_bg.png`;
 
   const publishedIso = service.createdAt
     ? new Date(service.createdAt).toISOString()
@@ -54,18 +62,18 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       modifiedTime: modifiedIso,
       images: [
         {
-          url: seo.ogImage || service.heroImage || `${BASE_URL}/portfolio_hero_bg.png`,
+          url: ogImg,
           width: 1200,
           height: 630,
-          alt: service.title,
+          alt: seo.featuredImageAlt || service.title,
         }
       ]
     },
     twitter: {
-      card: "summary_large_image",
-      title: seo.ogTitle || title,
-      description: seo.ogDescription || description,
-      images: [seo.ogImage || service.heroImage || `${BASE_URL}/portfolio_hero_bg.png`]
+      card: seo.twitterCard || "summary_large_image",
+      title: seo.twitterTitle || seo.ogTitle || title,
+      description: seo.twitterDescription || seo.ogDescription || description,
+      images: [getAbsoluteUrl(seo.twitterImage) || ogImg]
     },
     other: {
 "article:published_time": publishedIso,

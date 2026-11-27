@@ -116,7 +116,12 @@ export default function IndustryEditor({
   const updateSection = (section: string, field: string | null, value: any) => {
     setData((prev: any) => {
       const currentData = prev || {};
-      const currentIndustry = currentData.industryPage || currentData;
+      let currentIndustry = currentData.industryPage;
+      if (!currentIndustry) {
+        // Page FAQs live at the top level; copying them in would freeze stale fallbacks.
+        const { faqs, faqBadge, faqTitle, faqTitleHighlight, faqDescription, faqSchemaMarkup, faqSection, strategyAudit, ...rest } = currentData;
+        currentIndustry = rest;
+      }
       const sectionData = currentIndustry[section] || {};
 
       let newSectionState = sectionData;
@@ -600,6 +605,7 @@ export default function IndustryEditor({
                         _id: s._id,
                         id: s.id,
                         slug: s.slug,
+                        url: s.url,
                         title: s.title || s.name,
                         tag: s.tag,
                         category: s.category,

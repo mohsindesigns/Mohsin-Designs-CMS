@@ -66,6 +66,7 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
   // updatedAt of the version this editor last loaded/saved. Sent with every save so the API can
   // refuse to overwrite a newer version (another tab, or a list action like Publish/Trash).
   const [baseUpdatedAt, setBaseUpdatedAt] = useState<string>("");
+  const [globalFaqItems, setGlobalFaqItems] = useState<any[]>([]);
 
   useEffect(() => {
     if (id) {
@@ -96,6 +97,10 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
         setSeo(data.seo || {});
         if (data.template === 'faq') {
           setActiveTab('faqs');
+          fetch(adminApiUrl('/api/content'), { cache: 'no-store' })
+            .then(r => (r.ok ? r.json() : null))
+            .then(j => setGlobalFaqItems(Array.isArray(j?.faq?.items) ? j.faq.items : []))
+            .catch(() => {});
         }
       } else {
         router.push('/admin/pages');
@@ -198,6 +203,22 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
     } catch (err) {
       alert("Delete failed.");
     }
+  };
+
+  // The questions the public page actually shows (FAQTemplate falls back to the curated/global library).
+  const faqSchemaSource = () => {
+    const own = Array.isArray(content?.faqs) ? content.faqs : [];
+    if (own.length || page?.template !== 'faq') return own;
+    const curated = Array.isArray(content?.faq?.items) ? content.faq.items : [];
+    if (curated.length) return curated;
+    const slug = String(page?.slug || '').replace(/^\/+|\/+$/g, '');
+    return globalFaqItems.filter((it: any) =>
+      it?.visibility !== 'specific' ||
+      (Array.isArray(it.targetPages) ? it.targetPages : []).some((t: any) => {
+        const k = String(t).replace(/^\/+|\/+$/g, '');
+        return k === slug || k === 'faq';
+      })
+    );
   };
 
   // Location Hierarchy helpers
@@ -384,11 +405,19 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
                 // 404 after "changing" the slug here.
                 setSaving(true);
                 try {
-                  const res = await fetch(adminApiUrl(`/api/admin/pages/${id}`), {
+                  const sendSlug = (force: boolean) => fetch(adminApiUrl(`/api/admin/pages/${id}`), {
                     method: "PATCH",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ slug: ns }),
+                    body: JSON.stringify(force ? { slug: ns, force: true } : { slug: ns, baseUpdatedAt }),
                   });
+                  let res = await sendSlug(false);
+                  if (res.status === 409) {
+                    const err = await res.clone().json().catch(() => ({}));
+                    if (err.code === "STALE") {
+                      if (!confirm(`${err.error}\n\nOK = change the slug anyway.\nCancel = stop (reload the page to see the newer version).`)) return;
+                      res = await sendSlug(true);
+                    }
+                  }
                   if (res.ok) {
                     const updated = await res.json();
                     setPage((prev: any) => ({ ...prev, slug: updated.slug }));
@@ -424,15 +453,13 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
           {/* Main Editor Tabs */}
           <div className="bg-white border border-[#c3c4c7] shadow-sm">
             <div className="flex border-b border-[#f0f0f1] bg-[#f6f7f7]">
-              {page?.template !== 'faq' && (
-                <button
-                  onClick={() => setActiveTab('content')}
-                  className={`px-3 py-2 text-[12px] font-semibold border-r border-[#c3c4c7] transition-all ${activeTab === 'content' ? "bg-white text-[#1d2327]" : "text-[#2271b1] hover:text-[#135e96]"
-                    }`}
-                >
-                  Page Content
-                </button>
-              )}
+              <button
+                onClick={() => setActiveTab('content')}
+                className={`px-3 py-2 text-[12px] font-semibold border-r border-[#c3c4c7] transition-all ${activeTab === 'content' ? "bg-white text-[#1d2327]" : "text-[#2271b1] hover:text-[#135e96]"
+                  }`}
+              >
+                Page Content
+              </button>
               <button
                 onClick={() => setActiveTab('seo')}
                 className={`px-3 py-2 text-[12px] font-semibold border-r border-[#c3c4c7] transition-all ${activeTab === 'seo' ? "bg-white text-[#1d2327]" : "text-[#2271b1] hover:text-[#135e96]"
@@ -643,10 +670,10 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
                         <p className="text-[12px] text-[#646970] mt-0.5">Generates FAQPage structured data from the questions below. Click "Sync" again after editing FAQs to refresh it.</p>
                       </div>
                       <SectionToggle
-                        enabled={content.faqSchemaAutoSync === true}
+                        enabled={!!String(content.faqSchemaMarkup || "").trim()}
                         onChange={(v: boolean) => {
                           if (v) {
-                            const result = syncFaqSchema(content.faqs, content.faqSchemaMarkup, content.faqSchemaAutoSync === true);
+                            const result = syncFaqSchema(faqSchemaSource(), content.faqSchemaMarkup, content.faqSchemaAutoSync === true);
                             if (result.status === "empty") {
                               alert("Add at least one FAQ with both a question and an answer before enabling FAQ Schema.");
                               return;
@@ -663,10 +690,15 @@ export default function DynamicPageEditor({ params }: { params?: any }) {
                         label="FAQ Schema"
                       />
                     </div>
+                    {!!String(content.faqSchemaMarkup || "").trim() && content.faqSchemaAutoSync !== true && (
+                      <p className="text-[12px] text-[#996800] bg-[#fcf9e8] border border-[#dba617] px-3 py-2 rounded-[3px]">
+                        FAQs changed since the last sync, so the published FAQ schema is out of date. Click "Sync FAQs to Schema" to refresh it.
+                      </p>
+                    )}
                     <button
                       type="button"
                       onClick={() => {
-                        const result = syncFaqSchema(content.faqs, content.faqSchemaMarkup, content.faqSchemaAutoSync === true);
+                        const result = syncFaqSchema(faqSchemaSource(), content.faqSchemaMarkup, content.faqSchemaAutoSync === true);
                         if (result.status === "empty") {
                           alert("Add at least one FAQ with both a question and an answer before syncing.");
                           return;

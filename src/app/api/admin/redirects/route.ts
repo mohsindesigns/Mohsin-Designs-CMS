@@ -24,10 +24,11 @@ export async function GET(req: NextRequest) {
     const query: any = {};
 
     if (search) {
+      const safe = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       query.$or = [
-        { sourceUrl: { $regex: search, $options: 'i' } },
-        { targetUrl: { $regex: search, $options: 'i' } },
-        { notes: { $regex: search, $options: 'i' } }
+        { sourceUrl: { $regex: safe, $options: 'i' } },
+        { targetUrl: { $regex: safe, $options: 'i' } },
+        { notes: { $regex: safe, $options: 'i' } }
       ];
     }
 

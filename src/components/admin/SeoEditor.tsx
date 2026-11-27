@@ -177,6 +177,11 @@ export default function SeoEditor({ data, setData, pageSlug, pageTitle, pageCont
                       onChange={(url) => updateField('featuredImage', url)}
                       altValue={data.featuredImageAlt || ""}
                       onAltChange={(alt) => updateField('featuredImageAlt', alt)}
+                      onSelect={(url, alt) => {
+                        const next = { ...data, featuredImage: url, featuredImageAlt: alt };
+                        if (!data.ogImage) next.ogImage = url;
+                        setData(next);
+                      }}
                       description="Main image used for Schema.org and as a fallback for OG/Twitter social previews."
                     />
                   </div>

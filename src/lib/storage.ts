@@ -40,7 +40,8 @@ export async function uploadFile(file: File, buffer: Buffer): Promise<{ url: str
       // Use original filename (without extension) as the public_id in Cloudinary
       const dotIdx = file.name.lastIndexOf('.');
       const baseName = dotIdx !== -1 ? file.name.substring(0, dotIdx) : file.name;
-      const cleanFileName = baseName.replace(/[^a-zA-Z0-9_-]/g, '_');
+      // Signed uploads overwrite an existing public_id, so a same-named file would replace an asset already in use.
+      const cleanFileName = `${baseName.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 60) || 'file'}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
       formData.append('public_id', cleanFileName);
 
       // The `/auto/upload` endpoint content-sniffs the file to pick a resource type, and Cloudinary
@@ -95,7 +96,9 @@ export async function uploadFile(file: File, buffer: Buffer): Promise<{ url: str
 
   // Fallback to local storage (Supported in local development or VPS with writable disk)
   try {
-    const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+    // basename + safe charset: a crafted name like '../../x.js' must not escape public/uploads.
+    const safe = path.basename(file.name).replace(/[^a-zA-Z0-9._-]/g, '-');
+    const filename = `${Date.now()}-${safe}`;
     const uploadDir = path.join(process.cwd(), 'public', 'uploads');
     
     await mkdir(uploadDir, { recursive: true });

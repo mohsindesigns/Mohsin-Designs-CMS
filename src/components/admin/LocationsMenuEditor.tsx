@@ -93,10 +93,6 @@ export default function LocationsMenuEditor({
           <label className={labelCls}>Heading</label>
           <input className={inputCls} value={menu.title} onChange={(e) => set({ title: e.target.value })} placeholder="Our locations" />
         </div>
-        <div className="flex flex-col gap-1 md:col-span-2">
-          <label className={labelCls}>Description (optional)</label>
-          <textarea className={inputCls} rows={2} value={menu.description} onChange={(e) => set({ description: e.target.value })} />
-        </div>
         <div className="flex flex-col gap-1">
           <label className={labelCls}>Bottom link text (optional)</label>
           <input className={inputCls} value={menu.ctaLabel} onChange={(e) => set({ ctaLabel: e.target.value })} placeholder="View all locations" />
@@ -179,13 +175,9 @@ export default function LocationsMenuEditor({
                   ))}
                 </select>
               </div>
-              <div className="flex flex-col gap-1 lg:col-span-3">
+              <div className="flex flex-col gap-1 lg:col-span-6">
                 <label className={labelCls}>Name</label>
                 <input className={inputCls} value={item.label || ""} onChange={(e) => setItem(i, { label: e.target.value })} />
-              </div>
-              <div className="flex flex-col gap-1 lg:col-span-3">
-                <label className={labelCls}>Small text (optional)</label>
-                <input className={inputCls} value={item.subtitle || ""} onChange={(e) => setItem(i, { subtitle: e.target.value })} placeholder="Texas, USA" />
               </div>
               <div className="flex flex-col gap-1 lg:col-span-2">
                 <label className={labelCls}>URL</label>

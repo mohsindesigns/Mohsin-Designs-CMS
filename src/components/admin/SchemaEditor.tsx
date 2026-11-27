@@ -220,7 +220,7 @@ export default function SchemaEditor({
   pageSlug,
   className = "",
   title = "Custom Schema Markup (JSON-LD)",
-  description = "Add your custom Schema.org structured data for this template or page. You can paste raw JSON or full <script type=\"application/ld+json\"> blocks. Leave empty to disable schema on this page."
+  description = "Add your custom Schema.org structured data for this template or page. You can paste raw JSON or full <script type=\"application/ld+json\"> blocks. Leave empty to use the auto-generated schema for this template."
 }: SchemaEditorProps) {
   const [copied, setCopied] = useState(false);
   const snippetSelectId = useId();
@@ -304,7 +304,7 @@ export default function SchemaEditor({
           {status === "empty" && (
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[3px] text-[11px] font-medium bg-[#f0f0f1] text-[#646970]">
               <span className="w-2 h-2 rounded-full bg-[#8c8f94]" />
-              No Schema Set (Clean)
+              Using auto-generated schema
             </span>
           )}
           {status === "valid" && (

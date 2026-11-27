@@ -2935,7 +2935,7 @@ export default function ServiceDetailEditor({ pageId, data, setData, seo, setSeo
 
                 <ImageField
                   label="Founder Portrait Artwork"
-                  value={data.finalCta?.founderImage || data.finalCta?.image || data.finalCta?.backgroundImage || data.finalCta?.bgImage || "/founder_portrait_nobg.png"}
+                  value={data.finalCta?.founderImage || data.finalCta?.image || [data.finalCta?.backgroundImage, data.finalCta?.bgImage].find((v: any) => v && v !== "/portfolio_hero_bg.png") || "/founder_portrait_nobg.png"}
                   onChange={(url) => {
                     setData((prev: any) => {
                       const fc = prev?.finalCta || {};

@@ -68,7 +68,10 @@ export default function TrustedBrandsSection({ data }: { data?: any }) {
     ? data.description
     : "Powering innovative market disruptors, scaling enterprises, and high-performance industry leaders worldwide.";
 
-  const rawLogos = Array.isArray(data?.logos) && data.logos.length > 0
+  // A saved logos array - even an empty one - is deliberate, so the 8 sample brands only appear when
+  // nothing was ever saved. Legacy `items` still win over an empty `logos` (CountryTemplate relies on it).
+  const hasLegacyItems = Array.isArray(data?.items) && data.items.length > 0;
+  const rawLogos = Array.isArray(data?.logos) && (data.logos.length > 0 || !hasLegacyItems)
     ? data.logos
     : Array.isArray(data?.items) && data.items.length > 0
       ? data.items
@@ -164,6 +167,7 @@ export default function TrustedBrandsSection({ data }: { data?: any }) {
       </div>
 
       {/* Infinite Scrolling Logo Marquee with Gradient Mask */}
+      {rawLogos.length > 0 && (
       <div className="relative w-full overflow-hidden select-none marquee-hover-pause">
         {/* Left and Right Fade Masks */}
         <div className="absolute inset-y-0 left-0 w-16 sm:w-32 bg-gradient-to-r from-zinc-50 dark:from-[#080710] to-transparent z-20 pointer-events-none" />
@@ -208,6 +212,7 @@ export default function TrustedBrandsSection({ data }: { data?: any }) {
           ))}
         </div>
       </div>
+      )}
 
       <style>{`
         @keyframes marqueeBrandLogos {

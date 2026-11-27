@@ -804,7 +804,9 @@ export default function ServiceAreaEditor({ pageId, data, setData, seo, setSeo }
                     </div>
 
                     {serviceItems.length === 0 ? (
-                      <p className="text-slate-400 text-xs italic">No showcased services configured - the whole section is hidden on the live page. Click Add Service Card to start.</p>
+                      <p className="text-slate-400 text-xs italic">{Array.isArray(data?.servicesSection?.items)
+                        ? "No showcased services configured - the whole section is hidden on the live page. Click Add Service Card to start."
+                        : "No cards saved - the live page shows up to 6 services from the global catalogue. Add a card to replace them."}</p>
                     ) : (
                       serviceItems.map((item: any, sIdx: number) => (
                         <div key={sIdx} className="border border-[#e0e0e0] p-6 rounded-xl space-y-5 relative bg-slate-50/50">

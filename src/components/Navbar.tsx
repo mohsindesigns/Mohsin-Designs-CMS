@@ -29,7 +29,6 @@ function resolveLocationMap(menu: any, item?: any): MapSource {
   const menuEmbed = parseMapEmbed(menu?.mapEmbed);
   if (menu?.mapType ==="image" && menu?.mapImage) return { kind: "image", value: menu.mapImage };
   if (menuEmbed) return { kind: "embed", value: menuEmbed };
-  if (menu?.mapImage) return { kind: "image", value: menu.mapImage };
   return { kind: "none", value: "" };
 }
 

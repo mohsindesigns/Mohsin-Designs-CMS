@@ -380,7 +380,7 @@ const DEFAULT_SERVICE_TEMPLATE = {
     description: "Schedule a technical consultation today. We'll audit your current bottlenecks and build a concrete roadmap.",
     primaryCta: { text: "Schedule Strategy Call", link: "/contact" },
     secondaryCta: { text: "View Portfolio", link: "/portfolio" },
-    backgroundImage: "/portfolio_hero_bg.png"
+    founderImage: "/founder_portrait_nobg.png"
   },
   faqBadge: "FREQUENTLY ASKED QUESTIONS",
   faqTitleIntro: "Got Questions?",
@@ -500,7 +500,7 @@ export default function ServicesAdminPage() {
   }, []);
 
   useEffect(() => {
-    if (isEditing !== null && form.title && !form.id) {
+    if (isEditing !== null && isEditing >= services.length && form.title && !form.id) {
       const generatedSlug = form.title.toLowerCase().replace(/[^a-z0-9 ]/g, "").replace(/\s+/g, "-");
       if (form.slug !== generatedSlug) setForm((prev: any) => ({ ...prev, slug: generatedSlug }));
     }
@@ -522,19 +522,31 @@ export default function ServicesAdminPage() {
         const base = new Map(services.map((x: any) => [keyOf(x), j(x)]));
         const liveMap = new Map(live.map((x: any) => [keyOf(x), x]));
         const mine = new Set(newServicesIn.map(keyOf));
-        const merged = newServicesIn.map((x: any) => {
+        const merged = newServicesIn.flatMap((x: any) => {
           const k = keyOf(x);
           const unchangedHere = base.has(k) && base.get(k) === j(x);
-          return unchangedHere && liveMap.has(k) ? liveMap.get(k) : x;
+          // unchanged here but gone from live = deleted elsewhere; the length guard avoids a mass drop on an empty read
+          if (unchangedHere) return liveMap.has(k) ? [liveMap.get(k)] : (live.length > 0 ? [] : [x]);
+          return [x];
         });
         // services added elsewhere since this tab loaded must survive
         live.forEach((x: any) => { if (!mine.has(keyOf(x)) && !base.has(keyOf(x))) merged.push(x); });
+        const seen = new Map<string, any>();
+        for (const s of merged) {
+          if (s?.isTrashed || !s?.slug) continue;
+          if (seen.has(s.slug)) {
+            setSaving(false);
+            alert(`Slug "${s.slug}" is now used by both "${seen.get(s.slug).title}" and "${s.title}" (another tab saved meanwhile). Reload and pick a different slug.`);
+            return;
+          }
+          seen.set(s.slug, s);
+        }
         newServices = merged;
       }
     } catch { /* offline/DB hiccup: fall back to saving what we have */ }
     const prevServicesObj = (typeof data?.services === 'object' && !Array.isArray(data?.services)) ? data.services : {};
-    const updatedData = {
-      ...data,
+    // Only the services list: spreading the whole content doc would re-sync stale portfolio/galleryPage into page records.
+    const body = {
       section: "services",
       services: {
         ...prevServicesObj,
@@ -542,11 +554,12 @@ export default function ServicesAdminPage() {
       },
       globalServices: newServices
     };
+    const updatedData = { ...data, ...body };
     try {
       const res = await fetch(adminApiUrl("/api/content"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedData)
+        body: JSON.stringify(body)
       });
       if (res.ok) {
         setData(updatedData);
@@ -632,7 +645,7 @@ export default function ServicesAdminPage() {
       clientTrust: {
         ...DEFAULT_SERVICE_TEMPLATE.clientTrust,
         ...(service.clientTrust || {}),
-        logos: (service.clientTrust?.logos && service.clientTrust.logos.length > 0)
+        logos: Array.isArray(service.clientTrust?.logos)
           ? service.clientTrust.logos
           : DEFAULT_SERVICE_TEMPLATE.clientTrust.logos
       },
@@ -682,10 +695,10 @@ export default function ServicesAdminPage() {
         ...DEFAULT_SERVICE_TEMPLATE.recommendedSection,
         ...(service.recommendedSection || {})
       },
-      faqBadge: service.faqBadge || service.sectionTag || DEFAULT_SERVICE_TEMPLATE.faqBadge,
-      faqTitleIntro: service.faqTitleIntro || DEFAULT_SERVICE_TEMPLATE.faqTitleIntro,
-      faqTitleHighlight: service.faqTitleHighlight || DEFAULT_SERVICE_TEMPLATE.faqTitleHighlight,
-      faqDescription: service.faqDescription || DEFAULT_SERVICE_TEMPLATE.faqDescription,
+      faqBadge: service.faqBadge ?? service.sectionTag ?? DEFAULT_SERVICE_TEMPLATE.faqBadge,
+      faqTitleIntro: service.faqTitleIntro ?? DEFAULT_SERVICE_TEMPLATE.faqTitleIntro,
+      faqTitleHighlight: service.faqTitleHighlight ?? DEFAULT_SERVICE_TEMPLATE.faqTitleHighlight,
+      faqDescription: service.faqDescription ?? DEFAULT_SERVICE_TEMPLATE.faqDescription,
       // faqSchemaMarkup falls back to the legacy schemaMarkup/schemaData value
       // for older records saved before FAQ sync wrote to its own field - but
       // schemaMarkup/schemaData themselves no longer fall back the other way,
@@ -733,6 +746,9 @@ export default function ServicesAdminPage() {
     };
 
     const newServices = [...services, created];
+    setSeo({ schemaData: "" });
+    setMainTab("content");
+    setActiveSubTab("hero");
     saveToDb(newServices, services.length, created);
     setShowAddModal(false);
   };
@@ -829,25 +845,28 @@ export default function ServicesAdminPage() {
   };
 
   const handleBulkAction = (action: string) => {
-    if (!action || selectedIds.length === 0) return;
+    // Only act on rows still visible under the current filter/search.
+    const visible = new Set(filteredServices.map(s => s.id || s.slug));
+    const ids = selectedIds.filter(id => visible.has(id));
+    if (!action || ids.length === 0) return;
 
     if (action === 'delete') {
-      if (!confirm(`Permanently delete ${selectedIds.length} services?`)) return;
-      const newServices = services.filter(s => !selectedIds.includes(s.id || s.slug));
+      if (!confirm(`Permanently delete ${ids.length} services?`)) return;
+      const newServices = services.filter(s => !ids.includes(s.id || s.slug));
       setSelectedIds([]);
       saveToDb(newServices);
       return;
     }
 
     if (action === 'trash') {
-      const newServices = services.map(s => selectedIds.includes(s.id || s.slug) ? { ...s, isTrashed: true } : s);
+      const newServices = services.map(s => ids.includes(s.id || s.slug) ? { ...s, isTrashed: true } : s);
       setSelectedIds([]);
       saveToDb(newServices);
       return;
     }
 
     if (action === 'restore') {
-      const newServices = services.map(s => selectedIds.includes(s.id || s.slug) ? { ...s, isTrashed: false } : s);
+      const newServices = services.map(s => ids.includes(s.id || s.slug) ? { ...s, isTrashed: false } : s);
       setSelectedIds([]);
       saveToDb(newServices);
       return;
@@ -855,7 +874,7 @@ export default function ServicesAdminPage() {
 
     if (action === 'publish' || action === 'draft') {
       const status = action === 'publish' ? 'published' : 'draft';
-      const newServices = services.map(s => selectedIds.includes(s.id || s.slug) ? { ...s, status } : s);
+      const newServices = services.map(s => ids.includes(s.id || s.slug) ? { ...s, status } : s);
       setSelectedIds([]);
       saveToDb(newServices);
       return;
@@ -2985,7 +3004,7 @@ export default function ServicesAdminPage() {
                                         <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
                                           <div className="flex items-center gap-2">
                                             <span className="text-[10px] font-bold text-[#646970] uppercase">Plan #{idx + 1}: {plan.name || "Untitled"}</span>
-                                            {plan.popular && (
+                                            {(plan.isPopular || plan.popular) && (
                                               <span className="bg-[#E9BD36] text-[#080710] text-[9px] font-bold px-1.5 py-0.5 rounded uppercase">
                                                 Popular
                                               </span>
@@ -3096,10 +3115,10 @@ export default function ServicesAdminPage() {
                                         <label className="flex items-center gap-2 cursor-pointer text-[12px] font-bold text-[#1d2327]">
                                           <input
                                             type="checkbox"
-                                            checked={!!plan.popular}
+                                            checked={!!(plan.isPopular || plan.popular)}
                                             onChange={(e) => {
                                               const plans = [...form.pricing.plans];
-                                              plans[idx] = { ...plans[idx], popular: e.target.checked };
+                                              plans[idx] = { ...plans[idx], isPopular: e.target.checked, popular: e.target.checked };
                                               setForm({ ...form, pricing: { ...form.pricing, plans } });
                                             }}
                                           />
@@ -3238,20 +3257,20 @@ export default function ServicesAdminPage() {
                                       <label className={UI.label}>Title Intro</label>
                                       <input
                                         type="text"
-                                        value={form.serviceArea?.titleIntro || "Serving Clients Across "}
+                                        value={form.serviceArea?.titleIntro ?? ""}
                                         onChange={(e) => setForm({ ...form, serviceArea: { ...(form.serviceArea || {}), titleIntro: e.target.value } })}
                                         className={UI.input}
-                                        placeholder="e.g. Serving Clients Across "
+                                        placeholder="Serving Clients"
                                       />
                                     </div>
                                     <div className="space-y-1.5">
                                       <label className={UI.label}>Title Highlight</label>
                                       <input
                                         type="text"
-                                        value={form.serviceArea?.titleHighlight || "Prime Global Markets"}
+                                        value={form.serviceArea?.titleHighlight ?? ""}
                                         onChange={(e) => setForm({ ...form, serviceArea: { ...(form.serviceArea || {}), titleHighlight: e.target.value } })}
                                         className={UI.input + " font-bold border-[#2271b1] text-[#2271b1]"}
-                                        placeholder="e.g. Prime Global Markets"
+                                        placeholder="Worldwide"
                                       />
                                     </div>
                                   </div>
@@ -3260,10 +3279,10 @@ export default function ServicesAdminPage() {
                                     <label className={UI.label}>Description</label>
                                     <textarea
                                       rows={2}
-                                      value={form.serviceArea?.description || "Deploying high-performance digital platforms across North America, Europe, and worldwide."}
+                                      value={form.serviceArea?.description ?? ""}
                                       onChange={(e) => setForm({ ...form, serviceArea: { ...(form.serviceArea || {}), description: e.target.value } })}
                                       className={UI.input}
-                                      placeholder="e.g. Deploying high-performance digital platforms across North America, Europe, and worldwide."
+                                      placeholder="With distributed engineering hubs and round-the-clock availability, we partner with industry leaders across North America, Europe, the Middle East, and Asia-Pacific."
                                     />
                                   </div>
                                 </div>
@@ -3276,17 +3295,17 @@ export default function ServicesAdminPage() {
                                       <label className={UI.label}>Button Text</label>
                                       <input
                                         type="text"
-                                        value={form.serviceArea?.ctaText || "Schedule Global Consultation"}
+                                        value={form.serviceArea?.ctaText ?? ""}
                                         onChange={(e) => setForm({ ...form, serviceArea: { ...(form.serviceArea || {}), ctaText: e.target.value } })}
                                         className={UI.input}
-                                        placeholder="e.g. Schedule Global Consultation"
+                                        placeholder="Schedule Global Consultation"
                                       />
                                     </div>
                                     <div className="space-y-1.5">
                                       <label className={UI.label}>Button Link</label>
                                       <input
                                         type="text"
-                                        value={form.serviceArea?.ctaHref || "#contact-form"}
+                                        value={form.serviceArea?.ctaHref ?? ""}
                                         onChange={(e) => setForm({ ...form, serviceArea: { ...(form.serviceArea || {}), ctaHref: e.target.value } })}
                                         className={UI.input}
                                         placeholder="e.g. #contact-form or /contact"
@@ -3305,14 +3324,7 @@ export default function ServicesAdminPage() {
                                     <button
                                       type="button"
                                       onClick={() => {
-                                        const currentHubs = (Array.isArray(form.serviceArea?.hubs) && form.serviceArea.hubs.length > 0)
-                                          ? form.serviceArea.hubs
-                                          : [
-                                            { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", link: "/locations" },
-                                            { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", link: "/locations" },
-                                            { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", link: "/locations" },
-                                            { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", link: "/locations" }
-                                          ];
+                                        const currentHubs = (Array.isArray(form.serviceArea?.hubs) ? form.serviceArea.hubs : DEFAULT_SERVICE_TEMPLATE.serviceArea.hubs);
                                         const newHub = { id: `hub-${Date.now()}`, name: "California, USA", focus: "Regional Hub", timezone: "PST", link: "/locations" };
                                         setForm({ ...form, serviceArea: { ...(form.serviceArea || {}), hubs: [...currentHubs, newHub] } });
                                       }}
@@ -3323,23 +3335,12 @@ export default function ServicesAdminPage() {
                                   </div>
 
                                   <div className="space-y-4">
-                                    {((Array.isArray(form.serviceArea?.hubs) && form.serviceArea.hubs.length > 0)
-                                      ? form.serviceArea.hubs
-                                      : [
-                                        { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", link: "/locations" },
-                                        { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", link: "/locations" },
-                                        { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", link: "/locations" },
-                                        { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", link: "/locations" }
-                                      ]
+                                    {Array.isArray(form.serviceArea?.hubs) && form.serviceArea.hubs.length === 0 && (
+                                      <p className="text-xs text-[#646970] italic">No hubs added. The live page shows the site&apos;s default global hubs until you add at least one.</p>
+                                    )}
+                                    {((Array.isArray(form.serviceArea?.hubs) ? form.serviceArea.hubs : DEFAULT_SERVICE_TEMPLATE.serviceArea.hubs)
                                     ).map((hub: any, hIdx: number) => {
-                                      const currentHubs = (Array.isArray(form.serviceArea?.hubs) && form.serviceArea.hubs.length > 0)
-                                        ? form.serviceArea.hubs
-                                        : [
-                                          { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", link: "/locations" },
-                                          { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", link: "/locations" },
-                                          { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", link: "/locations" },
-                                          { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", link: "/locations" }
-                                        ];
+                                      const currentHubs = (Array.isArray(form.serviceArea?.hubs) ? form.serviceArea.hubs : DEFAULT_SERVICE_TEMPLATE.serviceArea.hubs);
 
                                       return (
                                         <div key={hIdx} className={UI.card + " space-y-4 relative"}>
@@ -3621,7 +3622,7 @@ export default function ServicesAdminPage() {
                                   <h3 className={UI.sectionHeader}>3. Media</h3>
                                   <ImageField
                                     label="CTA Banner Portrait / Side Image (shown on the right of the banner)"
-                                    value={form.finalCta?.founderImage || form.finalCta?.backgroundImage || ""}
+                                    value={form.finalCta?.founderImage || (form.finalCta?.backgroundImage !== "/portfolio_hero_bg.png" ? form.finalCta?.backgroundImage : "") || ""}
                                     onChange={(url) => setForm({ ...form, finalCta: { ...form.finalCta, founderImage: url, backgroundImage: url } })}
                                   />
                                 </div>
@@ -3640,10 +3641,10 @@ export default function ServicesAdminPage() {
                       setData={(newSeo: any) => {
                         setSeo(newSeo);
                         if (newSeo?.schemaData !== seo?.schemaData) {
-                          setForm((prev: any) => ({ ...(prev || {}), faqSchemaAutoSync: false }));
+                          setForm((prev: any) => ({ ...(prev || {}), schemaMarkup: newSeo.schemaData || "", faqSchemaAutoSync: false }));
                         }
                       }}
-                      pageSlug={form.slug || ""}
+                      pageSlug={form.slug ? `services/${form.slug}` : ""}
                       pageTitle={form.title || ""}
                       pageContent={form}
                     />
@@ -3851,11 +3852,12 @@ export default function ServicesAdminPage() {
                               <label className="text-[10px] font-bold uppercase text-[#50575e]">CTA Button Link</label>
                               <input
                                 type="text"
-                                value={form.strategyAudit?.href || "#contact"}
+                                value={form.strategyAudit?.href ?? ""}
                                 onChange={e => setForm({
                                   ...form,
                                   strategyAudit: { ...(form.strategyAudit || {}), href: e.target.value }
                                 })}
+                                placeholder="#contact-form"
                                 className="w-full border border-[#c3c4c7] px-3 py-1.5 text-[13px] bg-white rounded-[3px]"
                               />
                             </div>
@@ -4244,7 +4246,7 @@ export default function ServicesAdminPage() {
                           <button onClick={() => handleDuplicate(service)} className="text-[#2271b1] hover:underline text-[12px]">Duplicate</button>
                           <span className="text-[#a7aaad]">|</span>
                           <button onClick={() => toggleStatus(service)} className="text-[#2271b1] hover:underline text-[12px]">
-                            {service.status === 'published' ? 'Keep as Draft' : 'Publish Now'}
+                            {service.status !== 'draft' ? 'Keep as Draft' : 'Publish Now'}
                           </button>
                           <span className="text-[#a7aaad]">|</span>
                           {service.slug && (
@@ -4268,8 +4270,8 @@ export default function ServicesAdminPage() {
                         {service.tag || "General"}
                       </td>
                       <td className="py-3 px-3 align-top">
-                        <span className={`font-semibold ${service.status === 'published' ? 'text-[#00a32a]' : 'text-[#d63638]'}`}>
-                          {service.status === 'published' ? 'Active' : 'Draft'}
+                        <span className={`font-semibold ${service.status !== 'draft' ? 'text-[#00a32a]' : 'text-[#d63638]'}`}>
+                          {service.status !== 'draft' ? 'Active' : 'Draft'}
                         </span>
                       </td>
                       <td className="py-3 px-3 align-top">

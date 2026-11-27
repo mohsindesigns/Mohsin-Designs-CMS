@@ -16,15 +16,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let dynamicPages: any[] = [];
   let dynamicBlogPosts: any[] = [];
   let dynamicPortfolioItems: any[] = [];
+  let homepageId: string = '';
   try {
     await connectToDatabase();
 
     // Fetch Services
     const content = await SiteContent.findOne({ key: 'complete_data' });
+    homepageId = content?.data?.settings?.homepageId ? String(content.data.settings.homepageId) : '';
     if (content?.data?.services) {
       const sData = content.data.services;
       const allServices = Array.isArray(sData) ? sData : (sData.services || []);
-      dynamicServices = allServices.filter((s: any) => s.status !== 'draft' && !s.isTrashed);
+      // The service chosen as homepage redirects to '/', so its own URL is not listed.
+      dynamicServices = allServices.filter((s: any) =>
+        s.status !== 'draft' &&
+        !s.isTrashed &&
+        !(homepageId && (String(s._id) === homepageId || s.slug === homepageId))
+      );
     }
 
     // Fetch dynamic Pages
@@ -89,7 +96,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // Dynamic service detail pages
-  const serviceRoutes: MetadataRoute.Sitemap = dynamicServices.map((service: any) => {
+  const serviceRoutes: MetadataRoute.Sitemap = dynamicServices
+    .filter((service: any) => service.seo?.metaRobotsIndex !== 'noindex')
+    .map((service: any) => {
     const slug = String(service.slug || '')
       .replace(/^\/+/, '')
       .replace(/\/+$|^services\//, '');
@@ -102,7 +111,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     };
   });
 
-  const blogRoutes: MetadataRoute.Sitemap = dynamicBlogPosts.map((post: any) => {
+  const blogRoutes: MetadataRoute.Sitemap = dynamicBlogPosts
+    .filter((post: any) => post.seo?.metaRobotsIndex !== 'noindex')
+    .map((post: any) => {
     const slug = String(post.slug || '').replace(/^\/+/, '').replace(/\/+$/, '');
 
     return {
@@ -113,7 +124,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     };
   });
 
-  const portfolioRoutes: MetadataRoute.Sitemap = dynamicPortfolioItems.map((item: any) => {
+  const portfolioRoutes: MetadataRoute.Sitemap = dynamicPortfolioItems
+    .filter((item: any) => item.seo?.metaRobotsIndex !== 'noindex')
+    .map((item: any) => {
     const slug = String(item.slug || '').replace(/^\/+/, '').replace(/\/+$/, '');
 
     return {
@@ -141,6 +154,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       return { ...page, cleanSlug };
     })
     .filter((page: any) =>
+      !(homepageId && String(page._id) === homepageId) &&
       page.cleanSlug !== '' &&
       page.cleanSlug !== 'home' &&
       page.cleanSlug !== 'homepage' &&

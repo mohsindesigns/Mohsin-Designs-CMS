@@ -39,6 +39,8 @@ const navItems = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [sessionError, setSessionError] = useState(false);
+  const [sessionRetry, setSessionRetry] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
@@ -108,26 +110,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             window.location.href = "/admin/login/?from=" + encodeURIComponent(pathname);
           }
         } else {
+          setSessionError(false);
           setUser(data);
         }
       })
       .catch((err) => {
         console.error("Session load error:", err);
-        if (isMounted && !user) {
-          setUser({ 
-            username: "Admin", 
-            roleName: "Admin", 
-            permissions: { 
-              pages: { read: true, create: true, update: true, delete: true, publish: true }, 
-              blog: { read: true, create: true, update: true, delete: true, publish: true }, 
-              media: { read: true, create: true, update: true, delete: true }, 
-              submissions: { read: true, delete: true }, 
-              settings: { read: true, update: true }, 
-              users: { read: true, create: true, update: true, delete: true }, 
-              logs: { read: true } 
-            } 
-          });
-        }
+        // No redirect here: a transient error must not bounce the admin into a login loop.
+        if (isMounted && !user) setSessionError(true);
       })
       .finally(() => {
         if (isMounted) setLoading(false);
@@ -136,10 +126,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return () => {
       isMounted = false;
     };
-  }, [pathname, isPublicPath, cleanPath]);
+  }, [pathname, isPublicPath, cleanPath, sessionRetry]);
 
   if (isPublicPath) return <>{children}</>;
   if (loading) return <div className="h-screen flex items-center justify-center bg-[#f0f0f1]"><Loader2 className="w-6 h-6 animate-spin text-[#2271b1]" /></div>;
+  if (!user && sessionError && !cleanPath.startsWith("/admin/login")) {
+    return (
+      <div className="h-screen flex flex-col items-center justify-center gap-3 bg-[#f0f0f1] text-[#1d2327] text-[14px]">
+        <p>Could not verify your session.</p>
+        <button
+          onClick={() => { setSessionError(false); setLoading(true); setSessionRetry((n) => n + 1); }}
+          className="bg-[#2271b1] text-white px-4 py-1.5 rounded-[3px] hover:bg-[#135e96]"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
   if (!user) return null;
 
   const filteredNav = navItems.filter(item => {

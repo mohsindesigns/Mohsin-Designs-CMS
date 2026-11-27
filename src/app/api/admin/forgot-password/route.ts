@@ -9,7 +9,7 @@ export async function POST(req: Request) {
   try {
     const { email } = await req.json();
 
-    if (!email) {
+    if (!email || typeof email !== 'string') {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
@@ -20,7 +20,9 @@ export async function POST(req: Request) {
 
     await connectDB();
 
-    const user = await User.findOne({ email: email.toLowerCase() });
+    // Case-insensitive so accounts saved before emails were lowercased still match.
+    const escaped = email.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const user = await User.findOne({ email: new RegExp(`^${escaped}$`, 'i') });
 
     if (!user) {
       // For security, don't reveal if user exists or not
@@ -31,7 +33,7 @@ export async function POST(req: Request) {
     const resetToken = crypto.randomBytes(32).toString('hex');
     const resetExpires = new Date(Date.now() + 3600000); // 1 hour from now
 
-    user.resetPasswordToken = resetToken;
+    user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
     user.resetPasswordExpires = resetExpires;
     await user.save();
 

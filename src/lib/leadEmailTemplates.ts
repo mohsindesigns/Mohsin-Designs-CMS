@@ -91,7 +91,7 @@ export const ADMIN_LEAD_TEMPLATE = `<!DOCTYPE html>
           {{message}}
         </td>
       </tr></table>
-
+{{extra_details_html}}
       <!-- Actions -->
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:28px;"><tr>
         <td class="stack btn" style="padding:0 6px 10px 0;" width="50%">

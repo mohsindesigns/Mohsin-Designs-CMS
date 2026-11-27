@@ -22,7 +22,9 @@ export async function GET(req: NextRequest) {
       redirects = cachedRedirects.list;
     } else {
       await connectToDatabase();
-      redirects = await Redirect.find({ status: 'active' }).lean();
+      redirects = await Redirect.find({ status: 'active' })
+        .select('_id sourceUrl targetUrl statusCode queryParamMode ignoreCase isRegex')
+        .lean();
       cachedRedirects = {
         list: redirects,
         expiresAt: now + REDIRECT_CACHE_TTL_MS

@@ -21,7 +21,7 @@ const toPlainText = (value: unknown): string => {
     .trim();
 };
 
-export default function Services({ data: propData, masterCatalog: masterCatalogProp }: { data?: any; masterCatalog?: any[] }) {
+export default function Services({ data: propData, masterCatalog: masterCatalogProp, pageSlug }: { data?: any; masterCatalog?: any[]; pageSlug?: string }) {
   const pathname = usePathname();
   const carouselRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -84,8 +84,11 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
       ...(Array.isArray(anyContent?.globalServices) ? anyContent.globalServices : [])
     ];
 
-  // If services.list is empty, fallback to masterServices
-  const sourceList = services.list.length > 0 ? services.list : masterServices;
+  // Fall back to the catalog only when no list was passed at all; a passed list that filtering emptied stays empty.
+  const passedList = Array.isArray(raw?.list) || Array.isArray(raw?.services);
+  const sourceList = services.list.length > 0 || passedList
+    ? services.list
+    : masterServices.filter((s: any) => s && s.status !== 'draft' && !s.isTrashed);
 
   const validCards = sourceList
     .map((service: any, index: number) => {
@@ -110,10 +113,12 @@ export default function Services({ data: propData, masterCatalog: masterCatalogP
       const num = service?.num || String(index + 1).padStart(2, "0");
 
       if (!globalService && !imgSrc) return null;
+      if (globalService && (globalService.status === 'draft' || globalService.isTrashed)) return null;
 
       // Check visibility rules: if service is restricted to specific pages/services, respect it
-      if (globalService && !isServiceVisibleOnPage(globalService, pathname)) return null;
-      if (service && typeof service === 'object' && service.visibility && !isServiceVisibleOnPage(service, pathname)) return null;
+      const visibleHere = (s: any) => isServiceVisibleOnPage(s, pathname) || (!!pageSlug && isServiceVisibleOnPage(s, pageSlug));
+      if (globalService && !visibleHere(globalService)) return null;
+      if (service && typeof service === 'object' && service.visibility && !visibleHere(service)) return null;
 
       return { service, title, desc, imgSrc, category, slug, url, num };
     })

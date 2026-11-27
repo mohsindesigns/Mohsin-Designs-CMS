@@ -217,7 +217,7 @@ export default function PageServicesPicker({ pageSlug, compact = false }: PageSe
       {globalOnes.length > 0 && (
         <details className="text-[11px] text-[#646970]">
           <summary className="cursor-pointer select-none flex items-center gap-1">
-            <Globe className="w-3 h-3" /> {globalOnes.length} global service{globalOnes.length === 1 ? "" : "s"} always shown here too
+            <Globe className="w-3 h-3" /> {globalOnes.length} global service{globalOnes.length === 1 ? "" : "s"} also eligible here (shown when this page has no hand-picked list)
           </summary>
           <ul className="mt-1 pl-4 list-disc space-y-0.5">
             {globalOnes.map((s) => (

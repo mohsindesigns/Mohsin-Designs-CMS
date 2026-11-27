@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
-import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 
 export async function POST(req: Request) {
   try {
     const { token, password } = await req.json();
 
-    if (!token || !password) {
+    if (typeof token !== 'string' || !/^[a-f0-9]{64}$/.test(token) || typeof password !== 'string' || !password) {
       return NextResponse.json({ error: 'Token and password are required' }, { status: 400 });
     }
 
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     await connectDB();
 
     const user = await User.findOne({
-      resetPasswordToken: token,
+      resetPasswordToken: crypto.createHash('sha256').update(token).digest('hex'),
       resetPasswordExpires: { $gt: new Date() }
     });
 
@@ -30,6 +30,7 @@ export async function POST(req: Request) {
     user.password = password;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
+    user.tokenVersion = (user.tokenVersion || 0) + 1;
     await user.save();
 
     return NextResponse.json({ success: true, message: 'Password has been reset successfully' });

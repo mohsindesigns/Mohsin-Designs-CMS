@@ -208,6 +208,10 @@ export default function CountryTemplate({ pageData }: { pageData?: any; params?:
   const serviceCards = withTargetedServices(liveSavedCards, catalog, pageCountrySlug);
 
   const industries = pick(content.industries, content.domainExpertise);
+  // IndustriesSection / HowWeWork draw built-in demo cards when their list is empty.
+  const hasIndustryItems = [industries?.list, industries?.items, industries?.domains].some(
+    (a) => Array.isArray(a) && a.some((x: any) => x && str(x.title))
+  );
 
   const portfolio = content.portfolio;
   const portfolioItems: any[] = portfolio?.projects || portfolio?.caseStudies || [];
@@ -216,6 +220,9 @@ export default function CountryTemplate({ pageData }: { pageData?: any; params?:
   const reviews = reviewsSource?.enabled === false ? null : resolveReviews(reviewsSource);
 
   const whyChoose = pick(content.whyChooseUs, content.howWeWork);
+  const hasReasons = [whyChoose?.reasons, whyChoose?.features].some(
+    (a) => Array.isArray(a) && a.some((x: any) => x && (str(x.title) || plain(x.desc) || plain(x.description)))
+  );
 
   // Country -> states listing: the regional hubs (name + focus + page link) authored in the
   // "Global Coverage" tab. Without hubs ServiceArea would list its 12 built-in countries
@@ -296,7 +303,7 @@ export default function CountryTemplate({ pageData }: { pageData?: any; params?:
       )}
 
       {/* 3.5 Industries We Serve (was the only section without a content check -> default demo cards on every page) */}
-      {industries?.enabled !== false && hasContent(industries) && <IndustriesSection data={industries} />}
+      {industries?.enabled !== false && hasContent(industries) && hasIndustryItems && <IndustriesSection data={industries} />}
 
       {/* 4. Selected Portfolio Projects - Portfolio.tsx invents demo case studies when none are selected */}
       {portfolio?.enabled !== false && hasContent(portfolio) && portfolioItems.length > 0 && (
@@ -307,7 +314,7 @@ export default function CountryTemplate({ pageData }: { pageData?: any; params?:
       {reviews && <Testimonials data={reviews} />}
 
       {/* 6. How We Work / Value Props */}
-      {whyChoose?.enabled !== false && hasContent(whyChoose) && <HowWeWork data={whyChoose} />}
+      {whyChoose?.enabled !== false && hasContent(whyChoose) && hasReasons && <HowWeWork data={whyChoose} />}
 
       {/* 7. Service Area (Country coverage & regional hubs) */}
       {serviceArea?.enabled !== false && hubs.length > 0 && <ServiceArea data={serviceAreaData} />}

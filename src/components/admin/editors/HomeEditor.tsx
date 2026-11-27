@@ -119,6 +119,23 @@ function reviewRowsUseSamples(list: any[]): boolean {
    return rows.some((r) => r.length === 0);
 }
 
+const DEFAULT_SERVICE_HUBS = [
+   { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", link: "/locations" },
+   { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", link: "/locations" },
+   { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", link: "/locations" },
+   { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", link: "/locations" },
+   { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET", link: "/locations" },
+   { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET", link: "/locations" },
+   { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET", link: "/locations" },
+   { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET", link: "/locations" },
+   { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET", link: "/locations" },
+   { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT", link: "/locations" },
+   { id: "bh", name: "Bahrain", focus: "MENA Regional Hub", timezone: "AST", link: "/locations" },
+   { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST", link: "/locations" }
+];
+
+const DEFAULT_HERO_MARQUEE = ["Roofing", "Siding", "Windows", "Decks"];
+
 // Same resolution HowWeWork uses: saved "reasons", else legacy "features", else the built-in steps.
 function getEffectiveReasons(why: any): any[] {
    if (Array.isArray(why?.reasons) && why.reasons.length > 0) return why.reasons;
@@ -272,7 +289,10 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
 
    // What the live page renders for each list (see the DEFAULT_* notes above): every handler below
    // edits THIS list, so touching a default entry materialises the whole default set instead of a sparse array.
-   const trustedLogos: any[] = Array.isArray(data.trustedBrands?.logos) && data.trustedBrands.logos.length > 0 ? data.trustedBrands.logos : DEFAULT_TRUSTED_LOGOS;
+   // aboutClean is set only by the Country/State/City editors, whose templates hide these sections when empty.
+   const locationPage = aboutClean;
+   const fallbackHubs = locationPage ? [] : DEFAULT_SERVICE_HUBS;
+   const trustedLogos: any[] = Array.isArray(data.trustedBrands?.logos) ? data.trustedBrands.logos : (locationPage ? [] : DEFAULT_TRUSTED_LOGOS);
    const industryList: any[] = Array.isArray(data.industries?.list) && data.industries.list.length > 0 ? data.industries.list : DEFAULT_INDUSTRIES;
    // Reviews: only what is really saved. (The list used to start with the 9 built-in SAMPLE reviews, so the
    // first "Add Review Card" silently saved nine invented testimonials as real content - on location pages
@@ -503,7 +523,7 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                            <div className="space-y-1.5">
                               <label className={UI.label}>Marquee Items (Comma separated)</label>
                               <CommaListInput
-                                 value={data.hero?.marqueeItems || []}
+                                 value={data.hero?.marqueeItems ?? DEFAULT_HERO_MARQUEE}
                                  onChange={(list) => updateSection("hero", "marqueeItems", list)}
                                  className={UI.input}
                                  placeholder="e.g. SEO, Web Design, Branding, Social Media"
@@ -1334,20 +1354,7 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                               onClick={() => {
                                  const currentHubs = (data.serviceArea?.hubs && data.serviceArea.hubs.length > 0)
                                     ? data.serviceArea.hubs
-                                    : [
-                                       { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", link: "/locations" },
-                                       { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", link: "/locations" },
-                                       { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", link: "/locations" },
-                                       { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", link: "/locations" },
-                                       { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET", link: "/locations" },
-                                       { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET", link: "/locations" },
-                                       { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET", link: "/locations" },
-                                       { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET", link: "/locations" },
-                                       { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET", link: "/locations" },
-                                       { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT", link: "/locations" },
-                                       { id: "bh", name: "Bahrain", focus: "MENA Regional Hub", timezone: "AST", link: "/locations" },
-                                       { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST", link: "/locations" }
-                                    ];
+                                    : fallbackHubs;
                                  const newHub = { id: `hub-${Date.now()}`, name: "California, USA", focus: "Innovation Hub", timezone: "PST", link: "/locations" };
                                  updateSection("serviceArea", "hubs", [...currentHubs, newHub]);
                               }}
@@ -1360,37 +1367,11 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                         <div className="space-y-4">
                            {((data.serviceArea?.hubs && data.serviceArea.hubs.length > 0)
                               ? data.serviceArea.hubs
-                              : [
-                                 { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", link: "/locations" },
-                                 { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", link: "/locations" },
-                                 { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", link: "/locations" },
-                                 { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", link: "/locations" },
-                                 { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET", link: "/locations" },
-                                 { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET", link: "/locations" },
-                                 { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET", link: "/locations" },
-                                 { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET", link: "/locations" },
-                                 { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET", link: "/locations" },
-                                 { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT", link: "/locations" },
-                                 { id: "bh", name: "Bahrain", focus: "MENA Regional Hub", timezone: "AST", link: "/locations" },
-                                 { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST", link: "/locations" }
-                              ]
+                              : fallbackHubs
                            ).map((hub: any, hIdx: number) => {
                               const currentHubs = (data.serviceArea?.hubs && data.serviceArea.hubs.length > 0)
                                  ? data.serviceArea.hubs
-                                 : [
-                                    { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", link: "/locations" },
-                                    { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", link: "/locations" },
-                                    { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", link: "/locations" },
-                                    { id: "de", name: "Germany", focus: "High Performance Web", timezone: "CET", link: "/locations" },
-                                    { id: "fr", name: "France", focus: "Branding & Strategy", timezone: "CET", link: "/locations" },
-                                    { id: "es", name: "Spain", focus: "Frontend Development", timezone: "CET", link: "/locations" },
-                                    { id: "it", name: "Italy", focus: "Creative Design", timezone: "CET", link: "/locations" },
-                                    { id: "at", name: "Austria", focus: "Mobile Apps & API", timezone: "CET", link: "/locations" },
-                                    { id: "be", name: "Belgium", focus: "Digital Platforms", timezone: "CET", link: "/locations" },
-                                    { id: "br", name: "Brazil", focus: "Latin America Hub", timezone: "BRT", link: "/locations" },
-                                    { id: "bh", name: "Bahrain", focus: "MENA Regional Hub", timezone: "AST", link: "/locations" },
-                                    { id: "au", name: "Australia", focus: "APAC Delivery", timezone: "AEST", link: "/locations" }
-                                 ];
+                                 : fallbackHubs;
                               const geo = resolveCountryLocation(hub.name);
 
                               return (
@@ -1596,8 +1577,8 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                                         <Trash2 className="w-3.5 h-3.5" />
                                      </button>
                                   </div>
-                                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                     <div className="space-y-1.5 sm:col-span-2">
+                                  <div className="grid grid-cols-1 gap-3">
+                                     <div className="space-y-1.5">
                                         <label className={UI.label}>Industry Title</label>
                                         <input
                                            type="text"
@@ -1608,20 +1589,6 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                                               updateSection("industries", "list", list);
                                            }}
                                            className={UI.input}
-                                        />
-                                     </div>
-                                     <div className="space-y-1.5">
-                                        <label className={UI.label}>Watermark (2-3 chars)</label>
-                                        <input
-                                           type="text"
-                                           value={ind.watermark || ""}
-                                           onChange={(e) => {
-                                              const list = [...industryList];
-                                              list[i] = { ...list[i], watermark: e.target.value };
-                                              updateSection("industries", "list", list);
-                                           }}
-                                           className={UI.input}
-                                           placeholder="e.g. HS"
                                         />
                                      </div>
                                   </div>
@@ -2547,7 +2514,9 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                          <p>
                             {Array.isArray(data.faqs) && data.faqs.length > 0
                                ? data.faqs.length + " question" + (data.faqs.length === 1 ? "" : "s") + " added to this page."
-                               : "No questions added to this page yet - the site-wide FAQ list is shown instead."}
+                               : locationPage
+                                  ? "No questions added yet - no FAQ section is shown on this page."
+                                  : "No questions added to this page yet - the site-wide FAQ list is shown instead."}
                          </p>
                          <p>Structured data (FAQPage schema) for these questions is managed with the <em>Sync FAQs to Schema</em> button in the same tab; the Schema Markup tab (also at the top of this page) holds any custom JSON-LD.</p>
                       </div>

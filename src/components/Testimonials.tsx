@@ -162,7 +162,8 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
       quote: it.text || it.quote || "",
       rating: it.rating || 5,
       column: (idx % 3) + 1,
-      avatarBg: "bg-[#0306AC]"
+      avatarBg: "bg-[#0306AC]",
+      avatar: it.avatar || it.image || ""
     }));
   } else if (Array.isArray(rawData.testimonials) && rawData.testimonials.length > 0) {
     rawList = rawData.testimonials.map((it: any, idx: number) => ({
@@ -173,7 +174,8 @@ export default function Testimonials({ data: overrideData }: { data?: any }) {
       quote: it.text || it.quote || "",
       rating: it.rating || 5,
       column: (idx % 3) + 1,
-      avatarBg: "bg-[#0306AC]"
+      avatarBg: "bg-[#0306AC]",
+      avatar: it.avatar || it.image || ""
     }));
   } else {
     rawList = defaultReviews;

@@ -176,7 +176,8 @@ const DEFAULT_CONTACT_DATA = {
     titleLine2: "Together.",
     description: "Schedule a free 30-minute technical audit. We'll diagnose bottlenecks in your existing presence and map out a concrete blueprint for compounding growth.",
     ctaPrimary: { label: "Book Strategy Session", href: "#contact-form" },
-    ctaSecondary: { label: "Direct Office Line", href: "tel:+15550192834" },
+    // No href default: when unset the template dials the Office tab's phone.
+    ctaSecondary: { label: "Direct Office Line", href: undefined as string | undefined },
     // No default image: /founder.png does not exist in /public (it 404'd). Pick one with the image field.
     portraitSrc: "",
     portraitAlt: "Mohsin Designs Lead Architect"
@@ -1030,11 +1031,11 @@ export default function ContactEditor({ pageId, data, setData, seo, setSeo }: { 
                         ...prev,
                         ctaBanner: {
                           ...prev.ctaBanner,
-                          ctaSecondary: { ...prev.ctaBanner.ctaSecondary, href: e.target.value }
+                          ctaSecondary: { ...prev.ctaBanner.ctaSecondary, href: e.target.value || undefined }
                         }
                       }))}
                       className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] font-mono text-[11px]"
-                      placeholder="tel:+15550192834"
+                      placeholder="Blank = office phone (clear the label to hide the button)"
                     />
                   </div>
                 </div>

@@ -1,5 +1,5 @@
-// Pure helpers used ONLY by the Gallery/Portfolio template (public page) and the
-// GalleryEditor (admin), so both sides agree on how a "project" is read.
+// Pure helpers used by the Gallery/Portfolio template (public page), the GalleryEditor (admin) and
+// HomeTemplate (Work section picks), so every side agrees on how a "project" is read.
 //
 // Two project shapes reach the gallery grid:
 //   1. "custom" cards written by GalleryEditor:   { id, brand, badge, tag, tech, subtitle, image, link }

@@ -62,7 +62,11 @@ export function parseVideoEmbed(input?: string | null): { embedUrl: string; prov
   if (/vimeo/i.test(url.hostname)) {
     const id = extractVimeoId(url);
     if (!id) return { embedUrl: "", provider: "" };
-    return { embedUrl: `https://player.vimeo.com/video/${id}`, provider: "vimeo" };
+    const parts = url.pathname.split("/").filter(Boolean);
+    const i = parts.indexOf(id);
+    const rawHash = url.searchParams.get("h") || parts[i + 1] || "";
+    const hash = /^[a-f0-9]{6,}$/i.test(rawHash) ? rawHash : "";
+    return { embedUrl: `https://player.vimeo.com/video/${id}${hash ? `?h=${hash}` : ""}`, provider: "vimeo" };
   }
 
   return { embedUrl: "", provider: "" };

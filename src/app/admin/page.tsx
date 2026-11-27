@@ -24,6 +24,7 @@ const ACTION_LABELS: Record<string, { label: string; color: string; bg: string }
   DELETE_PAGE:      { label: "Deleted page",         color: "text-red-700",    bg: "bg-red-100"   },
   DUPLICATE_PAGE:   { label: "Duplicated page",      color: "text-purple-700", bg: "bg-purple-100"},
   UPDATE_SETTINGS:  { label: "Changed settings",     color: "text-amber-700",  bg: "bg-amber-100" },
+  UPDATE_CONTENT:   { label: "Updated content",      color: "text-amber-700",  bg: "bg-amber-100" },
   VIEW_USERS:       { label: "Viewed users",         color: "text-gray-600",   bg: "bg-gray-100"  },
   VIEW_SUBMISSIONS: { label: "Viewed submissions",   color: "text-gray-600",   bg: "bg-gray-100"  },
 };
@@ -154,7 +155,7 @@ export default function AdminDashboard() {
             <h2 className="text-[14px] font-semibold text-[#1d2327] flex items-center gap-2">
               <Activity className="w-4 h-4 text-[#82878c]" /> Recent Activity
             </h2>
-            <Link href="/admin/logs" className="text-[12px] text-[#2271b1] hover:underline flex items-center gap-1">
+            <Link href="/admin/activity-logs"className="text-[12px] text-[#2271b1] hover:underline flex items-center gap-1">
               View all <ArrowRight className="w-3 h-3" />
             </Link>
           </div>

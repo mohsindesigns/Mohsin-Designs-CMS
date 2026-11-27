@@ -17,6 +17,7 @@ export default function ProjectsAdminPage() {
   const [projects, setProjects] = useState<any[]>([]);
   const [isEditing, setIsEditing] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [toast, setToast] = useState<{ type: "ok" | "err"; msg: string } | null>(null);
 
   // Form State
@@ -59,6 +60,11 @@ export default function ProjectsAdminPage() {
 
         // 2. Fetch from /api/content
         const contentRes = await fetch(adminApiUrl(`/api/content?t=${Date.now()}`));
+        if (!contentRes.ok || contentRes.headers.get("X-Content-Fallback")) {
+          setLoadFailed(true);
+          setToast({ type: "err", msg: "Could not load the live project catalog. Saving is disabled; reload the page to try again." });
+          return;
+        }
         const json = await contentRes.json();
         
         const finalCats = (cats && cats.length > 0) ? cats : (json.portfolio?.categories || []);
@@ -78,12 +84,16 @@ export default function ProjectsAdminPage() {
   }, []);
 
   const saveToDb = async (newProjects: any[]) => {
+    if (loadFailed) {
+      setToast({ type: "err", msg: "Saving is disabled because the live catalog failed to load. Reload the page." });
+      return;
+    }
     setSaving(true);
-    const updatedPortfolio = { 
-      ...(data?.portfolio || {}), 
-      projects: newProjects 
+    const updatedPortfolio = {
+      ...(data?.portfolio || {}),
+      projects: newProjects
     };
-    const payload = { section: "portfolio", portfolio: updatedPortfolio };
+    const payload = { section: "portfolio", portfolio: { projects: newProjects } };
     try {
       const res = await fetch(adminApiUrl("/api/content"), {
         method: "PUT",

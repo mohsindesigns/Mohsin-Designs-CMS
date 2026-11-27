@@ -24,7 +24,7 @@ export default function RichTextRenderer({ content, className = "", stripParagra
   const safeSanitize = (html: string) => {
     if (!html) return html;
     try {
-      return DOMPurify.sanitize(html);
+      return DOMPurify.sanitize(html, { ADD_ATTR: ["target"] });
     } catch {
       // If the sanitizer itself throws for any reason, fail closed (render
       // nothing) rather than falling back to unsanitized HTML.

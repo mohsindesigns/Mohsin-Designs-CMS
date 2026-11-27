@@ -11,6 +11,7 @@ interface ImageFieldProps {
   onChange: (url: string) => void;
   altValue?: string;
   onAltChange?: (alt: string) => void;
+  onSelect?: (url: string, alt: string) => void;
   description?: string;
 }
 
@@ -20,6 +21,7 @@ export default function ImageField({
   onChange,
   altValue,
   onAltChange,
+  onSelect,
   description
 }: ImageFieldProps) {
   const [showSelector, setShowSelector] = useState(false);
@@ -33,10 +35,12 @@ export default function ImageField({
     : (typeof value === "object" && value !== null ? String((value as any).alt || "") : "");
 
   const handleSelect = (item: any) => {
-    onChange(item.url);
-    if (onAltChange && item.alt) {
-      onAltChange(item.alt);
+    if (onSelect) {
+      onSelect(item.url, item.alt || '');
+      return;
     }
+    onChange(item.url);
+    if (onAltChange) onAltChange(item.alt || '');
   };
 
   return (

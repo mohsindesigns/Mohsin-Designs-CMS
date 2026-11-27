@@ -33,9 +33,9 @@ export default function UsersPage() {
       ]);
       const uData = await uRes.json();
       const rData = await rRes.json();
-      setUsers(uData);
-      setRoles(rData);
-      if (rData.length > 0 && !form.roleId) setForm(f => ({ ...f, roleId: rData[0]._id }));
+      setUsers(uRes.ok && Array.isArray(uData) ? uData : []);
+      setRoles(rRes.ok && Array.isArray(rData) ? rData : []);
+      if (rRes.ok && Array.isArray(rData) && rData.length > 0 && !form.roleId) setForm(f => ({ ...f, roleId: rData[0]._id }));
     } catch (err) {
       console.error(err);
     } finally {

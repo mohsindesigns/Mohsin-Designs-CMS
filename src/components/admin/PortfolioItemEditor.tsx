@@ -89,6 +89,9 @@ export default function PortfolioItemEditor({ id }: PortfolioItemEditorProps) {
   const update = (patch: (prev: any) => any) => setItem(patch(item));
 
   const [slugTouched, setSlugTouched] = useState(!!id);
+  // Raw text while typing, so a typed comma/newline/space is not stripped before the next entry starts.
+  const [tagsText, setTagsText] = useState<string | null>(null);
+  const [bulletsText, setBulletsText] = useState<string | null>(null);
   const originalSlug = useRef<string>("");
 
   useEffect(() => {
@@ -117,6 +120,8 @@ export default function PortfolioItemEditor({ id }: PortfolioItemEditorProps) {
       if (res.ok) {
         originalSlug.current = data.slug || "";
         setItemRaw(normalizeItem(data));
+        setTagsText(null);
+        setBulletsText(null);
         setDirty(false);
       } else {
         setLoadError(data?.error || "Could not load this case study.");
@@ -164,6 +169,8 @@ export default function PortfolioItemEditor({ id }: PortfolioItemEditorProps) {
         }
         originalSlug.current = data.slug || slug;
         setItemRaw(normalizeItem({ ...item, ...data }));
+        setTagsText(null);
+        setBulletsText(null);
         toast(data.status === "published" ? "Case study saved and live." : "Draft saved.");
       } else {
         toast(data?.error || "Failed to save case study.", "error");
@@ -333,8 +340,8 @@ export default function PortfolioItemEditor({ id }: PortfolioItemEditorProps) {
                     <div>
                       <label className={labelCls}>Tags (pill chips, comma separated)</label>
                       <input
-                        value={(item.tags || []).join(", ")}
-                        onChange={(e) => setItem({ ...item, tags: e.target.value.split(",").map((t: string) => t.trim()).filter(Boolean) })}
+                        value={tagsText ?? (item.tags || []).join(", ")}
+                        onChange={(e) => { setTagsText(e.target.value); setItem({ ...item, tags: e.target.value.split(",").map((t: string) => t.trim()).filter(Boolean) }); }}
                         className={inputCls}
                         placeholder="Logo & Brand, Website Design, Lead Generation"
                       />
@@ -418,8 +425,8 @@ export default function PortfolioItemEditor({ id }: PortfolioItemEditorProps) {
                     <div className="space-y-1.5">
                       <label className={labelCls}>Pain points (one per line)</label>
                       <textarea
-                        value={(section.challenge.bulletPoints || []).join("\n")}
-                        onChange={(e) => updateSection("challenge", { bulletPoints: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) })}
+                        value={bulletsText ?? (section.challenge.bulletPoints || []).join("\n")}
+                        onChange={(e) => { setBulletsText(e.target.value); updateSection("challenge", { bulletPoints: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) }); }}
                         rows={3}
                         className={inputCls + " resize-none"}
                         placeholder={"No clear brand identity\nWebsite not generating leads\nHard to request a quote on mobile"}

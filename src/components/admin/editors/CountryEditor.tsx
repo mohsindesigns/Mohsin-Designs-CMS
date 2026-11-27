@@ -95,8 +95,8 @@ export default function CountryEditor({
         <p className="font-bold">How a Country page is built</p>
         <ul className="mt-1 list-disc pl-4 space-y-0.5 text-[#3c434a]">
           <li>
-            A section appears on the live page only once it has content. A tab left blank stays hidden - a Country page never
-            borrows Home page content.
+            A section appears on the live page only once it has content. A new Country page starts with a copy of the Home page
+            sections as a starting point; edit them, or clear a tab or switch it off, to hide it.
           </li>
           <li>
             The list of states / regions is the <strong>Global Coverage</strong> tab: add each state as a location and set its

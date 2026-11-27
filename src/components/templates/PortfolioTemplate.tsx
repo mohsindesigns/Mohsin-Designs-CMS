@@ -30,21 +30,21 @@ export default function PortfolioTemplate({ pageData }: PortfolioTemplateProps) 
 
   const hero = {
     enabled: rawData.hero?.enabled !== false,
-    eyebrow: rawData.hero?.eyebrow || "OUR WORK · REAL RESULTS",
+    eyebrow: rawData.hero?.eyebrow ?? "OUR WORK · REAL RESULTS",
     titleLine1: rawData.hero?.titleLine1 || "Work that moves",
     titleHighlight: rawData.hero?.titleHighlight || "the numbers.",
     description: rawData.hero?.description || "Every project below shows the problem, what we did, and the result it delivered. Filter by the service you need.",
     stat1Value: rawData.hero?.stat1Value || "3,000+",
-    stat1Label: rawData.hero?.stat1Label || "US businesses served",
+    stat1Label: rawData.hero?.stat1Label ?? "US businesses served",
     stat2Value: rawData.hero?.stat2Value || String(items.length || 0),
-    stat2Label: rawData.hero?.stat2Label || "Projects delivered",
+    stat2Label: rawData.hero?.stat2Label ?? "Projects delivered",
     stat3Value: rawData.hero?.stat3Value || "300%",
-    stat3Label: rawData.hero?.stat3Label || "more customer interaction for a client in 6 months",
+    stat3Label: rawData.hero?.stat3Label ?? "more customer interaction for a client in 6 months",
   };
 
   const featuredPanel = {
     enabled: rawData.featuredPanel?.enabled !== false,
-    eyebrow: rawData.featuredPanel?.eyebrow || "FEATURED CASE STUDY",
+    eyebrow: rawData.featuredPanel?.eyebrow ?? "FEATURED CASE STUDY",
     buttonLabel: rawData.featuredPanel?.buttonLabel || "See the full story",
   };
 
@@ -56,8 +56,8 @@ export default function PortfolioTemplate({ pageData }: PortfolioTemplateProps) 
 
   const ctaBanner = {
     enabled: rawData.ctaBanner?.enabled !== false,
-    titleIntro: rawData.ctaBanner?.titleIntro || "Want results like these?",
-    titleLine2: rawData.ctaBanner?.titleLine2 || "Let's build",
+    titleIntro: rawData.ctaBanner?.titleIntro ?? "Want results like these?",
+    titleLine2: rawData.ctaBanner?.titleLine2 ?? "Let's build",
     titleHighlight: rawData.ctaBanner?.titleHighlight || "something you're proud of.",
     description: rawData.ctaBanner?.description || "Tell us about your project and we'll put together a plan to get you there.",
     ctaPrimary: resolveButton(rawData.ctaBanner?.ctaPrimary, "Get a free quote", "/contact-us"),
@@ -112,15 +112,15 @@ export default function PortfolioTemplate({ pageData }: PortfolioTemplateProps) 
               <div className="flex-1 min-w-[280px] max-w-[460px] grid grid-cols-2 gap-3">
                 <div className="bg-white dark:bg-[#12121e] border border-brand-zinc-200/90 dark:border-white/10 rounded-2xl p-5 shadow-sm">
                   <p className="font-heading text-2xl sm:text-3xl font-extrabold text-brand-dark dark:text-white">{hero.stat1Value}</p>
-                  <p className="text-xs text-brand-zinc-500 dark:text-zinc-400 mt-1">{hero.stat1Label}</p>
+                  {hero.stat1Label.trim() && <p className="text-xs text-brand-zinc-500 dark:text-zinc-400 mt-1">{hero.stat1Label}</p>}
                 </div>
                 <div className="bg-white dark:bg-[#12121e] border border-brand-zinc-200/90 dark:border-white/10 rounded-2xl p-5 shadow-sm">
                   <p className="font-heading text-2xl sm:text-3xl font-extrabold text-brand-dark dark:text-white">{hero.stat2Value}</p>
-                  <p className="text-xs text-brand-zinc-500 dark:text-zinc-400 mt-1">{hero.stat2Label}</p>
+                  {hero.stat2Label.trim() && <p className="text-xs text-brand-zinc-500 dark:text-zinc-400 mt-1">{hero.stat2Label}</p>}
                 </div>
                 <div className="col-span-2 bg-brand-dark dark:bg-[#12121e] border border-white/10 rounded-2xl p-5 shadow-sm">
                   <p className="font-heading text-2xl sm:text-3xl font-extrabold text-brand-yellow">{hero.stat3Value}</p>
-                  <p className="text-xs text-zinc-300 mt-1">{hero.stat3Label}</p>
+                  {hero.stat3Label.trim() && <p className="text-xs text-zinc-300 mt-1">{hero.stat3Label}</p>}
                 </div>
               </div>
             </div>
@@ -245,7 +245,7 @@ export default function PortfolioTemplate({ pageData }: PortfolioTemplateProps) 
           <section className="mb-16">
             <div className="bg-brand-dark dark:bg-[#12121e] border border-white/10 rounded-[28px] p-8 sm:p-14 flex flex-wrap items-center gap-10">
               <div className="flex-1 min-w-[280px] space-y-5">
-                <span className="text-xs font-mono font-black uppercase tracking-widest text-brand-yellow">{featuredPanel.eyebrow}</span>
+                {featuredPanel.eyebrow.trim() && <span className="text-xs font-mono font-black uppercase tracking-widest text-brand-yellow">{featuredPanel.eyebrow}</span>}
                 <h2 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-tight">
                   {featuredItem.client || featuredItem.title}: {featuredItem.summary}
                 </h2>
@@ -290,9 +290,9 @@ export default function PortfolioTemplate({ pageData }: PortfolioTemplateProps) 
             <div className="cta-banner-card">
               <div className="relative z-10 flex flex-col justify-center gap-6 p-8 sm:p-12 lg:p-14">
                 <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.18] tracking-tight text-white">
-                  {ctaBanner.titleIntro} <br className="hidden sm:block" />
+                  {ctaBanner.titleIntro.trim() && <>{ctaBanner.titleIntro} <br className="hidden sm:block" /></>}
                   <span className="inline-block">
-                    {ctaBanner.titleLine2}{" "}
+                    {ctaBanner.titleLine2.trim() && <>{ctaBanner.titleLine2}{" "}</>}
                     <AccentHighlight className="font-cursive text-[var(--cta-accent)] text-3xl sm:text-4xl lg:text-5xl font-normal pl-1">
                       {ctaBanner.titleHighlight}
                     </AccentHighlight>

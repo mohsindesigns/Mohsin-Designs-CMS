@@ -12,7 +12,11 @@ export default function LogsPage() {
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
-  const [filters, setFilters] = useState({ user: "", action: "", status: "" });
+  const [filters, setFiltersState] = useState({ user: "", action: "", status: "" });
+  const setFilters = (next: typeof filters) => {
+    setFiltersState(next);
+    setPagination(p => ({ ...p, page: 1 }));
+  };
 
   useEffect(() => {
     fetchLogs();
@@ -28,9 +32,10 @@ export default function LogsPage() {
         status: filters.status
       });
       const res = await fetch(adminApiUrl(`/api/admin/activity-logs?${query}`));
+      if (!res.ok) { setLogs([]); return; }
       const data = await res.json();
-      setLogs(data.logs);
-      setPagination({ page: data.page, totalPages: data.totalPages });
+      setLogs(Array.isArray(data.logs) ? data.logs : []);
+      setPagination({ page: data.page || 1, totalPages: data.totalPages || 1 });
     } catch (err) {
       console.error(err);
     } finally {
@@ -213,7 +218,7 @@ export default function LogsPage() {
                 <option value="DELETE_USER">User Removed</option>
                 <option value="CREATE_PAGE">Page Created</option>
                 <option value="UPDATE_PAGE">Page Modified</option>
-                <option value="UPDATE_SETTINGS">Settings Changed</option>
+                <option value="UPDATE_CONTENT">Content/Settings Changed</option>
              </select>
            </div>
         </div>

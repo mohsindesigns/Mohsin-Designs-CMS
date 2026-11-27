@@ -476,8 +476,10 @@ const cleanStrings = (arr: any): string[] =>
 type AnchorMap = Record<string, boolean>;
 
 function resolveCmsLink(raw: any, fallback: string, anchors: AnchorMap): string | null {
-  const href = getValidHref(raw) || getValidHref(fallback);
+  let href = getValidHref(raw) || getValidHref(fallback);
   if (!href) return null;
+  // this page has no id="contact"; its form is #contact-form
+  if (href === "#contact") href = "#contact-form";
   if (href.startsWith("#") && href in anchors && !anchors[href]) return null;
   return href;
 }
@@ -975,7 +977,7 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
             });
           });
         }
-        if (direct) return []; // admin deliberately removed every tool card
+        if (direct || Array.isArray(dbService?.tools?.categories)) return []; // admin deliberately removed every tool card
         return [
           { name: "Next.js", iconName: "Monitor", tag: "CORE DEV", desc: "Headless rendering backend with automatic static optimization and route pre-fetching." },
           { name: "React.js", iconName: "Cpu", tag: "FRONTEND", desc: "Modular, reactive front-end library built for speedy interaction states." },
@@ -1074,11 +1076,12 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
       titleHighlight: dbService?.finalCta?.titleHighlight || "Competitive Edge",
       titleLine2: dbService?.finalCta?.titleLine2 || "",
       description: dbService?.finalCta?.description !== undefined ? dbService.finalCta.description : "Schedule a free strategic consultation. We'll audit your existing presence and map out a concrete blueprint for scalable growth.",
-      primaryCtaText: dbService?.finalCta?.primaryCtaText || dbService?.finalCta?.primaryCta?.text || dbService?.finalCta?.btnText || "Schedule Discovery Session",
+      primaryCtaText: dbService?.finalCta?.primaryCtaText ?? dbService?.finalCta?.primaryCta?.text ?? dbService?.finalCta?.btnText ?? "Schedule Discovery Session",
       primaryCtaLink: dbService?.finalCta?.primaryCtaLink || dbService?.finalCta?.primaryCta?.link || dbService?.finalCta?.btnLink || "#contact-form",
       secondaryCtaText: dbService?.finalCta?.secondaryCtaText || dbService?.finalCta?.secondaryCta?.text || "",
       secondaryCtaLink: dbService?.finalCta?.secondaryCtaLink || dbService?.finalCta?.secondaryCta?.link || "/contact-us",
-      founderImage: dbService?.finalCta?.founderImage || dbService?.finalCta?.image || dbService?.finalCta?.backgroundImage || dbService?.finalCta?.bgImage || "/founder_portrait_nobg.png"
+      // the old default template stored the wide hero background as backgroundImage; it is not a portrait
+      founderImage: dbService?.finalCta?.founderImage || dbService?.finalCta?.image || [dbService?.finalCta?.backgroundImage, dbService?.finalCta?.bgImage].find((v: any) => v && v !== "/portfolio_hero_bg.png") || "/founder_portrait_nobg.png"
     },
     blogSection: dbService?.blogSection,
     serviceArea: dbService?.serviceArea,
@@ -1156,7 +1159,6 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
   // section is hidden would otherwise be a dead link).
   const anchors: AnchorMap = {
     "#contact-form": showHero,
-    "#contact": showHero,
     "#what-included": showWhatIncluded,
     "#faq": showFaq,
     "#video-testimonials": showVideoTestimonials,
@@ -1695,7 +1697,12 @@ export default function ServiceDetailTemplate({ params, pageData }: any) {
                           >
                             <div className="space-y-2">
                               <div className="flex items-center gap-2">
-                                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                                {(() => {
+                                  const CaseIcon = (cs.iconName && iconMap[cs.iconName]) || null;
+                                  return CaseIcon
+                                    ? <CaseIcon className="w-4 h-4 text-brand-blue dark:text-brand-yellow shrink-0" />
+                                    : <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />;
+                                })()}
                                 <span className="font-heading font-extrabold text-sm sm:text-base text-brand-dark dark:text-white leading-tight">
                                   {cs.title}
                                 </span>

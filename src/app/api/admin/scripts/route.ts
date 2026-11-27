@@ -108,7 +108,7 @@ export async function PUT(req: NextRequest) {
 // DELETE — remove a script by id (passed as ?id=xxx)
 export async function DELETE(req: NextRequest) {
   const session = await getSessionUser(req);
-  if (!(await hasPermission(req, 'settings', 'delete'))) {
+  if (!(await hasPermission(req, 'settings', 'update'))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
   }
 

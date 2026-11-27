@@ -118,6 +118,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
   // An existing post's slug is its public URL, so it is never regenerated from the title behind the author's back.
   const [slugTouched, setSlugTouched] = useState(!!id || !!initialData?.slug);
   const originalSlug = useRef<string>(initialData?.slug || "");
+  const loadedSchedule = useRef<{ status?: string; publishedAt?: any }>({ status: initialData?.status, publishedAt: initialData?.publishedAt });
 
   const [categories, setCategories] = useState<any[]>([]);
   const [tags, setTags] = useState<any[]>([]);
@@ -159,6 +160,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
       const data = await res.json();
       if (res.ok) {
         originalSlug.current = data.slug || "";
+        loadedSchedule.current = { status: data.status, publishedAt: data.publishedAt };
         setPostRaw(normalizePost(data));
         setDirty(false);
       } else {
@@ -209,11 +211,13 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
       }
       if (kind === "categories") {
         setCategories((prev) => [...prev, data].sort((a, b) => a.name.localeCompare(b.name)));
-        setPost({ ...post, categories: [...post.categories, data._id] });
+        setPostRaw((p: any) => ({ ...p, categories: [...(p.categories || []), data._id] }));
+        setDirty(true);
         setNewCategory("");
       } else {
         setTags((prev) => [...prev, data].sort((a, b) => a.name.localeCompare(b.name)));
-        setPost({ ...post, tags: [...post.tags, data._id] });
+        setPostRaw((p: any) => ({ ...p, tags: [...(p.tags || []), data._id] }));
+        setDirty(true);
         setNewTag("");
       }
     } catch {
@@ -267,7 +271,11 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
     }
     if (status === "scheduled") {
       const when = post.publishedAt ? new Date(post.publishedAt) : null;
-      if (!when || Number.isNaN(when.getTime()) || when.getTime() <= Date.now()) {
+      const loaded = loadedSchedule.current;
+      // A schedule that came due before anyone promoted it is published by the server on save.
+      const unchangedDueSchedule = loaded.status === "scheduled" && !!when && !!loaded.publishedAt
+        && new Date(loaded.publishedAt).getTime() === when.getTime();
+      if (!unchangedDueSchedule && (!when || Number.isNaN(when.getTime()) || when.getTime() <= Date.now())) {
         toast("Pick a future publish date to schedule this post.", "error");
         return;
       }
@@ -298,6 +306,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
         }
         // Reflect what the server decided (e.g. a past "scheduled" date is published immediately).
         originalSlug.current = data.slug || slug;
+        loadedSchedule.current = { status: data.status ?? status, publishedAt: data.publishedAt ?? post.publishedAt };
         setPostRaw(normalizePost({ ...post, ...data }));
         toast(
           data.status === "scheduled" ? "Post scheduled." : data.status === "published" ? "Post saved and live." : "Draft saved."
@@ -595,7 +604,12 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
                       onClick={() => {
                         const result = syncFaqSchema(post.faq, post.faqSchemaMarkup, post.faqSchemaAutoSync === true);
                         if (result.status === "empty") {
-                          alert("Add at least one FAQ with both a question and an answer before syncing.");
+                          if ((post.faqSchemaMarkup || "").trim()) {
+                            setPost({ ...post, faqSchemaMarkup: "", faqSchemaAutoSync: false });
+                            toast("No FAQs left, so the FAQ schema was cleared. Save to apply.");
+                          } else {
+                            alert("Add at least one FAQ with both a question and an answer before syncing.");
+                          }
                           return;
                         }
                         if (result.status === "cancelled") return;
@@ -820,7 +834,15 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
                 <div className="relative group">
                   <img src={post.featuredImage} alt="" className="w-full aspect-video object-cover rounded border border-[#c3c4c7]" />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded">
-                    <button type="button" onClick={() => setPost({ ...post, featuredImage: "" })} className="text-white text-[12px] font-bold underline">Remove image</button>
+                    <button type="button" onClick={() => setPost({
+                      ...post,
+                      featuredImage: "",
+                      seo: {
+                        ...post.seo,
+                        featuredImage: post.seo?.featuredImage === post.featuredImage ? "" : post.seo?.featuredImage,
+                        ogImage: post.seo?.ogImage === post.featuredImage ? "" : post.seo?.ogImage
+                      }
+                    })} className="text-white text-[12px] font-bold underline">Remove image</button>
                   </div>
                 </div>
               ) : (
@@ -857,14 +879,17 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
       {showMediaSelector && (
         <MediaSelector
           onSelect={(item) => {
+            // seo images that still mirror the old featured image follow it; ones set by hand are kept.
+            const prevImg = post.featuredImage || "";
+            const follows = (v?: string) => !v || v === prevImg;
             setPost({
               ...post,
               featuredImage: item.url,
               seo: {
                 ...post.seo,
-                featuredImage: post.seo?.featuredImage || item.url,
+                featuredImage: follows(post.seo?.featuredImage) ? item.url : post.seo.featuredImage,
                 featuredImageAlt: post.seo?.featuredImageAlt || item.alt || "",
-                ogImage: post.seo?.ogImage || item.url
+                ogImage: follows(post.seo?.ogImage) ? item.url : post.seo.ogImage
               }
             });
             setShowMediaSelector(false);

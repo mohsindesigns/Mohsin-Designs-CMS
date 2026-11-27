@@ -85,7 +85,7 @@ const mergeBlog = (saved: any) => ({
   detailCtaBanner: { ...DEFAULT_BLOG_DATA.detailCtaBanner, ...(saved?.detailCtaBanner || {}) }
 });
 
-export default function BlogEditor({ pageId, data, setData }: { pageId: string, data: any, setData: (d: any) => void }) {
+export default function BlogEditor({ pageId, data, setData, seo, setSeo }: { pageId: string, data: any, setData: (d: any) => void, seo?: any, setSeo?: (s: any) => void }) {
   const [activeTab, setActiveTab] = useState("hero");
 
   // Ensure blogPage has complete structure
@@ -936,16 +936,10 @@ export default function BlogEditor({ pageId, data, setData }: { pageId: string, 
         {activeTab === "schema" && (
           <div className="space-y-4">
             <SchemaEditor
-              value={data.schemaMarkup || data.seo?.schemaData || ""}
+              value={seo?.schemaData || data.schemaMarkup || ""}
               onChange={(val) => {
-                setData((prev: any) => ({
-                  ...(prev || {}),
-                  schemaMarkup: val,
-                  seo: {
-                    ...(prev?.seo || {}),
-                    schemaData: val
-                  }
-                }));
+                setSeo?.((prev: any) => ({ ...(prev || {}), schemaData: val }));
+                setData((prev: any) => ({ ...(prev || {}), schemaMarkup: val }));
               }}
               pageTitle="Blog Insights"
             />

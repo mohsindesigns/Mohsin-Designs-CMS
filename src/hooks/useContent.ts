@@ -101,8 +101,13 @@ export const useContent = () => {
             const p = getSafe(completeData, 'portfolio', {});
             const selectedProjects = Array.isArray(p.projects) ? p.projects : [];
 
-            // If no projects specifically selected for home, use from galleryPage
+            // If no projects specifically selected for home, fall back to the live Admin > Projects
+            // catalog (injected by app/page.tsx as masterProjects), then to the galleryPage cards.
             if (selectedProjects.length === 0) {
+                const masterProjects = completeData?.masterProjects;
+                if (Array.isArray(masterProjects) && masterProjects.length > 0) {
+                    return { ...p, projects: masterProjects.slice(0, 8) };
+                }
                 const galleryProjects = completeData?.galleryPage?.projects || [];
                 if (Array.isArray(galleryProjects) && galleryProjects.length > 0) {
                     return {
@@ -151,7 +156,12 @@ export const useContent = () => {
                 scorecardRatingLabel: raw.scorecardRatingLabel || defaults.scorecardRatingLabel,
                 scorecardTitle: raw.scorecardTitle || defaults.scorecardTitle,
                 scorecardSub: raw.scorecardSub || defaults.scorecardSub,
-                list: (Array.isArray(raw.list) && raw.list.length > 0) ? raw.list : defaults.list
+                // Empty when real reviews live under items/testimonials so Testimonials.tsx maps those instead of the samples.
+                list: (Array.isArray(raw.list) && raw.list.length > 0)
+                    ? raw.list
+                    : ((Array.isArray(raw.testimonials) && raw.testimonials.length > 0) || (Array.isArray(raw.items) && raw.items.length > 0))
+                        ? []
+                        : defaults.list
             };
         })(),
         whyChooseUs: (() => {

@@ -188,7 +188,7 @@ export default async function PortfolioCaseStudyPage({ params }: Props) {
 
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         {/* ── 4. CHALLENGE ───────────────────────────────────────────── */}
-        {challenge && (challenge.heading || challenge.body) && (
+        {challenge && (challenge.heading || challenge.body || (Array.isArray(challenge.bulletPoints) && challenge.bulletPoints.length > 0)) && (
           <section className="py-14 sm:py-16 flex flex-wrap gap-10">
             <div className="flex-1 min-w-[220px] basis-[280px]">
               <span className="text-xs font-mono font-black uppercase tracking-widest text-brand-blue dark:text-brand-yellow">01 — The Challenge</span>
@@ -254,7 +254,7 @@ export default async function PortfolioCaseStudyPage({ params }: Props) {
       </div>
 
       {/* ── 7. RESULTS (full-width dark band) ───────────────────────── */}
-      {results && (results.heading || (results.stats || []).length > 0) && (
+      {results && (results.heading || (results.stats || []).length > 0 || results.proofImage) && (
         <section className="bg-brand-dark dark:bg-[#0c0b18] border-y border-white/10 py-16 sm:py-20">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <span className="text-xs font-mono font-black uppercase tracking-widest text-brand-yellow">04 — The Results</span>

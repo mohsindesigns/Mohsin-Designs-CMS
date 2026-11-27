@@ -11,10 +11,40 @@ import { resolveRobotsMetadata } from "@/lib/seo";
 import { getCachedSiteContent, getCachedSiteScripts } from "@/lib/content";
 
 interface ParsedScriptTag {
-  src?: string;
-  async?: boolean;
-  defer?: boolean;
+  tag: "script" | "style" | "noscript" | "meta" | "link";
+  props: Record<string, string | boolean>;
   inner?: string;
+}
+
+const ATTR_NAME_MAP: Record<string, string> = {
+  crossorigin: "crossOrigin",
+  class: "className",
+  "http-equiv": "httpEquiv",
+  charset: "charSet",
+  referrerpolicy: "referrerPolicy",
+  nomodule: "noModule",
+  fetchpriority: "fetchPriority",
+};
+const BOOLEAN_ATTRS = new Set(["async", "defer", "nomodule"]);
+
+function parseAttributes(attrs: string): Record<string, string | boolean> {
+  const props: Record<string, string | boolean> = {};
+  const re = /([^\s=\/>]+)(?:\s*=\s*("[^"]*"|'[^']*'|[^\s>]+))?/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(attrs)) !== null) {
+    const name = m[1].toLowerCase();
+    // React rejects string event handlers and string style values.
+    if (name.startsWith("on") || name === "style") continue;
+    const key = ATTR_NAME_MAP[name] || name;
+    if (BOOLEAN_ATTRS.has(name)) {
+      props[key] = true;
+    } else if (m[2] !== undefined) {
+      props[key] = m[2].replace(/^["']|["']$/g, "");
+    } else {
+      props[key] = "";
+    }
+  }
+  return props;
 }
 
 // An admin-pasted <head> snippet (GA/GTM/Meta Pixel/etc.) is almost always TWO sibling <script>
@@ -28,23 +58,26 @@ interface ParsedScriptTag {
 // defer, or the inline body) fixes this for any snippet shape, not just this one.
 function parseScriptTags(raw: string): ParsedScriptTag[] {
   const tags: ParsedScriptTag[] = [];
-  const re = /<script([^>]*)>([\s\S]*?)<\/script>/gi;
+  const re = /<(script|style|noscript)\b([^>]*)>([\s\S]*?)<\/\1\s*>|<(meta|link)\b([^>]*?)\/?>/gi;
   let match: RegExpExecArray | null;
   while ((match = re.exec(raw)) !== null) {
-    const attrs = match[1] || "";
-    const inner = (match[2] || "").trim();
-    const srcMatch = attrs.match(/\bsrc\s*=\s*["']([^"']+)["']/i);
-    tags.push({
-      src: srcMatch ? srcMatch[1] : undefined,
-      async: /(^|\s)async(\s|=|$)/i.test(attrs),
-      defer: /(^|\s)defer(\s|=|$)/i.test(attrs),
-      inner: inner || undefined,
-    });
+    if (match[1]) {
+      const inner = (match[3] || "").trim();
+      tags.push({
+        tag: match[1].toLowerCase() as ParsedScriptTag["tag"],
+        props: parseAttributes(match[2] || ""),
+        inner: inner || undefined,
+      });
+    } else {
+      tags.push({
+        tag: match[4].toLowerCase() as ParsedScriptTag["tag"],
+        props: parseAttributes(match[5] || ""),
+      });
+    }
   }
-  // No <script> tags found at all (admin pasted bare JS with no wrapper) - preserve that as a
-  // single inline script, matching the one case the old strip-and-wrap logic actually handled.
-  if (tags.length === 0 && raw.trim()) {
-    tags.push({ inner: raw.trim() });
+  // Bare JS with no markup at all - preserve it as a single inline script.
+  if (tags.length === 0 && raw.trim() && !/<[a-z!\/]/i.test(raw)) {
+    tags.push({ tag: "script", props: {}, inner: raw.trim() });
   }
   return tags;
 }
@@ -236,16 +269,17 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://images.unsplash.com" />
         {/* ── CMS-managed <head> scripts ── */}
         {headScripts.flatMap((s) =>
-          parseScriptTags(s.code).map((tag, i) => (
-            <script
-              key={`${s.id}-${i}`}
-              src={tag.src}
-              async={tag.async || undefined}
-              defer={tag.defer || undefined}
-              suppressHydrationWarning
-              {...(tag.inner ? { dangerouslySetInnerHTML: { __html: tag.inner } } : {})}
-            />
-          ))
+          parseScriptTags(s.code).map((tag, i) => {
+            const Tag = tag.tag as any;
+            return (
+              <Tag
+                key={`${s.id}-${i}`}
+                {...tag.props}
+                suppressHydrationWarning
+                {...(tag.inner ? { dangerouslySetInnerHTML: { __html: tag.inner } } : {})}
+              />
+            );
+          })
         )}
       </head>
       <body className="min-h-full flex flex-col bg-white dark:bg-[#080710] text-black dark:text-white font-sans relative transition-colors duration-300">

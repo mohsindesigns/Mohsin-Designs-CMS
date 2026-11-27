@@ -26,8 +26,7 @@ export default function ReviewsAdminPage() {
     company: "",
     text: "",
     avatar: "",
-    rating: 5,
-    videoId: ""
+    rating: 5
   });
 
   useEffect(() => {
@@ -57,9 +56,18 @@ export default function ReviewsAdminPage() {
 
   const saveToDb = async (newTestimonials: any[]) => {
     setSaving(true);
-    const updatedTestimonials = { ...(data?.testimonials || {}), testimonials: newTestimonials };
-    const payload = { section: "testimonials", testimonials: updatedTestimonials };
     try {
+      // Re-read so testimonial fields other admins/the homepage saved since this page loaded survive.
+      let base = data?.testimonials || {};
+      try {
+        const r = await fetch(adminApiUrl("/api/content"), { cache: "no-store" });
+        if (r.ok) {
+          const j = await r.json();
+          if (j?.testimonials && typeof j.testimonials === "object") base = j.testimonials;
+        }
+      } catch {}
+      const updatedTestimonials = { ...base, testimonials: newTestimonials };
+      const payload = { section: "testimonials", testimonials: updatedTestimonials };
       const res = await fetch(adminApiUrl("/api/content"), { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       if (res.ok) {
         setData((prev: any) => ({ ...prev, testimonials: updatedTestimonials }));
@@ -67,6 +75,9 @@ export default function ReviewsAdminPage() {
         setToast({ type: "ok", msg: "Reviews updated." });
         setTimeout(() => setToast(null), 3000);
         setIsEditing(null);
+      } else {
+        const j = await res.json().catch(() => ({}));
+        setToast({ type: "err", msg: j.error || `Save failed (${res.status})` });
       }
     } catch {
       setToast({ type: "err", msg: "Error saving." });
@@ -97,7 +108,7 @@ export default function ReviewsAdminPage() {
           <button
             onClick={() => {
               setIsEditing(testimonials.length);
-              setForm({ name: "", position: "", company: "", text: "", avatar: "", rating: 5, videoId: "" });
+              setForm({ name: "", position: "", company: "", text: "", avatar: "", rating: 5 });
             }}
             className="bg-white border border-[#2271b1] text-[#2271b1] hover:bg-[#f6f7f7] hover:text-[#135e96] hover:border-[#135e96] px-2 py-1 text-[13px] rounded-[3px] transition-colors"
           >
@@ -150,10 +161,6 @@ export default function ReviewsAdminPage() {
                           <select value={form.rating} onChange={(e) => setForm({ ...form, rating: Number(e.target.value) })} className="w-full border border-[#8c8f94] px-2 py-1.5 text-[14px] rounded-[3px]">
                              {[1,2,3,4,5].map(r => <option key={r} value={r}>{r} Stars</option>)}
                           </select>
-                       </div>
-                       <div className="space-y-1">
-                          <label className="text-[13px] font-bold">YouTube Video ID</label>
-                          <input type="text" value={form.videoId} onChange={(e) => setForm({ ...form, videoId: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="Optional" />
                        </div>
                     </div>
                  </div>
@@ -209,7 +216,7 @@ export default function ReviewsAdminPage() {
                              </div>
                           </div>
                        </td>
-                       <td className="py-4 px-3 align-top text-[#50575e] italic line-clamp-2">"{test.text}"</td>
+                       <td className="py-4 px-3 align-top text-[#50575e] italic line-clamp-2">"{String(test.text || '').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim()}"</td>
                        <td className="py-4 px-3 align-top">
                           <div className="flex items-center text-amber-500 font-bold">{test.rating || 5} <Star className="w-3 h-3 fill-current ml-1" /></div>
                        </td>

@@ -2,19 +2,27 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-const SECRET = new TextEncoder().encode(process.env.ADMIN_SESSION_SECRET || "mohsin-designs-secret-key-change-me-in-env");
+// Resolved lazily: throwing at import time would take down middleware and every public page.
+function getSecret() {
+  const raw = process.env.ADMIN_SESSION_SECRET;
+  if (raw && raw.length >= 32) return new TextEncoder().encode(raw);
+  if (process.env.NODE_ENV !== "production") {
+    return new TextEncoder().encode(raw || "dev-only-insecure-admin-session-secret-not-for-prod");
+  }
+  throw new Error("ADMIN_SESSION_SECRET must be set (at least 32 characters)");
+}
 
 export async function signToken(payload: any) {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("8h")
-    .sign(SECRET);
+    .sign(getSecret());
 }
 
 export async function verifyToken(token: string) {
   try {
-    const { payload } = await jwtVerify(token, SECRET);
+    const { payload } = await jwtVerify(token, getSecret());
     return payload;
   } catch (err) {
     return null;

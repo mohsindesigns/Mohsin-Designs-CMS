@@ -22,7 +22,7 @@ const DEFAULT_PORTFOLIO_DATA = {
     description: "Every project below shows the problem, what we did, and the result it delivered. Filter by the service you need.",
     stat1Value: "3,000+",
     stat1Label: "US businesses served",
-    stat2Value: "250+",
+    stat2Value: "",
     stat2Label: "Projects delivered",
     stat3Value: "300%",
     stat3Label: "more customer interaction for a client in 6 months",
@@ -142,7 +142,7 @@ export default function PortfolioEditor({ pageId, data, setData }: { pageId: str
                 </div>
                 <div className="bg-white border border-[#c3c4c7] p-3 rounded-[3px] space-y-2">
                   <h4 className="font-bold text-xs text-[#1d2327]">Stat Tile 2</h4>
-                  <input value={portfolio.hero.stat2Value} onChange={(e) => update((p) => ({ ...p, hero: { ...p.hero, stat2Value: e.target.value } }))} className={inputCls} placeholder="250+" />
+                  <input value={portfolio.hero.stat2Value} onChange={(e) => update((p) => ({ ...p, hero: { ...p.hero, stat2Value: e.target.value } }))} className={inputCls} placeholder="Leave empty to show the live count of published case studies" />
                   <input value={portfolio.hero.stat2Label} onChange={(e) => update((p) => ({ ...p, hero: { ...p.hero, stat2Label: e.target.value } }))} className={inputCls} placeholder="Projects delivered" />
                 </div>
                 <div className="bg-white border border-[#c3c4c7] p-3 rounded-[3px] space-y-2">

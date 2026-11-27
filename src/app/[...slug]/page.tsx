@@ -169,7 +169,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       type: "website",
       images: [
         {
-          url: getAbsoluteUrl(seo.featuredImage || seo.ogImage) || `${BASE_URL}/logo.png`,
+          url: getAbsoluteUrl(seo.ogImage || seo.featuredImage) || `${BASE_URL}/logo.png`,
           width: 1200,
           height: 630,
           alt: seo.featuredImageAlt || page.title,
@@ -177,10 +177,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       ],
     },
     twitter: {
-      card: "summary_large_image",
+      card: seo.twitterCard === "summary" ? "summary" : "summary_large_image",
       title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || page.title,
       description: seo.twitterDescription || seo.ogDescription || seo.metaDescription,
-      images: [getAbsoluteUrl(seo.featuredImage || seo.twitterImage || seo.ogImage) || `${BASE_URL}/logo.png`],
+      images: [getAbsoluteUrl(seo.twitterImage || seo.ogImage || seo.featuredImage) || `${BASE_URL}/logo.png`],
       site: "@MohsinDesigns",
       creator: "@MohsinDesigns",
     },
@@ -279,8 +279,11 @@ export default async function DynamicPage({ params }: PageProps) {
     } else {
       const allFaqs = globalData.faq?.items || [];
       page.faqs = allFaqs.filter((item: any) =>
-        item.visibility === 'global' ||
-        (item.visibility === 'specific' && item.targetPages?.includes(slug))
+        item.visibility !== 'specific' ||
+        (item.targetPages || []).some((t: any) => {
+          const k = String(t).replace(/^\/+|\/+$/g, '');
+          return k === slug || k === 'faq';
+        })
       );
     }
   }
@@ -294,6 +297,19 @@ export default async function DynamicPage({ params }: PageProps) {
 
   const initialBlogs = BLOG_AWARE_TEMPLATES.has(page.template) ? await loadInitialBlogs() : undefined;
 
+  // Private notification inboxes must not reach the client payload; /api/send reads them from the DB.
+  if (page.content?.contactPage) delete page.content.contactPage.receiverEmail;
+  if (page.content) delete page.content.receiverEmail;
+  const { receiverEmail: _re, ...publicContact } = globalData.contact || {};
+  const { notificationEmail: _ne, ...publicSettings } = globalData.settings || {};
+  const { receiverEmail: _cre, ...publicContactPage } = globalData.contactPage || {};
+  const publicGlobalData = {
+    ...globalData,
+    ...(globalData.contactPage ? { contactPage: publicContactPage } : {}),
+    ...(globalData.contact ? { contact: publicContact } : {}),
+    ...(globalData.settings ? { settings: publicSettings } : {}),
+  };
+
   return (
     <div>
       <CustomSchemaMarkup schema={resolvedSchemaBlocks} />
@@ -306,7 +322,7 @@ export default async function DynamicPage({ params }: PageProps) {
             globalServices: globalData?.services?.services || globalData?.globalServices || []
           }
         }}
-        globalData={globalData}
+        globalData={publicGlobalData}
         initialBlogs={initialBlogs}
         params={resolvedParams}
       />

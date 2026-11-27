@@ -110,6 +110,37 @@ function realFaqs(faqs: any): any[] {
   return (Array.isArray(faqs) ? faqs : []).filter((f: any) => f && (text(f.question) || text(f.answer) || text(f.q) || text(f.a)));
 }
 
+// Same as CountryTemplate: Testimonials.tsx fills any empty marquee row with invented demo reviews,
+// so keep only real reviews and spread them across all 3 rows.
+const richText = (v: any) => {
+  const s = text(v);
+  return /<img\b/i.test(s) || s.replace(/<[^>]*>/g, " ").replace(/&nbsp;|&#160;| /gi, " ").trim() ? s : "";
+};
+function resolveReviews(t: any) {
+  if (!t) return null;
+  const source = [t.list, t.items, t.testimonials].find((a) => Array.isArray(a) && a.length > 0) || [];
+  const real = source
+    .filter((r: any) => r && (text(r.name) || richText(r.quote ?? r.text)))
+    .map((r: any) => ({ ...r, quote: r.quote ?? r.text, role: r.role ?? r.position }));
+  if (real.length === 0) return null;
+  const rowsCovered = [1, 2, 3].every((c) => real.some((r: any) => Number(r.column) === c));
+  const list =
+    real.length >= 3
+      ? real.map((r: any, i: number) => ({ ...r, column: rowsCovered ? Number(r.column) : (i % 3) + 1 }))
+      : [0, 1, 2].map((i) => ({ ...real[i % real.length], column: i + 1 }));
+  return { ...t, list, items: undefined, testimonials: undefined };
+}
+
+// Mirrors how Services.tsx matches a saved card to the live service catalog (same as CountryTemplate).
+const sameService = (a: any, b: any): boolean =>
+  !!(
+    (a?._id && b?._id && String(a._id) === String(b._id)) ||
+    (a?.id && (String(b?.id) === String(a.id) || String(b?._id) === String(a.id))) ||
+    (a?.slug && b?.slug === a.slug) ||
+    (typeof a === "string" && [b?._id, b?.id, b?.slug, b?.title].some((x) => x && String(x) === a)) ||
+    (a?.title && b?.title && String(b.title).toLowerCase() === String(a.title).toLowerCase())
+  );
+
 // ---------------------------------------------------------------------------------------------
 // Service Area map. On a state page the hubs are the state's CITIES, but <ServiceArea> geocodes a
 // hub by NAME against a countries/states-only table, so most cities fall back to (20N, 0E) - a pin
@@ -206,14 +237,19 @@ export default function StateTemplate({ pageData, params }: { pageData?: any; pa
   const servicesPageSlug = pageData?.slug || "state";
   const stateCatalog: any[] = Array.isArray(content.globalServices) ? content.globalServices : [];
   const stateSavedCards: any[] = firstArray(content.services?.list, content.services?.services);
-  const stateLiveSavedCards = stateSavedCards.filter(
-    (x: any) =>
-      x &&
-      x.status !== "draft" &&
-      !x.isTrashed &&
-      (typeof x === "string" || text(x.title) || x._id || x.id || x.slug) &&
-      isServiceVisibleOnPage(x, servicesPageSlug)
-  );
+  const stateLiveSavedCards = stateCatalog.length === 0
+    ? stateSavedCards.filter(
+        (x: any) =>
+          x &&
+          x.status !== "draft" &&
+          !x.isTrashed &&
+          (typeof x === "string" || text(x.title) || x._id || x.id || x.slug) &&
+          isServiceVisibleOnPage(x, servicesPageSlug)
+      )
+    : stateSavedCards.filter((x: any) => {
+        const live = x && stateCatalog.find((s: any) => sameService(x, s));
+        return !!live && live.status !== "draft" && !live.isTrashed && isServiceVisibleOnPage(live, servicesPageSlug);
+      });
   const stateServiceCards = withTargetedServices(stateLiveSavedCards, stateCatalog, servicesPageSlug);
   const servicesShown = content.services?.enabled !== false && stateServiceCards.length > 0;
 
@@ -222,7 +258,7 @@ export default function StateTemplate({ pageData, params }: { pageData?: any; pa
 
   const portfolioShown = content.portfolio?.enabled !== false && hasContent(content.portfolio) && hasProjects(content.portfolio);
 
-  const reviewsData = [content.testimonials, content.reviews].find(hasRealReviews);
+  const reviewsData = resolveReviews([content.testimonials, content.reviews].find(hasRealReviews));
   const reviewsShown = content.testimonials?.enabled !== false && content.reviews?.enabled !== false && !!reviewsData;
 
   const howData = [content.whyChooseUs, content.howWeWork].find(hasContent);

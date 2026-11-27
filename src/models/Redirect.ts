@@ -11,6 +11,7 @@ const RedirectSchema = new mongoose.Schema({
   status: { type: String, required: true, enum: ['active', 'disabled'], default: 'active' },
   notes: { type: String, default: '' },
   hits: { type: Number, default: 0 },
+  lastAccessed: { type: Date },
 }, { timestamps: true });
 
 RedirectSchema.index({ status: 1 });

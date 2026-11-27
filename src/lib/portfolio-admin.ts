@@ -2,6 +2,7 @@
 // (whitelisted-field picking, publish rules, revalidation) for the Portfolio collection.
 
 import { safeDate } from '@/lib/blog-public';
+import { slugify } from '@/lib/blog-admin';
 
 export { slugify, dbErrorResponse, toIdList } from '@/lib/blog-admin';
 
@@ -22,6 +23,7 @@ export function pickPortfolioFields(body: any): Record<string, any> {
     if (body[key] !== undefined) out[key] = body[key];
   }
   if (typeof out.title === 'string') out.title = out.title.trim();
+  if (typeof out.slug === 'string') out.slug = slugify(out.slug);
   if (Array.isArray(out.services)) {
     out.services = [...new Set(out.services.map((s: any) => String(s ?? '').trim()).filter(Boolean))];
   }
@@ -42,7 +44,7 @@ export function pickPortfolioFields(body: any): Record<string, any> {
 
 /**
  * Simpler than blog-admin's applyPublishRules (no "scheduled" status for Portfolio items): a
- * freshly-published item that never had a publish date gets "now".
+ * freshly-published item gets "now" unless the admin deliberately changed its publish date.
  */
 export function applyPortfolioPublishRules(
   fields: Record<string, any>,
@@ -54,7 +56,10 @@ export function applyPortfolioPublishRules(
     if (d) out.publishedAt = d;
     else delete out.publishedAt;
   }
-  if (out.status === 'published' && prev?.status !== 'published' && !safeDate(out.publishedAt)) {
+  const prevDate = safeDate(prev?.publishedAt);
+  const chosen = safeDate(out.publishedAt);
+  const changedDate = !!chosen && (!prevDate || chosen.getTime() !== prevDate.getTime());
+  if (out.status === 'published' && prev?.status !== 'published' && !changedDate) {
     out.publishedAt = new Date();
   }
   return out;

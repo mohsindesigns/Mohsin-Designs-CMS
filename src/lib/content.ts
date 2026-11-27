@@ -17,11 +17,36 @@ import Page from '@/models/Page';
  * render for up to a minute. Throwing makes ISR keep serving the last good version.
  * `null` still means "no complete_data document exists".
  */
+/**
+ * Public copy of complete_data: drops draft/trashed catalog services and the admin-only
+ * notification addresses. Admin editors must read the unfiltered document (they save it back).
+ */
+export function sanitizePublicContent(data: any): any {
+  if (!data || typeof data !== 'object') return data;
+  const isPublic = (s: any) => s?.status !== 'draft' && !s?.isTrashed;
+  const out: any = { ...data };
+  if (out.services && typeof out.services === 'object' && !Array.isArray(out.services) && Array.isArray(out.services.services)) {
+    out.services = { ...out.services, services: out.services.services.filter(isPublic) };
+  } else if (Array.isArray(out.services)) {
+    out.services = out.services.filter(isPublic);
+  }
+  if (Array.isArray(out.globalServices)) out.globalServices = out.globalServices.filter(isPublic);
+  if (out.contact && typeof out.contact === 'object') {
+    out.contact = { ...out.contact };
+    delete out.contact.receiverEmail;
+  }
+  if (out.settings && typeof out.settings === 'object') {
+    out.settings = { ...out.settings };
+    delete out.settings.notificationEmail;
+  }
+  return out;
+}
+
 export const getCachedSiteContent = cache(async () => {
   try {
     await connectToDatabase();
     const doc = await SiteContent.findOne({ key: 'complete_data' }).lean();
-    const data = (doc as any)?.data || null;
+    const data = sanitizePublicContent((doc as any)?.data || null);
 
     // The services catalog is stored TWICE in complete_data (`services.services` and the
     // `globalServices` mirror, ~540 KB each; /api/content always writes them from the same list).

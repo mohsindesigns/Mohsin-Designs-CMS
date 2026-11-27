@@ -164,6 +164,8 @@ export function withTargetedServices(
   const targeted = pool.filter(
     (c: any) =>
       c &&
+      c.status !== "draft" &&
+      !c.isTrashed &&
       (c.visibility === "specific" || c.visibility === "selective") &&
       !savedKeys.has(keyOfService(c)) &&
       isServiceVisibleOnPage(c, pageIdentifier)

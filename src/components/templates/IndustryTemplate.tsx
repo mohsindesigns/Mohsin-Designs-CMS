@@ -28,7 +28,7 @@ import PageInlineFaqs from "@/components/PageInlineFaqs";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import AccentHighlight from "@/components/ui/AccentHighlight";
 import { DEFAULT_INDUSTRY_DOMAINS, DEFAULT_INDUSTRY_FEATURES, padIndex } from "./industryDefaults";
-import { isServiceVisibleOnPage } from "@/lib/servicesVisibility";
+import { isServiceVisibleOnPage, withTargetedServices } from "@/lib/servicesVisibility";
 
 // ── Icon Resolver Helper ──────────────────────────────────────────────────────
 // Same namespace the admin IconSelector lists from, so every name it can save resolves here.
@@ -217,14 +217,16 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
     .filter((sel: any) => sel && typeof sel === "object")
     .map((sel: any) => {
       const live = findLiveService(sel);
-      if (!live) return isServiceVisibleOnPage(sel, currentIndustrySlug) ? sel : null;
+      if (!live) return catalogAll.length === 0 && isServiceVisibleOnPage(sel, currentIndustrySlug) ? sel : null;
       return isVisibleHere(live) ? { ...sel, ...live } : null;
     })
     .filter(Boolean);
+  // A hand-picked list must still pick up services specifically targeted to this page via the
+  // "Services Shown Here" picker (same as the location templates).
   const rawServices = curatedServices.length > 0
-    ? curatedServices
+    ? withTargetedServices(curatedServices, catalogAll, currentIndustrySlug)
     : (Array.isArray(industryData.servicesSection?.items) && industryData.servicesSection.items.length > 0)
-      ? industryData.servicesSection.items.filter((it: any) => isServiceVisibleOnPage(it, currentIndustrySlug))
+      ? withTargetedServices(industryData.servicesSection.items.filter((it: any) => isServiceVisibleOnPage(it, currentIndustrySlug)), catalogAll, currentIndustrySlug)
       : liveCatalogVisible.length > 0
         ? liveCatalogVisible
         : [
@@ -354,7 +356,7 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
   // the page shows the four industry-specific starters below.
   const faqsList = (Array.isArray(pageContent.faqs) && pageContent.faqs.length > 0)
     ? pageContent.faqs
-    : (Array.isArray(industryData.faqs) && industryData.faqs.length > 0)
+    : (pageContent.faqs === undefined && Array.isArray(industryData.faqs) && industryData.faqs.length > 0)
       ? industryData.faqs
       : [
         {
@@ -396,9 +398,9 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
     titleWord1: industryData.ctaBanner?.titleWord1 || "Competitive",
     titleWord2: industryData.ctaBanner?.titleWord2 || "Advantage.",
     description: richOr(industryData.ctaBanner?.description, "Schedule a free 30-minute industry strategy session. We will audit your current presence and deliver an actionable architecture blueprint."),
-    ctaPrimaryText: industryData.ctaBanner?.ctaPrimaryText || "Book Strategy Session",
+    ctaPrimaryText: industryData.ctaBanner?.ctaPrimaryText !== undefined ? industryData.ctaBanner.ctaPrimaryText : "Book Strategy Session",
     ctaPrimaryHref: safeLink(industryData.ctaBanner?.ctaPrimaryHref, formHref),
-    ctaSecondaryText: industryData.ctaBanner?.ctaSecondaryText || "Explore Our Work",
+    ctaSecondaryText: industryData.ctaBanner?.ctaSecondaryText !== undefined ? industryData.ctaBanner.ctaSecondaryText : "Explore Our Work",
     ctaSecondaryHref: safeLink(industryData.ctaBanner?.ctaSecondaryHref, "/gallery"),
     portraitSrc: industryData.ctaBanner?.portraitSrc || "/founder_portrait_nobg.png",
     portraitAlt: industryData.ctaBanner?.portraitAlt || "Mohsin Lead Architect"
@@ -985,9 +987,9 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
         <PageInlineFaqs
           faqs={faqsList}
           faqSchemaMarkup={pageContent.faqSchemaMarkup || industryData.faqSchemaMarkup}
-          badge={pageContent.faqBadge || industryData.faqBadge || "INDUSTRY FAQS"}
-          title={pageContent.faqTitle || industryData.faqTitle || "Frequently Asked Questions"}
-          description={pageContent.faqDescription || industryData.faqDescription || "Key answers regarding our industry-specific architectural workflows and delivery."}
+          badge={pageContent.faqBadge || (pageContent.faqBadge === undefined && industryData.faqBadge) || "INDUSTRY FAQS"}
+          title={pageContent.faqTitle || (pageContent.faqTitle === undefined && industryData.faqTitle) || "Frequently Asked Questions"}
+          description={pageContent.faqDescription || (pageContent.faqDescription === undefined && industryData.faqDescription) || "Key answers regarding our industry-specific architectural workflows and delivery."}
           data={faqData}
         />
       )}
@@ -1029,8 +1031,8 @@ export default function IndustryTemplate({ pageData, params }: { pageData?: any;
               )}
 
               <div className="flex items-center gap-4 flex-wrap pt-2">
-                <CtaButton href={ctaBanner.ctaPrimaryHref}>{ctaBanner.ctaPrimaryText}</CtaButton>
-                <CtaButton href={ctaBanner.ctaSecondaryHref} variant="secondary" icon={<Play className="fill-current ml-0.5" />}>{ctaBanner.ctaSecondaryText}</CtaButton>
+                {ctaBanner.ctaPrimaryText && <CtaButton href={ctaBanner.ctaPrimaryHref}>{ctaBanner.ctaPrimaryText}</CtaButton>}
+                {ctaBanner.ctaSecondaryText && <CtaButton href={ctaBanner.ctaSecondaryHref} variant="secondary" icon={<Play className="fill-current ml-0.5" />}>{ctaBanner.ctaSecondaryText}</CtaButton>}
               </div>
             </div>
 

@@ -17,6 +17,7 @@ import SectionToggle from "@/components/admin/SectionToggle";
 import SchemaEditor from "@/components/admin/SchemaEditor";
 import VideoTestimonialsEditor from "./VideoTestimonialsEditor";
 import { adminApiUrl } from "@/lib/adminApi";
+import { resolveLocationPaths } from "@/lib/locationPath";
 
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
   ssr: false,
@@ -131,7 +132,7 @@ const DEFAULT_LOCATION_DATA = {
     ctaPrimaryHref: "/contact-us",
     ctaSecondaryText: "EXPLORE SHOWREEL",
     ctaSecondaryHref: "/gallery",
-    portraitSrc: "/founder_portrait_nobg.png",
+    portraitSrc: "",
     portraitAlt: "Founder & Lead Architect"
   }
 };
@@ -350,15 +351,13 @@ export default function LocationEditor({
   };
 
   // Options for the state dropdown: State pages (value = slug) and City pages that carry their full path.
+  const locIndex = resolveLocationPaths(livePages);
   const stateOptions = livePages
     .map((p: any) => {
       if (p.template === "state") return { value: p.slug, title: p.title, label: `/${p.slug}  (${p.title})${p.status === "draft" ? " - draft" : ""}`, group: "State pages" };
       if (p.template === "city") {
-        const full = String(p.slug).includes("/")
-          ? p.slug
-          : p.content?.countrySlug && p.content?.stateSlug
-            ? `${p.content.countrySlug}/${p.content.stateSlug}/${p.slug}`
-            : null;
+        const resolved = locIndex.byId.get(String(p._id ?? p.slug))?.path;
+        const full = resolved && resolved.split("/").length === 3 ? resolved : null;
         return full ? { value: full, title: p.title, label: `/${full}  (${p.title})${p.status === "draft" ? " - draft" : ""}`, group: "City pages" } : null;
       }
       return null;
@@ -1462,7 +1461,7 @@ export default function LocationEditor({
                 <div className="space-y-1.5 pt-3 border-t border-[#f0f0f1]">
                   <ImageField
                     label="Portrait Image for Arch Graphic"
-                    value={loc.ctaBanner?.portraitSrc || "/founder_portrait_nobg.png"}
+                    value={loc.ctaBanner?.portraitSrc || ""}
                     onChange={(val) => updateNested("ctaBanner", "portraitSrc", val)}
                     description="Portrait image with transparent background."
                   />

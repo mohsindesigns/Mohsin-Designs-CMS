@@ -5,6 +5,7 @@ import '@/models/User';
 import { hasPermission, getSessionUser } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
 import { applyPublishRules, dbErrorResponse, pickPostFields, revalidateBlog, slugify } from '@/lib/blog-admin';
+import { promoteDueScheduledPosts } from '@/lib/blog-public';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,6 +20,7 @@ export async function GET(req: NextRequest) {
 
   try {
     await connectToDatabase();
+    await promoteDueScheduledPosts();
     const { searchParams } = new URL(req.url);
     const status = searchParams.get('status');
     const search = searchParams.get('search');
@@ -85,7 +87,7 @@ export async function POST(req: NextRequest) {
     if (!fields.slug) fields.slug = slugify(fields.title);
     if (!fields.slug) return NextResponse.json({ error: 'Slug is required (use letters or numbers).' }, { status: 400 });
     const contentHtml = String(fields.content || '');
-    if (!contentHtml.replace(/<[^>]*>/g, '').trim() && !/<img\b/i.test(contentHtml)) {
+    if ((fields.status ?? 'draft') !== 'draft' && !contentHtml.replace(/<[^>]*>/g, '').trim() && !/<img\b/i.test(contentHtml)) {
       return NextResponse.json({ error: 'Write some content before saving.' }, { status: 400 });
     }
     fields = applyPublishRules(fields, null);

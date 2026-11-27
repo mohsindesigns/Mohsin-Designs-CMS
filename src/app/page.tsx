@@ -9,7 +9,7 @@ import { TemplateWrapper } from "@/components/templates/TemplateRegistry";
 import ServiceDetailTemplate from "@/components/templates/ServiceDetailTemplate";
 import { BASE_URL } from "@/lib/constants";
 import { resolveRobotsMetadata } from "@/lib/seo";
-import { getCachedSiteContent } from "@/lib/content";
+import { getCachedPageServices, getCachedSiteContent } from "@/lib/content";
 import { getResolvedSchemaBlocks } from "@/lib/dynamicSchema";
 // One definition of "publicly visible post", read time and excerpt for the whole site.
 import { PUBLIC_POST_QUERY, promoteDueScheduledPosts, readMinutes, stripHtml, truncate } from "@/lib/blog-public";
@@ -100,6 +100,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const pageUrl = BASE_URL;
 
   let targetSeo: any = {};
+  let found = false;
   let fallbackTitle = settings?.siteTitle || "Mohsin Designs";
   let fallbackDesc = "High-performance web architecture, modern software engineering, and digital growth systems.";
 
@@ -114,6 +115,7 @@ export async function generateMetadata(): Promise<Metadata> {
       }).lean() as any;
 
       if (page) {
+        found = true;
         targetSeo = page.seo || {};
         fallbackTitle = page.title || fallbackTitle;
         fallbackDesc = page.seo?.metaDescription || fallbackDesc;
@@ -121,11 +123,12 @@ export async function generateMetadata(): Promise<Metadata> {
     }
 
     // 2. Check if assigned homepage is a Service
-    if (!targetSeo.metaTitle) {
+    if (!found) {
       const service = globalData?.services?.services?.find((s: any) =>
         (s._id === homepageId || s.slug === homepageId) && s.status !== 'draft' && !s.isTrashed
       );
       if (service) {
+        found = true;
         targetSeo = service.seo || {};
         fallbackTitle = service.title || fallbackTitle;
         fallbackDesc = service.description || fallbackDesc;
@@ -134,22 +137,23 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   // 3. If no homepageId or not found, check the default Home Page in Page collection
-  if (!targetSeo.metaTitle) {
+  if (!found) {
     const defaultHomePageDoc = await Page.findOne({
       $or: [{ slug: 'home' }, { template: 'home' }],
       status: 'published',
       isTrashed: { $ne: true }
     }).lean() as any;
 
-    if (defaultHomePageDoc?.seo) {
-      targetSeo = defaultHomePageDoc.seo;
+    if (defaultHomePageDoc) {
+      found = true;
+      targetSeo = defaultHomePageDoc.seo || {};
       fallbackTitle = defaultHomePageDoc.title || fallbackTitle;
-      fallbackDesc = defaultHomePageDoc.seo.metaDescription || fallbackDesc;
+      fallbackDesc = defaultHomePageDoc.seo?.metaDescription || fallbackDesc;
     }
   }
 
   // 4. Fallback to globalData.home if still not set
-  if (!targetSeo.metaTitle && globalData?.home) {
+  if (!found && globalData?.home) {
     const homeData = globalData.home;
     targetSeo = homeData.seo || {};
     fallbackTitle = homeData.hero?.headline || fallbackTitle;
@@ -160,6 +164,13 @@ export async function generateMetadata(): Promise<Metadata> {
   const finalDesc = targetSeo.metaDescription || fallbackDesc;
   const rawImage = targetSeo.featuredImage || targetSeo.ogImage || targetSeo.twitterImage;
   const finalImage = getAbsoluteUrl(rawImage) || `${BASE_URL}/portfolio_hero_bg.png`;
+  // A same-domain stored canonical is the chosen page's own /<slug>/, which redirects back to "/".
+  let canonical = `${BASE_URL}/`;
+  if (typeof targetSeo.canonicalUrl === "string" && targetSeo.canonicalUrl.trim()) {
+    try {
+      if (new URL(targetSeo.canonicalUrl.trim(), BASE_URL).host !== new URL(BASE_URL).host) canonical = targetSeo.canonicalUrl.trim();
+    } catch {}
+  }
 
   return {
     metadataBase: new URL(BASE_URL),
@@ -168,7 +179,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: finalDesc,
     alternates: {
-      canonical: targetSeo.canonicalUrl || pageUrl,
+      canonical,
     },
     openGraph: {
       title: targetSeo.ogTitle || finalTitle,
@@ -202,7 +213,10 @@ export default async function Index() {
   const settings = content?.data?.settings;
   const homepageId = settings?.homepageId;
   // Fresh service catalog (site_contents.data.services.services) - see the masterCatalog notes in Services.tsx.
-  const globalServices = content?.data?.services?.services || [];
+  // Page-authored services (template "service-detail") are merged here only, not into globalData, so Navbar/Footer lists stay catalog-only.
+  const catalogServices: any[] = Array.isArray(content?.data?.services?.services) ? content.data.services.services : [];
+  const globalServices = [...catalogServices, ...(await getCachedPageServices())];
+  const masterProjects: any[] = Array.isArray(content?.data?.portfolio?.projects) ? content.data.portfolio.projects : [];
 
   // A page assigned as homepage in Settings is looked up by _id. homepageId can also be a service
   // slug (handled below); querying Page.findOne({ _id: "some-slug" }) throws a CastError, which
@@ -232,7 +246,8 @@ export default async function Index() {
             ...page,
             content: {
               ...pageContent,
-              globalServices
+              globalServices,
+              masterProjects
             }
           }}
           globalData={content?.data || {}}
@@ -294,12 +309,15 @@ export default async function Index() {
             // Always refresh from the live master catalog rather than trusting
             // whatever globalServices snapshot happened to be last saved on this
             // Page doc - that mirror can go stale (see Services.tsx enrichment).
-            globalServices
+            globalServices,
+            // Live Admin > Projects catalog: the Home Work section resolves its picks against it.
+            masterProjects
           }
         } : {
           content: {
             ...homeContent,
-            globalServices
+            globalServices,
+            masterProjects
           }
         }}
         globalData={content?.data || {}}

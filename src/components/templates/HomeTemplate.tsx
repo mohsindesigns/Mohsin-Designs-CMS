@@ -6,6 +6,7 @@ import Services from "@/components/Services";
 import { useContent } from "@/hooks/useContent";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 import contentDefaults from "@/data/content.json";
+import { resolveSelectedProjects, toProjectList } from "@/lib/galleryProjects";
 
 const TrustedBrandsSection = dynamic(() => import("@/components/sections/TrustedBrandsSection"), { ssr: false });
 const VideoTestimonials = dynamic(() => import("@/components/sections/VideoTestimonials"), { ssr: false });
@@ -45,7 +46,7 @@ function resolveContactData(contact: any) {
  * _id / id / slug / title) and, when nothing is picked, show every published service instead of
  * an empty carousel / the stale `services.services` mirror saved on the page document.
  */
-import { isServiceVisibleOnPage } from "@/lib/servicesVisibility";
+import { isServiceVisibleOnPage, withTargetedServices } from "@/lib/servicesVisibility";
 
 function resolveServicesSection(raw: any, masterCatalog: any) {
   const allMaster: any[] = Array.isArray(masterCatalog) ? masterCatalog : [];
@@ -90,11 +91,18 @@ function resolveServicesSection(raw: any, masterCatalog: any) {
     })
     .filter(Boolean);
 
-  return { ...raw, list };
+  // Services an admin targeted to the homepage via "Services Shown Here" are added to a hand-picked
+  // list too (withTargetedServices skips ones already picked, drafts and trashed entries).
+  const pickedKeys = new Set(list.map((s: any) => s && typeof s === "object" ? String(s._id || s.id || s.slug || "") : ""));
+  const withTargeted = withTargetedServices(list, catalog, "home").map((s: any) =>
+    s && typeof s === "object" && !pickedKeys.has(String(s._id || s.id || s.slug || "")) ? fresh(s) : s
+  );
+
+  return { ...raw, list: withTargeted };
 }
 
 export default function HomeTemplate({ pageData, params }: { pageData?: any; params?: any }) {
-  const { allBlogs, blogSection, faq } = useContent();
+  const { allBlogs, blogSection, faq, portfolio: contextPortfolio } = useContent();
 
   const content = pageData?.content || {};
 
@@ -131,6 +139,17 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any; par
 
   // Featured services: fresh catalog data instead of stale picked copies (see resolveServicesSection).
   const servicesData = resolveServicesSection(content.services, content.globalServices);
+
+  // Work section: the editor saves full COPIES of each picked project, so re-read every pick from the
+  // live Admin > Projects catalog (injected as masterProjects) - edits propagate and deleted projects
+  // drop out, the same way GalleryTemplate resolves its selection. All picks gone -> the catalog.
+  const masterProjects = toProjectList(content.masterProjects);
+  const pickedProjects = toProjectList(content.portfolio?.projects);
+  let portfolioData: any = undefined;
+  if (pickedProjects.length > 0 && masterProjects.length > 0) {
+    const { resolved } = resolveSelectedProjects(pickedProjects, masterProjects);
+    portfolioData = { ...(contextPortfolio || {}), projects: resolved.length > 0 ? resolved : masterProjects.slice(0, 8) };
+  }
 
   // Video testimonials render nothing without at least one video, so don't mount an empty wrapper
   // (or download the section's chunk) for it.
@@ -184,7 +203,7 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any; par
       )}
 
       {content.portfolio?.enabled !== false && (
-        <Portfolio />
+        <Portfolio data={portfolioData} />
       )}
 
       {(content.testimonials?.enabled !== false && content.reviews?.enabled !== false) && (

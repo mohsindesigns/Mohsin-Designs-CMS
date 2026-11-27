@@ -226,10 +226,48 @@ export async function planChildRenames(
   })
     .select('_id slug title seo.canonicalUrl content.countrySlug content.stateSlug content.parentLocationSlug')
     .lean();
-  if (children.length === 0) return { plan: [] };
 
   const oldSegs = oldSlug.split('/');
   const newSegs = newSlug.split('/');
+
+  // Cities stored with flat slugs (never migrated) find their state through content fields, not the slug.
+  const flatCityPlan: ChildRename[] = [];
+  if (page.template === 'state') {
+    const oldSeg = oldSegs[oldSegs.length - 1];
+    const newSeg = newSegs[newSegs.length - 1];
+    const flatCities: any[] = await Page.find({
+      _id: { $ne: page._id },
+      template: 'city',
+      slug: { $not: /\// },
+      $or: [
+        { 'content.stateSlug': oldSeg },
+        { 'content.parentLocationSlug': { $in: [oldSlug, oldSeg] } },
+        { 'content.parentLocationSlug': { $regex: `/${escapeRegex(oldSeg)}$` } },
+        { 'content.parentLocationId': { $in: [String(page._id), page._id] } },
+      ],
+    })
+      .select('_id slug content.stateSlug content.parentLocationSlug content.parentLocationId')
+      .lean();
+    for (const c of flatCities) {
+      const cs = c.content || {};
+      if (cs.parentLocationId && String(cs.parentLocationId) !== String(page._id)) continue;
+      const set: Record<string, any> = {};
+      if (cs.stateSlug === oldSeg || !cs.stateSlug) set['content.stateSlug'] = newSeg;
+      if (typeof cs.parentLocationSlug === 'string' && cs.parentLocationSlug.split('/').pop() === oldSeg) {
+        set['content.parentLocationSlug'] = newSlug;
+      }
+      if (Object.keys(set).length === 0) continue;
+      // set has no slug, so old/new here are only the public URLs used for the 301.
+      const hasCountry = oldSegs.length >= 2 && newSegs.length >= 2;
+      flatCityPlan.push({
+        id: String(c._id),
+        oldSlug: hasCountry ? `${oldSlug}/${c.slug}` : c.slug,
+        newSlug: hasCountry ? `${newSlug}/${c.slug}` : c.slug,
+        set,
+      });
+    }
+  }
+  if (children.length === 0) return { plan: flatCityPlan };
 
   const plan: ChildRename[] = children.map((c) => {
     const childNew = newSlug + c.slug.slice(oldSlug.length);
@@ -253,7 +291,7 @@ export async function planChildRenames(
   if (real.length > 0) {
     return { plan: [], error: `Cannot move this page: the child URL "${real[0].slug}" is already used by "${real[0].title}".` };
   }
-  return { plan };
+  return { plan: [...plan, ...flatCityPlan] };
 }
 
 /** Writes a plan produced by planChildRenames (and its redirects). Returns how many were renamed. */

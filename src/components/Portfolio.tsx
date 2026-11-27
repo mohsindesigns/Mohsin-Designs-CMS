@@ -426,6 +426,11 @@ export default function Portfolio({ data }: { data?: any }) {
       }));
 
   // Filter case studies by active category
+  // The CMS always supplies a portfolio object; with no projects anywhere (no picks, no Gallery cards,
+  // empty Admin > Projects catalog) hide the section rather than presenting the invented
+  // DEFAULT_PORTFOLIO sample brands as real case studies.
+  if (rawProjects.length === 0) return null;
+
   const filteredCaseStudies = caseStudies.filter((item: any) =>
     activeCategory ==="all" ? true : item.categories?.includes(activeCategory)
   );

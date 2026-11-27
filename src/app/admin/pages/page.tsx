@@ -298,12 +298,16 @@ export default function PagesDashboard() {
       const contentPayload: any = {};
 
       if (newPage.template === "city") {
-        const countryDoc = countryPages.find((c) => c.slug === newPage.selectedCountrySlug) || countryPages[0];
+        const countryDoc = countryPages.find((c) => c.slug === newPage.selectedCountrySlug);
+        if (!countryDoc) {
+          setCreating(false);
+          return alert("Select the parent Country for this city.");
+        }
         const stateDoc = statePages.find(
           (s) => s.slug === newPage.selectedStateSlug || String(s._id) === newPage.parentLocationId
         );
 
-        const countrySlug = newPage.selectedCountrySlug || "usa";
+        const countrySlug = countryDoc.slug;
         const stateSegment = (stateDoc?.slug || newPage.selectedStateSlug || "").split("/").pop() || "";
         const citySegment = finalSlug.split("/").pop() || "";
 
@@ -318,8 +322,12 @@ export default function PagesDashboard() {
         contentPayload.parentLocationId = stateDoc?._id || newPage.parentLocationId;
         contentPayload.parentLocationSlug = stateDoc?.slug || `${countrySlug}/${stateSegment}`;
       } else if (newPage.template === "state") {
-        const countryDoc = countryPages.find((c) => c.slug === newPage.selectedCountrySlug) || countryPages[0];
-        const countrySlug = newPage.selectedCountrySlug || "usa";
+        const countryDoc = countryPages.find((c) => c.slug === newPage.selectedCountrySlug);
+        if (!countryDoc) {
+          setCreating(false);
+          return alert("Select the parent Country for this state.");
+        }
+        const countrySlug = countryDoc.slug;
         const stateSegment = finalSlug.split("/").pop() || "";
 
         finalSlug = `${countrySlug}/${stateSegment}`;
@@ -507,9 +515,13 @@ export default function PagesDashboard() {
         const res = await fetch(adminApiUrl(`/api/admin/pages/${id}`), {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ status: newStatus })
+          body: JSON.stringify({ status: newStatus, baseUpdatedAt: page.updatedAt })
         });
         if (res.ok) fetchPages();
+        else if (res.status === 409 && (await res.clone().json().catch(() => ({}))).code === "STALE") {
+          alert("This page was changed since the list loaded. The list has been refreshed - check its status and try again.");
+          fetchPages();
+        }
         else alert("Status update failed: " + (await apiError(res, "Unknown error")));
       } catch (err) {
         alert("Status update failed.");
@@ -532,16 +544,32 @@ export default function PagesDashboard() {
 
     setSavingQuickEdit(true);
     try {
-      const res = await fetch(adminApiUrl(`/api/admin/pages/${editingPage._id}`), {
+      const changed: any = {};
+      if (!original || editingPage.title !== original.title) changed.title = editingPage.title;
+      if (!original || editingPage.slug !== original.slug) changed.slug = editingPage.slug;
+      if (!original || editingPage.status !== original.status) changed.status = editingPage.status;
+      if (!original || newTemplate !== oldTemplate) changed.template = newTemplate;
+      if (Object.keys(changed).length === 0) {
+        setEditingPage(null);
+        return;
+      }
+      const send = (force: boolean) => fetch(adminApiUrl(`/api/admin/pages/${editingPage._id}`), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: editingPage.title,
-          slug: editingPage.slug,
-          status: editingPage.status,
-          template: newTemplate
-        })
+        body: JSON.stringify(force ? { ...changed, force: true } : { ...changed, baseUpdatedAt: original?.updatedAt })
       });
+      let res = await send(false);
+      if (res.status === 409) {
+        const err = await res.clone().json().catch(() => ({}));
+        if (err.code === "STALE") {
+          if (!confirm(`${err.error}\n\nOK = apply only the fields you changed here.\nCancel = stop and reload the list.`)) {
+            setEditingPage(null);
+            fetchPages();
+            return;
+          }
+          res = await send(true);
+        }
+      }
       if (res.ok) {
         const data = await res.json().catch(() => ({}));
         if (data?.cascadedChildren) {
@@ -1013,9 +1041,16 @@ export default function PagesDashboard() {
                       const ownSlug = (newPage.slug || "").split("/").pop() || "";
                       let computedSlug = ownSlug;
 
+                      const validCountrySlug = countryPages.some((c) => c.slug === newPage.selectedCountrySlug)
+                        ? newPage.selectedCountrySlug
+                        : (countryPages[0]?.slug || "");
                       if (template === "city") {
-                        const cSlug = newPage.selectedCountrySlug || "usa";
-                        const firstState = statePages[0]?.slug || "usa/texas";
+                        const cSlug = validCountrySlug;
+                        const firstState = statePages.find((s) =>
+                          s.slug.startsWith(`${cSlug}/`) ||
+                          s.content?.countrySlug === cSlug ||
+                          (cSlug === "usa" && !s.slug.includes("/"))
+                        )?.slug || "";
                         const sSeg = firstState.split("/").pop();
                         computedSlug = `${cSlug}/${sSeg}/${ownSlug}`;
                         setNewPage({
@@ -1026,7 +1061,7 @@ export default function PagesDashboard() {
                           slug: computedSlug
                         });
                       } else if (template === "state") {
-                        const cSlug = newPage.selectedCountrySlug || "usa";
+                        const cSlug = validCountrySlug;
                         computedSlug = `${cSlug}/${ownSlug}`;
                         setNewPage({
                           ...newPage,

@@ -369,7 +369,7 @@ export default function ServicesTemplate({ pageData }: { pageData?: any; params?
         s.isTrashed ||
         typeof s.slug !== "string" || !s.slug.trim() ||
         typeof s.title !== "string" || !s.title.trim() ||
-        !isServiceVisibleOnPage(s, "services")
+        ![pageData?.slug, "services"].filter(Boolean).some((id) => isServiceVisibleOnPage(s, id))
       ) return false;
       const key = s.slug.trim();
       if (seenSlugs.has(key)) return false;

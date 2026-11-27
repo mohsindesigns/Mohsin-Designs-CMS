@@ -29,6 +29,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     user.role = roleId || user.role;
     user.status = status || user.status;
     if (password) user.password = password;
+    if (password || user.status !== before.status || user.role.toString() !== before.roleId) {
+      user.tokenVersion = (user.tokenVersion || 0) + 1;
+    }
 
     await user.save();
 

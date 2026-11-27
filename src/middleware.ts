@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 
 const ADMIN_COOKIE = 'mohsin_admin_session';
@@ -46,12 +46,17 @@ function matchRedirectRule(rule: RedirectRule, pathname: string, search: string)
     return null;
   }
 
-  let redirectPath = rule.sourceUrl;
-  const qIdx = redirectPath.indexOf('?');
-  if (qIdx !== -1) redirectPath = redirectPath.substring(0, qIdx);
+  let source = rule.sourceUrl || '';
   // A rule saved without a leading slash (possible for data written before the admin API started
   // enforcing one) can never equal pathname, which always has one - restore it before comparing.
-  if (redirectPath && !redirectPath.startsWith('/')) redirectPath = '/' + redirectPath;
+  if (source && !/^https?:\/\//i.test(source) && !source.startsWith('/')) source = '/' + source;
+  let srcUrl: URL;
+  try {
+    srcUrl = new URL(source, 'http://localhost');
+  } catch {
+    return null;
+  }
+  const redirectPath = srcUrl.pathname;
 
   // Trailing slashes are normalized unconditionally (not gated behind rule.ignoreSlash): this site
   // has trailingSlash:true in next.config.ts, so every real request path carries one. A rule saved
@@ -66,14 +71,28 @@ function matchRedirectRule(rule: RedirectRule, pathname: string, search: string)
     normRed = normRed.toLowerCase();
   }
 
-  if (normReq === normRed) {
-    return rule.targetUrl;
+  if (normReq !== normRed) return null;
+
+  const mode = rule.queryParamMode || 'exact';
+  if (mode === 'ignore') return rule.targetUrl;
+
+  const fold = (v: string | null) => (v !== null && rule.ignoreCase ? v.toLowerCase() : v);
+  if (mode === 'pass') {
+    return fold(search) === fold(srcUrl.search) ? rule.targetUrl : null;
   }
 
-  return null;
+  const reqParams = new URLSearchParams(search);
+  const reqKeys = Array.from(reqParams.keys()).sort();
+  const srcKeys = Array.from(srcUrl.searchParams.keys()).sort();
+  if (reqKeys.length !== srcKeys.length) return null;
+  for (let i = 0; i < reqKeys.length; i++) {
+    if (reqKeys[i] !== srcKeys[i]) return null;
+    if (fold(reqParams.get(reqKeys[i])) !== fold(srcUrl.searchParams.get(reqKeys[i]))) return null;
+  }
+  return rule.targetUrl;
 }
 
-export async function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest, event: NextFetchEvent) {
   const { pathname } = req.nextUrl;
 
   // 1. Check for global redirects (only for public HTML pages, not API, admin, assets, dev tools)
@@ -137,11 +156,27 @@ export async function middleware(req: NextRequest) {
           if (target.startsWith('/')) {
             target = new URL(target, req.url).toString();
           }
+          let response: NextResponse;
           try {
-            return NextResponse.redirect(target, rule.statusCode || 301);
+            response = NextResponse.redirect(target, rule.statusCode || 301);
           } catch {
             continue;
           }
+          // Count the hit without delaying the redirect (rules are matched in memory above, so
+          // nothing else ever records traffic). Disabled when INTERNAL_API_SECRET is unset.
+          const hitSecret = process.env.INTERNAL_API_SECRET;
+          if (hitSecret && rule._id) {
+            const port = process.env.PORT || '3007';
+            const internalBase = process.env.INTERNAL_API_URL || `http://127.0.0.1:${port}`;
+            event.waitUntil(
+              fetch(new URL('/api/redirects/hit/', internalBase).toString(), {
+                method: 'POST',
+                headers: { 'content-type': 'application/json', 'x-internal-secret': hitSecret },
+                body: JSON.stringify({ id: String(rule._id) })
+              }).then(() => undefined, () => undefined)
+            );
+          }
+          return response;
         }
       }
     }

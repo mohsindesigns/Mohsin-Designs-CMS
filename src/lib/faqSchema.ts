@@ -83,10 +83,15 @@ export function syncFaqSchema(
   const generated = buildFaqSchema(items);
   if (!generated) return { status: "empty" };
 
-  const hasExistingUnrelatedSchema = !!(currentSchemaMarkup && currentSchemaMarkup.trim()) && !wasAutoSynced;
+  const existing = (currentSchemaMarkup || "").trim();
+  let prior: any = null;
+  try {
+    prior = JSON.parse(existing.replace(/^<script[^>]*>/i, "").replace(/<\/script>$/i, "").trim());
+  } catch {}
+  const hasExistingUnrelatedSchema = !!existing && !wasAutoSynced && prior?.["@type"] !== "FAQPage";
   if (hasExistingUnrelatedSchema) {
     const proceed = window.confirm(
-      "This page already has schema markup entered in the Schema tab. Syncing FAQ schema will replace it - this cannot be undone. Continue?"
+      "This page's FAQ schema field contains custom markup that syncing will replace. Continue?"
     );
     if (!proceed) return { status: "cancelled" };
   }

@@ -254,7 +254,7 @@ export default function ServicesEditor({ pageId, data, setData, seo, setSeo }: {
                   <p>
                     The cards are generated automatically from your service catalog (Admin &rarr; Services). Draft and trashed
                     services are left out, and the rest are ordered by their &ldquo;Order / Position&rdquo; number. Each card&apos;s
-                    icon, tag, summary and bullet points come from that service, and it links to the service page. Edit a
+                    icon, summary and bullet points come from that service, and it links to the service page. Edit a
                     service there to change its card; this tab only controls the heading above the cards.
                   </p>
                 </div>

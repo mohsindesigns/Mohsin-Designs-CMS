@@ -17,6 +17,7 @@ import {
   Trash2, Rows3, Columns3
 } from "lucide-react";
 import MediaSelector from "./MediaSelector";
+import { getValidHref } from "@/lib/utils";
 
 interface RichTextEditorProps {
   content?: any; // accepts string | string[] | null | undefined from DB
@@ -84,7 +85,7 @@ export default function RichTextEditor({
   const toggleHtmlMode = () => {
     if (isHtmlMode) {
       if (editor) {
-        editor.commands.setContent(normalizeContent(rawContent));
+        editor.commands.setContent(normalizeContent(rawContent), { emitUpdate: false });
       }
     }
     setIsHtmlMode(!isHtmlMode);
@@ -149,16 +150,8 @@ export default function RichTextEditor({
       editor.chain().focus().extendMarkRange("link").unsetLink().run();
       return;
     }
-    let finalUrl = url;
-    if (
-      url &&
-      !url.startsWith("http") &&
-      !url.startsWith("/") &&
-      !url.startsWith("#") &&
-      !url.startsWith("mailto:")
-    ) {
-      if (url.includes(".")) finalUrl = `https://${url}`;
-    }
+    const finalUrl = getValidHref(url);
+    if (!finalUrl) return;
     editor.chain().focus().extendMarkRange("link").setLink({ href: finalUrl }).run();
   };
 

@@ -245,9 +245,7 @@ export async function PATCH(
     let globalChanged = false;
     if (updatedPage && content !== undefined && updatedPage.template === 'home' && updatedPage.status === 'published' && !updatedPage.isTrashed) {
       const homepageId = await getHomepageId();
-      const isTheHomepage =
-        (!!homepageId && String(updatedPage._id) === homepageId) ||
-        updatedPage.slug === 'home' || updatedPage.slug === 'homepage' || updatedPage.slug === '/';
+      const isTheHomepage = isLiveHomepage(updatedPage, homepageId);
       if (isTheHomepage) {
         try {
           const SiteContent = (await import('@/models/Content')).default;
@@ -283,6 +281,15 @@ export async function PATCH(
                 ...(currentDoc.data?.portfolio || {}),
                 ...updateData.content.portfolio,
                 ...(Array.isArray(masterProjects) ? { projects: masterProjects } : {}),
+              };
+            }
+            if (updateData.content.testimonials && typeof updateData.content.testimonials === 'object') {
+              // testimonials.testimonials is the Admin > Reviews master list; never take it from the page.
+              const masterReviews = currentDoc.data?.testimonials?.testimonials;
+              mergedData.testimonials = {
+                ...(currentDoc.data?.testimonials || {}),
+                ...updateData.content.testimonials,
+                ...(Array.isArray(masterReviews) ? { testimonials: masterReviews } : {}),
               };
             }
             await SiteContent.updateOne(

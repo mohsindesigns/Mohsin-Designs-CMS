@@ -3,9 +3,6 @@
 
 const TURNSTILE_VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
-// Cloudflare Turnstile production secret key for mohsindesigns.com
-const DEFAULT_PROD_SECRET_KEY = '0x4AAAAAAEJg7ZqMfKx2vSUv3G4ew9BiNhA';
-
 export async function verifyTurnstileToken(
   token?: string,
   remoteip?: string
@@ -15,8 +12,14 @@ export async function verifyTurnstileToken(
     return { success: false, error: 'Captcha verification is required. Please complete the security check.' };
   }
 
-  const envSecret = process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY;
-  const secret = (envSecret && !envSecret.startsWith('1x0000')) ? envSecret : DEFAULT_PROD_SECRET_KEY;
+  const secret = process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY;
+  const isProd = process.env.NODE_ENV === 'production';
+  if (!secret || (isProd && secret.startsWith('1x0000'))) {
+    console.error('Cloudflare Turnstile secret key is missing (or is a test key in production).');
+    return isProd
+      ? { success: false, error: 'Captcha is not configured. Please try again later.' }
+      : { success: true };
+  }
 
   try {
     const formData = new URLSearchParams();

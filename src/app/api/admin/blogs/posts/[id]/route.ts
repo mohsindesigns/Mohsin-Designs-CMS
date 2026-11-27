@@ -4,6 +4,7 @@ import Post from '@/models/Post';
 import { hasPermission, getSessionUser } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
 import { applyPublishRules, dbErrorResponse, pickPostFields, revalidateBlog, slugify } from '@/lib/blog-admin';
+import { promoteDueScheduledPosts } from '@/lib/blog-public';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,6 +21,7 @@ export async function GET(
   try {
     const { id } = await params;
     await connectToDatabase();
+    await promoteDueScheduledPosts();
     const post = await Post.findById(id).populate('categories tags').lean();
     if (!post) return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     return NextResponse.json(post);
@@ -56,7 +58,7 @@ export async function PATCH(
       updateData.slug = slugify(updateData.title ?? oldPost.title);
       if (!updateData.slug) return NextResponse.json({ error: 'Slug is required (use letters or numbers).' }, { status: 400 });
     }
-    if ('content' in updateData) {
+    if ('content' in updateData && (updateData.status ?? oldPost.status) !== 'draft') {
       const html = String(updateData.content || '');
       if (!html.replace(/<[^>]*>/g, '').trim() && !/<img\b/i.test(html)) {
         return NextResponse.json({ error: 'Content cannot be empty.' }, { status: 400 });

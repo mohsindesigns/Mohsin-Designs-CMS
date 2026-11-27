@@ -43,7 +43,15 @@ function LoginForm() {
 
       if (res.ok && data.success) {
         const rawFrom = searchParams.get("from");
-        const destination = rawFrom && !rawFrom.startsWith("/admin/login") ? rawFrom : "/admin/";
+        let destination = "/admin/";
+        if (rawFrom) {
+          try {
+            const url = new URL(rawFrom, window.location.origin);
+            if (url.origin === window.location.origin && url.pathname.startsWith("/admin") && !url.pathname.startsWith("/admin/login")) {
+              destination = url.pathname + url.search + url.hash;
+            }
+          } catch {}
+        }
         window.location.href = destination;
       } else {
         setError(data.error || "Invalid credentials. Please try again.");

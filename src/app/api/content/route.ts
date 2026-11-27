@@ -5,9 +5,10 @@ import { hasPermission, getSessionUser } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
 import { sanitizeEncoding } from '@/lib/utils';
 import contentDefaults from '@/data/content.json';
+import { sanitizePublicContent } from '@/lib/content';
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     await connectToDatabase();
     
@@ -16,13 +17,14 @@ export async function GET() {
     
     if (!content || !content.data) {
       console.warn('Content not found in MongoDB, returning fallback defaults from content.json');
-      return NextResponse.json(contentDefaults);
+      return NextResponse.json(contentDefaults, { headers: { 'X-Content-Fallback': '1' } });
     }
-    
-    return NextResponse.json(content.data);
+
+    const session = await getSessionUser(req);
+    return NextResponse.json(session ? content.data : sanitizePublicContent(content.data));
   } catch (error: any) {
     console.error('Content fetch error (falling back to contentDefaults):', error);
-    return NextResponse.json(contentDefaults);
+    return NextResponse.json(contentDefaults, { status: 503, headers: { 'X-Content-Fallback': '1' } });
   }
 }
 
@@ -39,6 +41,11 @@ export async function PUT(req: NextRequest) {
     await connectToDatabase();
     const body = await req.json();
     const sanitizedBody = sanitizeEncoding(body);
+
+    const isGlobalLayout = ['settings', 'navbar', 'footer', 'loader', 'hours'].includes(sanitizedBody?.section);
+    if (isGlobalLayout ? !canUpdateSettings : !canUpdatePages) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
 
     const oldContent = await SiteContent.findOne({ key: 'complete_data' });
     const existingData = oldContent?.data || {};
@@ -83,13 +90,15 @@ export async function PUT(req: NextRequest) {
         await SiteContent.updateOne(
           { key: 'services_backup' },
           {
+            // Under `data`: the schema is strict, so top-level fields here were silently dropped.
             $set: {
-              lastBackup: new Date(),
-              count: incomingList.length,
-              services: incomingList
+              'data.lastBackup': new Date(),
+              'data.count': incomingList.length,
+              'data.services': incomingList,
+              lastUpdated: new Date()
             },
             $push: {
-              history: {
+              'data.history': {
                 $each: [{ timestamp: new Date(), count: incomingList.length, user: (session as any)?.username || 'admin' }],
                 $slice: -20 // keep last 20 snapshots
               }
@@ -107,7 +116,7 @@ export async function PUT(req: NextRequest) {
       // send a single key matching their section name - merge each provided key individually
       // so navbar/footer/loader/hours edits (e.g. the navbar logo) aren't silently dropped.
       finalData = { ...existingData };
-      for (const key of ['settings', 'navbar', 'footer', 'loader', 'hours']) {
+      for (const key of ['settings', 'navbar', 'footer', 'loader', 'hours', 'contact']) {
         if (sanitizedBody[key] !== undefined) {
           finalData[key] = sanitizedBody[key];
         }
@@ -119,9 +128,13 @@ export async function PUT(req: NextRequest) {
 
     } else if (sanitizedBody.section && sanitizedBody.section !== 'complete_data') {
       // Granular section update for other editors (e.g. 'portfolio', 'faq', 'testimonials')
+      const incoming = sanitizedBody[sanitizedBody.section] ?? sanitizedBody;
+      const prevSection = existingData[sanitizedBody.section];
       finalData = {
         ...existingData,
-        [sanitizedBody.section]: sanitizedBody[sanitizedBody.section] ?? sanitizedBody
+        [sanitizedBody.section]: sanitizedBody.section === 'portfolio' && prevSection && typeof prevSection === 'object' && !Array.isArray(prevSection)
+          ? { ...prevSection, ...incoming }
+          : incoming
       };
 
       // Ensure services are NEVER touched by any other section update
@@ -178,23 +191,41 @@ export async function PUT(req: NextRequest) {
       }).catch((bkErr) => console.warn('[Backup Engine] Complete DB snapshot failed:', bkErr));
     }).catch((bkErr) => console.warn('[Backup Engine] Backup import failed:', bkErr));
 
+    // Granular sections $set only their own paths so concurrent saves of other sections aren't reverted.
+    let changedKeys: string[] | null = null;
+    if (sanitizedBody.section === 'services') {
+      changedKeys = ['services', 'globalServices'];
+    } else if (sanitizedBody.section === 'settings') {
+      changedKeys = ['settings', 'navbar', 'footer', 'loader', 'hours', 'contact'].filter((k) => sanitizedBody[k] !== undefined);
+    } else if (sanitizedBody.section && sanitizedBody.section !== 'complete_data' && /^[A-Za-z0-9_-]+$/.test(sanitizedBody.section)) {
+      changedKeys = [sanitizedBody.section];
+    }
+    const setOps: Record<string, any> = { lastUpdated: new Date() };
+    if (changedKeys && oldContent?.data) {
+      for (const k of changedKeys) setOps[`data.${k}`] = finalData[k];
+    } else {
+      setOps.data = finalData;
+    }
+
     const result = await SiteContent.updateOne(
       { key: 'complete_data' },
-      { 
-        $set: { 
-          data: finalData,
-          lastUpdated: new Date()
-        } 
-      },
+      { $set: setOps },
       { upsert: true }
     );
 
     // Sync portfolio to Home Page document in MongoDB so it never gets overridden by stale page data
-    if (sanitizedBody?.portfolio) {
+    // Never copy `projects`: on the Home doc that list is the hand-picked Featured selection.
+    const portfolioSet: Record<string, any> = {};
+    if (sanitizedBody?.portfolio && typeof sanitizedBody.portfolio === 'object') {
+      for (const [k, v] of Object.entries(sanitizedBody.portfolio)) {
+        if (k !== 'projects') portfolioSet[`content.portfolio.${k}`] = v;
+      }
+    }
+    if (Object.keys(portfolioSet).length > 0) {
       import('@/models/Page').then(({ default: PageModel }) => {
         PageModel.updateMany(
           { $or: [{ slug: 'home' }, { template: 'home' }, { slug: '/' }] },
-          { $set: { "content.portfolio": sanitizedBody.portfolio } }
+          { $set: portfolioSet }
         ).catch((syncErr) => console.warn('Could not sync portfolio to Home Page doc:', syncErr));
       }).catch(() => {});
     }

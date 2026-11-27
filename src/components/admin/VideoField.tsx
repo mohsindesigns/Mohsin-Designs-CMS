@@ -41,6 +41,7 @@ export default function VideoField({ label = "Testimonial Video", videoType, vid
   const urlTabEmbed = activeType === "url" ? parseVideoEmbed(urlDraft) : null;
 
   const handleTabChange = (type: VideoType) => {
+    if (type === activeType) return;
     // Switching source type starts that tab fresh rather than carrying over a URL that
     // was only ever valid for the previous type (an uploaded media URL isn't a YouTube
     // link, etc.).
