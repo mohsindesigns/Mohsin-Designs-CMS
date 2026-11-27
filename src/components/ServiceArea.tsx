@@ -35,7 +35,7 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
   const ctaHref = serviceArea.ctaHref || serviceArea.ctaLink || "#contact-form";
 
   // Auto-enrich hubs with geocoded coordinates & timezone if missing
-  const rawHubs: any[] = Array.isArray(serviceArea.hubs) && serviceArea.hubs.length > 0 ? serviceArea.hubs : [
+  const rawHubs: any[] = Array.isArray(serviceArea.hubs) ? serviceArea.hubs : [
     { id: "us", name: "United States", focus: "Architecture & Design", timezone: "EST / PST", link: "/locations" },
     { id: "ca", name: "Canada", focus: "Cloud & Security", timezone: "EST", link: "/locations" },
     { id: "uk", name: "United Kingdom", focus: "Fintech & Enterprise UI", timezone: "GMT", link: "/locations" },
@@ -97,6 +97,7 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
             />
 
             {/* ── Country / State chip grid ── */}
+            {hubs.length > 0 && (
             <div className="w-full flex flex-wrap justify-center lg:justify-start gap-2">
               {hubs.map((hub) => {
                 const isActive = activeHub === hub.id;
@@ -144,8 +145,10 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
                 );
               })}
             </div>
+            )}
 
             {/* Fixed-height active hub info panel with Link navigation */}
+            {hubs.length > 0 && (
             <div className="relative w-full min-h-[64px] overflow-hidden">
               <AnimatePresence mode="wait">
                 {selectedHubObj ? (
@@ -191,6 +194,7 @@ export default function ServiceArea({ data: overrideData }: { data?: any }) {
                 )}
               </AnimatePresence>
             </div>
+            )}
 
             {/* Solid CTA Button */}
             <CtaButton href={ctaHref}>{ctaText}</CtaButton>

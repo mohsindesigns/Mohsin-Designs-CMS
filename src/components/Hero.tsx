@@ -23,7 +23,7 @@ export default function Hero({ data, content: overrideContent, breadcrumb }: { d
   const description = hero?.description !== undefined ? hero.description : "High-performance digital engineering, branding, SEO, and web design.";
   
   // Resolve buttons dynamically from CMS array or fallback to defaults
-  const buttonsList = (Array.isArray(hero?.buttons) && hero.buttons.length > 0)
+  const buttonsList = Array.isArray(hero?.buttons)
     ? hero.buttons
     : [
         {

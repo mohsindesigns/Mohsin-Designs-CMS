@@ -170,7 +170,8 @@ export default function HowWeWork({ data: overrideData }: { data?: any }) {
     { value: "<24h", label: "Turnaround", sublabel: "Average Response", percentage: 0.9 }
   ];
 
-  const rawReasons = Array.isArray(rawWhyChoose.reasons) && rawWhyChoose.reasons.length > 0 
+  // A saved reasons array (even empty) is deliberate; legacy `features` still win over an empty one.
+  const rawReasons = Array.isArray(rawWhyChoose.reasons) && (rawWhyChoose.reasons.length > 0 || !(Array.isArray(rawWhyChoose.features) && rawWhyChoose.features.length > 0))
     ? rawWhyChoose.reasons 
     : (Array.isArray(rawWhyChoose.features) && rawWhyChoose.features.length > 0 
         ? rawWhyChoose.features.map((f: any, idx: number) => ({
@@ -258,6 +259,7 @@ export default function HowWeWork({ data: overrideData }: { data?: any }) {
           </div>
 
           {/* ── RIGHT SCROLLING ──────────────────────────────── */}
+          {reasons.length > 0 && (
           <div className="lg:flex-1 lg:pl-14 flex flex-col">
             {reasons.map((reason: any, index: number) => {
               const IconComp = reason.icon;
@@ -327,6 +329,7 @@ export default function HowWeWork({ data: overrideData }: { data?: any }) {
               );
             })}
           </div>
+          )}
 
         </div>
       </div>

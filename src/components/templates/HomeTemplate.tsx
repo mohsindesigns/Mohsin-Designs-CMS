@@ -149,6 +149,9 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any; par
   if (pickedProjects.length > 0 && masterProjects.length > 0) {
     const { resolved } = resolveSelectedProjects(pickedProjects, masterProjects);
     portfolioData = { ...(contextPortfolio || {}), projects: resolved.length > 0 ? resolved : masterProjects.slice(0, 8) };
+  } else if (pickedProjects.length > 0 && Array.isArray(content.masterProjects)) {
+    // Catalog injected but empty: every picked project has been deleted.
+    portfolioData = { ...(contextPortfolio || {}), projects: [] };
   }
 
   // Video testimonials render nothing without at least one video, so don't mount an empty wrapper

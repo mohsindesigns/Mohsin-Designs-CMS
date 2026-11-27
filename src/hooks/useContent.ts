@@ -76,7 +76,7 @@ export const useContent = () => {
             return Array.isArray(s) ? s : (Array.isArray(s.services) ? s.services : []);
         })(),
         navbar: getSafe(completeData, 'navbar', { menu: [], logo: "", cta: { text: "Get Quote", href: "/contact-us" } }),
-        hero: getSafe(completeData, 'hero', { headlines: [], description: "", buttons: [], stats: [], images: [] }),
+        hero: getSafe(completeData, 'hero', { headlines: [], description: "", stats: [], images: [] }),
         about: getSafe(completeData, 'about'),
         services: (() => {
             const s = getSafe(completeData, 'services', {});
@@ -197,7 +197,7 @@ export const useContent = () => {
                 subtext: raw.subtext || raw.section?.description || defaults.subtext,
                 stats: (Array.isArray(raw.stats) && raw.stats.length > 0) ? raw.stats : defaults.stats,
                 illustrations: { ...defaults.illustrations, ...(raw.illustrations || {}) },
-                reasons: (Array.isArray(raw.reasons) && raw.reasons.length > 0) 
+                reasons: (Array.isArray(raw.reasons) && (raw.reasons.length > 0 || !(Array.isArray(raw.features) && raw.features.length > 0)))
                     ? raw.reasons 
                     : (Array.isArray(raw.features) && raw.features.length > 0 
                         ? raw.features.map((f: any, idx: number) => ({
@@ -247,7 +247,7 @@ export const useContent = () => {
                 ctaHref: raw.ctaHref || defaults.ctaHref,
                 mapSrc: raw.mapSrc || defaults.mapSrc,
                 mapAlt: raw.mapAlt || defaults.mapAlt,
-                hubs: Array.isArray(raw.hubs) && raw.hubs.length > 0 ? raw.hubs : defaults.hubs
+                hubs: Array.isArray(raw.hubs) ? raw.hubs : defaults.hubs
             };
         })(),
 

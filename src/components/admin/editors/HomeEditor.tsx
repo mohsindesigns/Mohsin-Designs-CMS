@@ -138,7 +138,7 @@ const DEFAULT_HERO_MARQUEE = ["Roofing", "Siding", "Windows", "Decks"];
 
 // Same resolution HowWeWork uses: saved "reasons", else legacy "features", else the built-in steps.
 function getEffectiveReasons(why: any): any[] {
-   if (Array.isArray(why?.reasons) && why.reasons.length > 0) return why.reasons;
+   if (Array.isArray(why?.reasons) && (why.reasons.length > 0 || !(Array.isArray(why?.features) && why.features.length > 0))) return why.reasons;
    if (Array.isArray(why?.features) && why.features.length > 0) {
       return why.features.map((f: any, idx: number) => ({
          num: String(idx + 1).padStart(2, "0"),
@@ -292,6 +292,12 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
    // aboutClean is set only by the Country/State/City editors, whose templates hide these sections when empty.
    const locationPage = aboutClean;
    const fallbackHubs = locationPage ? [] : DEFAULT_SERVICE_HUBS;
+   const heroButtons: any[] = Array.isArray(data.hero?.buttons)
+      ? data.hero.buttons
+      : [
+         { text: data.hero?.ctaPrimaryText || "Get Estimate", href: data.hero?.ctaPrimaryHref || "/contact-us", icon: "ArrowRight", primary: true },
+         { text: data.hero?.ctaSecondaryText || "Our Services", href: data.hero?.ctaSecondaryHref || "/services", icon: "ArrowUpRight", primary: false }
+      ];
    const trustedLogos: any[] = Array.isArray(data.trustedBrands?.logos) ? data.trustedBrands.logos : (locationPage ? [] : DEFAULT_TRUSTED_LOGOS);
    const industryList: any[] = Array.isArray(data.industries?.list) && data.industries.list.length > 0 ? data.industries.list : DEFAULT_INDUSTRIES;
    // Reviews: only what is really saved. (The list used to start with the 9 built-in SAMPLE reviews, so the
@@ -378,20 +384,8 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>4. Buttons</h3>
                         <div className="space-y-4">
-                           {((Array.isArray(data.hero?.buttons) && data.hero.buttons.length > 0)
-                              ? data.hero.buttons
-                              : [
-                                 { text: data.hero?.ctaPrimaryText || "Get Estimate", href: data.hero?.ctaPrimaryHref || "/contact-us", icon: "ArrowRight", primary: true },
-                                 { text: data.hero?.ctaSecondaryText || "Our Services", href: data.hero?.ctaSecondaryHref || "/services", icon: "ArrowUpRight", primary: false }
-                              ]
+                           {(heroButtons
                            ).map((btn: any, i: number) => {
-                              const heroButtons = (Array.isArray(data.hero?.buttons) && data.hero.buttons.length > 0)
-                                 ? data.hero.buttons
-                                 : [
-                                    { text: data.hero?.ctaPrimaryText || "Get Estimate", href: data.hero?.ctaPrimaryHref || "/contact-us", icon: "ArrowRight", primary: true },
-                                    { text: data.hero?.ctaSecondaryText || "Our Services", href: data.hero?.ctaSecondaryHref || "/services", icon: "ArrowUpRight", primary: false }
-                                 ];
-
                               return (
                                  <div key={i} className={UI.card + " space-y-4"}>
                                     <div className="space-y-1.5">
@@ -462,12 +456,6 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                            })}
                            <button
                               onClick={() => {
-                                 const heroButtons = (Array.isArray(data.hero?.buttons) && data.hero.buttons.length > 0)
-                                    ? data.hero.buttons
-                                    : [
-                                       { text: data.hero?.ctaPrimaryText || "Get Estimate", href: data.hero?.ctaPrimaryHref || "/contact-us", icon: "ArrowRight", primary: true },
-                                       { text: data.hero?.ctaSecondaryText || "Our Services", href: data.hero?.ctaSecondaryHref || "/services", icon: "ArrowUpRight", primary: false }
-                                    ];
                                  updateSection("hero", "buttons", [...heroButtons, { text: "", href: "", primary: heroButtons.length === 0, icon: "ArrowRight" }]);
                               }}
                               className={UI.buttonAdd}
@@ -1352,7 +1340,7 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                            </div>
                            <button
                               onClick={() => {
-                                 const currentHubs = (data.serviceArea?.hubs && data.serviceArea.hubs.length > 0)
+                                 const currentHubs = Array.isArray(data.serviceArea?.hubs)
                                     ? data.serviceArea.hubs
                                     : fallbackHubs;
                                  const newHub = { id: `hub-${Date.now()}`, name: "California, USA", focus: "Innovation Hub", timezone: "PST", link: "/locations" };
@@ -1365,11 +1353,11 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                         </div>
 
                         <div className="space-y-4">
-                           {((data.serviceArea?.hubs && data.serviceArea.hubs.length > 0)
+                           {(Array.isArray(data.serviceArea?.hubs)
                               ? data.serviceArea.hubs
                               : fallbackHubs
                            ).map((hub: any, hIdx: number) => {
-                              const currentHubs = (data.serviceArea?.hubs && data.serviceArea.hubs.length > 0)
+                              const currentHubs = Array.isArray(data.serviceArea?.hubs)
                                  ? data.serviceArea.hubs
                                  : fallbackHubs;
                               const geo = resolveCountryLocation(hub.name);
