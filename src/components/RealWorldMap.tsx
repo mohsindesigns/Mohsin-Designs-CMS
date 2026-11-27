@@ -95,16 +95,18 @@ export default function RealWorldMap({
     const cartoKey = process.env.NEXT_PUBLIC_CARTO_API_KEY;
     const keyQuery = cartoKey ? `?key=${cartoKey}` : "";
 
-    // dark_all's own place-name labels are baked into the tile's raster pixels - rendered in
-    // a dim gray that's barely distinguishable from the dark land fill (confirmed: no CSS
-    // filter can separate them, since brightness/contrast scale every pixel in the tile
-    // uniformly, text included - pushing the whole tile brighter or higher-contrast moves the
-    // label and the land together instead of apart). dark_nolabels drops those labels
-    // entirely; our own hub markers already show their name in a label we fully control
-    // (RealWorldMap's own tooltip, not tile pixels), so nothing actually goes unlabeled.
+    // dark_all's own place-name labels are baked into the tile's raster pixels, rendered dim
+    // at closer zoom levels (confirmed against CartoDB's completely unmodified, no-filter
+    // tiles - same dim labels with zero CSS applied, so this is how the free dark style itself
+    // renders at this zoom, not something our code does). Tried dark_nolabels to sidestep it,
+    // but that removes every country name on the whole map, which is worse than a dim one.
+    // Keeping dark_all - our own hub markers still show their name via a label we fully
+    // control on top, and most of the map (world view and the business's own hub countries)
+    // reads fine; only non-hub countries at a deep zoom are dim, a real limit of this free
+    // CartoDB style rather than a bug we can fix from our own code/CSS.
     const tileUrl = cartoKey
       ? isDarkMode
-        ? `https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png${keyQuery}`
+        ? `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png${keyQuery}`
         : `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png${keyQuery}`
       : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 
