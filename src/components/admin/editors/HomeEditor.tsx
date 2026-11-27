@@ -173,6 +173,18 @@ const PREFILL_KEYS = ["hero", "trustedBrands", "videoTestimonials", "about", "in
 export default function HomeEditor({ pageId, data, setData, aboutClean = false }: { pageId: string, data: any, setData: (d: any) => void, aboutClean?: boolean }) {
    const [activeTab, setActiveTab] = useState("hero");
 
+   // Live pages list, used ONLY to warn when a hand-typed "Service Area" hub link (below) does not
+   // match any real published page - the field itself stays free text (it also legitimately holds
+   // "#contact" and off-site URLs), so this never blocks typing, it only flags a likely-dead link
+   // before it quietly 404s on the live site like a mistyped city slug ("forth-worth" vs "fort-worth").
+   const [availablePages, setAvailablePages] = useState<any[]>([]);
+   useEffect(() => {
+      fetch(adminApiUrl("/api/admin/pages"))
+         .then((res) => res.json())
+         .then((pages) => { if (Array.isArray(pages)) setAvailablePages(pages); })
+         .catch((err) => console.error("Failed to load CMS pages list:", err));
+   }, []);
+
    // Prefill an empty page once. Guarded by a ref: this effect re-runs on every data change, so
    // without the guard it re-fetched in an endless loop whenever the fetched content had no hero.
    const prefilled = useRef(false);
@@ -200,6 +212,28 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
    }, [data, setData]);
 
    if (!data) return <div className="flex items-center justify-center h-64"><Loader2 className="w-5 h-5 text-[#2271b1] animate-spin" /></div>;
+
+   // A hub "Navigation Link" is only checkable when it points at one of OUR OWN pages (an anchor
+   // like "#contact" or an off-site URL is never wrong here). Checks the slug against the live
+   // pages list exactly like the Locations hub editor already does for its own country/state links.
+   const hubLinkWarning = (link: string): string => {
+      const raw = String(link || "").trim();
+      if (!raw || raw.startsWith("#")) return "";
+      let path = raw;
+      if (/^https?:\/\//i.test(raw)) {
+         try { path = new URL(raw).pathname; } catch { return ""; }
+      } else if (!raw.startsWith("/")) {
+         return ""; // mailto:, tel:, javascript: guards etc. - not a page link to validate
+      }
+      const slug = path.replace(/^\/+|\/+$/g, "");
+      if (!slug || slug === "locations" || slug === "location") return "";
+      if (availablePages.length === 0) return "";
+      const clean = (v: any) => String(v || "").trim().replace(/^\/+|\/+$/g, "");
+      const page = availablePages.find((p: any) => !p.isTrashed && clean(p.slug) === slug);
+      if (!page) return `No published page at "/${slug}/" - this link will 404 on the live site.`;
+      if (page.status && page.status !== "published") return `"${page.title}" is still a draft - this link will 404 until it is published.`;
+      return "";
+   };
 
    const updateSection = (section: string | null, field: string | null, value: any) => {
       setData((prev: any) => {
@@ -1457,6 +1491,11 @@ export default function HomeEditor({ pageId, data, setData, aboutClean = false }
                                              className={UI.input}
                                              placeholder="e.g. /locations/california or #contact"
                                           />
+                                          {hubLinkWarning(hub.link) && (
+                                             <p className="text-[10px] font-semibold text-[#d63638] flex items-center gap-1 pt-0.5">
+                                                ⚠ {hubLinkWarning(hub.link)}
+                                             </p>
+                                          )}
                                        </div>
                                     </div>
                                  </div>
