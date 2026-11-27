@@ -292,6 +292,13 @@ export async function PATCH(
                 ...(Array.isArray(masterReviews) ? { testimonials: masterReviews } : {}),
               };
             }
+            if (updateData.content.contact && typeof updateData.content.contact === 'object') {
+              // Merge rather than replace, and keep Settings-only fields (receiverEmail) owned by Settings.
+              const curContact = currentDoc.data?.contact || {};
+              mergedData.contact = { ...curContact, ...updateData.content.contact };
+              if (curContact.receiverEmail !== undefined) mergedData.contact.receiverEmail = curContact.receiverEmail;
+              else delete mergedData.contact.receiverEmail;
+            }
             await SiteContent.updateOne(
               { key: 'complete_data' },
               { $set: { data: mergedData, lastUpdated: new Date() } }

@@ -72,6 +72,9 @@ function matchRedirectRule(rule: RedirectRule, pathname: string, search: string)
   }
 
   if (normReq !== normRed) return null;
+  // Query matching only applies to rules whose source carries a query string; path-only rules
+  // (every rule saved before query modes existed) keep matching regardless of ?utm_/gclid params.
+  if (!srcUrl.search) return rule.targetUrl;
 
   const mode = rule.queryParamMode || 'exact';
   if (mode === 'ignore') return rule.targetUrl;
@@ -172,7 +175,8 @@ export async function middleware(req: NextRequest, event: NextFetchEvent) {
               fetch(new URL('/api/redirects/hit/', internalBase).toString(), {
                 method: 'POST',
                 headers: { 'content-type': 'application/json', 'x-internal-secret': hitSecret },
-                body: JSON.stringify({ id: String(rule._id) })
+                body: JSON.stringify({ id: String(rule._id) }),
+                signal: AbortSignal.timeout(1500)
               }).then(() => undefined, () => undefined)
             );
           }

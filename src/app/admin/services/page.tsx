@@ -379,8 +379,7 @@ const DEFAULT_SERVICE_TEMPLATE = {
     titleHighlight: "Digital Presence?",
     description: "Schedule a technical consultation today. We'll audit your current bottlenecks and build a concrete roadmap.",
     primaryCta: { text: "Schedule Strategy Call", link: "/contact" },
-    secondaryCta: { text: "View Portfolio", link: "/portfolio" },
-    founderImage: "/founder_portrait_nobg.png"
+    secondaryCta: { text: "View Portfolio", link: "/portfolio" }
   },
   faqBadge: "FREQUENTLY ASKED QUESTIONS",
   faqTitleIntro: "Got Questions?",
@@ -3634,7 +3633,7 @@ export default function ServicesAdminPage() {
                                   <h3 className={UI.sectionHeader}>3. Media</h3>
                                   <ImageField
                                     label="CTA Banner Portrait / Side Image (shown on the right of the banner)"
-                                    value={form.finalCta?.founderImage || (form.finalCta?.backgroundImage !== "/portfolio_hero_bg.png" ? form.finalCta?.backgroundImage : "") || ""}
+                                    value={form.finalCta?.founderImage || form.finalCta?.image || [form.finalCta?.backgroundImage, form.finalCta?.bgImage].find((v: any) => v && v !== "/portfolio_hero_bg.png") || ""}
                                     onChange={(url) => setForm({ ...form, finalCta: { ...form.finalCta, founderImage: url, backgroundImage: url } })}
                                   />
                                 </div>

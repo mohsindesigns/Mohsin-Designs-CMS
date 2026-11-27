@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import Category from '@/models/Category';
 import Post from '@/models/Post';
-import { hasPermission } from '@/lib/rbac';
+import { hasPermission, getPermissions } from '@/lib/rbac';
 import { dbErrorResponse, slugify } from '@/lib/blog-admin';
 
 // The ONE categories route (src/app/api/admin/blog/categories re-exports it).
@@ -30,7 +30,13 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  if (!(await hasPermission(req, 'blog', 'update')) && !(await hasPermission(req, 'blog', 'create'))) {
+  let permissions: Record<string, any> | null;
+  try {
+    permissions = await getPermissions(req);
+  } catch {
+    return NextResponse.json({ error: 'Database unavailable' }, { status: 503 });
+  }
+  if (!(await hasPermission(req, 'blog', 'update', permissions)) && !(await hasPermission(req, 'blog', 'create', permissions))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
   }
   try {

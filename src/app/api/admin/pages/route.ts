@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import connectToDatabase from '@/lib/mongodb';
 import Page from '@/models/Page';
-import { hasPermission, getSessionUser } from '@/lib/rbac';
+import { hasPermission, getSessionUser, getPermissions } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
 import { normalizePageSlug } from '@/lib/utils';
 import {
@@ -133,7 +133,13 @@ function cleanIds(ids: unknown): string[] {
 
 export async function PATCH(req: NextRequest) {
   const session = await getSessionUser(req);
-  if (!(await hasPermission(req, 'pages', 'update'))) {
+  let permissions: Record<string, any> | null;
+  try {
+    permissions = await getPermissions(req);
+  } catch {
+    return NextResponse.json({ error: 'Database unavailable' }, { status: 503 });
+  }
+  if (!(await hasPermission(req, 'pages', 'update', permissions))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
   }
 
@@ -149,7 +155,7 @@ export async function PATCH(req: NextRequest) {
 
     if (action === 'duplicate') {
       // Duplicating creates pages, so it needs the create permission (it used to only need update).
-      if (!(await hasPermission(req, 'pages', 'create'))) {
+      if (!(await hasPermission(req, 'pages', 'create', permissions))) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
       }
       const sourcePages = await Page.find({ _id: { $in: ids } });
@@ -205,7 +211,7 @@ export async function PATCH(req: NextRequest) {
           return NextResponse.json({ error: 'Invalid status.' }, { status: 400 });
         }
         // Publishing / unpublishing needs the separate `pages.publish` permission.
-        if (!(await hasPermission(req, 'pages', 'publish'))) {
+        if (!(await hasPermission(req, 'pages', 'publish', permissions))) {
           return NextResponse.json({ error: 'You do not have permission to publish or unpublish pages.' }, { status: 403 });
         }
       }

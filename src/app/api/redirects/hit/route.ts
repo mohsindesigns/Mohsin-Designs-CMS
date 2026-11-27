@@ -27,7 +27,10 @@ export async function POST(req: NextRequest) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
     }
-    await connectToDatabase();
+    // Drop the hit rather than letting it sit in Mongoose's command buffer during an outage.
+    if ((await connectToDatabase()) === null || mongoose.connection.readyState !== 1) {
+      return NextResponse.json({ ok: false }, { status: 503 });
+    }
     await Redirect.findByIdAndUpdate(id, { $inc: { hits: 1 }, $set: { lastAccessed: new Date() } });
     return NextResponse.json({ ok: true });
   } catch (error) {

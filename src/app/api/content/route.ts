@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import SiteContent from '@/models/Content';
-import { hasPermission, getSessionUser } from '@/lib/rbac';
+import { getPermissions, checkPermission, getSessionUser, getActiveSessionUser } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
 import { sanitizeEncoding } from '@/lib/utils';
 import contentDefaults from '@/data/content.json';
@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(contentDefaults, { headers: { 'X-Content-Fallback': '1' } });
     }
 
-    const session = await getSessionUser(req);
+    const session = await getActiveSessionUser(req);
     return NextResponse.json(session ? content.data : sanitizePublicContent(content.data));
   } catch (error: any) {
     console.error('Content fetch error (falling back to contentDefaults):', error);
@@ -30,8 +30,14 @@ export async function GET(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   const session = await getSessionUser(req);
-  const canUpdateSettings = await hasPermission(req, 'settings', 'update');
-  const canUpdatePages = await hasPermission(req, 'pages', 'update');
+  let permissions: Record<string, any> | null;
+  try {
+    permissions = await getPermissions(req);
+  } catch {
+    return NextResponse.json({ error: 'Database unavailable' }, { status: 503 });
+  }
+  const canUpdateSettings = checkPermission(permissions, 'settings', 'update');
+  const canUpdatePages = checkPermission(permissions, 'pages', 'update');
 
   if (!canUpdateSettings && !canUpdatePages) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
@@ -42,8 +48,14 @@ export async function PUT(req: NextRequest) {
     const body = await req.json();
     const sanitizedBody = sanitizeEncoding(body);
 
-    const isGlobalLayout = ['settings', 'navbar', 'footer', 'loader', 'hours'].includes(sanitizedBody?.section);
-    if (isGlobalLayout ? !canUpdateSettings : !canUpdatePages) {
+    // Site-wide keys need settings.update however they arrive: via their own section, or bundled
+    // into a full-merge (no section / 'complete_data') payload.
+    const GLOBAL_KEYS = ['settings', 'navbar', 'footer', 'loader', 'hours', 'contact'];
+    const sec = sanitizedBody?.section;
+    const isFullMerge = !sec || sec === 'complete_data';
+    const touchesGlobal = GLOBAL_KEYS.includes(sec) || (isFullMerge && GLOBAL_KEYS.some((k) => sanitizedBody?.[k] !== undefined));
+    const needsPages = !GLOBAL_KEYS.includes(sec);
+    if ((touchesGlobal && !canUpdateSettings) || (needsPages && !canUpdatePages)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
@@ -178,6 +190,7 @@ export async function PUT(req: NextRequest) {
         finalData.settings = existingData.settings;
         if (existingData.loader) finalData.loader = existingData.loader;
         if (existingData.hours) finalData.hours = existingData.hours;
+        finalData.contact = existingData.contact;
       }
     }
 

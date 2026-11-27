@@ -1,6 +1,20 @@
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 
+const LOCAL_EXT_BY_MIME: Record<string, string> = {
+  'image/jpeg': '.jpg',
+  'image/png': '.png',
+  'image/webp': '.webp',
+  'image/gif': '.gif',
+  'image/avif': '.avif',
+  'image/x-icon': '.ico',
+  'image/vnd.microsoft.icon': '.ico',
+  'video/mp4': '.mp4',
+  'video/webm': '.webm',
+  'video/quicktime': '.mov',
+  'application/pdf': '.pdf',
+};
+
 /**
  * Universal upload function that handles both local and Cloudinary storage
  */
@@ -95,10 +109,16 @@ export async function uploadFile(file: File, buffer: Buffer): Promise<{ url: str
   }
 
   // Fallback to local storage (Supported in local development or VPS with writable disk)
+  // Extension comes from the (allowlisted) MIME type, never the client filename: a file named
+  // 'x.html' or 'x.svg' would otherwise be served as active content from our origin.
+  const ext = LOCAL_EXT_BY_MIME[(file.type || '').toLowerCase()];
+  if (!ext) throw new Error(`Unsupported file type: ${file.type || 'unknown'}`);
   try {
     // basename + safe charset: a crafted name like '../../x.js' must not escape public/uploads.
-    const safe = path.basename(file.name).replace(/[^a-zA-Z0-9._-]/g, '-');
-    const filename = `${Date.now()}-${safe}`;
+    const base = path.basename(file.name);
+    const dot = base.lastIndexOf('.');
+    const safeBase = (dot > 0 ? base.slice(0, dot) : base).replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 80) || 'file';
+    const filename = `${Date.now()}-${safeBase}${ext}`;
     const uploadDir = path.join(process.cwd(), 'public', 'uploads');
     
     await mkdir(uploadDir, { recursive: true });

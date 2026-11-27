@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import SiteContent from '@/models/Content';
 import { randomUUID } from 'crypto';
-import { hasPermission, getSessionUser } from '@/lib/rbac';
+import { hasPermission, getSessionUser, getPermissions } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
 
 const KEY = 'site_scripts_v2';
@@ -39,7 +39,13 @@ export async function GET(req: NextRequest) {
 // POST — create a new script entry
 export async function POST(req: NextRequest) {
   const session = await getSessionUser(req);
-  if (!(await hasPermission(req, 'settings', 'create')) && !(await hasPermission(req, 'settings', 'update'))) {
+  let permissions: Record<string, any> | null;
+  try {
+    permissions = await getPermissions(req);
+  } catch {
+    return NextResponse.json({ error: 'Database unavailable' }, { status: 503 });
+  }
+  if (!(await hasPermission(req, 'settings', 'create', permissions)) && !(await hasPermission(req, 'settings', 'update', permissions))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
   }
 

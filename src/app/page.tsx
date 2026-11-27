@@ -216,7 +216,8 @@ export default async function Index() {
   // Page-authored services (template "service-detail") are merged here only, not into globalData, so Navbar/Footer lists stay catalog-only.
   const catalogServices: any[] = Array.isArray(content?.data?.services?.services) ? content.data.services.services : [];
   const globalServices = [...catalogServices, ...(await getCachedPageServices())];
-  const masterProjects: any[] = Array.isArray(content?.data?.portfolio?.projects) ? content.data.portfolio.projects : [];
+  // undefined (not []) when the catalog was never created, so Home picks from the Gallery fallback still render.
+  const masterProjects: any[] | undefined = Array.isArray(content?.data?.portfolio?.projects) ? content.data.portfolio.projects : undefined;
 
   // A page assigned as homepage in Settings is looked up by _id. homepageId can also be a service
   // slug (handled below); querying Page.findOne({ _id: "some-slug" }) throws a CastError, which

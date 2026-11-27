@@ -4,7 +4,7 @@ import Page from '@/models/Page';
 import User from '@/models/User';
 import ActivityLog from '@/models/ActivityLog';
 import Submission from '@/models/Submission';
-import { getSessionUser, hasPermission } from '@/lib/rbac';
+import { getSessionUser, getPermissions, checkPermission } from '@/lib/rbac';
 
 // Short in-memory cache to avoid hammering MongoDB on repeated rapid navigation
 let cachedDashboard: { data: any; expiresAt: number } | null = null;
@@ -16,8 +16,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const canSubs = await hasPermission(req, 'submissions', 'read');
-  const canLogs = await hasPermission(req, 'logs', 'read');
+  let permissions: Record<string, any> | null;
+  try {
+    permissions = await getPermissions(req);
+  } catch {
+    return NextResponse.json({ error: 'Database unavailable' }, { status: 503 });
+  }
+  const canSubs = checkPermission(permissions, 'submissions', 'read');
+  const canLogs = checkPermission(permissions, 'logs', 'read');
   const filterForRole = (data: any) => ({
     stats: {
       pages: data.stats.pages,
