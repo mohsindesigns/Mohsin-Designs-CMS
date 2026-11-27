@@ -118,6 +118,55 @@ export default function SettingsEditor() {
   const [submittingRedirect, setSubmittingRedirect] = useState(false);
   const [redirectError, setRedirectError] = useState("");
 
+  // Import Redirects states
+  const [showImportPanel, setShowImportPanel] = useState(false);
+  const [importFile, setImportFile] = useState<File | null>(null);
+  const [importing, setImporting] = useState(false);
+  const [importError, setImportError] = useState("");
+  const [importResult, setImportResult] = useState<{
+    created: number;
+    skipped: number;
+    failed: number;
+    total: number;
+    details: { row: number; sourceUrl?: string; targetUrl?: string; reason: string }[];
+  } | null>(null);
+  const [showImportDetails, setShowImportDetails] = useState(false);
+
+  const handleImportRedirects = async () => {
+    if (!importFile) {
+      setImportError("Please choose a .json or .csv file first.");
+      return;
+    }
+    setImporting(true);
+    setImportError("");
+    setImportResult(null);
+    try {
+      const text = await importFile.text();
+      const isJson = importFile.name.toLowerCase().endsWith(".json");
+      const format = isJson ? "json" : "csv";
+
+      const res = await fetch(adminApiUrl("/api/admin/redirects/import"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ format, content: text })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setImportResult(data);
+        setToast({ type: "ok", msg: `Imported ${data.created}, skipped ${data.skipped}, failed ${data.failed}.` });
+        setTimeout(() => setToast(null), 4000);
+        fetchRedirects();
+      } else {
+        setImportError(data.error || "Import failed.");
+      }
+    } catch (err) {
+      console.error("Import redirects error:", err);
+      setImportError("Failed to import file. Please check the file format and try again.");
+    } finally {
+      setImporting(false);
+    }
+  };
+
   const fetchRedirects = async () => {
     setLoadingRedirects(true);
     try {
@@ -1328,6 +1377,115 @@ export default function SettingsEditor() {
                      )}
                   </div>
                </form>
+
+               {/* Import Redirects */}
+               <div className="bg-[#f6f7f7] border border-[#c3c4c7] p-6 rounded-sm space-y-4 mb-8">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <h3 className="text-sm font-bold text-[#1d2327] m-0">Import Redirects</h3>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowImportPanel((v) => !v);
+                        setImportError("");
+                        setImportResult(null);
+                      }}
+                      className="bg-white border border-[#8c8f94] text-[#2c3338] px-4 py-1.5 rounded-[3px] text-[13px] hover:bg-[#f0f0f1] inline-flex items-center gap-1.5"
+                    >
+                      <Upload className="w-3.5 h-3.5" />
+                      {showImportPanel ? "Close Import" : "Import Redirects"}
+                    </button>
+                  </div>
+
+                  {showImportPanel && (
+                    <div className="space-y-4 pt-2 border-t border-[#c3c4c7]">
+                      <p className="text-[13px] text-[#2c3338] leading-relaxed m-0">
+                        Upload a <strong>.json</strong> export from the WordPress "Redirection" plugin,
+                        or a <strong>.csv</strong> file with columns{" "}
+                        <code className="bg-white border border-[#c3c4c7] px-1 rounded-[2px]">
+                          sourceUrl,targetUrl,statusCode,status,notes
+                        </code>{" "}
+                        (statusCode optional, default 301; status optional, default active; notes optional).
+                        Rows that are missing required fields, would self-redirect, or would create a
+                        redirect loop are skipped and listed below after import.
+                      </p>
+
+                      <div className="flex flex-wrap items-center gap-4 text-[13px]">
+                        <a
+                          href="/sample-redirects.json"
+                          download
+                          className="text-[#2271b1] hover:underline inline-flex items-center gap-1"
+                        >
+                          Download sample JSON
+                        </a>
+                        <a
+                          href="/sample-redirects.csv"
+                          download
+                          className="text-[#2271b1] hover:underline inline-flex items-center gap-1"
+                        >
+                          Download sample CSV
+                        </a>
+                      </div>
+
+                      {importError && (
+                        <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-3 text-[13px] rounded-sm">
+                          {importError}
+                        </div>
+                      )}
+
+                      <div className="flex flex-wrap items-center gap-3">
+                        <input
+                          type="file"
+                          accept=".json,.csv"
+                          onChange={(e) => {
+                            setImportFile(e.target.files?.[0] || null);
+                            setImportError("");
+                            setImportResult(null);
+                          }}
+                          className="text-[13px]"
+                        />
+                        <button
+                          type="button"
+                          disabled={importing || !importFile}
+                          onClick={handleImportRedirects}
+                          className="bg-[#2271b1] text-white px-4 py-1.5 rounded-[3px] text-[13px] font-semibold border border-[#2271b1] hover:bg-[#135e96] hover:border-[#135e96] disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {importing ? "Importing..." : "Import"}
+                        </button>
+                      </div>
+
+                      {importResult && (
+                        <div className="bg-white border border-[#c3c4c7] rounded-sm p-4 space-y-2">
+                          <p className="text-[13px] text-[#1d2327] font-semibold m-0">
+                            Imported {importResult.created} of {importResult.total} rows - skipped{" "}
+                            {importResult.skipped}, failed {importResult.failed}.
+                          </p>
+                          {importResult.details.length > 0 && (
+                            <div>
+                              <button
+                                type="button"
+                                onClick={() => setShowImportDetails((v) => !v)}
+                                className="text-[#2271b1] hover:underline text-[13px]"
+                              >
+                                {showImportDetails ? "Hide" : "Show"} {importResult.details.length} skipped/failed row(s)
+                              </button>
+                              {showImportDetails && (
+                                <ul className="mt-2 max-h-56 overflow-y-auto text-[12px] text-[#2c3338] divide-y divide-[#f0f0f1] border border-[#f0f0f1] rounded-sm">
+                                  {importResult.details.map((d, i) => (
+                                    <li key={i} className="p-2">
+                                      <span className="font-semibold">Row {d.row}:</span>{" "}
+                                      {d.sourceUrl || "(empty)"} → {d.targetUrl || "(empty)"} —{" "}
+                                      <span className="text-red-600">{d.reason}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+               </div>
 
                {/* Search, Filter, and Table controls */}
                <div className="flex flex-col sm:flex-row gap-3 items-center justify-between mb-4 pt-4 border-t border-[#c3c4c7]">

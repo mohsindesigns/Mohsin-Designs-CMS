@@ -1,0 +1,4 @@
+sourceUrl,targetUrl,statusCode,status,notes
+/old-contact-page/,/contact/,301,active,Merged contact pages
+/old-pricing/,/pricing/,301,active,
+/temp-promo/,/offers/,302,disabled,Seasonal promo retired

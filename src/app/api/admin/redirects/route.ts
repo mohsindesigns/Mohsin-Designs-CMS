@@ -4,78 +4,7 @@ import Redirect from '@/models/Redirect';
 import { hasPermission, getSessionUser } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
 import { invalidateRedirectCache } from '@/app/api/redirects/match/route';
-
-// A relative path saved without a leading slash can never match a real request: middleware.ts
-// compares it directly against req.nextUrl.pathname, which always starts with "/" - so
-// "old-page" (missing its "/") silently never fires, with no error anywhere to flag it. Applied
-// only to non-regex sourceUrl (a regex pattern's literal text matters) and to a relative
-// (non-absolute-URL, non-anchor) targetUrl.
-function withLeadingSlash(path: string): string {
-  const trimmed = (path || "").trim();
-  if (!trimmed) return trimmed;
-  if (/^https?:\/\//i.test(trimmed) || trimmed.startsWith("#")) return trimmed;
-  return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
-}
-
-// Helper to normalize path for loop checking
-function normalizePathForLoopCheck(urlStr: string) {
-  if (!urlStr) return '';
-  let path = urlStr;
-  try {
-    if (urlStr.startsWith('http://') || urlStr.startsWith('https://')) {
-      const u = new URL(urlStr);
-      path = u.pathname + u.search;
-    }
-  } catch {}
-  
-  let p = path.trim().toLowerCase();
-  if (p !== '/' && p.endsWith('/')) {
-    p = p.slice(0, -1);
-  }
-  if (!p.startsWith('/')) {
-    p = '/' + p;
-  }
-  return p;
-}
-
-// Loop checker algorithm
-async function isRedirectLoop(sourceUrl: string, targetUrl: string, excludeId?: string): Promise<boolean> {
-  const normSource = normalizePathForLoopCheck(sourceUrl);
-  const normTarget = normalizePathForLoopCheck(targetUrl);
-
-  if (normSource === normTarget) {
-    return true; // Direct self-redirect
-  }
-
-  // Fetch all active redirects
-  const redirects = await Redirect.find({ status: 'active' }).lean();
-
-  // Build the redirect map: source -> target
-  const redirectMap = new Map<string, string>();
-  for (const r of redirects) {
-    if (excludeId && r._id.toString() === excludeId) continue;
-    redirectMap.set(normalizePathForLoopCheck(r.sourceUrl), normalizePathForLoopCheck(r.targetUrl));
-  }
-
-  // Add the proposed redirect
-  redirectMap.set(normSource, normTarget);
-
-  // Traverse redirect path starting from normTarget to see if it reaches normSource
-  let current = normTarget;
-  const visited = new Set<string>([normSource]);
-
-  while (current) {
-    if (visited.has(current)) {
-      return true; // Cycle detected!
-    }
-    visited.add(current);
-    const next = redirectMap.get(current);
-    if (!next) break;
-    current = next;
-  }
-
-  return false;
-}
+import { withLeadingSlash, normalizePathForLoopCheck, isRedirectLoop } from '@/lib/redirectUtils';
 
 export async function GET(req: NextRequest) {
   if (!(await hasPermission(req, 'settings', 'read'))) {

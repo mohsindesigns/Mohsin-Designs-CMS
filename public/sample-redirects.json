@@ -1,0 +1,76 @@
+{
+  "plugin": { "version": "5.5.0" },
+  "groups": [
+    { "id": 1, "name": "Redirections", "module_id": 1, "moduleName": "WordPress", "enabled": true }
+  ],
+  "redirects": [
+    {
+      "id": 1,
+      "url": "/hail-damage-public-adjuster-near-me/",
+      "match_url": "/hail-damage-public-adjuster-near-me/",
+      "match_data": { "source": { "flag_regex": false, "flag_trailing": true, "flag_case": true, "flag_query": "exact" } },
+      "action_code": 301,
+      "action_type": "url",
+      "action_data": { "url": "https://example.com/hail-damage-claims/" },
+      "match_type": "url",
+      "title": "Old hail damage page -> new claims page",
+      "hits": 0,
+      "regex": false,
+      "group_id": 1,
+      "position": 0,
+      "last_access": "-",
+      "enabled": true
+    },
+    {
+      "id": 2,
+      "url": "/public-adjuster-services/",
+      "match_url": "/public-adjuster-services/",
+      "match_data": { "source": { "flag_regex": false, "flag_trailing": true, "flag_case": false, "flag_query": "ignore" } },
+      "action_code": 301,
+      "action_type": "url",
+      "action_data": { "url": "/services/" },
+      "match_type": "url",
+      "title": "",
+      "hits": 0,
+      "regex": false,
+      "group_id": 1,
+      "position": 1,
+      "last_access": "-",
+      "enabled": true
+    },
+    {
+      "id": 3,
+      "url": "/old-blog-category/",
+      "match_url": "/old-blog-category/",
+      "match_data": { "source": { "flag_regex": false, "flag_trailing": true, "flag_case": false, "flag_query": "exact" } },
+      "action_code": 302,
+      "action_type": "url",
+      "action_data": { "url": "/blog/" },
+      "match_type": "url",
+      "title": "Temporary redirect while category is retired",
+      "hits": 0,
+      "regex": false,
+      "group_id": 1,
+      "position": 2,
+      "last_access": "-",
+      "enabled": false
+    },
+    {
+      "id": 4,
+      "url": "^/legacy-posts/(.*)$",
+      "match_url": "^/legacy-posts/(.*)$",
+      "match_data": { "source": { "flag_regex": true, "flag_trailing": false, "flag_case": false, "flag_query": "ignore" } },
+      "action_code": 301,
+      "action_type": "url",
+      "action_data": { "url": "/blog/$1" },
+      "match_type": "url",
+      "title": "Legacy posts regex redirect",
+      "hits": 0,
+      "regex": true,
+      "group_id": 1,
+      "position": 3,
+      "last_access": "-",
+      "enabled": true
+    }
+  ]
+}
