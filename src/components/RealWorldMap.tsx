@@ -95,19 +95,16 @@ export default function RealWorldMap({
     const cartoKey = process.env.NEXT_PUBLIC_CARTO_API_KEY;
     const keyQuery = cartoKey ? `?key=${cartoKey}` : "";
 
-    // dark_all's own place-name labels are baked into the tile's raster pixels, rendered dim
-    // at closer zoom levels (confirmed against CartoDB's completely unmodified, no-filter
-    // tiles - same dim labels with zero CSS applied, so this is how the free dark style itself
-    // renders at this zoom, not something our code does). Tried dark_nolabels to sidestep it,
-    // but that removes every country name on the whole map, which is worse than a dim one.
-    // Keeping dark_all - our own hub markers still show their name via a label we fully
-    // control on top, and most of the map (world view and the business's own hub countries)
-    // reads fine; only non-hub countries at a deep zoom are dim, a real limit of this free
-    // CartoDB style rather than a bug we can fix from our own code/CSS.
+    // Always uses the light "voyager" tileset now, even when the site is in dark mode.
+    // dark_all's own country-name labels are baked into its raster tiles in a gray that gets
+    // too dim to read past the world-view zoom level - confirmed against CartoDB's completely
+    // unmodified tiles (zero CSS applied, same dim result), so it's an inherent limit of that
+    // free dark style, not something fixable from our own code/CSS. voyager's labels are bold
+    // and dark-on-light at every zoom, so this trades the map matching the page's dark theme
+    // for every country name actually being legible everywhere, every time - the tradeoff the
+    // client explicitly chose over continuing to chase dark-tile contrast.
     const tileUrl = cartoKey
-      ? isDarkMode
-        ? `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png${keyQuery}`
-        : `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png${keyQuery}`
+      ? `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png${keyQuery}`
       : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 
     const newTileLayer = L.tileLayer(tileUrl, {
@@ -116,12 +113,16 @@ export default function RealWorldMap({
       attribution: cartoKey
         ? '&copy; <a href="https://carto.com/">CARTO</a>'
         : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      className: isDarkMode ? "map-tiles-dark" : "map-tiles-light",
+      // Always the light-tile styling now, matching the voyager tileset above -
+      // map-tiles-dark's hue-rotate/brightness filter was tuned for the dark_all palette
+      // and would look wrong applied to voyager's light colors.
+      className: "map-tiles-light",
     });
 
     newTileLayer.addTo(map);
     tileLayerRef.current = newTileLayer;
-  }, [isDarkMode]);
+    // No longer depends on isDarkMode - the tile layer is always the light style now.
+  }, []);
 
   // Update Markers whenever hubs list, activeHub, or theme changes
   useEffect(() => {
