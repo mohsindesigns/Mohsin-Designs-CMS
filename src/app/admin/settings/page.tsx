@@ -89,6 +89,7 @@ const SettingsRow = ({ label, children, description }: any) => (
 
 export default function SettingsEditor() {
   const [data, setData] = useState<any>(null);
+  const [loadError, setLoadError] = useState("");
   const [pages, setPages] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState("general");
   const [saving, setSaving] = useState(false);
@@ -277,8 +278,12 @@ export default function SettingsEditor() {
 
   useEffect(() => {
     Promise.all([
-      fetch(adminApiUrl("/api/content")).then(res => res.json()),
-      fetch(adminApiUrl("/api/admin/pages")).then(res => res.json())
+      // A failed load must not fall through to the defaults below - saving those would overwrite real settings.
+      fetch(adminApiUrl("/api/content")).then(res => {
+        if (!res.ok) throw new Error(`content ${res.status}`);
+        return res.json();
+      }),
+      fetch(adminApiUrl("/api/admin/pages")).then(res => res.ok ? res.json() : [])
     ]).then(([contentJson, pagesJson]) => {
       const d = { ...(contentJson || {}) };
       if (!d.settings) d.settings = { siteTitle: "Mohsin Designs", siteTemplate: "%s | Mohsin Designs", favicon: "/portfolio_hero_bg.png", globalNoIndex: false };
@@ -298,7 +303,10 @@ export default function SettingsEditor() {
         .filter((s: any) => s.status === 'published' || s.status === undefined)
         .map((s: any) => ({ ...s, _id: s._id || s.slug, type: 'service', title: s.title, slug: `services/${s.slug}` }));
       setPages([...pageList, ...serviceList]);
-    }).catch(err => console.error("Settings load error:", err));
+    }).catch(err => {
+      console.error("Settings load error:", err);
+      setLoadError("Settings could not be loaded. Refresh the page to try again - nothing has been changed.");
+    });
   }, []);
 
   useEffect(() => {
@@ -340,7 +348,7 @@ export default function SettingsEditor() {
     setData((prev: any) => ({ ...prev, [section]: field ? { ...prev[section], [field]: value } : value }));
   };
 
-  if (!data) return <div className="flex h-screen items-center justify-center text-[#646970] font-serif">Loading...</div>;
+  if (!data) return <div className="flex h-screen items-center justify-center text-[#646970] font-serif">{loadError || "Loading..."}</div>;
 
   const tabs = [
     { id: "general", label: "General", icon: Globe },

@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import Tag from '@/models/Tag';
 import Post from '@/models/Post';
-import { hasPermission, getPermissions } from '@/lib/rbac';
+import { hasPermission, getPermissions, getSessionUser } from '@/lib/rbac';
+import { recordActivity } from '@/lib/logger';
 import { dbErrorResponse, slugify } from '@/lib/blog-admin';
 
 // The ONE tags route (src/app/api/admin/blog/tags re-exports it).
@@ -47,6 +48,16 @@ export async function POST(req: NextRequest) {
 
     await connectToDatabase();
     const tag = await Tag.create({ name, slug });
+    const session: any = await getSessionUser(req);
+    await recordActivity({
+      user: session?.userId,
+      userName: session?.username,
+      action: 'CREATE_TAG',
+      entity: 'Tag',
+      entityId: String(tag._id),
+      details: { name: tag.name },
+      ip: req.headers.get('x-forwarded-for') || 'unknown',
+    });
     return NextResponse.json(tag);
   } catch (error: any) {
     return dbErrorResponse(error, 'tag');

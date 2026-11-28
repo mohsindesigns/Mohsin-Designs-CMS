@@ -4,6 +4,7 @@ import Post from '@/models/Post';
 import { getSessionUser, hasPermission } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
 import { revalidateBlog, toIdList } from '@/lib/blog-admin';
+import { hasBodyContent } from '@/lib/html-text';
 
 export const dynamic = 'force-dynamic';
 
@@ -55,10 +56,7 @@ export async function POST(req: NextRequest) {
     } else if (action === 'status') {
       if (value === 'published') {
         const toPublish = await Post.find({ _id: { $in: ids }, status: { $ne: 'published' } }, 'title content').lean();
-        const empty = toPublish.filter((p: any) => {
-          const html = String(p.content || '');
-          return !html.replace(/<[^>]*>/g, '').trim() && !/<img\b/i.test(html);
-        });
+        const empty = toPublish.filter((p: any) => !hasBodyContent(p.content));
         if (empty.length) {
           return NextResponse.json(
             { error: `Cannot publish posts with no content: ${empty.map((p: any) => p.title || 'Untitled').join(', ')}` },
@@ -68,7 +66,8 @@ export async function POST(req: NextRequest) {
         // Posts that were not live yet get "now" as their publish date (aggregation-pipeline update).
         await Post.updateMany(
           { _id: { $in: ids }, status: { $ne: 'published' } },
-          [{ $set: { status: 'published', publishedAt: '$$NOW' } }]
+          [{ $set: { status: 'published', publishedAt: '$$NOW' } }],
+          { updatePipeline: true }
         );
       } else {
         await Post.updateMany(

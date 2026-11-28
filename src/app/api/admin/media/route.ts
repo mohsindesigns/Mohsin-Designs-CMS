@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import Media from '@/models/Media';
-import { writeFile, mkdir, unlink } from 'fs/promises';
-import path from 'path';
 import sizeOf from 'image-size';
+import { deleteFile } from '@/lib/storage';
+import { loadMediaHaystack, isMediaInUse } from '@/lib/mediaUsage';
 import { hasPermission, getSessionUser } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
 
@@ -11,6 +11,8 @@ import { recordActivity } from '@/lib/logger';
 const MAX_UPLOAD_SIZE = 64 * 1024 * 1024;
 // SVG/HTML are deliberately excluded: served from our own origin they are stored XSS.
 const ALLOWED_MIME_RE = /^(image\/(jpeg|png|webp|gif|avif|x-icon|vnd\.microsoft\.icon)|video\/(mp4|webm|quicktime))$/i;
+// image-size result types accepted for image/* uploads ('heif' covers AVIFs with an mif1 major brand).
+const SNIFFED_IMAGE_TYPES = new Set(['jpg', 'png', 'webp', 'gif', 'avif', 'heif', 'ico', 'cur']);
 
 export async function GET(req: NextRequest) {
   if (!(await hasPermission(req, 'media', 'read'))) {
@@ -54,14 +56,23 @@ export async function POST(req: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Calculate dimensions
+    // The declared MIME type is client-controlled (an SVG renamed .png passes it), so image
+    // uploads must also match on the sniffed content type.
+    const isImage = (file.type || '').toLowerCase().startsWith('image/');
+    const invalidType = () => NextResponse.json(
+      { error: 'Invalid file type. Only JPEG, PNG, WebP, GIF, AVIF, ICO images and MP4, WebM, MOV videos are allowed.' },
+      { status: 400 }
+    );
     let width = 0;
     let height = 0;
     try {
       const dimensions = sizeOf(buffer);
+      if (isImage && !SNIFFED_IMAGE_TYPES.has(dimensions.type || '')) return invalidType();
       width = dimensions.width || 0;
       height = dimensions.height || 0;
     } catch (err) {
+      // image-size cannot parse animated AVIF ('avis' brand), so only that type may pass unsniffed.
+      if (isImage && file.type.toLowerCase() !== 'image/avif') return invalidType();
       console.warn('Could not calculate image dimensions:', err);
     }
 
@@ -114,28 +125,16 @@ export async function DELETE(req: NextRequest) {
     // Find all records to get URLs
     const mediaItems = await Media.find({ _id: { $in: ids } });
 
-    // Bulk physical delete
+    // Remove the stored file only when nothing on the site still uses it; otherwise just the library entry goes.
+    const haystack = await loadMediaHaystack();
+    const keptInUse: string[] = [];
     for (const item of mediaItems) {
       try {
-        if (item.publicId && process.env.CLOUDINARY_API_KEY) {
-          // Cloudinary delete (simplified via fetch)
-          const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-          const apiKey = process.env.CLOUDINARY_API_KEY;
-          const apiSecret = process.env.CLOUDINARY_API_SECRET;
-          
-          if (cloudName && apiKey && apiSecret) {
-            const timestamp = Math.round(new Date().getTime() / 1000);
-            const signature = btoa(`public_id=${item.publicId}&timestamp=${timestamp}${apiSecret}`); // This is a simplification
-            // Actually Cloudinary requires a real SHA1 signature, which is hard without a lib.
-            // I'll skip physical delete for now if it's Cloudinary, or tell the user to install the lib.
-          }
-        } else {
-          const filename = item.url.split('/').pop();
-          if (filename) {
-            const filePath = path.join(process.cwd(), 'public', 'uploads', filename);
-            await unlink(filePath);
-          }
+        if (await isMediaInUse(item, haystack, ids)) {
+          keptInUse.push(item.name || item.url);
+          continue;
         }
+        await deleteFile(item);
       } catch (err) {
         console.warn(`Failed to delete physical file for ${item._id}:`, err);
       }
@@ -152,7 +151,7 @@ export async function DELETE(req: NextRequest) {
       ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
     });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, keptInUse });
   } catch (error: any) {
     console.error('Media delete error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

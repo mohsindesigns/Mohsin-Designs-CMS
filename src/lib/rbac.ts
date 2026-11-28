@@ -43,11 +43,8 @@ export async function getSessionUser(req: NextRequest) {
 }
 
 // Like getSessionUser, but rejects deactivated users and revoked (tokenVersion-bumped) sessions.
+// Throws on a DB error so callers never mistake an outage for "not signed in".
 export async function getActiveSessionUser(req: NextRequest) {
-  try {
-    const active = await loadActiveUser(req);
-    return active ? active.session : null;
-  } catch {
-    return null;
-  }
+  const active = await loadActiveUser(req);
+  return active ? active.session : null;
 }

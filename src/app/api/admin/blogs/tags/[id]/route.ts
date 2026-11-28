@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import Tag from '@/models/Tag';
 import Post from '@/models/Post';
-import { hasPermission } from '@/lib/rbac';
+import { hasPermission, getSessionUser } from '@/lib/rbac';
+import { recordActivity } from '@/lib/logger';
 import { dbErrorResponse, revalidateBlog, slugify } from '@/lib/blog-admin';
 
 // Edit / delete one tag. src/app/api/admin/blog/tags/[id] re-exports this file.
@@ -27,6 +28,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     await connectToDatabase();
     const tag = await Tag.findByIdAndUpdate(id, update, { new: true, runValidators: true });
     if (!tag) return NextResponse.json({ error: 'Tag not found' }, { status: 404 });
+    const session: any = await getSessionUser(req);
+    await recordActivity({
+      user: session?.userId,
+      userName: session?.username,
+      action: 'UPDATE_TAG',
+      entity: 'Tag',
+      entityId: id,
+      details: { after: tag.name },
+      ip: req.headers.get('x-forwarded-for') || 'unknown',
+    });
     await revalidateBlog([]);
     return NextResponse.json(tag);
   } catch (error: any) {
@@ -44,6 +55,16 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     const tag = await Tag.findByIdAndDelete(id);
     if (!tag) return NextResponse.json({ error: 'Tag not found' }, { status: 404 });
     const cleaned = await Post.updateMany({ tags: id }, { $pull: { tags: id } });
+    const session: any = await getSessionUser(req);
+    await recordActivity({
+      user: session?.userId,
+      userName: session?.username,
+      action: 'DELETE_TAG',
+      entity: 'Tag',
+      entityId: id,
+      details: { name: tag.name, postsUpdated: cleaned.modifiedCount ?? 0 },
+      ip: req.headers.get('x-forwarded-for') || 'unknown',
+    });
     await revalidateBlog([]);
     return NextResponse.json({ success: true, postsUpdated: cleaned.modifiedCount ?? 0 });
   } catch (error: any) {

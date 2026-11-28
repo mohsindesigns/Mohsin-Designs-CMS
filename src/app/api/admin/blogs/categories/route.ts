@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import Category from '@/models/Category';
 import Post from '@/models/Post';
-import { hasPermission, getPermissions } from '@/lib/rbac';
+import { hasPermission, getPermissions, getSessionUser } from '@/lib/rbac';
+import { recordActivity } from '@/lib/logger';
 import { dbErrorResponse, slugify } from '@/lib/blog-admin';
 
 // The ONE categories route (src/app/api/admin/blog/categories re-exports it).
@@ -48,6 +49,16 @@ export async function POST(req: NextRequest) {
 
     await connectToDatabase();
     const category = await Category.create({ name, slug, description: String(body?.description ?? '').trim() });
+    const session: any = await getSessionUser(req);
+    await recordActivity({
+      user: session?.userId,
+      userName: session?.username,
+      action: 'CREATE_CATEGORY',
+      entity: 'Category',
+      entityId: String(category._id),
+      details: { name: category.name },
+      ip: req.headers.get('x-forwarded-for') || 'unknown',
+    });
     return NextResponse.json(category);
   } catch (error: any) {
     return dbErrorResponse(error, 'category');

@@ -17,6 +17,7 @@ import { adminApiUrl } from "@/lib/adminApi";
 import SeoEditor from "./SeoEditor";
 import { BASE_URL } from "@/lib/constants";
 import { syncFaqSchema } from "@/lib/faqSchema";
+import { hasBodyContent } from "@/lib/html-text";
 
 const RichTextEditor = dynamic(() => import("./RichTextEditor"), { ssr: false });
 
@@ -224,8 +225,6 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
       toast("Network error while adding.", "error");
     }
   };
-
-  const hasBodyContent = (html: string) => !!(html || "").replace(/<[^>]*>/g, "").trim() || /<img\b/i.test(html || "");
 
   const handleSave = async (mode?: "draft" | "publish") => {
     if (saving) return;

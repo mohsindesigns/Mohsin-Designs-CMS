@@ -20,7 +20,17 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(contentDefaults, { headers: { 'X-Content-Fallback': '1' } });
     }
 
-    const session = await getActiveSessionUser(req);
+    let session = null;
+    try {
+      session = await getActiveSessionUser(req);
+    } catch (err) {
+      // A signed-in admin must never get the stripped public payload: an editor that saves it would
+      // persist the missing fields. Only fail when a session cookie is actually present.
+      if (await getSessionUser(req)) {
+        console.error('Content fetch: could not verify admin session', err);
+        return NextResponse.json({ error: 'Could not verify session. Please retry.' }, { status: 503 });
+      }
+    }
     return NextResponse.json(session ? content.data : sanitizePublicContent(content.data));
   } catch (error: any) {
     console.error('Content fetch error (falling back to contentDefaults):', error);

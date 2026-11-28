@@ -34,7 +34,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const isGlobalNoIndex = !!contentData?.settings?.globalNoIndex;
   const pageTitle = item.seo?.metaTitle || `${item.title} | Mohsin Designs`;
-  const pageDesc = item.seo?.metaDescription || item.summary || truncate(stripHtml(item.sections?.challenge?.body), 160) || `${item.title} - a Mohsin Designs case study.`;
+  const challengeDesc = item.sections?.challenge?.enabled !== false ? truncate(stripHtml(item.sections?.challenge?.body), 160) : "";
+  const pageDesc = item.seo?.metaDescription || item.summary || challengeDesc || `${item.title} - a Mohsin Designs case study.`;
   const pageImage = absoluteUrl(item.seo?.ogImage || item.seo?.featuredImage || item.thumbnail);
   const twitterImage = absoluteUrl(item.seo?.twitterImage) || pageImage;
   const canonicalUrl = normalizeCanonicalUrl(item.seo?.canonicalUrl, `${BASE_URL}/portfolio/${item.slug}/`, item.slug);

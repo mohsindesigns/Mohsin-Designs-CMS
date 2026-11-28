@@ -6,6 +6,7 @@ import { hasPermission, getSessionUser } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
 import { applyPublishRules, dbErrorResponse, pickPostFields, revalidateBlog, slugify } from '@/lib/blog-admin';
 import { promoteDueScheduledPosts } from '@/lib/blog-public';
+import { hasBodyContent } from '@/lib/html-text';
 
 export const dynamic = 'force-dynamic';
 
@@ -86,8 +87,7 @@ export async function POST(req: NextRequest) {
     if (!fields.title) return NextResponse.json({ error: 'Title is required.' }, { status: 400 });
     if (!fields.slug) fields.slug = slugify(fields.title);
     if (!fields.slug) return NextResponse.json({ error: 'Slug is required (use letters or numbers).' }, { status: 400 });
-    const contentHtml = String(fields.content || '');
-    if ((fields.status ?? 'draft') !== 'draft' && !contentHtml.replace(/<[^>]*>/g, '').trim() && !/<img\b/i.test(contentHtml)) {
+    if ((fields.status ?? 'draft') !== 'draft' && !hasBodyContent(fields.content)) {
       return NextResponse.json({ error: 'Write some content before saving.' }, { status: 400 });
     }
     fields = applyPublishRules(fields, null);

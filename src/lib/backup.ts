@@ -3,7 +3,11 @@ import Backup from '@/models/Backup';
 import SiteContent from '@/models/Content';
 import Page from '@/models/Page';
 
-const MAX_COMPLETE_BACKUPS = 5;
+const MAX_COMPLETE_BACKUPS = 50;
+// Hard ceiling so a long editing burst inside the 72h window can't grow storage without bound.
+const ABSOLUTE_MAX_COMPLETE_BACKUPS = 200;
+// A burst of saves must never rotate out a recent pre-change snapshot.
+const MIN_COMPLETE_BACKUP_AGE_MS = 72 * 60 * 60 * 1000;
 const MAX_PAGE_BACKUPS = 10;
 
 /**
@@ -44,11 +48,15 @@ export async function createCompleteDbBackup({
     const oldBackups = await Backup.find({ type: 'complete_db' })
       .sort({ createdAt: -1 })
       .skip(MAX_COMPLETE_BACKUPS)
-      .select('_id')
+      .select('_id createdAt')
       .lean();
 
-    if (oldBackups.length > 0) {
-      const idsToDelete = oldBackups.map(b => b._id);
+    const cutoff = Date.now() - MIN_COMPLETE_BACKUP_AGE_MS;
+    const overCeiling = ABSOLUTE_MAX_COMPLETE_BACKUPS - MAX_COMPLETE_BACKUPS;
+    const idsToDelete = oldBackups
+      .filter((b: any, i: number) => i >= overCeiling || (b.createdAt && new Date(b.createdAt).getTime() < cutoff))
+      .map(b => b._id);
+    if (idsToDelete.length > 0) {
       await Backup.deleteMany({ _id: { $in: idsToDelete } });
     }
 

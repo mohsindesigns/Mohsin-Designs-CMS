@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import sizeOf from "image-size";
 import { uploadFile } from "@/lib/storage";
 import { getSessionUser, hasPermission } from "@/lib/rbac";
 
@@ -38,6 +39,16 @@ export async function POST(req: NextRequest) {
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
+    // The declared MIME type is client-controlled (an SVG renamed .png passes it), so check the real content.
+    if (file.type.toLowerCase().startsWith("image/")) {
+      let sniffed = "";
+      try {
+        sniffed = sizeOf(buffer).type || "";
+      } catch {}
+      if (!["jpg", "png", "webp", "gif"].includes(sniffed)) {
+        return NextResponse.json({ error: "Invalid file type. Only standard images and PDFs are allowed." }, { status: 400 });
+      }
+    }
     const { url, publicId } = await uploadFile(file, buffer);
 
     return NextResponse.json({ url, publicId });

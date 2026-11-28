@@ -52,7 +52,8 @@ export async function POST(req: NextRequest) {
       if (value === 'published') {
         await Portfolio.updateMany(
           { _id: { $in: ids }, status: { $ne: 'published' } },
-          [{ $set: { status: 'published', publishedAt: '$$NOW' } }]
+          [{ $set: { status: 'published', publishedAt: '$$NOW' } }],
+          { updatePipeline: true }
         );
       } else {
         await Portfolio.updateMany({ _id: { $in: ids } }, { $set: { status: value, updatedAt: new Date() } }, { runValidators: true });

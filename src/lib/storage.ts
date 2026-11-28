@@ -15,17 +15,13 @@ const LOCAL_EXT_BY_MIME: Record<string, string> = {
   'application/pdf': '.pdf',
 };
 
-/**
- * Universal upload function that handles both local and Cloudinary storage
- */
-export async function uploadFile(file: File, buffer: Buffer): Promise<{ url: string; publicId?: string }> {
+function getCloudinaryConfig() {
   let cloudName = process.env.CLOUDINARY_CLOUD_NAME;
   let apiKey = process.env.CLOUDINARY_API_KEY;
   let apiSecret = process.env.CLOUDINARY_API_SECRET;
   const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET;
   const cloudinaryUrl = process.env.CLOUDINARY_URL;
 
-  // Parse CLOUDINARY_URL if provided
   if (cloudinaryUrl && !cloudName) {
     try {
       const trimmed = cloudinaryUrl.trim().replace(/^["']|["']$/g, '');
@@ -44,6 +40,48 @@ export async function uploadFile(file: File, buffer: Buffer): Promise<{ url: str
       console.error('Failed to parse CLOUDINARY_URL:', err);
     }
   }
+  return { cloudName, apiKey, apiSecret, uploadPreset };
+}
+
+/**
+ * Removes the stored file behind a media record (Cloudinary asset or local /uploads file).
+ * Throws if the storage provider reports a failure.
+ */
+export async function deleteFile(m: { url?: string; publicId?: string }) {
+  const url = m.url || '';
+  // Resource type comes from the URL, not the record: older /auto/upload SVGs were stored as 'raw'.
+  const resourceType = url.match(/res\.cloudinary\.com\/[^/]+\/(image|video|raw)\/upload\//)?.[1];
+  if (resourceType) {
+    const { cloudName, apiKey, apiSecret } = getCloudinaryConfig();
+    if (!m.publicId || !cloudName || !apiKey || !apiSecret) {
+      throw new Error('Cloudinary credentials or public_id missing; asset not deleted');
+    }
+    const { createHash } = await import('crypto');
+    const timestamp = Math.round(Date.now() / 1000).toString();
+    const signature = createHash('sha1')
+      .update(`invalidate=true&public_id=${m.publicId}&timestamp=${timestamp}${apiSecret}`)
+      .digest('hex');
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/destroy`, {
+      method: 'POST',
+      body: new URLSearchParams({ public_id: m.publicId, timestamp, api_key: apiKey, invalidate: 'true', signature }),
+    });
+    const data: any = await res.json().catch(() => ({}));
+    if (!res.ok || (data.result !== 'ok' && data.result !== 'not found')) {
+      throw new Error(`Cloudinary delete failed: ${data.error?.message || data.result || res.status}`);
+    }
+    return;
+  }
+  if (url.startsWith('/uploads/')) {
+    const { unlink } = await import('fs/promises');
+    await unlink(path.join(process.cwd(), 'public', 'uploads', path.basename(url)));
+  }
+}
+
+/**
+ * Universal upload function that handles both local and Cloudinary storage
+ */
+export async function uploadFile(file: File, buffer: Buffer): Promise<{ url: string; publicId?: string }> {
+  const { cloudName, apiKey, apiSecret, uploadPreset } = getCloudinaryConfig();
 
   // Use Cloudinary if configured
   if (cloudName && (uploadPreset || (apiKey && apiSecret))) {

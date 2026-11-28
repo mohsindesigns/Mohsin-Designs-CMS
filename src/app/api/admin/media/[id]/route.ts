@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import Media from '@/models/Media';
-import { unlink } from 'fs/promises';
-import path from 'path';
+import { deleteFile } from '@/lib/storage';
+import { loadMediaHaystack, isMediaInUse } from '@/lib/mediaUsage';
 import { hasPermission, getSessionUser } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
 
@@ -67,13 +67,9 @@ export async function DELETE(
       return NextResponse.json({ error: 'Media not found' }, { status: 404 });
     }
 
-    // Attempt to delete physical file
+    // Remove the stored file only when nothing on the site still uses it.
     try {
-      const filename = media.url.split('/').pop();
-      if (filename) {
-        const filePath = path.join(process.cwd(), 'public', 'uploads', filename);
-        await unlink(filePath);
-      }
+      if (!(await isMediaInUse(media, await loadMediaHaystack()))) await deleteFile(media);
     } catch (err) {
       console.warn('Physical file deletion failed or file already gone:', err);
     }

@@ -398,6 +398,7 @@ export default function ServicesAdminPage() {
   const [data, setData] = useState<any>(null);
   const [services, setServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [isEditing, setIsEditing] = useState<number | null>(null);
   const [mainTab, setMainTab] = useState<'content' | 'seo' | 'schema' | 'faqs'>('content');
   const [activeSubTab, setActiveSubTab] = useState("hero");
@@ -447,6 +448,7 @@ export default function ServicesAdminPage() {
         fetch(adminApiUrl(`/api/content?t=${Date.now()}`)),
         fetch(adminApiUrl(`/api/admin/pages?t=${Date.now()}`)).catch(() => null)
       ]);
+      if (!res.ok) throw new Error(`content ${res.status}`);
       const json = await res.json();
       setData(json);
       const list = Array.isArray(json.services?.services) && json.services.services.length > 0
@@ -489,6 +491,7 @@ export default function ServicesAdminPage() {
       }
     } catch (err) {
       console.error("Failed to fetch services:", err);
+      setLoadError(true);
     } finally {
       setLoading(false);
     }
@@ -951,6 +954,10 @@ export default function ServicesAdminPage() {
 
   if (loading) {
     return <div className="flex h-screen items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-[#2271b1]" /></div>;
+  }
+
+  if (loadError) {
+    return <div className="flex h-screen items-center justify-center text-[#646970] font-serif">Services could not be loaded. Refresh the page to try again - nothing has been changed.</div>;
   }
 
   return (
@@ -3759,8 +3766,8 @@ export default function ServicesAdminPage() {
                                 Remove
                               </button>
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                              <div className="sm:col-span-3 space-y-1.5">
+                            <div className="space-y-1.5">
+                              <div className="space-y-1.5">
                                 <label className={UI.label}>Question</label>
                                 <input
                                   type="text"
@@ -3771,20 +3778,6 @@ export default function ServicesAdminPage() {
                                     setForm({ ...form, faqs: nf, faqSchemaAutoSync: false });
                                   }}
                                   placeholder="What is your typical turnaround time?"
-                                  className={UI.input}
-                                />
-                              </div>
-                              <div className="space-y-1.5">
-                                <label className={UI.label}>Category</label>
-                                <input
-                                  type="text"
-                                  value={faq.category || ""}
-                                  onChange={e => {
-                                    const nf = form.faqs.map((f: any, i: number) => i === idx ? { ...f, category: e.target.value } : f);
-                                    
-                                    setForm({ ...form, faqs: nf, faqSchemaAutoSync: false });
-                                  }}
-                                  placeholder="TIMELINE"
                                   className={UI.input}
                                 />
                               </div>

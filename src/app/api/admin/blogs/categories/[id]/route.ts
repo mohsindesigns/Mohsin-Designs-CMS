@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import Category from '@/models/Category';
 import Post from '@/models/Post';
-import { hasPermission } from '@/lib/rbac';
+import { hasPermission, getSessionUser } from '@/lib/rbac';
+import { recordActivity } from '@/lib/logger';
 import { dbErrorResponse, revalidateBlog, slugify } from '@/lib/blog-admin';
 
 // Edit / delete one category (the admin list had Edit + Delete links that did nothing).
@@ -29,6 +30,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     await connectToDatabase();
     const category = await Category.findByIdAndUpdate(id, update, { new: true, runValidators: true });
     if (!category) return NextResponse.json({ error: 'Category not found' }, { status: 404 });
+    const session: any = await getSessionUser(req);
+    await recordActivity({
+      user: session?.userId,
+      userName: session?.username,
+      action: 'UPDATE_CATEGORY',
+      entity: 'Category',
+      entityId: id,
+      details: { after: category.name },
+      ip: req.headers.get('x-forwarded-for') || 'unknown',
+    });
     await revalidateBlog([]);
     return NextResponse.json(category);
   } catch (error: any) {
@@ -47,6 +58,16 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     if (!category) return NextResponse.json({ error: 'Category not found' }, { status: 404 });
     // Integrity: no post may keep pointing at a category that no longer exists.
     const cleaned = await Post.updateMany({ categories: id }, { $pull: { categories: id } });
+    const session: any = await getSessionUser(req);
+    await recordActivity({
+      user: session?.userId,
+      userName: session?.username,
+      action: 'DELETE_CATEGORY',
+      entity: 'Category',
+      entityId: id,
+      details: { name: category.name, postsUpdated: cleaned.modifiedCount ?? 0 },
+      ip: req.headers.get('x-forwarded-for') || 'unknown',
+    });
     await revalidateBlog([]);
     return NextResponse.json({ success: true, postsUpdated: cleaned.modifiedCount ?? 0 });
   } catch (error: any) {

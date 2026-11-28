@@ -5,6 +5,7 @@ import { hasPermission, getSessionUser } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
 import { applyPublishRules, dbErrorResponse, pickPostFields, revalidateBlog, slugify } from '@/lib/blog-admin';
 import { promoteDueScheduledPosts } from '@/lib/blog-public';
+import { hasBodyContent } from '@/lib/html-text';
 
 export const dynamic = 'force-dynamic';
 
@@ -61,7 +62,7 @@ export async function PATCH(
     const finalStatus = updateData.status ?? oldPost.status;
     if (finalStatus !== 'draft' && ('content' in updateData || finalStatus !== oldPost.status)) {
       const html = String(('content' in updateData ? updateData.content : oldPost.content) || '');
-      if (!html.replace(/<[^>]*>/g, '').trim() && !/<img\b/i.test(html)) {
+      if (!hasBodyContent(html)) {
         return NextResponse.json({ error: 'Content cannot be empty.' }, { status: 400 });
       }
     }
